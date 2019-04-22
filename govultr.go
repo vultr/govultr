@@ -17,6 +17,10 @@ const (
 	UserAgent   = "govultr/" + version
 )
 
+type ApiKey struct {
+	key string
+}
+
 type Client struct {
 	client *http.Client
 
@@ -25,9 +29,11 @@ type Client struct {
 	UserAgent string
 
 	Account AccountService
+
+	ApiKey ApiKey
 }
 
-func NewClient(httpClient *http.Client) *Client {
+func NewClient(httpClient *http.Client, key string) *Client {
 
 	baseUrl, _ := url.Parse(DefaultBase)
 
@@ -38,6 +44,9 @@ func NewClient(httpClient *http.Client) *Client {
 	}
 
 	client.Account = &AccountServiceHandler{client}
+
+	apiKey := ApiKey{key: key}
+	client.ApiKey = apiKey
 
 	return client
 }
@@ -65,8 +74,7 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Va
 		return nil, err
 	}
 
-	// todo Review alt method for this
-	//req.Header.Add("API-key", "")
+	req.Header.Add("API-key", c.ApiKey.key)
 	// todo review the Accept and content types
 	req.Header.Add("User-Agent", c.UserAgent)
 	req.Header.Add("Accept", "application/json")
