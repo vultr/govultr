@@ -89,7 +89,7 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Va
 	var reqBody io.Reader
 
 	if body != nil {
-		strings.NewReader(body.Encode())
+		reqBody = strings.NewReader(body.Encode())
 	} else {
 		reqBody = nil
 	}
