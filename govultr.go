@@ -14,9 +14,9 @@ import (
 
 const (
 	version     = "0.0.1"
-	DefaultBase = "https://api.vultr.com"
-	UserAgent   = "govultr/" + version
-	RateLimit   = 200 * time.Millisecond
+	defaultBase = "https://api.vultr.com"
+	userAgent   = "govultr/" + version
+	rateLimit   = 200 * time.Millisecond
 )
 
 // ApiKey contains a users API Key for interacting with the API
@@ -59,13 +59,13 @@ func NewClient(httpClient *http.Client, key string) *Client {
 		httpClient = http.DefaultClient
 	}
 
-	baseUrl, _ := url.Parse(DefaultBase)
+	baseUrl, _ := url.Parse(defaultBase)
 
 	client := &Client{
 		client:    httpClient,
 		BaseUrl:   baseUrl,
-		UserAgent: UserAgent,
-		RateLimit: RateLimit,
+		UserAgent: userAgent,
+		RateLimit: rateLimit,
 	}
 
 	client.Account = &AccountServiceHandler{client}
@@ -171,6 +171,10 @@ func (c *Client) SetBaseUrl(baseUrl string) error {
 // Overrides the default rateLimit
 func (c *Client) SetRateLimit(time time.Duration) {
 	c.RateLimit = time
+}
+
+func (c *Client) SetUserAgent(ua string) {
+	c.UserAgent = ua
 }
 
 // OnRequestCompleted sets the API request completion callback
