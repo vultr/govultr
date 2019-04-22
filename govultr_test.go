@@ -3,11 +3,13 @@ package govultr
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"reflect"
 	"testing"
+	"time"
 )
 
 var (
@@ -97,7 +99,37 @@ func TestClient_DoWithContext(t *testing.T) {
 }
 
 func TestClient_NewRequest(t *testing.T) {
-	//todo
+	c := NewClient(nil, "dum-dum")
+
+	in := "/unit"
+	out := defaultBase + "/unit"
+
+	inRequest := url.Values{
+		"balance": {"500"},
+	}
+	outRequest := `balance=500`
+
+	req, _ := c.NewRequest(ctx, http.MethodGet, in, inRequest)
+
+	if req.URL.String() != out {
+		t.Errorf("NewRequest(%v) URL = %v, expected %v", in, req.URL, out)
+	}
+
+	body, _ := ioutil.ReadAll(req.Body)
+
+	if string(body) != outRequest {
+		t.Errorf("NewRequest(%v)Body = %v, expected %v", inRequest, string(body), outRequest)
+	}
+
+	userAgent := req.Header.Get("User-Agent")
+	if c.UserAgent != userAgent {
+		t.Errorf("NewRequest() User-Agent = %v, expected %v", userAgent, c.UserAgent)
+	}
+
+	if c.ApiKey.key != "dum-dum" {
+		t.Errorf("NewRequest() API-Key = %v, expected %v", c.ApiKey.key, "dum-dum")
+	}
+
 }
 
 func TestClient_SetBaseUrl(t *testing.T) {
@@ -116,7 +148,7 @@ func TestClient_SetBaseUrl(t *testing.T) {
 	}
 }
 
-func TestClient_SetRateLimit(t *testing.T) {
+func TestClient_SetUserAgent(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -125,6 +157,18 @@ func TestClient_SetRateLimit(t *testing.T) {
 
 	if client.UserAgent != ua {
 		t.Errorf("NewClient UserAgent = %v, expected %v", client.UserAgent, userAgent)
+	}
+}
+
+func TestClient_SetRateLimit(t *testing.T) {
+	setup()
+	defer teardown()
+
+	time := 500 * time.Millisecond
+	client.SetRateLimit(time)
+
+	if client.RateLimit != time {
+		t.Errorf("NewClient RateLimit = %v, expected %v", client.RateLimit, time)
 	}
 }
 
