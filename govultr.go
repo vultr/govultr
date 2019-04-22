@@ -17,20 +17,28 @@ const (
 	UserAgent   = "govultr/" + version
 )
 
+// ApiKey contains a users API Key for interacting with the API
 type ApiKey struct {
+	// API Key
 	key string
 }
 
+// Client manages interaction with the Vultr V1 API
 type Client struct {
+	// Http Client used to interact with the Vultr V1 API
 	client *http.Client
 
+	// BASE URL for APIs
 	BaseUrl *url.URL
 
+	// User Agent for the client
 	UserAgent string
 
-	Account AccountService
-
+	// API Key
 	ApiKey ApiKey
+
+	// Services used to interact with the API
+	Account AccountService
 }
 
 func NewClient(httpClient *http.Client, key string) *Client {
