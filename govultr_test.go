@@ -6,8 +6,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"net/http/httputil"
 	"net/url"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
@@ -98,6 +100,30 @@ func TestClient_DoWithContext(t *testing.T) {
 	}
 }
 
+func TestClient_DoWithContextFailure(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+		if method := http.MethodGet; method != request.Method {
+			t.Errorf("Request method = %v, expecting %v", request.Method, method)
+		}
+		fmt.Fprint(writer, `{Error}`)
+		writer.WriteHeader(500)
+
+	})
+
+	req, _ := client.NewRequest(ctx, http.MethodGet, "/", nil)
+
+	err := client.DoWithContext(context.Background(), req, nil)
+
+	expected := `{Error}`
+
+	if !reflect.DeepEqual(err.Error(), expected) {
+		t.Fatalf("DoWithContext(): %v: expected %v", err, expected)
+	}
+}
+
 func TestClient_NewRequest(t *testing.T) {
 	c := NewClient(nil, "dum-dum")
 
@@ -109,7 +135,7 @@ func TestClient_NewRequest(t *testing.T) {
 	}
 	outRequest := `balance=500`
 
-	req, _ := c.NewRequest(ctx, http.MethodGet, in, inRequest)
+	req, _ := c.NewRequest(ctx, http.MethodPost, in, inRequest)
 
 	if req.URL.String() != out {
 		t.Errorf("NewRequest(%v) URL = %v, expected %v", in, req.URL, out)
@@ -128,6 +154,11 @@ func TestClient_NewRequest(t *testing.T) {
 
 	if c.ApiKey.key != "dum-dum" {
 		t.Errorf("NewRequest() API-Key = %v, expected %v", c.ApiKey.key, "dum-dum")
+	}
+
+	contentType := req.Header.Get("Content-Type")
+	if contentType != "application/x-www-form-urlencoded" {
+		t.Errorf("NewRequest() Header Content Type = %v, expected %v", contentType, "application/x-www-form-urlencoded")
 	}
 
 }
@@ -173,5 +204,44 @@ func TestClient_SetRateLimit(t *testing.T) {
 }
 
 func TestClient_OnRequestCompleted(t *testing.T) {
-	//todo
+	setup()
+	defer teardown()
+
+	var completedReq *http.Request
+	var completedRes string
+
+	type Vultr struct {
+		Bird string
+	}
+
+	mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer, `{"Vultr":"bird"}`)
+	})
+
+	req, _ := client.NewRequest(ctx, http.MethodGet, "/", nil)
+
+	data := new(Vultr)
+
+	client.OnRequestCompleted(func(request *http.Request, response *http.Response) {
+		completedReq = req
+		dump, err := httputil.DumpResponse(response, true)
+		if err != nil {
+			t.Errorf("Failed to dump response: %s", err)
+		}
+		completedRes = string(dump)
+	})
+
+	err := client.DoWithContext(context.Background(), req, data)
+	if err != nil {
+		t.Fatalf("Do(): %v", err)
+	}
+
+	if !reflect.DeepEqual(req, completedReq) {
+		t.Errorf("Completed request = %v, expected %v", completedReq, req)
+	}
+
+	expected := `{"Vultr":"bird"}`
+	if !strings.Contains(completedRes, expected) {
+		t.Errorf("expected response to contain %v, Response = %v", expected, completedRes)
+	}
 }

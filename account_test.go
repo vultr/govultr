@@ -36,3 +36,26 @@ func TestAccountServiceHandler_GetInfo(t *testing.T) {
 		t.Errorf("Account.GetInfo returned %+v, expected %+v", account, expected)
 	}
 }
+
+func TestAccountServiceHandler_GetInfoEmpty(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/account/info", func(w http.ResponseWriter, r *http.Request) {
+
+		response := `[]`
+
+		fmt.Fprint(w, response)
+	})
+
+	account, err := client.Account.GetInfo(ctx)
+	if err != nil {
+		t.Errorf("Account.GetInfo returned error: %v", err)
+	}
+
+	expected := &Account{}
+
+	if !reflect.DeepEqual(account, expected) {
+		t.Errorf("Account.GetInfo returned %+v, expected %+v", account, expected)
+	}
+}
