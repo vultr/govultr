@@ -46,6 +46,7 @@ type Client struct {
 	Account     AccountService
 	API         APIService
 	Application ApplicationService
+	OS          OSService
 	Snapshot    SnapshotService
 
 	// Optional function called after every successful request made to the Vultr API
@@ -74,6 +75,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.Account = &AccountServiceHandler{client}
 	client.API = &APIServiceHandler{client}
 	client.Application = &ApplicationServiceHandler{client}
+	client.OS = &OSServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
 
 	apiKey := APIKey{key: key}
