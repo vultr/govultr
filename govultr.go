@@ -44,6 +44,7 @@ type Client struct {
 
 	// Services used to interact with the API
 	Account AccountService
+	API     APIService
 
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
@@ -69,6 +70,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	}
 
 	client.Account = &AccountServiceHandler{client}
+	client.API = &APIServiceHandler{client}
 
 	apiKey := APIKey{key: key}
 	client.APIKey = apiKey
