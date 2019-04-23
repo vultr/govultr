@@ -11,7 +11,7 @@ import (
 // Link: https://www.vultr.com/api/#snapshot
 type SnapshotService interface {
 	Create(ctx context.Context, vpsID, description string) (*Snapshot, error)
-	//CreateFromUrl(ctx context.Context, snapshotURL string) (*Snapshot, error)
+	CreateFromURL(ctx context.Context, snapshotURL string) (*Snapshot, error)
 	Destroy(ctx context.Context, snapshotID string) error
 	GetList(ctx context.Context) ([]Snapshot, error)
 	Get(ctx context.Context, snapshotID string) (*Snapshot, error)
@@ -63,17 +63,29 @@ func (s *SnapshotServiceHandler) Create(ctx context.Context, vpsID, description 
 	return snapshot, nil
 }
 
-////todo createFromUrl
-//func (s *SnapshotServiceHandler) CreateFromUrl(ctx context.Context, snapshotURL string) (*Snapshot, error) {
-//	uri := "/v1/snapshot/create_from_url"
-//
-//	values := url.Values{
-//		"url": {snapshotURL},
-//	}
-//
-//
-//	return nil, nil
-//}
+// CreateFromURL will create a snapshot based on an image iso from a URL you provide
+func (s *SnapshotServiceHandler) CreateFromURL(ctx context.Context, snapshotURL string) (*Snapshot, error) {
+	uri := "/v1/snapshot/create_from_url"
+
+	values := url.Values{
+		"url": {snapshotURL},
+	}
+
+	req, err := s.Client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return nil, err
+	}
+
+	snapshot := new(Snapshot)
+	err = s.Client.DoWithContext(ctx, req, snapshot)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return snapshot, nil
+}
 
 // Destroy a snapshot based on snapshotID
 func (s *SnapshotServiceHandler) Destroy(ctx context.Context, snapshotID string) error {

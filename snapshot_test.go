@@ -30,6 +30,29 @@ func TestSnapshotServiceHandler_Create(t *testing.T) {
 	}
 }
 
+func TestSnapshotServiceHandler_CreateFromURL(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/snapshot/create_from_url", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"SNAPSHOTID": "544e52f31c706"}`
+
+		fmt.Fprint(writer, response)
+	})
+
+	snapshot, err := client.Snapshot.CreateFromURL(ctx, "http://localhost/some.iso")
+
+	if err != nil {
+		t.Errorf("Account.GetInfo returned error: %v", err)
+	}
+
+	expected := &Snapshot{SnapshotID: "544e52f31c706"}
+
+	if !reflect.DeepEqual(snapshot, expected) {
+		t.Errorf("Snapshot.Create returned %+v, expected %+v", snapshot, expected)
+	}
+}
+
 //func TestSnapshotServiceHandler_Destroy(t *testing.T) {
 //	setup()
 //	defer teardown()
@@ -119,8 +142,7 @@ func TestSnapshotServiceHandler_Get(t *testing.T) {
 	if err != nil {
 		t.Errorf("Account.GetInfo returned error: %v", err)
 	}
-	expected := &Snapshot{SnapshotID: "5359435dc1df3", DateCreated: "2014-04-22 16:11:46", Description: "", Size: "10000000", Status: "complete", OsID: "127", AppID: "0",
-	}
+	expected := &Snapshot{SnapshotID: "5359435dc1df3", DateCreated: "2014-04-22 16:11:46", Description: "", Size: "10000000", Status: "complete", OsID: "127", AppID: "0"}
 
 	if !reflect.DeepEqual(snapshots, expected) {
 		t.Errorf("Snapshot.Get returned %+v, expected %+v", snapshots, expected)
