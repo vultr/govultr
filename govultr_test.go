@@ -108,9 +108,8 @@ func TestClient_DoWithContextFailure(t *testing.T) {
 		if method := http.MethodGet; method != request.Method {
 			t.Errorf("Request method = %v, expecting %v", request.Method, method)
 		}
-		fmt.Fprint(writer, `{Error}`)
 		writer.WriteHeader(500)
-
+		fmt.Fprint(writer, `{Error}`)
 	})
 
 	req, _ := client.NewRequest(ctx, http.MethodGet, "/", nil)
