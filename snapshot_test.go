@@ -53,22 +53,21 @@ func TestSnapshotServiceHandler_CreateFromURL(t *testing.T) {
 	}
 }
 
-//func TestSnapshotServiceHandler_Destroy(t *testing.T) {
-//	setup()
-//	defer teardown()
-//
-//	mux.HandleFunc("/v1/snapshot/destroy", func(writer http.ResponseWriter, request *http.Request) {
-//		response := `[]`
-//		fmt.Fprint(writer, response)
-//	})
-//
-//	err := client.Snapshot.Destroy(ctx, "987654321")
-//
-//	if err != nil {
-//		t.Errorf("Account.GetInfo returned %+v, expected %+v", err, nil)
-//	}
-//
-//}
+func TestSnapshotServiceHandler_Destroy(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/snapshot/destroy", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Snapshot.Destroy(ctx, "7a05cbf361d98")
+
+	if err != nil {
+		t.Errorf("Account.GetInfo returned %+v, expected %+v", err, nil)
+	}
+
+}
 
 func TestSnapshotServiceHandler_GetList(t *testing.T) {
 	setup()

@@ -2,7 +2,6 @@ package govultr
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"net/url"
 )
@@ -126,8 +125,6 @@ func (s *SnapshotServiceHandler) GetList(ctx context.Context) ([]Snapshot, error
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(snapshotMap)
 
 	var snapshots []Snapshot
 

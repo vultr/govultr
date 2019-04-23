@@ -155,8 +155,8 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 					return err
 				}
 			}
-			return nil
 		}
+		return nil
 	}
 
 	return errors.New(string(body))
