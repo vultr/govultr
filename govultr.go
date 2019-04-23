@@ -173,6 +173,7 @@ func (c *Client) SetRateLimit(time time.Duration) {
 	c.RateLimit = time
 }
 
+// Overrides the default UserAgent
 func (c *Client) SetUserAgent(ua string) {
 	c.UserAgent = ua
 }
