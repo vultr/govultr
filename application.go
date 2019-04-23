@@ -18,7 +18,7 @@ type ApplicationServiceHandler struct {
 
 // Application represents a Vultr application
 type Application struct {
-	ID         string  `json:"APPID"`
+	AppID      string  `json:"APPID"`
 	Name       string  `json:"name"`
 	ShortName  string  `json:"short_name"`
 	DeployName string  `json:"deploy_name"`

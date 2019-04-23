@@ -42,14 +42,14 @@ func TestOSServiceHandler_GetList(t *testing.T) {
 
 	expected := []OS{
 		{
-			ID:      "127",
+			OsID:    "127",
 			Name:    "CentOS 6 x64",
 			Arch:    "x64",
 			Family:  "centos",
 			Windows: false,
 		},
 		{
-			ID:      "148",
+			OsID:    "148",
 			Name:    "Ubuntu 12.04 i386",
 			Arch:    "i386",
 			Family:  "ubuntu",
