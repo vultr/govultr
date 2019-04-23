@@ -24,7 +24,7 @@ type Account struct {
 	LastPaymentAmount string `json:"last_payment_amount"`
 }
 
-// Get Vultr account info
+// GetInfo Vultr account info
 func (a *AccountServiceHandler) GetInfo(ctx context.Context) (*Account, error) {
 
 	uri := "/v1/account/info"

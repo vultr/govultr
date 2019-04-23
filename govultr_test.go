@@ -27,7 +27,7 @@ func setup() {
 
 	client = NewClient(nil, "dummy-key")
 	url, _ := url.Parse(server.URL)
-	client.BaseUrl = url
+	client.baseURL = url
 }
 
 func teardown() {
@@ -38,16 +38,16 @@ func TestNewClient(t *testing.T) {
 	setup()
 	defer teardown()
 
-	if client.BaseUrl == nil || client.BaseUrl.String() != server.URL {
-		t.Errorf("NewClient BaseURL = %v, expected %v", client.BaseUrl, server.URL)
+	if client.baseURL == nil || client.baseURL.String() != server.URL {
+		t.Errorf("NewClient BaseURL = %v, expected %v", client.baseURL, server.URL)
 	}
 
 	if client.RateLimit == 0 || client.RateLimit.String() != "200ms" {
 		t.Errorf("NewClient RateLimit = %v, expected %v", client.RateLimit, rateLimit.String())
 	}
 
-	if client.ApiKey.key != "dummy-key" {
-		t.Errorf("NewClient ApiKey = %v, expected %v", client.ApiKey.key, "dummy-key")
+	if client.APIKey.key != "dummy-key" {
+		t.Errorf("NewClient ApiKey = %v, expected %v", client.APIKey.key, "dummy-key")
 	}
 
 	if client.UserAgent != userAgent {
@@ -152,8 +152,8 @@ func TestClient_NewRequest(t *testing.T) {
 		t.Errorf("NewRequest() User-Agent = %v, expected %v", userAgent, c.UserAgent)
 	}
 
-	if c.ApiKey.key != "dum-dum" {
-		t.Errorf("NewRequest() API-Key = %v, expected %v", c.ApiKey.key, "dum-dum")
+	if c.APIKey.key != "dum-dum" {
+		t.Errorf("NewRequest() API-Key = %v, expected %v", c.APIKey.key, "dum-dum")
 	}
 
 	contentType := req.Header.Get("Content-Type")
@@ -168,14 +168,14 @@ func TestClient_SetBaseUrl(t *testing.T) {
 	defer teardown()
 
 	base := "http://localhost/vultr"
-	err := client.SetBaseUrl(base)
+	err := client.SetBaseURL(base)
 
 	if err != nil {
 		t.Fatalf("SetBaseUrl unexpected error: %v", err)
 	}
 
-	if client.BaseUrl.String() != base {
-		t.Errorf("NewClient BaseUrl = %v, expected %v", client.BaseUrl, base)
+	if client.baseURL.String() != base {
+		t.Errorf("NewClient BaseUrl = %v, expected %v", client.baseURL, base)
 	}
 }
 

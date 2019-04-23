@@ -19,8 +19,8 @@ const (
 	rateLimit   = 200 * time.Millisecond
 )
 
-// ApiKey contains a users API Key for interacting with the API
-type ApiKey struct {
+// APIKey contains a users API Key for interacting with the API
+type APIKey struct {
 	// API Key
 	key string
 }
@@ -31,13 +31,13 @@ type Client struct {
 	client *http.Client
 
 	// BASE URL for APIs
-	BaseUrl *url.URL
+	baseURL *url.URL
 
 	// User Agent for the client
 	UserAgent string
 
 	// API Key
-	ApiKey ApiKey
+	APIKey APIKey
 
 	// API Rate Limit - Vultr rate limits based on time
 	RateLimit time.Duration
@@ -52,26 +52,26 @@ type Client struct {
 // RequestCompletionCallback defines the type of the request callback function
 type RequestCompletionCallback func(*http.Request, *http.Response)
 
-// New Client returns a Vultr API Client
+// NewClient returns a Vultr API Client
 func NewClient(httpClient *http.Client, key string) *Client {
 
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
 
-	baseUrl, _ := url.Parse(defaultBase)
+	baseURL, _ := url.Parse(defaultBase)
 
 	client := &Client{
 		client:    httpClient,
-		BaseUrl:   baseUrl,
+		baseURL:   baseURL,
 		UserAgent: userAgent,
 		RateLimit: rateLimit,
 	}
 
 	client.Account = &AccountServiceHandler{client}
 
-	apiKey := ApiKey{key: key}
-	client.ApiKey = apiKey
+	apiKey := APIKey{key: key}
+	client.APIKey = apiKey
 
 	return client
 }
@@ -80,7 +80,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Values) (*http.Request, error) {
 
 	path, err := url.Parse(uri)
-	resolvedUrl := c.BaseUrl.ResolveReference(path)
+	resolvedURL := c.baseURL.ResolveReference(path)
 
 	if err != nil {
 		return nil, err
@@ -94,13 +94,13 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Va
 		reqBody = nil
 	}
 
-	req, err := http.NewRequest(method, resolvedUrl.String(), reqBody)
+	req, err := http.NewRequest(method, resolvedURL.String(), reqBody)
 
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Add("API-key", c.ApiKey.key)
+	req.Header.Add("API-key", c.APIKey.key)
 	// todo review the Accept and content types
 	req.Header.Add("User-Agent", c.UserAgent)
 	req.Header.Add("Accept", "application/json")
@@ -156,24 +156,24 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 	return errors.New(string(body))
 }
 
-// Overrides the default BaseUrl
-func (c *Client) SetBaseUrl(baseUrl string) error {
-	updatedUrl, err := url.Parse(baseUrl)
+// SetBaseURL Overrides the default BaseUrl
+func (c *Client) SetBaseURL(baseURL string) error {
+	updatedURL, err := url.Parse(baseURL)
 
 	if err != nil {
 		return err
 	}
 
-	c.BaseUrl = updatedUrl
+	c.baseURL = updatedURL
 	return nil
 }
 
-// Overrides the default rateLimit
+// SetRateLimit Overrides the default rateLimit
 func (c *Client) SetRateLimit(time time.Duration) {
 	c.RateLimit = time
 }
 
-// Overrides the default UserAgent
+// SetUserAgent Overrides the default UserAgent
 func (c *Client) SetUserAgent(ua string) {
 	c.UserAgent = ua
 }
