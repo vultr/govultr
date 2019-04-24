@@ -13,7 +13,7 @@ type BlockStorageService interface {
 	Attach(ctx context.Context, blockID, vpsID string) error
 	Create(ctx context.Context, regionID, size int, label string) (*BlockStorage, error)
 	Delete(ctx context.Context, blockID string) error
-	//Detach(ctx context.Context, blockID, live string) error
+	Detach(ctx context.Context, blockID string) error
 	//SetLabel(ctx context.Context, blockID, label string) error
 	//GetList(ctx context.Context, blockID string) ([]BlockStorage, error)
 	//Resize(ctx context.Context, blockID string, size int) error
@@ -97,6 +97,30 @@ func (b *BlockStorageServiceHandler) Create(ctx context.Context, regionID, size 
 func (b *BlockStorageServiceHandler) Delete(ctx context.Context, blockID string) error {
 
 	uri := "/v1/block/delete"
+
+	values := url.Values{
+		"SUBID": {blockID},
+	}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Detach will de-link a given block storage to the Vultr vps it is attached to
+func (b *BlockStorageServiceHandler) Detach(ctx context.Context, blockID string) error {
+
+	uri := "/v1/block/detach"
 
 	values := url.Values{
 		"SUBID": {blockID},
