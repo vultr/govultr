@@ -11,7 +11,7 @@ import (
 type DNSDomainService interface {
 	Create(ctx context.Context, domain, vpsIP string) error
 	Delete(ctx context.Context, domain string) error
-	//EnableDnssec(ctx context.Context, domain, enabled string) error
+	ToggleDNSSec(ctx context.Context, domain string, enabled bool) error
 	//DnssecInfo(ctx context.Context, domain string) (string, error)
 	//GetList(ctx context.Context) ([]DNSDomain, error)
 	//GetSoa(ctx context.Context, domain string) ([]Soa, error)
@@ -65,6 +65,36 @@ func (d *DNSDomainServiceHandler) Delete(ctx context.Context, domain string) err
 
 	values := url.Values{
 		"domain": {domain},
+	}
+
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = d.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ToggleDNSSec will enable or disable DNSSEC for a domain on Vultr
+func (d *DNSDomainServiceHandler) ToggleDNSSec(ctx context.Context, domain string, enabled bool) error {
+
+	uri := "/v1/dns/dnssec_enable"
+
+	enable := "no"
+	if enabled == true {
+		enable = "yes"
+	}
+
+	values := url.Values{
+		"domain": {domain},
+		"enable": {enable},
 	}
 
 	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, values)
