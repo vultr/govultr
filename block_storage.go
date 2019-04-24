@@ -224,6 +224,7 @@ func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID string) (*
 	return blockStorage, nil
 }
 
+// Resize allows you to resize your Vultr block storage instance
 func (b *BlockStorageServiceHandler) Resize(ctx context.Context, blockID string, size int) error {
 
 	uri := "/v1/block/resize"
