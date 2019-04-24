@@ -10,7 +10,7 @@ import (
 // Link: https://www.vultr.com/api/#dns
 type DNSDomainService interface {
 	Create(ctx context.Context, domain, vpsIP string) error
-	//Delete(ctx context.Context, domain string) error
+	Delete(ctx context.Context, domain string) error
 	//EnableDnssec(ctx context.Context, domain, enabled string) error
 	//DnssecInfo(ctx context.Context, domain string) (string, error)
 	//GetList(ctx context.Context) ([]DNSDomain, error)
@@ -43,6 +43,28 @@ func (d *DNSDomainServiceHandler) Create(ctx context.Context, domain, vpsIP stri
 	values := url.Values{
 		"domain":   {domain},
 		"serverip": {vpsIP},
+	}
+
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = d.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (d *DNSDomainServiceHandler) Delete(ctx context.Context, domain string) error {
+	uri := "/v1/dns/delete_domain"
+
+	values := url.Values{
+		"domain": {domain},
 	}
 
 	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, values)
