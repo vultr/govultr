@@ -15,7 +15,7 @@ type DNSDomainService interface {
 	DNSSecInfo(ctx context.Context, domain string) ([]string, error)
 	GetList(ctx context.Context) ([]DNSDomain, error)
 	GetSoa(ctx context.Context, domain string) (*Soa, error)
-	//UpdateSoa(ctx context.Context, domain, nsPrimary, email string) error
+	UpdateSoa(ctx context.Context, domain, nsPrimary, email string) error
 }
 
 // DNSDomainServiceHandler handles interaction with the DNS methods for the Vultr API
@@ -137,6 +137,7 @@ func (d *DNSDomainServiceHandler) DNSSecInfo(ctx context.Context, domain string)
 
 	return DNSSec, nil
 }
+
 // GetList gets all domains associated with the current Vultr account.
 func (d *DNSDomainServiceHandler) GetList(ctx context.Context) ([]DNSDomain, error) {
 	uri := "/v1/dns/list"
@@ -179,4 +180,30 @@ func (d *DNSDomainServiceHandler) GetSoa(ctx context.Context, domain string) (*S
 	}
 
 	return soa, nil
+}
+
+// UpdateSoa will update the SOA record information for a domain.
+func (d *DNSDomainServiceHandler) UpdateSoa(ctx context.Context, domain, nsPrimary, email string) error {
+
+	uri := "/v1/dns/soa_update"
+
+	values := url.Values{
+		"domain":    {domain},
+		"nsprimary": {nsPrimary},
+		"email":     {email},
+	}
+
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = d.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
