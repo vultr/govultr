@@ -28,11 +28,11 @@ type BlockStorageServiceHandler struct {
 type BlockStorage struct {
 	BlockStorageID string `json:"SUBID"`
 	DateCreated    string `json:"date_created"`
-	CostPerMonth   int    `json:"cost_per_month"`
+	Cost           string `json:"cost_per_month"`
 	Status         string `json:"status"`
 	Size           int    `json:"size_gb"`
 	RegionID       int    `json:"region_id"`
-	VpsID          int    `json:"attached_to_SUBID"`
+	VpsID          string `json:"attached_to_SUBID"`
 	Label          string `json:"label"`
 }
 
@@ -64,5 +64,9 @@ func (b *BlockStorageServiceHandler) Create(ctx context.Context, regionID, size 
 		return nil, err
 	}
 
-	return nil, nil
+	blockStorage.RegionID = regionID
+	blockStorage.Label = label
+	blockStorage.Size = size
+
+	return blockStorage, nil
 }
