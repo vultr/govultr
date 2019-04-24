@@ -14,7 +14,7 @@ type DNSDomainService interface {
 	ToggleDNSSec(ctx context.Context, domain string, enabled bool) error
 	DNSSecInfo(ctx context.Context, domain string) ([]string, error)
 	GetList(ctx context.Context) ([]DNSDomain, error)
-	//GetSoa(ctx context.Context, domain string) ([]Soa, error)
+	GetSoa(ctx context.Context, domain string) (*Soa, error)
 	//UpdateSoa(ctx context.Context, domain, nsPrimary, email string) error
 }
 
@@ -137,7 +137,7 @@ func (d *DNSDomainServiceHandler) DNSSecInfo(ctx context.Context, domain string)
 
 	return DNSSec, nil
 }
-
+// GetList gets all domains associated with the current Vultr account.
 func (d *DNSDomainServiceHandler) GetList(ctx context.Context) ([]DNSDomain, error) {
 	uri := "/v1/dns/list"
 
@@ -157,3 +157,26 @@ func (d *DNSDomainServiceHandler) GetList(ctx context.Context) ([]DNSDomain, err
 	return dnsDomains, nil
 }
 
+// GetSoa gets the SOA record information for a domain
+func (d *DNSDomainServiceHandler) GetSoa(ctx context.Context, domain string) (*Soa, error) {
+	uri := "/v1/dns/soa_info"
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("domain", domain)
+	req.URL.RawQuery = q.Encode()
+
+	soa := new(Soa)
+	err = d.client.DoWithContext(ctx, req, soa)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return soa, nil
+}
