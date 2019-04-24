@@ -46,7 +46,7 @@ type Client struct {
 	Account     AccountService
 	API         APIService
 	Application ApplicationService
-	DNSRecord   DNSRecordsService
+	DNSRecord   DNSRecordService
 	OS          OSService
 	Snapshot    SnapshotService
 
