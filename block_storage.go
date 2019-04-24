@@ -15,7 +15,8 @@ type BlockStorageService interface {
 	Delete(ctx context.Context, blockID string) error
 	Detach(ctx context.Context, blockID string) error
 	SetLabel(ctx context.Context, blockID, label string) error
-	//GetList(ctx context.Context, blockID string) ([]BlockStorage, error)
+	GetList(ctx context.Context) ([]BlockStorageGet, error)
+	Get(ctx context.Context, blockID int) (*BlockStorageGet, error)
 	//Resize(ctx context.Context, blockID string, size int) error
 }
 
@@ -31,8 +32,20 @@ type BlockStorage struct {
 	Cost           string `json:"cost_per_month"`
 	Status         string `json:"status"`
 	Size           int    `json:"size_gb"`
-	RegionID       int    `json:"region_id"`
+	RegionID       int    `json:"DCID"`
 	VpsID          string `json:"attached_to_SUBID"`
+	Label          string `json:"label"`
+}
+
+// BlockStorageGet represents Vultr Block-Storage with different data Types
+type BlockStorageGet struct {
+	BlockStorageID int    `json:"SUBID"`
+	DateCreated    string `json:"date_created"`
+	Cost           int    `json:"cost_per_month"`
+	Status         string `json:"status"`
+	Size           int    `json:"size_gb"`
+	RegionID       int    `json:"DCID"`
+	VpsID          int    `json:"attached_to_SUBID"`
 	Label          string `json:"label"`
 }
 
@@ -163,4 +176,50 @@ func (b *BlockStorageServiceHandler) SetLabel(ctx context.Context, blockID, labe
 	}
 
 	return nil
+}
+
+// GetList returns a list of all block storage instances on your Vultr Account
+func (b *BlockStorageServiceHandler) GetList(ctx context.Context) ([]BlockStorageGet, error) {
+
+	uri := "/v1/block/list"
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var blockStorage []BlockStorageGet
+	err = b.client.DoWithContext(ctx, req, &blockStorage)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return blockStorage, nil
+}
+
+// Get returns a single block storage instance based ony our blockID you provide from your Vultr Account
+func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID int) (*BlockStorageGet, error) {
+
+	uri := "/v1/block/list"
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", strconv.Itoa(blockID))
+	req.URL.RawQuery = q.Encode()
+
+	blockStorage := new(BlockStorageGet)
+	err = b.client.DoWithContext(ctx, req, blockStorage)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return blockStorage, nil
 }
