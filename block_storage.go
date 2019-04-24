@@ -16,8 +16,8 @@ type BlockStorageService interface {
 	Detach(ctx context.Context, blockID string) error
 	SetLabel(ctx context.Context, blockID, label string) error
 	GetList(ctx context.Context) ([]BlockStorageGet, error)
-	Get(ctx context.Context, blockID int) (*BlockStorageGet, error)
-	//Resize(ctx context.Context, blockID string, size int) error
+	Get(ctx context.Context, blockID string) (*BlockStorageGet, error)
+	Resize(ctx context.Context, blockID string, size int) error
 }
 
 // BlockStorageServiceHandler handles interaction with the block-storage methods for the Vultr API
@@ -200,7 +200,7 @@ func (b *BlockStorageServiceHandler) GetList(ctx context.Context) ([]BlockStorag
 }
 
 // Get returns a single block storage instance based ony our blockID you provide from your Vultr Account
-func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID int) (*BlockStorageGet, error) {
+func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID string) (*BlockStorageGet, error) {
 
 	uri := "/v1/block/list"
 
@@ -211,7 +211,7 @@ func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID int) (*Blo
 	}
 
 	q := req.URL.Query()
-	q.Add("SUBID", strconv.Itoa(blockID))
+	q.Add("SUBID", blockID)
 	req.URL.RawQuery = q.Encode()
 
 	blockStorage := new(BlockStorageGet)
@@ -222,4 +222,28 @@ func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID int) (*Blo
 	}
 
 	return blockStorage, nil
+}
+
+func (b *BlockStorageServiceHandler) Resize(ctx context.Context, blockID string, size int) error {
+
+	uri := "/v1/block/resize"
+
+	values := url.Values{
+		"SUBID":   {blockID},
+		"size_gb": {strconv.Itoa(size)},
+	}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
