@@ -10,7 +10,7 @@ import (
 // BlockStorageService is the interface to interact with Block-Storage endpoint on the Vultr API
 // Link: https://www.vultr.com/api/#block
 type BlockStorageService interface {
-	//Attach(ctx context.Context, blockID, vpsID, live string) error
+	Attach(ctx context.Context, blockID, vpsID string) error
 	Create(ctx context.Context, regionID, size int, label string) (*BlockStorage, error)
 	Delete(ctx context.Context, blockID string) error
 	//Detach(ctx context.Context, blockID, live string) error
@@ -36,8 +36,30 @@ type BlockStorage struct {
 	Label          string `json:"label"`
 }
 
-//todo
-//attach
+// Attach will link a given block storage to a given Vultr vps
+func (b *BlockStorageServiceHandler) Attach(ctx context.Context, blockID, vpsID string) error {
+
+	uri := "/v1/block/attach"
+
+	values := url.Values{
+		"SUBID":           {blockID},
+		"attach_to_SUBID": {vpsID},
+	}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 // Create builds out a block storage
 func (b *BlockStorageServiceHandler) Create(ctx context.Context, regionID, size int, label string) (*BlockStorage, error) {
@@ -71,6 +93,7 @@ func (b *BlockStorageServiceHandler) Create(ctx context.Context, regionID, size 
 	return blockStorage, nil
 }
 
+// Delete will remove block storage instance from your Vultr account
 func (b *BlockStorageServiceHandler) Delete(ctx context.Context, blockID string) error {
 
 	uri := "/v1/block/delete"
