@@ -13,7 +13,7 @@ type DNSDomainService interface {
 	Delete(ctx context.Context, domain string) error
 	ToggleDNSSec(ctx context.Context, domain string, enabled bool) error
 	DNSSecInfo(ctx context.Context, domain string) ([]string, error)
-	//GetList(ctx context.Context) ([]DNSDomain, error)
+	GetList(ctx context.Context) ([]DNSDomain, error)
 	//GetSoa(ctx context.Context, domain string) ([]Soa, error)
 	//UpdateSoa(ctx context.Context, domain, nsPrimary, email string) error
 }
@@ -59,6 +59,7 @@ func (d *DNSDomainServiceHandler) Create(ctx context.Context, domain, vpsIP stri
 
 	return nil
 }
+
 //Delete will delete a domain name and all associated records
 func (d *DNSDomainServiceHandler) Delete(ctx context.Context, domain string) error {
 	uri := "/v1/dns/delete_domain"
@@ -111,6 +112,7 @@ func (d *DNSDomainServiceHandler) ToggleDNSSec(ctx context.Context, domain strin
 
 	return nil
 }
+
 // DNSSecInfo gets the DNSSec keys for a domain (if enabled)
 func (d *DNSDomainServiceHandler) DNSSecInfo(ctx context.Context, domain string) ([]string, error) {
 
@@ -135,3 +137,23 @@ func (d *DNSDomainServiceHandler) DNSSecInfo(ctx context.Context, domain string)
 
 	return DNSSec, nil
 }
+
+func (d *DNSDomainServiceHandler) GetList(ctx context.Context) ([]DNSDomain, error) {
+	uri := "/v1/dns/list"
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var dnsDomains []DNSDomain
+	err = d.client.DoWithContext(ctx, req, &dnsDomains)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return dnsDomains, nil
+}
+
