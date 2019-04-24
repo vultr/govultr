@@ -46,6 +46,7 @@ type Client struct {
 	Account     AccountService
 	API         APIService
 	Application ApplicationService
+	DNSRecord   DNSRecordsService
 	OS          OSService
 	Snapshot    SnapshotService
 
@@ -75,6 +76,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.Account = &AccountServiceHandler{client}
 	client.API = &APIServiceHandler{client}
 	client.Application = &ApplicationServiceHandler{client}
+	client.DNSRecord = &DNSRecordsServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
 
