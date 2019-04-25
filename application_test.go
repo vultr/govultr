@@ -42,14 +42,14 @@ func TestApplicationServiceHandler_GetList(t *testing.T) {
 
 	expected := []Application{
 		{
-			ID:         "1",
+			AppID:      "1",
 			Name:       "LEMP",
 			ShortName:  "lemp",
 			DeployName: "LEMP on CentOS 6 x64",
 			Surcharge:  0,
 		},
 		{
-			ID:         "2",
+			AppID:      "2",
 			Name:       "WordPress",
 			ShortName:  "wordpress",
 			DeployName: "WordPress on CentOS 6 x64",
@@ -81,7 +81,6 @@ func TestApplicationServiceHandler_GetListEmpty(t *testing.T) {
 	var expected []Application
 
 	if !reflect.DeepEqual(apps, expected) {
-
 		t.Errorf("Application.GetList returned %+v, expected %+v", apps, expected)
 	}
 }
