@@ -56,6 +56,7 @@ type Client struct {
 
 
 	Iso          IsoService
+	Plans        PlansService
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
 }
@@ -89,8 +90,8 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.OS = &OSServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
 
-
 	client.Iso = &IsoServiceHandler{client}
+	client.Plans = &PlansServiceHandler{client}
 	apiKey := APIKey{key: key}
 	client.APIKey = apiKey
 
