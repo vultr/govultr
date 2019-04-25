@@ -10,7 +10,7 @@ import (
 // Link: https://www.vultr.com/api/#plans
 type PlansService interface {
 	GetAllList(ctx context.Context, planType string) ([]Plans, error)
-	GetBareMetalList(ctx context.Context) ([]Plans, error)
+	GetBareMetalList(ctx context.Context) ([]BareMetalPlan, error)
 	GetVc2List(ctx context.Context) ([]Plans, error)
 	GetVdc2List(ctx context.Context) ([]Plans, error)
 }
@@ -33,6 +33,20 @@ type Plans struct {
 	PlanType   string `json:"plan_type"`
 	Regions    []int  `json:"available_locations"`
 	Deprecated bool   `json:"deprecated"`
+}
+
+// BareMetalPlan represents bare metal plans
+type BareMetalPlan struct {
+	BareMetalID string `json:"METALPLANID"`
+	Name        string `json:"name"`
+	Cpus        int    `json:"cpu_count"`
+	RAM         int    `json:"ram"`
+	Disk        string `json:"disk"`
+	Bandwidth   int    `json:"bandwidth_tb"`
+	Price       int    `json:"price_per_month"`
+	PlanType    string `json:"plan_type"`
+	Deprecated  bool   `json:"deprecated"`
+	Regions     []int  `json:"available_locations"`
 }
 
 // GetAllList retrieve a list of all active plans.
@@ -68,8 +82,29 @@ func (p *PlansServiceHandler) GetAllList(ctx context.Context, planType string) (
 }
 
 // GetBareMetalList retrieves a list of all active bare metal plans.
-func (p *PlansServiceHandler) GetBareMetalList(ctx context.Context) ([]Plans, error) {
-	return nil, nil
+func (p *PlansServiceHandler) GetBareMetalList(ctx context.Context) ([]BareMetalPlan, error) {
+
+	uri := "/v1/plans/list_baremetal"
+
+	req, err := p.Client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var bareMetalMap map[string]BareMetalPlan
+	err = p.Client.DoWithContext(ctx, req, &bareMetalMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var bareMetalPlan []BareMetalPlan
+	for _, b := range bareMetalMap {
+		bareMetalPlan = append(bareMetalPlan, b)
+	}
+
+	return bareMetalPlan, nil
 }
 
 // GetVc2List retrieve a list of all active vc2 plans.
