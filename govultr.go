@@ -50,14 +50,12 @@ type Client struct {
 	BlockStorage BlockStorageService
 	DNSDomain    DNSDomainService
 	DNSRecord    DNSRecordService
+	Iso          IsoService
 	OS           OSService
+	Plans        PlansService
 	Snapshot     SnapshotService
 	SSHKey       SSHKeyService
 
-
-
-	Iso          IsoService
-	Plans        PlansService
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
 }
@@ -88,12 +86,12 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.BlockStorage = &BlockStorageServiceHandler{client}
 	client.DNSDomain = &DNSDomainServiceHandler{client}
 	client.DNSRecord = &DNSRecordsServiceHandler{client}
+	client.Iso = &IsoServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
+	client.Plans = &PlansServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
 	client.SSHKey = &SSHKeyServiceHandler{client}
 
-	client.Iso = &IsoServiceHandler{client}
-	client.Plans = &PlansServiceHandler{client}
 	apiKey := APIKey{key: key}
 	client.APIKey = apiKey
 
