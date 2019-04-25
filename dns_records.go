@@ -3,12 +3,15 @@ package govultr
 import (
 	"context"
 	"net/http"
+	"net/url"
+	"strconv"
 )
 
 // DNSRecordService is the interface to interact with the DNS Records endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#dns
 type DNSRecordService interface {
 	//Create(ctx context.Context, domain string, dnsRecord *DNSRecord) (string, error)
+	Create(ctx context.Context, domain, recordType, name, data string, ttl, priority int) error
 	//Delete(ctx context.Context, domain, recordID string) error
 	GetList(ctx context.Context, domain string) ([]DNSRecord, error)
 	//Update (ctx context.Context, domain string, dnsRecord *DNSRecord) error
@@ -27,6 +30,35 @@ type DNSRecord struct {
 	Data     string `json:"data"`
 	Priority int    `json:"priority"`
 	TTL      int    `json:"ttl"`
+}
+
+// Create will add a DNS record.
+func (d *DNSRecordsServiceHandler) Create(ctx context.Context, domain, recordType, name, data string, ttl, priority int) error {
+
+	uri := "v1/dns/create_record"
+
+	values := url.Values{
+		"domain": {domain},
+		"name": {name},
+		"type": {recordType},
+		"data": {data},
+		"ttl": {strconv.Itoa(ttl)},
+		"priority": {strconv.Itoa(priority)},
+	}
+
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return nil
+	}
+
+	err = d.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return  nil
 }
 
 // GetList will list all the records associated with a particular domain on Vultr
