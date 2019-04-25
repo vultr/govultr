@@ -22,17 +22,18 @@ type PlansServiceHandler struct {
 
 // Plans represents available plans that Vultr offers
 type Plans struct {
-	VpsID      int    `json:"VPSPLANID,string"`
-	Name       string `json:"name"`
-	VCpus      int    `json:"vcpu_count,string"`
-	RAM        string `json:"ram"`
-	Disk       string `json:"disk"`
-	Bandwidth  string `json:"bandwidth"`
-	Price      string `json:"price_per_month"`
-	Windows    bool   `json:"windows"`
-	PlanType   string `json:"plan_type"`
-	Regions    []int  `json:"available_locations"`
-	Deprecated bool   `json:"deprecated"`
+	VpsID       int    `json:"VPSPLANID,string"`
+	Name        string `json:"name"`
+	VCpus       int    `json:"vcpu_count,string"`
+	RAM         string `json:"ram"`
+	Disk        string `json:"disk"`
+	Bandwidth   string `json:"bandwidth"`
+	BandwidthGB string `json:"bandwidth_gb"`
+	Price       string `json:"price_per_month"`
+	Windows     bool   `json:"windows"`
+	PlanType    string `json:"plan_type"`
+	Regions     []int  `json:"available_locations"`
+	Deprecated  bool   `json:"deprecated"`
 }
 
 // BareMetalPlan represents bare metal plans
@@ -51,15 +52,15 @@ type BareMetalPlan struct {
 
 // VCPlan represents either a vdc2 or a vc2 plan
 type VCPlan struct {
-	VpsID        string `json:"VPSPLANID"`
-	Name         string `json:"name"`
-	Cpus         string `json:"vcpu_count"`
-	RAM          string `json:"ram"`
-	Disk         string `json:"disk"`
-	Bandwidth    string `json:"bandwidth"`
+	VpsID       string `json:"VPSPLANID"`
+	Name        string `json:"name"`
+	Cpus        string `json:"vcpu_count"`
+	RAM         string `json:"ram"`
+	Disk        string `json:"disk"`
+	Bandwidth   string `json:"bandwidth"`
 	BandwidthGB string `json:"bandwidth_gb"`
-	Cost         string `json:"price_per_month"`
-	PlanType     string `json:"plan_type"`
+	Cost        string `json:"price_per_month"`
+	PlanType    string `json:"plan_type"`
 }
 
 // GetAllList retrieve a list of all active plans.
