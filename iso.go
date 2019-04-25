@@ -2,12 +2,14 @@ package govultr
 
 import (
 	"context"
+	"net/http"
+	"net/url"
 )
 
 // IsoService is the interface to interact with the ISO endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#iso
 type IsoService interface {
-	CreateFromURL(ctx context.Context, url string) (*Iso, error)
+	CreateFromURL(ctx context.Context, isoUrl string) (*Iso, error)
 	Delete(ctx context.Context, isoID int) error
 	GetList(ctx context.Context) ([]Iso, error)
 	GetPublicList(ctx context.Context) ([]Iso, error)
@@ -37,9 +39,28 @@ type Iso struct {
 }
 
 // CreateFromUrl will create a new ISO image on your account
-func (i *IsoServiceHandler) CreateFromURL(ctx context.Context, url string) (*Iso, error) {
+func (i *IsoServiceHandler) CreateFromURL(ctx context.Context, isoUrl string) (*Iso, error) {
 
-	return nil, nil
+	uri := "/v1/iso/create_from_url"
+
+	values := url.Values{
+		"url": {isoUrl},
+	}
+
+	req, err := i.Client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return nil, err
+	}
+
+	iso := new(Iso)
+	err = i.Client.DoWithContext(ctx, req, iso)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return iso, err
 }
 
 // Delete will delete an ISO image from your account
