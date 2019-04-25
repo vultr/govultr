@@ -2,7 +2,6 @@ package govultr
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 )
 
@@ -84,7 +83,7 @@ func (p *PlansServiceHandler) GetAllList(ctx context.Context, planType string) (
 	err = p.Client.DoWithContext(ctx, req, &planMap)
 
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 
 	var plans []Plans
@@ -135,7 +134,7 @@ func (p *PlansServiceHandler) GetVc2List(ctx context.Context) ([]VCPlan, error) 
 	err = p.Client.DoWithContext(ctx, req, &vc2Plan)
 
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 
 	var vc2 []VCPlan
@@ -160,7 +159,7 @@ func (p *PlansServiceHandler) GetVdc2List(ctx context.Context) ([]VCPlan, error)
 	err = p.Client.DoWithContext(ctx, req, &vdc2Map)
 
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 
 	var vdc2 []VCPlan
