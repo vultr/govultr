@@ -12,7 +12,7 @@ type SSHKeyService interface {
 	Create(ctx context.Context, name, sshKey string) (*SSHKey, error)
 	Destroy(ctx context.Context, sshKeyID string) error
 	GetList(ctx context.Context) ([]SSHKey, error)
-	Update(ctx context.Context, sshKeyID, name, sshKey string) error
+	Update(ctx context.Context, sshKey *SSHKey) error
 }
 
 // SSHKeyServiceHandler handles interaction with the SSH Key methods for the Vultr API
@@ -108,20 +108,20 @@ func (s *SSHKeyServiceHandler) GetList(ctx context.Context) ([]SSHKey, error) {
 }
 
 // Update will update the given SSH Key. Empty strings will be ignored.
-func (s *SSHKeyServiceHandler) Update(ctx context.Context, sshKeyID, name, sshKey string) error {
+func (s *SSHKeyServiceHandler) Update(ctx context.Context, sshKey *SSHKey) error {
 
 	uri := "/v1/sshkey/update"
 
 	values := url.Values{
-		"SSHKEYID": {sshKeyID},
+		"SSHKEYID": {sshKey.SSHKeyID},
 	}
 
 	// Optional
-	if name != "" {
-		values.Add("name", name)
+	if sshKey.Name != "" {
+		values.Add("name", sshKey.Name)
 	}
-	if sshKey != "" {
-		values.Add("ssh_key", sshKey)
+	if sshKey.Key != "" {
+		values.Add("ssh_key", sshKey.Key)
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
