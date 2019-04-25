@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 // IsoService is the interface to interact with the ISO endpoints on the Vultr API
@@ -60,11 +61,30 @@ func (i *IsoServiceHandler) CreateFromURL(ctx context.Context, isoUrl string) (*
 		return nil, err
 	}
 
-	return iso, err
+	return iso, nil
 }
 
 // Delete will delete an ISO image from your account
 func (i *IsoServiceHandler) Delete(ctx context.Context, isoID int) error {
+
+	uri := "/v1/iso/destroy"
+
+	values := url.Values{
+		"ISOID": {strconv.Itoa(isoID)},
+	}
+
+	req, err := i.Client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return  err
+	}
+
+	err = i.Client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
