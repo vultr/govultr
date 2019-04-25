@@ -109,7 +109,27 @@ func (p *PlansServiceHandler) GetBareMetalList(ctx context.Context) ([]BareMetal
 
 // GetVc2List retrieve a list of all active vc2 plans.
 func (p *PlansServiceHandler) GetVc2List(ctx context.Context) ([]Plans, error) {
-	return nil, nil
+	uri := "/v1/plans/list_vc2"
+
+	req, err := p.Client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var planMap map[string]Plans
+	err = p.Client.DoWithContext(ctx, req, &planMap)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var plans []Plans
+	for _, p := range planMap {
+		plans = append(plans, p)
+	}
+
+	return plans, nil
 }
 
 // GetVdc2List Retrieve a list of all active vdc2 plans
