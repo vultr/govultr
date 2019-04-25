@@ -12,7 +12,7 @@ type IsoService interface {
 	CreateFromURL(ctx context.Context, isoUrl string) (*Iso, error)
 	Delete(ctx context.Context, isoID int) error
 	GetList(ctx context.Context) ([]Iso, error)
-	GetPublicList(ctx context.Context) ([]Iso, error)
+	GetPublicList(ctx context.Context) ([]PublicIso, error)
 }
 
 // IsoServiceHandler handles interaction with the ISO methods for the Vultr API
@@ -95,7 +95,28 @@ func (i *IsoServiceHandler) GetList(ctx context.Context) ([]Iso, error) {
 }
 
 // GetPublicList will list public ISOs offered in the Vultr ISO library.
-func (i *IsoServiceHandler) GetPublicList(ctx context.Context) ([]Iso, error) {
+func (i *IsoServiceHandler) GetPublicList(ctx context.Context) ([]PublicIso, error) {
 
-	return nil, nil
+	uri := "/v1/iso/list_public"
+
+	req, err := i.Client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var isoMap map[string]PublicIso
+	err = i.Client.DoWithContext(ctx, req, &isoMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var publicIso []PublicIso
+
+	for _, p := range isoMap {
+		publicIso = append(publicIso, p)
+	}
+
+	return publicIso, nil
 }
