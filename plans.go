@@ -11,8 +11,8 @@ import (
 type PlansService interface {
 	GetAllList(ctx context.Context, planType string) ([]Plans, error)
 	GetBareMetalList(ctx context.Context) ([]BareMetalPlan, error)
-	GetVc2List(ctx context.Context) ([]Plans, error)
-	GetVdc2List(ctx context.Context) ([]Plans, error)
+	GetVc2List(ctx context.Context) ([]VCPlan, error)
+	GetVdc2List(ctx context.Context) ([]VCPlan, error)
 }
 
 // PlansServiceHandler handles interaction with the Plan methods for the Vultr API
@@ -47,6 +47,19 @@ type BareMetalPlan struct {
 	PlanType    string `json:"plan_type"`
 	Deprecated  bool   `json:"deprecated"`
 	Regions     []int  `json:"available_locations"`
+}
+
+// VCPlan represents either a vdc2 or a vc2 plan
+type VCPlan struct {
+	VpsID        string `json:"VPSPLANID"`
+	Name         string `json:"name"`
+	Cpus         string `json:"vcpu_count"`
+	RAM          string `json:"ram"`
+	Disk         string `json:"disk"`
+	Bandwidth    string `json:"bandwidth"`
+	BandwidthGB string `json:"bandwidth_gb"`
+	Cost         string `json:"price_per_month"`
+	PlanType     string `json:"plan_type"`
 }
 
 // GetAllList retrieve a list of all active plans.
@@ -108,7 +121,7 @@ func (p *PlansServiceHandler) GetBareMetalList(ctx context.Context) ([]BareMetal
 }
 
 // GetVc2List retrieve a list of all active vc2 plans.
-func (p *PlansServiceHandler) GetVc2List(ctx context.Context) ([]Plans, error) {
+func (p *PlansServiceHandler) GetVc2List(ctx context.Context) ([]VCPlan, error) {
 	uri := "/v1/plans/list_vc2"
 
 	req, err := p.Client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -117,22 +130,42 @@ func (p *PlansServiceHandler) GetVc2List(ctx context.Context) ([]Plans, error) {
 		return nil, err
 	}
 
-	var planMap map[string]Plans
-	err = p.Client.DoWithContext(ctx, req, &planMap)
+	var vc2Plan map[string]VCPlan
+	err = p.Client.DoWithContext(ctx, req, &vc2Plan)
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	var plans []Plans
-	for _, p := range planMap {
-		plans = append(plans, p)
+	var vc2 []VCPlan
+	for _, p := range vc2Plan {
+		vc2 = append(vc2, p)
 	}
 
-	return plans, nil
+	return vc2, nil
 }
 
 // GetVdc2List Retrieve a list of all active vdc2 plans
-func (p *PlansServiceHandler) GetVdc2List(ctx context.Context) ([]Plans, error) {
-	return nil, nil
+func (p *PlansServiceHandler) GetVdc2List(ctx context.Context) ([]VCPlan, error) {
+	uri := "/v1/plans/list_vdc2"
+
+	req, err := p.Client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var vdc2Map map[string]VCPlan
+	err = p.Client.DoWithContext(ctx, req, &vdc2Map)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var vdc2 []VCPlan
+	for _, p := range vdc2Map {
+		vdc2 = append(vdc2, p)
+	}
+
+	return vdc2, nil
 }
