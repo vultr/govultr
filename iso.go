@@ -76,7 +76,7 @@ func (i *IsoServiceHandler) Delete(ctx context.Context, isoID int) error {
 	req, err := i.Client.NewRequest(ctx, http.MethodPost, uri, values)
 
 	if err != nil {
-		return  err
+		return err
 	}
 
 	err = i.Client.DoWithContext(ctx, req, nil)
