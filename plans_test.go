@@ -88,7 +88,7 @@ func TestPlansServiceHandler_GetVc2List(t *testing.T) {
 	vc2, err := client.Plans.GetVc2List(ctx)
 
 	if err != nil {
-		t.Errorf("Plans.GetBareMetalList returned %+v", err)
+		t.Errorf("Plans.GetVc2List returned %+v", err)
 	}
 
 	expected := []VCPlan{
