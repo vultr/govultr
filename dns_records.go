@@ -2,6 +2,7 @@ package govultr
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -13,7 +14,7 @@ type DNSRecordService interface {
 	Create(ctx context.Context, domain, recordType, name, data string, ttl, priority int) error
 	Delete(ctx context.Context, domain, recordID string) error
 	GetList(ctx context.Context, domain string) ([]DNSRecord, error)
-	//Update (ctx context.Context, domain string, dnsRecord *DNSRecord) error
+	Update(ctx context.Context, domain string, dnsRecord *DNSRecord) error
 }
 
 // DNSRecordsServiceHandler handles interaction with the DNS Records methods for the Vultr API
@@ -108,4 +109,43 @@ func (d *DNSRecordsServiceHandler) GetList(ctx context.Context, domain string) (
 	}
 
 	return dnsRecord, nil
+}
+
+// Update will update a DNS record
+func (d *DNSRecordsServiceHandler) Update(ctx context.Context, domain string, dnsRecord *DNSRecord) error {
+
+	uri := "/v1/dns/update_record"
+
+	values := url.Values{
+		"domain":   {domain},
+		"RECORDID": {strconv.Itoa(dnsRecord.RecordID)},
+	}
+
+	// Optional
+	if dnsRecord.Name != "" {
+		values.Add("name", dnsRecord.Name)
+	}
+	if dnsRecord.Data != "" {
+		values.Add("data", dnsRecord.Data)
+	}
+	if dnsRecord.TTL != 0 {
+		values.Add("ttl", fmt.Sprintf("%v", dnsRecord.TTL))
+	}
+	if dnsRecord.Priority != 0 {
+		values.Add("priority", fmt.Sprintf("%v", dnsRecord.Priority))
+	}
+
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = d.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+
+	}
+
+	return nil
 }
