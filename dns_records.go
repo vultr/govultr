@@ -143,7 +143,7 @@ func (d *DNSRecordsServiceHandler) Update(ctx context.Context, domain string, dn
 	err = d.client.DoWithContext(ctx, req, nil)
 
 	if err != nil {
-
+		return nil
 	}
 
 	return nil
