@@ -1,7 +1,9 @@
 package govultr
 
 import (
-	"Context"
+	"context"
+	"fmt"
+	"net/http"
 )
 
 // PlansService is the interface to interact with the Plans endpoints on the Vultr API
@@ -36,7 +38,33 @@ type Plans struct {
 // GetAllList retrieve a list of all active plans.
 func (p *PlansServiceHandler) GetAllList(ctx context.Context, planType string) ([]Plans, error) {
 
-	return nil, nil
+	uri := "/v1/plans/list"
+
+	req, err := p.Client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if planType != "" {
+		q := req.URL.Query()
+		q.Add("type", planType)
+		req.URL.RawQuery = q.Encode()
+	}
+
+	var planMap map[string]Plans
+	err = p.Client.DoWithContext(ctx, req, &planMap)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var plans []Plans
+	for _, p := range planMap {
+		plans = append(plans, p)
+	}
+
+	return plans, nil
 }
 
 // GetBareMetalList retrieves a list of all active bare metal plans.
