@@ -10,7 +10,7 @@ import (
 // IsoService is the interface to interact with the ISO endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#iso
 type IsoService interface {
-	CreateFromURL(ctx context.Context, isoUrl string) (*Iso, error)
+	CreateFromURL(ctx context.Context, isoURL string) (*Iso, error)
 	Delete(ctx context.Context, isoID int) error
 	GetList(ctx context.Context) ([]Iso, error)
 	GetPublicList(ctx context.Context) ([]PublicIso, error)
@@ -39,13 +39,13 @@ type PublicIso struct {
 	Description string `json:"description"`
 }
 
-// CreateFromUrl will create a new ISO image on your account
-func (i *IsoServiceHandler) CreateFromURL(ctx context.Context, isoUrl string) (*Iso, error) {
+// CreateFromURL will create a new ISO image on your account
+func (i *IsoServiceHandler) CreateFromURL(ctx context.Context, isoURL string) (*Iso, error) {
 
 	uri := "/v1/iso/create_from_url"
 
 	values := url.Values{
-		"url": {isoUrl},
+		"url": {isoURL},
 	}
 
 	req, err := i.Client.NewRequest(ctx, http.MethodPost, uri, values)
