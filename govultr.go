@@ -43,12 +43,13 @@ type Client struct {
 	RateLimit time.Duration
 
 	// Services used to interact with the API
-	Account     AccountService
-	API         APIService
-	Application ApplicationService
+	Account      AccountService
+	API          APIService
+	Application  ApplicationService
+	BlockStorage BlockStorageService
 	DNSDomain   DNSDomainService
-	OS          OSService
-	Snapshot    SnapshotService
+	OS           OSService
+	Snapshot     SnapshotService
 
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
@@ -76,6 +77,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.Account = &AccountServiceHandler{client}
 	client.API = &APIServiceHandler{client}
 	client.Application = &ApplicationServiceHandler{client}
+	client.BlockStorage = &BlockStorageServiceHandler{client}
 	client.DNSDomain = &DNSDomainServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
