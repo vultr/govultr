@@ -20,8 +20,8 @@ type IsoServiceHandler struct {
 	Client *Client
 }
 
-// PublicIso represents public ISOs offered in the Vultr ISO library.
-type PublicIso struct {
+// Iso represents ISOs currently available on this account.
+type Iso struct {
 	IsoID       int    `json:"ISOID"`
 	DateCreated string `json:"date_created"`
 	FileName    string `json:"filename"`
@@ -31,8 +31,8 @@ type PublicIso struct {
 	Status      string `json:"status"`
 }
 
-// Iso represents ISOs currently available on this account.
-type Iso struct {
+// PublicIso represents public ISOs offered in the Vultr ISO library.
+type PublicIso struct {
 	IsoID       int    `json:"ISOID"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -71,7 +71,27 @@ func (i *IsoServiceHandler) Delete(ctx context.Context, isoID int) error {
 // GetList will list all ISOs currently available on your account
 func (i *IsoServiceHandler) GetList(ctx context.Context) ([]Iso, error) {
 
-	return nil, nil
+	uri := "/v1/iso/list"
+
+	req, err := i.Client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var isoMap map[string]Iso
+	err = i.Client.DoWithContext(ctx, req, &isoMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var iso []Iso
+	for _, i := range isoMap {
+		iso = append(iso, i)
+	}
+
+	return iso, nil
 }
 
 // GetPublicList will list public ISOs offered in the Vultr ISO library.
