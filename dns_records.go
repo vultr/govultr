@@ -2,7 +2,6 @@ package govultr
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -35,7 +34,7 @@ type DNSRecord struct {
 // Create will add a DNS record.
 func (d *DNSRecordsServiceHandler) Create(ctx context.Context, domain, recordType, name, data string, ttl, priority int) error {
 
-	uri := "v1/dns/create_record"
+	uri := "/v1/dns/create_record"
 
 	values := url.Values{
 		"domain":   {domain},
@@ -129,10 +128,10 @@ func (d *DNSRecordsServiceHandler) Update(ctx context.Context, domain string, dn
 		values.Add("data", dnsRecord.Data)
 	}
 	if dnsRecord.TTL != 0 {
-		values.Add("ttl", fmt.Sprintf("%v", dnsRecord.TTL))
+		values.Add("ttl", strconv.Itoa(dnsRecord.TTL))
 	}
 	if dnsRecord.Priority != 0 {
-		values.Add("priority", fmt.Sprintf("%v", dnsRecord.Priority))
+		values.Add("priority", strconv.Itoa(dnsRecord.Priority))
 	}
 
 	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, values)
