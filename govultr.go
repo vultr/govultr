@@ -52,6 +52,7 @@ type Client struct {
 	DNSRecord    DNSRecordService
 	OS           OSService
 	Snapshot     SnapshotService
+	SSHKey       SSHKeyService
 
 
 
@@ -89,6 +90,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.DNSRecord = &DNSRecordsServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
+	client.SSHKey = &SSHKeyServiceHandler{client}
 
 	client.Iso = &IsoServiceHandler{client}
 	client.Plans = &PlansServiceHandler{client}
