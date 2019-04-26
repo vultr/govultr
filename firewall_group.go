@@ -6,7 +6,7 @@ import (
 	"net/url"
 )
 
-// FirewallGroupService is the interface to interact with Fire endpoints on the Vultr API
+// FirewallGroupService is the interface to interact with the firewall group endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#firewall
 type FirewallGroupService interface {
 	Create(ctx context.Context, description string) (*FirewallGroup, error)
@@ -57,7 +57,7 @@ func (f *FireWallGroupServiceHandler) Create(ctx context.Context, description st
 	return firewall, nil
 }
 
-// Delete will a firewall group from your Vultr account
+// Delete will delete a firewall group from your Vultr account
 func (f *FireWallGroupServiceHandler) Delete(ctx context.Context, groupID string) error {
 
 	uri := "/v1/firewall/group_delete"
@@ -107,7 +107,7 @@ func (f *FireWallGroupServiceHandler) GetList(ctx context.Context) ([]FirewallGr
 	return firewallGroup, nil
 }
 
-// Get will a firewall group based on provided groupID from your Vultr account
+// Get will a return firewall group based on provided groupID from your Vultr account
 func (f *FireWallGroupServiceHandler) Get(ctx context.Context, groupID string) (*FirewallGroup, error) {
 
 	uri := "/v1/firewall/group_list"
