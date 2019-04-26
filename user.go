@@ -6,7 +6,7 @@ import (
 	"net/url"
 )
 
-// UserService is the interface to interact with the SSH Key endpoints on the Vultr API
+// UserService is the interface to interact with the user management endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#user
 type UserService interface {
 	Create(ctx context.Context, email, name, password, apiEnabled string, acls []string) (*User, error)
@@ -25,7 +25,7 @@ type User struct {
 	UserID     string   `json:"USERID"`
 	Name       string   `json:"name"`
 	Email      string   `json:"email"`
-	Password   string   `json:"password`
+	Password   string   `json:"password"`
 	APIEnabled string   `json:"api_enabled"`
 	ACL        []string `json:"acls"`
 	APIKey     string   `json:"api_key"`

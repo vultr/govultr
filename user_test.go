@@ -129,9 +129,12 @@ func TestUserServiceHandler_Update(t *testing.T) {
 	})
 
 	user := &User{
-		UserID: "2e35cc32f9923",
-		Email:  "example@vultr.com",
-		ACL:    []string{"support"},
+		UserID:     "2e35cc32f9923",
+		Name:       "Example User",
+		Password:   "w1a4dcnst0n!",
+		Email:      "example@vultr.com",
+		APIEnabled: "yes",
+		ACL:        []string{"support"},
 	}
 
 	err := client.User.Update(ctx, user)
