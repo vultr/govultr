@@ -10,10 +10,10 @@ import (
 // Link: https://www.vultr.com/api/#regions
 type RegionsService interface {
 	Availability(ctx context.Context, regionID int, planType string) ([]int, error)
-	BareMetalAvailability(ctx context.Context, regionID int) ([]int, error) // returns plan Ids
-	Vc2Availability(ctx context.Context, regionID int) ([]int, error)       // returns plan IDs
-	Vdc2Availability(ctx context.Context, regionID int) ([]int, error)      // returns plan IDs
-	GetList(ctx context.Context, available string) ([]Region, error)
+	BareMetalAvailability(ctx context.Context, regionID int) ([]int, error)
+	Vc2Availability(ctx context.Context, regionID int) ([]int, error)
+	Vdc2Availability(ctx context.Context, regionID int) ([]int, error)
+	GetList(ctx context.Context) ([]Region, error)
 }
 
 // RegionsServiceHandler handles interaction with the region methods for the Vultr API
@@ -106,8 +106,29 @@ func (r *RegionsServiceHandler) Vdc2Availability(ctx context.Context, regionID i
 }
 
 // GetList retrieves a list of all active regions
-func (r *RegionsServiceHandler) GetList(ctx context.Context, available string) ([]Region, error) {
-	return nil, nil
+func (r *RegionsServiceHandler) GetList(ctx context.Context) ([]Region, error) {
+
+	uri := "/v1/regions/list"
+
+	req, err := r.Client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var regionsMap map[string]Region
+	err = r.Client.DoWithContext(ctx, req, &regionsMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var region []Region
+	for _, r := range regionsMap {
+		region = append(region, r)
+	}
+
+	return region, nil
 }
 
 // instanceAvailability keeps the similar calls dry
