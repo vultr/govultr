@@ -36,7 +36,7 @@ type Region struct {
 // Availability retrieves a list of the VPSPLANIDs currently available for a given location.
 func (r *RegionsServiceHandler) Availability(ctx context.Context, regionID int, planType string) ([]int, error) {
 
-	uri := "v1/regions/availability"
+	uri := "/v1/regions/availability"
 
 	req, err := r.Client.NewRequest(ctx, http.MethodGet, uri, nil)
 
@@ -65,17 +65,77 @@ func (r *RegionsServiceHandler) Availability(ctx context.Context, regionID int, 
 
 // BareMetalAvailability retrieve a list of the METALPLANIDs currently available for a given location.
 func (r *RegionsServiceHandler) BareMetalAvailability(ctx context.Context, regionID int) ([]int, error) {
-	return nil, nil
+
+	uri := "/v1/regions/availability_baremetal"
+
+	req, err := r.Client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("DCID", strconv.Itoa(regionID))
+	req.URL.RawQuery = q.Encode()
+
+	var regions []int
+	err = r.Client.DoWithContext(ctx, req, &regions)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return regions, nil
 }
 
 // Vc2Availability retrieve a list of the vc2 VPSPLANIDs currently available for a given location.
 func (r *RegionsServiceHandler) Vc2Availability(ctx context.Context, regionID int) ([]int, error) {
-	return nil, nil
+
+	uri := "/v1/regions/availability_vc2"
+
+	req, err := r.Client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("DCID", strconv.Itoa(regionID))
+	req.URL.RawQuery = q.Encode()
+
+	var regions []int
+	err = r.Client.DoWithContext(ctx, req, &regions)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return regions, nil
 }
 
 // Vdc2Availability retrieves a list of the vdc2 VPSPLANIDs currently available for a given location.
 func (r *RegionsServiceHandler) Vdc2Availability(ctx context.Context, regionID int) ([]int, error) {
-	return nil, nil
+
+	uri := "/v1/regions/availability_vdc2"
+
+	req, err := r.Client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("DCID", strconv.Itoa(regionID))
+	req.URL.RawQuery = q.Encode()
+
+	var regions []int
+	err = r.Client.DoWithContext(ctx, req, &regions)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return regions, nil
 }
 
 // GetList retrieves a list of all active regions
