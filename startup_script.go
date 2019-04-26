@@ -25,33 +25,32 @@ type StartupScriptServiceHandler struct {
 // StartupScript represents an startup script on Vultr
 type StartupScript struct {
 	ScriptID     string `json:"SCRIPTID"`
+	DateCreated  string `json:"date_created"`
+	DateModified string `json:"date_modified"`
 	Name         string `json:"name"`
 	Type         string `json:"type"`
 	Script       string `json:"script"`
-	DateCreated  string `json:"date_created"`
-	DateModified string `json:"date_modified"`
 }
 
-// UnmarshalJSON implements json.Unmarshaller on StartupScript.
-// Necessary because the SCRIPTID field has inconsistent types.
+// UnmarshalJSON implements json.Unmarshaller on StartupScript to handle the inconsistent types returned from the Vultr API.
 func (s *StartupScript) UnmarshalJSON(data []byte) (err error) {
 	if s == nil {
 		*s = StartupScript{}
 	}
 
-	var fields map[string]interface{}
-	if err := json.Unmarshal(data, &fields); err != nil {
+	var v map[string]interface{}
+	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
 
-	s.ScriptID = fmt.Sprintf("%v", fields["SCRIPTID"])
-	s.Name = fmt.Sprintf("%v", fields["name"])
-	s.Type = fmt.Sprintf("%v", fields["type"])
-	s.Script = fmt.Sprintf("%v", fields["script"])
-	s.DateCreated = fmt.Sprintf("%v", fields["date_created"])
-	s.DateModified = fmt.Sprintf("%v", fields["date_modified"])
+	s.ScriptID = fmt.Sprintf("%v", v["SCRIPTID"])
+	s.DateCreated = fmt.Sprintf("%v", v["date_created"])
+	s.DateModified = fmt.Sprintf("%v", v["date_modified"])
+	s.Name = fmt.Sprintf("%v", v["name"])
+	s.Type = fmt.Sprintf("%v", v["type"])
+	s.Script = fmt.Sprintf("%v", v["script"])
 
-	return
+	return nil
 }
 
 // Create will add the specified startup script to your Vultr account
@@ -82,9 +81,11 @@ func (s *StartupScriptServiceHandler) Create(ctx context.Context, name, script, 
 		return nil, err
 	}
 
+	ss.DateCreated = ""
+	ss.DateModified = ""
 	ss.Name = name
-	ss.Script = script
 	ss.Type = scriptType
+	ss.Script = script
 
 	return ss, nil
 }

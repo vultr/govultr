@@ -29,10 +29,12 @@ func TestStartupScriptServiceHandler_Create(t *testing.T) {
 	}
 
 	expected := &StartupScript{
-		ScriptID: "5",
-		Name:     "foo",
-		Type:     "pxe",
-		Script:   "#!/bin/bash\necho hello world > /root/hello",
+		ScriptID:     "5",
+		DateCreated:  "",
+		DateModified: "",
+		Name:         "foo",
+		Type:         "pxe",
+		Script:       "#!/bin/bash\necho hello world > /root/hello",
 	}
 
 	if !reflect.DeepEqual(s, expected) {
