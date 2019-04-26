@@ -68,18 +68,7 @@ func (r *RegionsServiceHandler) BareMetalAvailability(ctx context.Context, regio
 
 	uri := "/v1/regions/availability_baremetal"
 
-	req, err := r.Client.NewRequest(ctx, http.MethodGet, uri, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	q := req.URL.Query()
-	q.Add("DCID", strconv.Itoa(regionID))
-	req.URL.RawQuery = q.Encode()
-
-	var regions []int
-	err = r.Client.DoWithContext(ctx, req, &regions)
+	regions, err := r.instanceAvailability(ctx, uri, regionID)
 
 	if err != nil {
 		return nil, err
@@ -93,18 +82,7 @@ func (r *RegionsServiceHandler) Vc2Availability(ctx context.Context, regionID in
 
 	uri := "/v1/regions/availability_vc2"
 
-	req, err := r.Client.NewRequest(ctx, http.MethodGet, uri, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	q := req.URL.Query()
-	q.Add("DCID", strconv.Itoa(regionID))
-	req.URL.RawQuery = q.Encode()
-
-	var regions []int
-	err = r.Client.DoWithContext(ctx, req, &regions)
+	regions, err := r.instanceAvailability(ctx, uri, regionID)
 
 	if err != nil {
 		return nil, err
@@ -118,6 +96,22 @@ func (r *RegionsServiceHandler) Vdc2Availability(ctx context.Context, regionID i
 
 	uri := "/v1/regions/availability_vdc2"
 
+	regions, err := r.instanceAvailability(ctx, uri, regionID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return regions, nil
+}
+
+// GetList retrieves a list of all active regions
+func (r *RegionsServiceHandler) GetList(ctx context.Context, available string) ([]Region, error) {
+	return nil, nil
+}
+
+// instanceAvailability keeps the similar calls dry
+func (r *RegionsServiceHandler) instanceAvailability(ctx context.Context, uri string, regionID int) ([]int, error) {
 	req, err := r.Client.NewRequest(ctx, http.MethodGet, uri, nil)
 
 	if err != nil {
@@ -136,9 +130,4 @@ func (r *RegionsServiceHandler) Vdc2Availability(ctx context.Context, regionID i
 	}
 
 	return regions, nil
-}
-
-// GetList retrieves a list of all active regions
-func (r *RegionsServiceHandler) GetList(ctx context.Context, available string) ([]Region, error) {
-	return nil, nil
 }
