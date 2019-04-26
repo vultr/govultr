@@ -43,18 +43,19 @@ type Client struct {
 	RateLimit time.Duration
 
 	// Services used to interact with the API
-	Account      AccountService
-	API          APIService
-	Application  ApplicationService
-	Backup       BackupService
-	BlockStorage BlockStorageService
-	DNSDomain    DNSDomainService
-	DNSRecord    DNSRecordService
-	Iso          IsoService
-	OS           OSService
-	Plans        PlansService
-	Snapshot     SnapshotService
-	SSHKey       SSHKeyService
+	Account       AccountService
+	API           APIService
+	Application   ApplicationService
+	Backup        BackupService
+	BlockStorage  BlockStorageService
+	DNSDomain     DNSDomainService
+	DNSRecord     DNSRecordService
+	Iso           IsoService
+	OS            OSService
+	Plans         PlansService
+	Snapshot      SnapshotService
+	SSHKey        SSHKeyService
+	StartupScript StartupScriptService
 
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
@@ -91,6 +92,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.Plans = &PlansServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
 	client.SSHKey = &SSHKeyServiceHandler{client}
+	client.StartupScript = &StartupScriptServiceHandler{client}
 
 	apiKey := APIKey{key: key}
 	client.APIKey = apiKey
