@@ -53,6 +53,7 @@ type Client struct {
 	Iso          IsoService
 	OS           OSService
 	Plans        PlansService
+	Regions      RegionsService
 	Snapshot     SnapshotService
 	SSHKey       SSHKeyService
 
@@ -89,6 +90,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.Iso = &IsoServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
 	client.Plans = &PlansServiceHandler{client}
+	client.Regions = &RegionsServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
 	client.SSHKey = &SSHKeyServiceHandler{client}
 
