@@ -107,7 +107,7 @@ func (f *FireWallGroupServiceHandler) GetList(ctx context.Context) ([]FirewallGr
 	return firewallGroup, nil
 }
 
-// Get will a return firewall group based on provided groupID from your Vultr account
+// Get will return a firewall group based on provided groupID from your Vultr account
 func (f *FireWallGroupServiceHandler) Get(ctx context.Context, groupID string) (*FirewallGroup, error) {
 
 	uri := "/v1/firewall/group_list"
