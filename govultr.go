@@ -56,6 +56,7 @@ type Client struct {
 	Regions      RegionsService
 	Snapshot     SnapshotService
 	SSHKey       SSHKeyService
+	StartupScript StartupScriptService
 
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
@@ -93,6 +94,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.Regions = &RegionsServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
 	client.SSHKey = &SSHKeyServiceHandler{client}
+	client.StartupScript = &StartupScriptServiceHandler{client}
 
 	apiKey := APIKey{key: key}
 	client.APIKey = apiKey
