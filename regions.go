@@ -2,6 +2,8 @@ package govultr
 
 import (
 	"context"
+	"net/http"
+	"strconv"
 )
 
 // RegionsService is the interface to interact with Region endpoints on the Vultr API
@@ -34,7 +36,31 @@ type Region struct {
 // Availability retrieves a list of the VPSPLANIDs currently available for a given location.
 func (r *RegionsServiceHandler) Availability(ctx context.Context, regionID int, planType string) ([]int, error) {
 
-	return nil, nil
+	uri := "v1/regions/availability"
+
+	req, err := r.Client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("DCID", strconv.Itoa(regionID))
+
+	// Optional planType filter
+	if planType != "" {
+		q.Add("type", planType)
+	}
+	req.URL.RawQuery = q.Encode()
+
+	var regions []int
+	err = r.Client.DoWithContext(ctx, req, &regions)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return regions, nil
 }
 
 // BareMetalAvailability retrieve a list of the METALPLANIDs currently available for a given location.
