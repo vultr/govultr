@@ -38,9 +38,9 @@ type FirewallRule struct {
 // UnmarshalJSON implements a custom unmarshaler on FirewallRule
 // This is done to help reduce data inconsistency with V1 of the Vultr API
 // It also merges the subnet & subnet_mask into a single type of *net.IPNet
-func (r *FirewallRule) UnmarshalJSON(data []byte) (err error) {
-	if r == nil {
-		*r = FirewallRule{}
+func (f *FirewallRule) UnmarshalJSON(data []byte) (err error) {
+	if f == nil {
+		*f = FirewallRule{}
 	}
 
 	// Pull out all of the data that was given to us and put it into a map
@@ -54,13 +54,33 @@ func (r *FirewallRule) UnmarshalJSON(data []byte) (err error) {
 	// Unmarshal RuleNumber
 	value := fmt.Sprintf("%v", fields["rulenumber"])
 	number, _ := strconv.Atoi(value)
-	r.RuleNumber = number
+	f.RuleNumber = number
 
 	// Unmarshal all other strings
-	r.Action = fmt.Sprintf("%v", fields["action"])
-	r.Protocol = fmt.Sprintf("%v", fields["protocol"])
-	r.Port = fmt.Sprintf("%v", fields["port"])
-	r.Notes = fmt.Sprintf("%v", fields["notes"])
+
+	action := fmt.Sprintf("%v", fields["action"])
+	if action == "<nil>" {
+		action = ""
+	}
+	f.Action = action
+
+	protocol := fmt.Sprintf("%v", fields["protocol"])
+	if protocol == "<nil>" {
+		protocol = ""
+	}
+	f.Protocol = protocol
+
+	port := fmt.Sprintf("%v", fields["port"])
+	if port == "<nil>" {
+		port = ""
+	}
+	f.Port = port
+
+	notes := fmt.Sprintf("%v", fields["notes"])
+	if notes == "<nil>" {
+		notes = ""
+	}
+	f.Notes = notes
 
 	// Unmarshal subnet_size & subnet and convert to *net.IP
 	value = fmt.Sprintf("%v", fields["subnet_size"])
@@ -81,7 +101,7 @@ func (r *FirewallRule) UnmarshalJSON(data []byte) (err error) {
 			return errors.New("an issue has occurred while parsing subnet")
 		}
 
-		r.Network = ipNet
+		f.Network = ipNet
 	}
 
 	return
