@@ -2,6 +2,9 @@ package govultr
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"net"
 	"net/http"
 	"net/url"
@@ -13,7 +16,7 @@ import (
 type FireWallRuleService interface {
 	Create(ctx context.Context, groupID, protocol, port, network, notes string) (*FirewallRule, error)
 	Delete(ctx context.Context, groupID, ruleID string) error
-	GetList(ctx context.Context, groupID, direction, ipType string) ([]FirewallRule, error)
+	GetList(ctx context.Context, groupID, ipType string) ([]FirewallRule, error)
 }
 
 // FireWallRuleServiceHandler handles interaction with the firewall rule methods for the Vultr API
@@ -29,6 +32,58 @@ type FirewallRule struct {
 	Port       string     `json:"port"`
 	Network    *net.IPNet `json:"network"`
 	Notes      string     `json:"notes"`
+}
+
+// UnmarshalJson implements a custom unmarshaler on FirewallRule
+// This is done to help reduce data inconsistency with V1 of the Vultr API
+// It also merges the subnet & subnet_mask into a single type of *net.IPNet
+func (r *FirewallRule) UnmarshalJSON(data []byte) (err error) {
+	if r == nil {
+		*r = FirewallRule{}
+	}
+
+	// Pull out all of the data that was given to us and put it into a map
+	var fields map[string]interface{}
+	err = json.Unmarshal(data, &fields)
+
+	if err != nil {
+		return err
+	}
+
+	// Unmarshal RuleNumber
+	value := fmt.Sprintf("%v", fields["rulenumber"])
+	number, _ := strconv.Atoi(value)
+	r.RuleNumber = number
+
+	// Unmarshal all other strings
+	r.Action = fmt.Sprintf("%v", fields["action"])
+	r.Protocol = fmt.Sprintf("%v", fields["protocol"])
+	r.Port = fmt.Sprintf("%v", fields["port"])
+	r.Notes = fmt.Sprintf("%v", fields["notes"])
+
+	// Unmarshal subnet_size & subnet and convert to *net.IP
+	value = fmt.Sprintf("%v", fields["subnet_size"])
+	if len(value) == 0 || value == "<nil>" {
+		value = "0"
+	}
+	subnetSize, _ := strconv.Atoi(value)
+
+	subnet := fmt.Sprintf("%v", fields["subnet"])
+	if subnet == "<nil>" {
+		subnet = ""
+	}
+
+	if len(subnet) > 0 {
+		_, ipNet, err := net.ParseCIDR(fmt.Sprintf("%s/%d", subnet, subnetSize))
+
+		if err != nil {
+			return errors.New("an issue has occurred while parsing subnet")
+		}
+
+		r.Network = ipNet
+	}
+
+	return
 }
 
 // Create will create a rule in a firewall rule.
@@ -110,7 +165,35 @@ func (f *FireWallRuleServiceHandler) Delete(ctx context.Context, groupID, ruleID
 	return nil
 }
 
-// GetList will list the rules in a firewall rule
-func (f *FireWallRuleServiceHandler) GetList(ctx context.Context, groupID, direction, ipType string) ([]FirewallRule, error) {
-	return nil, nil
+// GetList will list the rules in a firewall rule.
+// ipType values that can be passed in are "v4", "v6"
+func (f *FireWallRuleServiceHandler) GetList(ctx context.Context, groupID, ipType string) ([]FirewallRule, error) {
+
+	uri := "/v1/firewall/rule_list"
+
+	req, err := f.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("FIREWALLGROUPID", groupID)
+	q.Add("direction", "in")
+	q.Add("ip_type", ipType)
+	req.URL.RawQuery = q.Encode()
+	var firewallRuleMap map[string]FirewallRule
+
+	err = f.client.DoWithContext(ctx, req, &firewallRuleMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var firewallRule []FirewallRule
+	for _, f := range firewallRuleMap {
+		firewallRule = append(firewallRule, f)
+	}
+
+	return firewallRule, nil
 }
