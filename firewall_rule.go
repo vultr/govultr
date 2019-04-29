@@ -107,7 +107,7 @@ func (f *FirewallRule) UnmarshalJSON(data []byte) (err error) {
 	return
 }
 
-// Create will create a rule in a firewall rule.
+// Create will create a rule in a firewall group.
 func (f *FireWallRuleServiceHandler) Create(ctx context.Context, groupID, protocol, port, cdirBlock, notes string) (*FirewallRule, error) {
 
 	uri := "/v1/firewall/rule_create"
@@ -186,7 +186,7 @@ func (f *FireWallRuleServiceHandler) Delete(ctx context.Context, groupID, ruleID
 	return nil
 }
 
-// GetList will list the rules in a firewall rule.
+// GetList will list the current firewall rules in a firewall group.
 // ipType values that can be passed in are "v4", "v6"
 func (f *FireWallRuleServiceHandler) GetList(ctx context.Context, groupID, ipType string) ([]FirewallRule, error) {
 
@@ -219,7 +219,7 @@ func (f *FireWallRuleServiceHandler) GetList(ctx context.Context, groupID, ipTyp
 	return firewallRule, nil
 }
 
-// GetAll will return both ip4 an ip6 firewall rules that are in a given groupID
+// GetAll will return both ipv4 an ipv6 firewall rules that are defined within a firewall group
 func (f *FireWallRuleServiceHandler) GetAll(ctx context.Context, groupID string) ([]FirewallRule, error) {
 	uri := "/v1/firewall/rule_list"
 
