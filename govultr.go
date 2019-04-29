@@ -57,6 +57,7 @@ type Client struct {
 	Plans         PlansService
 	Regions       RegionsService
 	ReservedIP    ReservedIPService
+	Server        ServerService
 	Snapshot      SnapshotService
 	SSHKey        SSHKeyService
 	StartupScript StartupScriptService
@@ -98,6 +99,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.OS = &OSServiceHandler{client}
 	client.Plans = &PlansServiceHandler{client}
 	client.Regions = &RegionsServiceHandler{client}
+	client.Server = &ServerServiceHandler{client}
 	client.ReservedIP = &ReservedIPServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
 	client.SSHKey = &SSHKeyServiceHandler{client}
