@@ -41,7 +41,7 @@ func (s *SSHKeyServiceHandler) Create(ctx context.Context, name, sshKey string) 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
 
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	key := new(SSHKey)
@@ -70,7 +70,7 @@ func (s *SSHKeyServiceHandler) Destroy(ctx context.Context, sshKeyID string) err
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
 
 	if err != nil {
-		return nil
+		return err
 	}
 
 	err = s.client.DoWithContext(ctx, req, nil)

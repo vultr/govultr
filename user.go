@@ -50,7 +50,7 @@ func (u *UserServiceHandler) Create(ctx context.Context, email, name, password, 
 	req, err := u.client.NewRequest(ctx, http.MethodPost, uri, values)
 
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	user := new(User)
@@ -81,7 +81,7 @@ func (u *UserServiceHandler) Delete(ctx context.Context, userID string) error {
 	req, err := u.client.NewRequest(ctx, http.MethodPost, uri, values)
 
 	if err != nil {
-		return nil
+		return err
 	}
 
 	err = u.client.DoWithContext(ctx, req, nil)

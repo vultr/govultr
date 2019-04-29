@@ -48,7 +48,7 @@ func (d *DNSRecordsServiceHandler) Create(ctx context.Context, domain, recordTyp
 	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, values)
 
 	if err != nil {
-		return nil
+		return err
 	}
 
 	err = d.client.DoWithContext(ctx, req, nil)
@@ -73,7 +73,7 @@ func (d *DNSRecordsServiceHandler) Delete(ctx context.Context, domain, recordID 
 	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, values)
 
 	if err != nil {
-		return nil
+		return err
 	}
 
 	err = d.client.DoWithContext(ctx, req, nil)
