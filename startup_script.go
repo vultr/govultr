@@ -70,7 +70,7 @@ func (s *StartupScriptServiceHandler) Create(ctx context.Context, name, script, 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
 
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	ss := new(StartupScript)
@@ -102,7 +102,7 @@ func (s *StartupScriptServiceHandler) Destroy(ctx context.Context, scriptID stri
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
 
 	if err != nil {
-		return nil
+		return err
 	}
 
 	err = s.client.DoWithContext(ctx, req, nil)
