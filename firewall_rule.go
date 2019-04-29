@@ -17,6 +17,7 @@ type FireWallRuleService interface {
 	Create(ctx context.Context, groupID, protocol, port, network, notes string) (*FirewallRule, error)
 	Delete(ctx context.Context, groupID, ruleID string) error
 	GetList(ctx context.Context, groupID, ipType string) ([]FirewallRule, error)
+	GetAll(ctx context.Context, groupID string) ([]FirewallRule, error)
 }
 
 // FireWallRuleServiceHandler handles interaction with the firewall rule methods for the Vultr API
@@ -34,7 +35,7 @@ type FirewallRule struct {
 	Notes      string     `json:"notes"`
 }
 
-// UnmarshalJson implements a custom unmarshaler on FirewallRule
+// UnmarshalJSON implements a custom unmarshaler on FirewallRule
 // This is done to help reduce data inconsistency with V1 of the Vultr API
 // It also merges the subnet & subnet_mask into a single type of *net.IPNet
 func (r *FirewallRule) UnmarshalJSON(data []byte) (err error) {
@@ -183,6 +184,51 @@ func (f *FireWallRuleServiceHandler) GetList(ctx context.Context, groupID, ipTyp
 	q.Add("ip_type", ipType)
 	req.URL.RawQuery = q.Encode()
 	var firewallRuleMap map[string]FirewallRule
+
+	err = f.client.DoWithContext(ctx, req, &firewallRuleMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var firewallRule []FirewallRule
+	for _, f := range firewallRuleMap {
+		firewallRule = append(firewallRule, f)
+	}
+
+	return firewallRule, nil
+}
+
+// GetAll will return both ip4 an ip6 firewall rules that are in a given groupID
+func (f *FireWallRuleServiceHandler) GetAll(ctx context.Context, groupID string) ([]FirewallRule, error) {
+	uri := "/v1/firewall/rule_list"
+
+	req, err := f.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("FIREWALLGROUPID", groupID)
+	q.Add("direction", "in")
+	q.Add("ip_type", "v4")
+
+	req.URL.RawQuery = q.Encode()
+
+	var firewallRuleMap map[string]FirewallRule
+
+	// V4 call
+	err = f.client.DoWithContext(ctx, req, &firewallRuleMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// V6 call
+	q.Del("ip_type")
+	q.Add("ip_type", "v6")
+	req.URL.RawQuery = q.Encode()
 
 	err = f.client.DoWithContext(ctx, req, &firewallRuleMap)
 
