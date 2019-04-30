@@ -29,6 +29,9 @@ type ServerService interface {
 	UpgradePlan(ctx context.Context, vpsID, vpsPlanID string) error
 	ListOS(ctx context.Context, vpsID string) ([]OS, error)
 	ChangeOS(ctx context.Context, vpsID, osID string) error
+	IsoAttach(ctx context.Context, vpsID, isoID string) error
+	IsoDetach(ctx context.Context, vpsID string) error
+	IsoStatus(ctx context.Context, vpsID string) (*ServerIso, error)
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -56,6 +59,12 @@ type PrivateNetwork struct {
 	NetworkID  string `json:"NETWORKID"`
 	MacAddress string `json:"mac_address"`
 	IPAddress  string `json:"ip_address"`
+}
+
+// ServerIso represents a iso attached to a VPS
+type ServerIso struct {
+	State string `json:"state"`
+	IsoID string `json:"ISOID"`
 }
 
 // ChangeApp changes the VPS to a different application.
@@ -554,4 +563,79 @@ func (s *ServerServiceHandler) ChangeOS(ctx context.Context, vpsID, osID string)
 	}
 
 	return nil
+}
+
+// IsoAttach will attach an ISO to the given VPS and reboot it
+func (s *ServerServiceHandler) IsoAttach(ctx context.Context, vpsID, isoID string) error {
+
+	uri := "/v1/server/iso_attach"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+		"ISOID": {isoID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// IsoDetach will detach the currently mounted ISO and reboot the server.
+func (s *ServerServiceHandler) IsoDetach(ctx context.Context, vpsID string) error {
+
+	uri := "/v1/server/iso_detach"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// IsoStatus retrieves the current ISO state for a given VPS.
+// The returned state may be one of: ready | isomounting | isomounted.
+func (s *ServerServiceHandler) IsoStatus(ctx context.Context, vpsID string) (*ServerIso, error) {
+
+	uri := "/v1/server/iso_status"
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", vpsID)
+	req.URL.RawQuery = q.Encode()
+
+	serverIso := new(ServerIso)
+	err = s.client.DoWithContext(ctx, req, serverIso)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return serverIso, nil
 }
