@@ -424,8 +424,22 @@ func TestServerServiceHandler_IsoStatus(t *testing.T) {
 
 	expected := &ServerIso{State: "ready", IsoID: "12345"}
 
-
 	if !reflect.DeepEqual(isoStatus, expected) {
 		t.Errorf("Server.ListOS returned %+v, expected %+v", isoStatus, expected)
+	}
+}
+
+func TestServerServiceHandler_SetFirewallGroup(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/firewall_group_set", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.SetFirewallGroup(ctx, "1234", "123")
+
+	if err != nil {
+		t.Errorf("Server.SetFirewallGroup return %+v ", err)
 	}
 }

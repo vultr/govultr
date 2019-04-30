@@ -32,6 +32,7 @@ type ServerService interface {
 	IsoAttach(ctx context.Context, vpsID, isoID string) error
 	IsoDetach(ctx context.Context, vpsID string) error
 	IsoStatus(ctx context.Context, vpsID string) (*ServerIso, error)
+	SetFirewallGroup(ctx context.Context, vpsID, firewallGroupID string) error
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -638,4 +639,30 @@ func (s *ServerServiceHandler) IsoStatus(ctx context.Context, vpsID string) (*Se
 	}
 
 	return serverIso, nil
+}
+
+// SetFirewallGroup will set, change, or remove the firewall group currently applied to a vps.
+//  A value of "0" means "no firewall group"
+func (s *ServerServiceHandler) SetFirewallGroup(ctx context.Context, vpsID, firewallGroupID string) error {
+
+	uri := "/v1/server/firewall_group_set"
+
+	values := url.Values{
+		"SUBID":           {vpsID},
+		"FIREWALLGROUPID": {firewallGroupID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
