@@ -18,7 +18,7 @@ type OSServiceHandler struct {
 
 // OS represents a Vultr operating system
 type OS struct {
-	OsID    string `json:"OSID"`
+	OsID    int    `json:"OSID"`
 	Name    string `json:"name"`
 	Arch    string `json:"arch"`
 	Family  string `json:"family"`
