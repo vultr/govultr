@@ -2,6 +2,7 @@ package govultr
 
 import (
 	"context"
+	"encoding/base64"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -33,6 +34,8 @@ type ServerService interface {
 	IsoDetach(ctx context.Context, vpsID string) error
 	IsoStatus(ctx context.Context, vpsID string) (*ServerIso, error)
 	SetFirewallGroup(ctx context.Context, vpsID, firewallGroupID string) error
+	GetUserData(ctx context.Context, vpsID string) (*UserData, error)
+	SetUserData(ctx context.Context, vpsID, userData string) error
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -66,6 +69,11 @@ type PrivateNetwork struct {
 type ServerIso struct {
 	State string `json:"state"`
 	IsoID string `json:"ISOID"`
+}
+
+// UserData represents the user data you can give a VPS
+type UserData struct {
+	UserData string `json:"userdata"`
 }
 
 // ChangeApp changes the VPS to a different application.
@@ -665,4 +673,58 @@ func (s *ServerServiceHandler) SetFirewallGroup(ctx context.Context, vpsID, fire
 	}
 
 	return nil
+}
+
+// SetUserData sets the user-data for this subscription.
+// User-data is a generic data store, which some provisioning tools and cloud operating systems use as a configuration file.
+// It is generally consumed only once after an instance has been launched, but individual needs may vary.
+func (s *ServerServiceHandler) SetUserData(ctx context.Context, vpsID, userData string) error {
+
+	uri := "/v1/server/set_user_data"
+
+	encodedUserData := base64.StdEncoding.EncodeToString([]byte(userData))
+
+	values := url.Values{
+		"SUBID":    {vpsID},
+		"userdata": {encodedUserData},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetUserData retrieves the (base64 encoded) user-data for this VPS
+func (s *ServerServiceHandler) GetUserData(ctx context.Context, vpsID string) (*UserData, error) {
+
+	uri := "/v1/server/get_user_data"
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", vpsID)
+	req.URL.RawQuery = q.Encode()
+
+	userData := new(UserData)
+	err = s.client.DoWithContext(ctx, req, userData)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return userData, nil
 }

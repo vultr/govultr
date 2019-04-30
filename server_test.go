@@ -443,3 +443,40 @@ func TestServerServiceHandler_SetFirewallGroup(t *testing.T) {
 		t.Errorf("Server.SetFirewallGroup return %+v ", err)
 	}
 }
+
+func TestServerServiceHandler_SetUserData(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/set_user_data", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.SetUserData(ctx, "1234", "user-test-data")
+
+	if err != nil {
+		t.Errorf("Server.SetUserData return %+v ", err)
+	}
+}
+
+func TestServerServiceHandler_GetUserData(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/get_user_data", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"userdata": "ZWNobyBIZWxsbyBXb3JsZA=="}`
+		fmt.Fprint(writer, response)
+	})
+
+	userData, err := client.Server.GetUserData(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.GetUserData return %+v ", err)
+	}
+
+	expected := &UserData{UserData: "ZWNobyBIZWxsbyBXb3JsZA=="}
+
+	if !reflect.DeepEqual(userData, expected){
+		t.Errorf("Server.GetUserData returned %+v, expected %+v", userData, expected)
+	}
+}
