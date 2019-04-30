@@ -27,6 +27,8 @@ type ServerService interface {
 	ListPrivateNetworks(ctx context.Context, vpsID string) ([]PrivateNetwork, error)
 	ListUpgradePlan(ctx context.Context, vpsID string) ([]int, error)
 	UpgradePlan(ctx context.Context, vpsID, vpsPlanID string) error
+	ListOS(ctx context.Context, vpsID string) ([]OS, error)
+	ChangeOS(ctx context.Context, vpsID, osID string) error
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -481,6 +483,62 @@ func (s *ServerServiceHandler) UpgradePlan(ctx context.Context, vpsID, vpsPlanID
 	values := url.Values{
 		"SUBID":     {vpsID},
 		"VPSPLANID": {vpsPlanID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ListOS retrieves a list of operating systems to which the VPS can be changed to.
+func (s *ServerServiceHandler) ListOS(ctx context.Context, vpsID string) ([]OS, error) {
+
+	uri := "/v1/server/os_change_list"
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", vpsID)
+	req.URL.RawQuery = q.Encode()
+
+	var osMap map[string]OS
+	err = s.client.DoWithContext(ctx, req, &osMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var os []OS
+	for _, o := range osMap {
+		os = append(os, o)
+	}
+
+	return os, nil
+}
+
+// ChangeOS changes the VPS to a different operating system.
+// All data will be permanently lost.
+func (s *ServerServiceHandler) ChangeOS(ctx context.Context, vpsID, osID string) error {
+
+	uri := "/v1/server/os_change"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+		"OSID":  {osID},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)

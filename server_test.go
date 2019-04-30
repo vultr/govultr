@@ -331,3 +331,48 @@ func TestServerServiceHandler_UpgradePlan(t *testing.T) {
 		t.Errorf("Server.UpgradePlan return %+v ", err)
 	}
 }
+
+func TestServerServiceHandler_ListOS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/os_change_list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"127": {"OSID": 127,"name": "CentOS 6 x64","arch": "x64","family": "centos","windows": false,"surcharge": "0.00"}}`
+		fmt.Fprint(writer, response)
+	})
+
+	os, err := client.Server.ListOS(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.ListOS return %+v ", err)
+	}
+
+	expected := []OS{
+		{
+			OsID:    127,
+			Name:    "CentOS 6 x64",
+			Arch:    "x64",
+			Family:  "centos",
+			Windows: false,
+		},
+	}
+
+	if !reflect.DeepEqual(os, expected) {
+		t.Errorf("Server.ListOS returned %+v, expected %+v", os, expected)
+	}
+}
+
+func TestServerServiceHandler_ChangeOS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/os_change", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.ChangeOS(ctx, "1234", "1")
+
+	if err != nil {
+		t.Errorf("Server.ChangeOS return %+v ", err)
+	}
+}
