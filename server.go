@@ -19,6 +19,9 @@ type ServerService interface {
 	SetBackupSchedule(ctx context.Context, vpsID string, backup *BackupSchedule) error
 	RestoreBackup(ctx context.Context, vpsID, backupID string) error
 	RestoreSnapshot(ctx context.Context, vpsID, snapshotID string) error
+	SetLabel(ctx context.Context, vpsID, label string) error
+	SetTag(ctx context.Context, vpsID, tag string) error
+	Neighbors(ctx context.Context, vpsID string) ([]int, error)
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -271,4 +274,79 @@ func (s *ServerServiceHandler) RestoreSnapshot(ctx context.Context, vpsID, snaps
 	}
 
 	return nil
+}
+
+// SetLabel will set a label for a given VPS
+func (s *ServerServiceHandler) SetLabel(ctx context.Context, vpsID, label string) error {
+
+	uri := "/v1/server/label_set"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+		"label": {label},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SetTag will set a tag for a given VPS
+func (s *ServerServiceHandler) SetTag(ctx context.Context, vpsID, tag string) error {
+
+	uri := "/v1/server/tag_set"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+		"tag":   {tag},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Neighbors will determine what other vps are hosted on the same physical host as a given vps.
+func (s *ServerServiceHandler) Neighbors(ctx context.Context, vpsID string) ([]int, error) {
+
+	uri := "/v1/server/neighbors"
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", vpsID)
+	req.URL.RawQuery = q.Encode()
+
+	var neighbors []int
+	err = s.client.DoWithContext(ctx, req, &neighbors)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return neighbors, nil
 }
