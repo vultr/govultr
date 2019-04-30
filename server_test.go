@@ -425,7 +425,7 @@ func TestServerServiceHandler_IsoStatus(t *testing.T) {
 	expected := &ServerIso{State: "ready", IsoID: "12345"}
 
 	if !reflect.DeepEqual(isoStatus, expected) {
-		t.Errorf("Server.ListOS returned %+v, expected %+v", isoStatus, expected)
+		t.Errorf("Server.IsoStatus returned %+v, expected %+v", isoStatus, expected)
 	}
 }
 
