@@ -25,6 +25,8 @@ type ServerService interface {
 	EnablePrivateNetwork(ctx context.Context, vpsID, networkID string) error
 	DisablePrivateNetwork(ctx context.Context, vpsID, networkID string) error
 	ListPrivateNetworks(ctx context.Context, vpsID string) ([]PrivateNetwork, error)
+	ListUpgradePlan(ctx context.Context, vpsID string) ([]int, error)
+	UpgradePlan(ctx context.Context, vpsID, vpsPlanID string) error
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -442,4 +444,56 @@ func (s *ServerServiceHandler) ListPrivateNetworks(ctx context.Context, vpsID st
 	}
 
 	return privateNetworks, nil
+}
+
+// ListUpgradePlan Retrieve a list of the planIDs for which the vps can be upgraded.
+// An empty response array means that there are currently no upgrades available
+func (s *ServerServiceHandler) ListUpgradePlan(ctx context.Context, vpsID string) ([]int, error) {
+
+	uri := "/v1/server/upgrade_plan_list"
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", vpsID)
+	req.URL.RawQuery = q.Encode()
+
+	var plans []int
+	err = s.client.DoWithContext(ctx, req, &plans)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return plans, nil
+}
+
+// UpgradePlan will upgrade the plan of a virtual machine.
+// The vps will be rebooted upon a successful upgrade.
+func (s *ServerServiceHandler) UpgradePlan(ctx context.Context, vpsID, vpsPlanID string) error {
+
+	uri := "/v1/server/upgrade_plan"
+
+	values := url.Values{
+		"SUBID":     {vpsID},
+		"VPSPLANID": {vpsPlanID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
