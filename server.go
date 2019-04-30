@@ -17,6 +17,8 @@ type ServerService interface {
 	DisableBackup(ctx context.Context, vpsID string) error
 	GetBackupSchedule(ctx context.Context, vpsID string) (*BackupSchedule, error)
 	SetBackupSchedule(ctx context.Context, vpsID string, backup *BackupSchedule) error
+	RestoreBackup(ctx context.Context, vpsID, backupID string) error
+	RestoreSnapshot(ctx context.Context, vpsID, snapshotID string) error
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -204,6 +206,56 @@ func (s *ServerServiceHandler) SetBackupSchedule(ctx context.Context, vpsID stri
 		"hour":      {strconv.Itoa(backup.Hour)},
 		"dow":       {strconv.Itoa(backup.Dow)},
 		"dom":       {strconv.Itoa(backup.Dom)},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// RestoreBackup will restore the specified backup to the given VPS
+func (s *ServerServiceHandler) RestoreBackup(ctx context.Context, vpsID, backupID string) error {
+
+	uri := "/v1/server/restore_backup"
+
+	values := url.Values{
+		"SUBID":    {vpsID},
+		"BACKUPID": {backupID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// RestoreSnapshot will restore the specified snapshot to the given VPS
+func (s *ServerServiceHandler) RestoreSnapshot(ctx context.Context, vpsID, snapshotID string) error {
+
+	uri := "/v1/server/restore_snapshot"
+
+	values := url.Values{
+		"SUBID":      {vpsID},
+		"SNAPSHOTID": {snapshotID},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
