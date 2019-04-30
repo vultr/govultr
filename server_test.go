@@ -236,3 +236,196 @@ func TestServerServiceHandler_Neighbors(t *testing.T) {
 		t.Errorf("Server.Neighbors returned %+v, expected %+v", neighbors, expected)
 	}
 }
+
+func TestServerServiceHandler_EnablePrivateNetwork(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/private_network_enable", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.EnablePrivateNetwork(ctx, "1234", "45a31f4")
+
+	if err != nil {
+		t.Errorf("Server.EnablePrivateNetwork returned %+v, ", err)
+	}
+}
+
+func TestServerServiceHandler_DisablePrivateNetwork(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/private_network_disable", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.DisablePrivateNetwork(ctx, "1234", "45a31f4")
+
+	if err != nil {
+		t.Errorf("Server.DisablePrivateNetwork returned %+v, ", err)
+	}
+}
+
+func TestServerServiceHandler_ListPrivateNetworks(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/private_networks", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"net539626f0798d7": {"NETWORKID": "net539626f0798d7","mac_address": "5a:02:00:00:24:e9","ip_address": "10.99.0.3"}}`
+		fmt.Fprint(writer, response)
+	})
+
+	privateNetwork, err := client.Server.ListPrivateNetworks(ctx, "12345")
+
+	if err != nil {
+		t.Errorf("Server.ListPrivateNetworks return %+v, ", err)
+	}
+
+	expected := []PrivateNetwork{
+		{
+			NetworkID:  "net539626f0798d7",
+			MacAddress: "5a:02:00:00:24:e9",
+			IPAddress:  "10.99.0.3",
+		},
+	}
+
+	if !reflect.DeepEqual(privateNetwork, expected) {
+		t.Errorf("Server.ListPrivateNetworks returned %+v, expected %+v", privateNetwork, expected)
+	}
+}
+
+func TestServerServiceHandler_ListUpgradePlan(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/upgrade_plan_list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `[1, 2, 3, 4]`
+		fmt.Fprint(writer, response)
+	})
+
+	plans, err := client.Server.ListUpgradePlan(ctx, "123")
+
+	if err != nil {
+		t.Errorf("Server.ListUpgradePlan return %+v ", err)
+	}
+
+	expected := []int{1, 2, 3, 4}
+
+	if !reflect.DeepEqual(plans, expected) {
+		t.Errorf("Server.ListUpgradePlan returned %+v, expected %+v", plans, expected)
+	}
+}
+
+func TestServerServiceHandler_UpgradePlan(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/upgrade_plan", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.UpgradePlan(ctx, "12351", "123")
+
+	if err != nil {
+		t.Errorf("Server.UpgradePlan return %+v ", err)
+	}
+}
+
+func TestServerServiceHandler_ListOS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/os_change_list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"127": {"OSID": 127,"name": "CentOS 6 x64","arch": "x64","family": "centos","windows": false,"surcharge": "0.00"}}`
+		fmt.Fprint(writer, response)
+	})
+
+	os, err := client.Server.ListOS(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.ListOS return %+v ", err)
+	}
+
+	expected := []OS{
+		{
+			OsID:    127,
+			Name:    "CentOS 6 x64",
+			Arch:    "x64",
+			Family:  "centos",
+			Windows: false,
+		},
+	}
+
+	if !reflect.DeepEqual(os, expected) {
+		t.Errorf("Server.ListOS returned %+v, expected %+v", os, expected)
+	}
+}
+
+func TestServerServiceHandler_ChangeOS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/os_change", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.ChangeOS(ctx, "1234", "1")
+
+	if err != nil {
+		t.Errorf("Server.ChangeOS return %+v ", err)
+	}
+}
+
+func TestServerServiceHandler_IsoAttach(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/iso_attach", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.IsoAttach(ctx, "1234", "1")
+
+	if err != nil {
+		t.Errorf("Server.IsoAttach return %+v ", err)
+	}
+}
+
+func TestServerServiceHandler_IsoDetach(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/iso_detach", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.IsoDetach(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.IsoDetach return %+v ", err)
+	}
+}
+
+func TestServerServiceHandler_IsoStatus(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/iso_status", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"state": "ready","ISOID": "12345"}`
+		fmt.Fprint(writer, response)
+	})
+
+	isoStatus, err := client.Server.IsoStatus(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.IsoStatus return %+v ", err)
+	}
+
+	expected := &ServerIso{State: "ready", IsoID: "12345"}
+
+
+	if !reflect.DeepEqual(isoStatus, expected) {
+		t.Errorf("Server.IsoStatus returned %+v, expected %+v", isoStatus, expected)
+	}
+}
