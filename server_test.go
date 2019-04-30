@@ -321,7 +321,7 @@ func TestServerServiceHandler_UpgradePlan(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/server/upgrade_plans", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v1/server/upgrade_plan", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
@@ -374,5 +374,58 @@ func TestServerServiceHandler_ChangeOS(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("Server.ChangeOS return %+v ", err)
+	}
+}
+
+func TestServerServiceHandler_IsoAttach(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/iso_attach", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.IsoAttach(ctx, "1234", "1")
+
+	if err != nil {
+		t.Errorf("Server.IsoAttach return %+v ", err)
+	}
+}
+
+func TestServerServiceHandler_IsoDetach(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/iso_detach", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.IsoDetach(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.IsoDetach return %+v ", err)
+	}
+}
+
+func TestServerServiceHandler_IsoStatus(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/iso_status", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"state": "ready","ISOID": "12345"}`
+		fmt.Fprint(writer, response)
+	})
+
+	isoStatus, err := client.Server.IsoStatus(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.IsoStatus return %+v ", err)
+	}
+
+	expected := &ServerIso{State: "ready", IsoID: "12345"}
+
+
+	if !reflect.DeepEqual(isoStatus, expected) {
+		t.Errorf("Server.ListOS returned %+v, expected %+v", isoStatus, expected)
 	}
 }
