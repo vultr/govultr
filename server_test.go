@@ -294,3 +294,40 @@ func TestServerServiceHandler_ListPrivateNetworks(t *testing.T) {
 		t.Errorf("Server.ListPrivateNetworks returned %+v, expected %+v", privateNetwork, expected)
 	}
 }
+
+func TestServerServiceHandler_ListUpgradePlan(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/upgrade_plan_list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `[1, 2, 3, 4]`
+		fmt.Fprint(writer, response)
+	})
+
+	plans, err := client.Server.ListUpgradePlan(ctx, "123")
+
+	if err != nil {
+		t.Errorf("Server.ListUpgradePlan return %+v ", err)
+	}
+
+	expected := []int{1, 2, 3, 4}
+
+	if !reflect.DeepEqual(plans, expected) {
+		t.Errorf("Server.ListUpgradePlan returned %+v, expected %+v", plans, expected)
+	}
+}
+
+func TestServerServiceHandler_UpgradePlan(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/upgrade_plans", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.UpgradePlan(ctx, "12351", "123")
+
+	if err != nil {
+		t.Errorf("Server.UpgradePlan return %+v ", err)
+	}
+}
