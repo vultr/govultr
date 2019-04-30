@@ -10,6 +10,7 @@ import (
 // Link: https://www.vultr.com/api/#baremetal
 type BareMetalServerService interface {
 	Create(ctx context.Context, regionID, planID, osID string, options *BareMetalServerOptions) (*BareMetalServer, error)
+	Destroy(ctx context.Context, serverID string) error
 	GetList(ctx context.Context, serverID, tag, label, mainIP string) ([]BareMetalServer, error)
 	Halt(ctx context.Context, serverID string) error
 	Reboot(ctx context.Context, serverID string) error
@@ -127,6 +128,30 @@ func (b *BareMetalServerServiceHandler) Create(ctx context.Context, regionID, pl
 	}
 
 	return bm, nil
+}
+
+// Destroy (delete) a bare metal server.
+// All data will be permanently lost, and the IP address will be released. There is no going back from this call.
+func (b *BareMetalServerServiceHandler) Destroy(ctx context.Context, serverID string) error {
+	uri := "/v1/baremetal/destroy"
+
+	values := url.Values{
+		"SUBID": {serverID},
+	}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // GetList lists all bare metal servers on the current account. This includes both pending and active servers.

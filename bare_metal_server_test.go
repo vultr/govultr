@@ -47,6 +47,21 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 	}
 }
 
+func TestBareMetalServerServiceHandler_Destroy(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/destroy", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.BareMetalServer.Destroy(ctx, "900000")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.Destroy returned %+v, expected %+v", err, nil)
+	}
+}
+
 func TestBareMetalServerServiceHandler_GetList(t *testing.T) {
 	setup()
 	defer teardown()
