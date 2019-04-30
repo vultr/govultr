@@ -236,3 +236,61 @@ func TestServerServiceHandler_Neighbors(t *testing.T) {
 		t.Errorf("Server.Neighbors returned %+v, expected %+v", neighbors, expected)
 	}
 }
+
+func TestServerServiceHandler_EnablePrivateNetwork(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/private_network_enable", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.EnablePrivateNetwork(ctx, "1234", "45a31f4")
+
+	if err != nil {
+		t.Errorf("Server.EnablePrivateNetwork returned %+v, ", err)
+	}
+}
+
+func TestServerServiceHandler_DisablePrivateNetwork(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/private_network_disable", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.DisablePrivateNetwork(ctx, "1234", "45a31f4")
+
+	if err != nil {
+		t.Errorf("Server.DisablePrivateNetwork returned %+v, ", err)
+	}
+}
+
+func TestServerServiceHandler_ListPrivateNetworks(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/private_networks", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"net539626f0798d7": {"NETWORKID": "net539626f0798d7","mac_address": "5a:02:00:00:24:e9","ip_address": "10.99.0.3"}}`
+		fmt.Fprint(writer, response)
+	})
+
+	privateNetwork, err := client.Server.ListPrivateNetworks(ctx, "12345")
+
+	if err != nil {
+		t.Errorf("Server.ListPrivateNetworks return %+v, ", err)
+	}
+
+	expected := []PrivateNetwork{
+		{
+			NetworkID:  "net539626f0798d7",
+			MacAddress: "5a:02:00:00:24:e9",
+			IPAddress:  "10.99.0.3",
+		},
+	}
+
+	if !reflect.DeepEqual(privateNetwork, expected) {
+		t.Errorf("Server.ListPrivateNetworks returned %+v, expected %+v", privateNetwork, expected)
+	}
+}

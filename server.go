@@ -22,6 +22,9 @@ type ServerService interface {
 	SetLabel(ctx context.Context, vpsID, label string) error
 	SetTag(ctx context.Context, vpsID, tag string) error
 	Neighbors(ctx context.Context, vpsID string) ([]int, error)
+	EnablePrivateNetwork(ctx context.Context, vpsID, networkID string) error
+	DisablePrivateNetwork(ctx context.Context, vpsID, networkID string) error
+	ListPrivateNetworks(ctx context.Context, vpsID string) ([]PrivateNetwork, error)
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -42,6 +45,13 @@ type BackupSchedule struct {
 	Hour     int    `json:"hour"`
 	Dow      int    `json:"dow"`
 	Dom      int    `json:"dom"`
+}
+
+// PrivateNetwork represents a private network attached to a VPS
+type PrivateNetwork struct {
+	NetworkID  string `json:"NETWORKID"`
+	MacAddress string `json:"mac_address"`
+	IPAddress  string `json:"ip_address"`
 }
 
 // ChangeApp changes the VPS to a different application.
@@ -349,4 +359,87 @@ func (s *ServerServiceHandler) Neighbors(ctx context.Context, vpsID string) ([]i
 	}
 
 	return neighbors, nil
+}
+
+// EnablePrivateNetwork enables private networking on a server.
+// The server will be automatically rebooted to complete the request.
+// No action occurs if private networking was already enabled
+func (s *ServerServiceHandler) EnablePrivateNetwork(ctx context.Context, vpsID, networkID string) error {
+
+	uri := "/v1/server/private_network_enable"
+
+	values := url.Values{
+		"SUBID":     {vpsID},
+		"NETWORKID": {networkID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DisablePrivateNetwork removes a private network from a server.
+// The server will be automatically rebooted to complete the request.
+func (s *ServerServiceHandler) DisablePrivateNetwork(ctx context.Context, vpsID, networkID string) error {
+
+	uri := "/v1/server/private_network_disable"
+
+	values := url.Values{
+		"SUBID":     {vpsID},
+		"NETWORKID": {networkID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ListPrivateNetworks will list private networks attached to a vps
+func (s *ServerServiceHandler) ListPrivateNetworks(ctx context.Context, vpsID string) ([]PrivateNetwork, error) {
+
+	uri := "/v1/server/private_networks"
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", vpsID)
+	req.URL.RawQuery = q.Encode()
+
+	var networkMap map[string]PrivateNetwork
+	err = s.client.DoWithContext(ctx, req, &networkMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var privateNetworks []PrivateNetwork
+	for _, p := range networkMap {
+		privateNetworks = append(privateNetworks, p)
+	}
+
+	return privateNetworks, nil
 }
