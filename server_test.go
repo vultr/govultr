@@ -184,3 +184,55 @@ func TestServerServiceHandler_RestoreSnapshot(t *testing.T) {
 		t.Errorf("Server.RestoreSnapshot returned %+v, ", err)
 	}
 }
+
+func TestServerServiceHandler_SetLabel(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/label_set", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.SetLabel(ctx, "1234", "new-label")
+
+	if err != nil {
+		t.Errorf("Server.SetLabel returned %+v, ", err)
+	}
+}
+
+func TestServerServiceHandler_SetTag(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/tag_set", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.SetTag(ctx, "1234", "new-tag")
+
+	if err != nil {
+		t.Errorf("Server.SetTag returned %+v, ", err)
+	}
+}
+
+func TestServerServiceHandler_Neighbors(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/neighbors", func(writer http.ResponseWriter, request *http.Request) {
+		response := `[2345,1234]`
+		fmt.Fprint(writer, response)
+	})
+
+	neighbors, err := client.Server.Neighbors(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.Neighbors returned %+v, ", err)
+	}
+
+	expected := []int{2345, 1234}
+
+	if !reflect.DeepEqual(neighbors, expected) {
+		t.Errorf("Server.Neighbors returned %+v, expected %+v", neighbors, expected)
+	}
+}
