@@ -73,3 +73,114 @@ func TestServerServiceHandler_AppInfo(t *testing.T) {
 		t.Errorf("Server.AppInfo returned %+v, expected %+v", appInfo, expected)
 	}
 }
+
+func TestServerServiceHandler_EnableBackup(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/backup_enable", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.EnableBackup(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.EnableBackup returned %+v, ", err)
+	}
+}
+
+func TestServerServiceHandler_DisableBackup(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/backup_disable", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.DisableBackup(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.DisableBackup returned %+v, ", err)
+	}
+}
+
+func TestServerServiceHandler_GetBackupSchedule(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/backup_get_schedule", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{ "enabled": true,"cron_type": "weekly","next_scheduled_time_utc": "2016-05-07 08:00:00","hour": 8,"dow": 6,"dom": 0}`
+		fmt.Fprint(writer, response)
+	})
+
+	backup, err := client.Server.GetBackupSchedule(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.GetBackupSchedule returned %+v, ", err)
+	}
+
+	expected := &BackupSchedule{
+		Enabled:  true,
+		CronType: "weekly",
+		NextRun:  "2016-05-07 08:00:00",
+		Hour:     8,
+		Dow:      6,
+		Dom:      0,
+	}
+
+	if !reflect.DeepEqual(backup, expected) {
+		t.Errorf("Server.GetBackupSchedule returned %+v, expected %+v", backup, expected)
+	}
+}
+
+func TestServerServiceHandler_SetBackupSchedule(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/backup_set_schedule", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	bs := &BackupSchedule{
+		CronType: "",
+		Hour:     23,
+		Dow:      2,
+		Dom:      3,
+	}
+
+	err := client.Server.SetBackupSchedule(ctx, "1234", bs)
+
+	if err != nil {
+		t.Errorf("Server.SetBackupSchedule returned %+v, ", err)
+	}
+}
+
+func TestServerServiceHandler_RestoreBackup(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/restore_backup", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.RestoreBackup(ctx, "1234", "45a31f4")
+
+	if err != nil {
+		t.Errorf("Server.RestoreBackup returned %+v, ", err)
+	}
+}
+
+func TestServerServiceHandler_RestoreSnapshot(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/restore_snapshot", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.RestoreSnapshot(ctx, "1234", "45a31f4")
+
+	if err != nil {
+		t.Errorf("Server.RestoreSnapshot returned %+v, ", err)
+	}
+}
