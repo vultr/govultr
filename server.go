@@ -47,6 +47,11 @@ type ServerService interface {
 	DeleteReverseIPV6(ctx context.Context, vpsID, ip string) error
 	SetReverseIPV4(ctx context.Context, vpsID, ipv4, entry string) error
 	SetReverseIPV6(ctx context.Context, vpsID, ipv6, entry string) error
+	Start(ctx context.Context, vpsID string) error
+	Halt(ctx context.Context, vpsID string) error
+	Reboot(ctx context.Context, vpsID string) error
+	Reinstall(ctx context.Context, vpsID string) error
+	Destroy(ctx context.Context, vpsID string) error
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -1073,6 +1078,124 @@ func (s *ServerServiceHandler) SetReverseIPV6(ctx context.Context, vpsID, ipv6, 
 		"SUBID": {vpsID},
 		"ip":    {ipv6},
 		"entry": {entry},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Start will start a vps. If the machine is already running, it will be restarted.
+func (s *ServerServiceHandler) Start(ctx context.Context, vpsID string) error {
+	uri := "/v1/server/start"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Halt will halt a virtual machine. This is a hard power off
+func (s *ServerServiceHandler) Halt(ctx context.Context, vpsID string) error {
+
+	uri := "/v1/server/halt"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Reboot will reboot a VPS. This is a hard reboot
+func (s *ServerServiceHandler) Reboot(ctx context.Context, vpsID string) error {
+
+	uri := "/v1/server/reboot"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Reinstall will reinstall the operating system on a VPS.
+func (s *ServerServiceHandler) Reinstall(ctx context.Context, vpsID string) error {
+	uri := "/v1/server/reinstall"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Destroy will delete a VPS. All data will be permanently lost, and the IP address will be released
+func (s *ServerServiceHandler) Destroy(ctx context.Context, vpsID string) error {
+
+	uri := "/v1/server/destroy"
+
+	values := url.Values{
+		"SUBID": {vpsID},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)

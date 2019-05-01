@@ -692,3 +692,78 @@ func TestServerServiceHandler_SetReverseIPV6(t *testing.T) {
 		t.Errorf("Server.SetReverseIPV6 returned %+v", err)
 	}
 }
+
+func TestServerServiceHandler_Halt(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/halt", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.Halt(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.Halt returned %+v", err)
+	}
+}
+
+func TestServerServiceHandler_Start(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/start", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.Start(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.Start returned %+v", err)
+	}
+}
+
+func TestServerServiceHandler_Reboot(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/reboot", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.Reboot(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.Reboot returned %+v", err)
+	}
+}
+
+func TestServerServiceHandler_Reinstall(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/reinstall", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.Reinstall(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.Reinstall returned %+v", err)
+	}
+}
+
+func TestServerServiceHandler_Destroy(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/destroy", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.Destroy(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.Destroy returned %+v", err)
+	}
+}
