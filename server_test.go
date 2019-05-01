@@ -476,7 +476,135 @@ func TestServerServiceHandler_GetUserData(t *testing.T) {
 
 	expected := &UserData{UserData: "ZWNobyBIZWxsbyBXb3JsZA=="}
 
-	if !reflect.DeepEqual(userData, expected){
+	if !reflect.DeepEqual(userData, expected) {
 		t.Errorf("Server.GetUserData returned %+v, expected %+v", userData, expected)
+	}
+}
+
+func TestServerServiceHandler_IPV4Info(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/list_ipv4", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{ "576965": [{"ip": "123.123.123.123","netmask": "255.255.255.248","gateway": "123.123.123.1","type": "main_ip","reverse": "host1.example.com"}]}`
+		fmt.Fprint(writer, response)
+	})
+
+	ipv4, err := client.Server.IPV4Info(ctx, "1234", true)
+
+	if err != nil {
+		t.Errorf("Server.IPV4Info returned %+v", err)
+	}
+
+	expected := []IPV4{
+		{
+			IP:      "123.123.123.123",
+			Netmask: "255.255.255.248",
+			Gateway: "123.123.123.1",
+			Type:    "main_ip",
+			Reverse: "host1.example.com",
+		},
+	}
+
+	if !reflect.DeepEqual(ipv4, expected) {
+		t.Errorf("Server.IPV4Info returned %+v, expected %+v", ipv4, expected)
+	}
+}
+
+func TestServerServiceHandler_IPV6Info(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/list_ipv6", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"576965": [{"ip": "2001:DB8:1000::100","network": "2001:DB8:1000::","network_size": "64","type": "main_ip"}]}`
+		fmt.Fprint(writer, response)
+	})
+
+	ipv6, err := client.Server.IPV6Info(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.IPV6Info returned %+v", err)
+	}
+
+	expected := []IPV6{
+		{
+			IP:          "2001:DB8:1000::100",
+			Network:     "2001:DB8:1000::",
+			NetworkSize: "64",
+			Type:        "main_ip",
+		},
+	}
+
+	if !reflect.DeepEqual(ipv6, expected) {
+		t.Errorf("Server.IPV6Info returned %+v, expected %+v", ipv6, expected)
+	}
+}
+
+func TestServerServiceHandler_AddIPV4(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/create_ipv4", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.AddIPV4(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.AddIPV4 returned %+v", err)
+	}
+}
+
+func TestServerServiceHandler_DestroyIPV4(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/destroy_ipv4", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.DestroyIPV4(ctx, "1234", "192.168.0.1")
+
+	if err != nil {
+		t.Errorf("Server.DestroyIPV4 returned %+v", err)
+	}
+}
+
+func TestServerServiceHandler_EnableIPV6(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/ipv6_enable", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.EnableIPV6(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.EnableIPV6 returned %+v", err)
+	}
+}
+
+func TestServerServiceHandler_Bandwidth(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/bandwidth", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"incoming_bytes": [["2014-06-10","81072581"]],"outgoing_bytes": [["2014-06-10","4059610"]]}`
+		fmt.Fprint(writer, response)
+	})
+
+	bandwidth, err := client.Server.Bandwidth(ctx, "123")
+
+	if err != nil {
+		t.Errorf("Server.Bandwidth returned %+v", err)
+	}
+
+	expected := []map[string]string{
+		{"date": "2014-06-10", "incoming": "81072581", "outgoing": "4059610"},
+	}
+
+	if !reflect.DeepEqual(bandwidth, expected) {
+		t.Errorf("Server.Bandwidth returned %+v, expected %+v", bandwidth, expected)
 	}
 }
