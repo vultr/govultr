@@ -2,8 +2,11 @@ package govultr
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 // BareMetalServerService is the interface to interact with the bare metal endpoints on the Vultr API
@@ -11,7 +14,11 @@ import (
 type BareMetalServerService interface {
 	Create(ctx context.Context, regionID, planID, osID string, options *BareMetalServerOptions) (*BareMetalServer, error)
 	Destroy(ctx context.Context, serverID string) error
-	GetList(ctx context.Context, serverID, tag, label, mainIP string) ([]BareMetalServer, error)
+	GetList(ctx context.Context) ([]BareMetalServer, error)
+	GetListByLabel(ctx context.Context, label string) ([]BareMetalServer, error)
+	GetListByMainIP(ctx context.Context, mainIP string) ([]BareMetalServer, error)
+	GetListByTag(ctx context.Context, tag string) ([]BareMetalServer, error)
+	GetServer(ctx context.Context, serverID string) (*BareMetalServer, error)
 	Halt(ctx context.Context, serverID string) error
 	Reboot(ctx context.Context, serverID string) error
 	Reinstall(ctx context.Context, serverID string) error
@@ -31,7 +38,7 @@ type BareMetalServer struct {
 	MainIP            string      `json:"main_ip"`
 	CPUCount          int         `json:"cpu_count"`
 	Location          string      `json:"location"`
-	RegionID          string      `json:"DCID"`
+	RegionID          int         `json:"DCID"`
 	DefaultPassword   string      `json:"default_password"`
 	DateCreated       string      `json:"date_created"`
 	Status            string      `json:"status"`
@@ -49,7 +56,7 @@ type BareMetalServer struct {
 type V6Network struct {
 	Network     string `json:"v6_network"`
 	MainIP      string `json:"v6_main_ip"`
-	NetworkSize int    `json:"v6_network_size"`
+	NetworkSize string `json:"v6_network_size"`
 }
 
 // BareMetalServerOptions represents the optional parameters that can be set when creating a bare metal server
@@ -65,6 +72,92 @@ type BareMetalServerOptions struct {
 	Hostname        string
 	Tag             string
 	ReservedIPV4    string
+}
+
+// UnmarshalJSON implements a custom unmarshaler on BareMetalServer
+// This is done to help reduce data inconsistency with V1 of the Vultr API
+func (b *BareMetalServer) UnmarshalJSON(data []byte) error {
+	if b == nil {
+		*b = BareMetalServer{}
+	}
+
+	var v map[string]interface{}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+
+	cpu, err := b.unmarshalInt(fmt.Sprintf("%v", v["cpu_count"]))
+	if err != nil {
+		return err
+	}
+	b.CPUCount = cpu
+
+	region, err := b.unmarshalInt(fmt.Sprintf("%v", v["DCID"]))
+	if err != nil {
+		return err
+	}
+	b.RegionID = region
+
+	plan, err := b.unmarshalInt(fmt.Sprintf("%v", v["METALPLANID"]))
+	if err != nil {
+		return err
+	}
+	b.BareMetalPlanID = plan
+
+	b.OsID = b.unmarshalStr(fmt.Sprintf("%v", v["OSID"]))
+	b.AppID = b.unmarshalStr(fmt.Sprintf("%v", v["APPID"]))
+
+	b.BareMetalServerID = fmt.Sprintf("%v", v["SUBID"])
+	b.Os = fmt.Sprintf("%v", v["os"])
+	b.RAM = fmt.Sprintf("%v", v["ram"])
+	b.Label = fmt.Sprintf("%v", v["label"])
+	b.Disk = fmt.Sprintf("%v", v["disk"])
+	b.MainIP = fmt.Sprintf("%v", v["main_ip"])
+	b.Location = fmt.Sprintf("%v", v["location"])
+	b.DefaultPassword = fmt.Sprintf("%v", v["default_password"])
+	b.DateCreated = fmt.Sprintf("%v", v["date_created"])
+	b.Status = fmt.Sprintf("%v", v["status"])
+	b.NetmaskV4 = fmt.Sprintf("%v", v["netmask_v4"])
+	b.GatewayV4 = fmt.Sprintf("%v", v["gateway_v4"])
+	b.Tag = fmt.Sprintf("%v", v["tag"])
+
+	v6networks := make([]V6Network, 0)
+	if networks, ok := v["v6_networks"].([]interface{}); ok {
+		for _, network := range networks {
+			if network, ok := network.(map[string]interface{}); ok {
+				v6network := V6Network{
+					Network:     fmt.Sprintf("%v", network["v6_network"]),
+					MainIP:      fmt.Sprintf("%v", network["v6_main_ip"]),
+					NetworkSize: fmt.Sprintf("%v", network["v6_network_size"]),
+				}
+				v6networks = append(v6networks, v6network)
+			}
+		}
+		b.V6Networks = v6networks
+	}
+
+	return nil
+}
+
+func (b *BareMetalServer) unmarshalInt(value string) (int, error) {
+	if len(value) == 0 || value == "<nil>" {
+		value = "0"
+	}
+
+	v, err := strconv.Atoi(value)
+	if err != nil {
+		return 0, err
+	}
+
+	return v, nil
+}
+
+func (b *BareMetalServer) unmarshalStr(value string) string {
+	if value == "<nil>" {
+		value = ""
+	}
+
+	return value
 }
 
 // Create a new bare metal server.
@@ -155,30 +248,38 @@ func (b *BareMetalServerServiceHandler) Destroy(ctx context.Context, serverID st
 }
 
 // GetList lists all bare metal servers on the current account. This includes both pending and active servers.
-// If you need to filter the list, review the parameters for this function.
-// Currently, only one filter at a time may be applied (serverID, tag, label, mainIP).
-func (b *BareMetalServerServiceHandler) GetList(ctx context.Context, serverID, tag, label, mainIP string) ([]BareMetalServer, error) {
+func (b *BareMetalServerServiceHandler) GetList(ctx context.Context) ([]BareMetalServer, error) {
+	return b.getList(ctx, "", "")
+}
+
+// GetListByLabel lists all bare metal servers that match the given label on the current account. This includes both pending and active servers.
+func (b *BareMetalServerServiceHandler) GetListByLabel(ctx context.Context, label string) ([]BareMetalServer, error) {
+	return b.getList(ctx, "label", label)
+}
+
+// GetListByMainIP lists all bare metal servers that match the given IP address on the current account. This includes both pending and active servers.
+func (b *BareMetalServerServiceHandler) GetListByMainIP(ctx context.Context, mainIP string) ([]BareMetalServer, error) {
+	return b.getList(ctx, "main_ip", mainIP)
+}
+
+// GetListByTag lists all bare metal servers that match the given tag on the current account. This includes both pending and active servers.
+func (b *BareMetalServerServiceHandler) GetListByTag(ctx context.Context, tag string) ([]BareMetalServer, error) {
+	return b.getList(ctx, "tag", tag)
+}
+
+func (b *BareMetalServerServiceHandler) getList(ctx context.Context, key, value string) ([]BareMetalServer, error) {
 	uri := "/v1/baremetal/list"
 
-	values := url.Values{}
-
-	if serverID != "" {
-		values.Add("SUBID", serverID)
-	}
-	if tag != "" {
-		values.Add("tag", tag)
-	}
-	if label != "" {
-		values.Add("label", label)
-	}
-	if mainIP != "" {
-		values.Add("main_ip", mainIP)
-	}
-
-	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, values)
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 
 	if err != nil {
 		return nil, err
+	}
+
+	if key != "" {
+		q := req.URL.Query()
+		q.Add(key, value)
+		req.URL.RawQuery = q.Encode()
 	}
 
 	bmsMap := make(map[string]BareMetalServer)
@@ -190,6 +291,29 @@ func (b *BareMetalServerServiceHandler) GetList(ctx context.Context, serverID, t
 	var bms []BareMetalServer
 	for _, bm := range bmsMap {
 		bms = append(bms, bm)
+	}
+
+	return bms, nil
+}
+
+// GetServer gets the server with the given ID
+func (b *BareMetalServerServiceHandler) GetServer(ctx context.Context, serverID string) (*BareMetalServer, error) {
+	uri := "/v1/baremetal/list"
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", serverID)
+	req.URL.RawQuery = q.Encode()
+
+	bms := new(BareMetalServer)
+	err = b.client.DoWithContext(ctx, req, bms)
+	if err != nil {
+		return nil, err
 	}
 
 	return bms, nil

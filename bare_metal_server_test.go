@@ -101,7 +101,7 @@ func TestBareMetalServerServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bm, err := client.BareMetalServer.GetList(ctx, "900000", "my tag", "my label", "203.0.113.10")
+	bm, err := client.BareMetalServer.GetList(ctx)
 
 	if err != nil {
 		t.Errorf("BareMetalServer.GetList returned error: %v", err)
@@ -116,7 +116,7 @@ func TestBareMetalServerServiceHandler_GetList(t *testing.T) {
 			MainIP:            "203.0.113.10",
 			CPUCount:          1,
 			Location:          "New Jersey",
-			RegionID:          "1",
+			RegionID:          1,
 			DefaultPassword:   "ab81u!ryranq",
 			DateCreated:       "2017-04-12 18:45:41",
 			Status:            "active",
@@ -127,7 +127,7 @@ func TestBareMetalServerServiceHandler_GetList(t *testing.T) {
 				{
 					Network:     "2001:DB8:9000::",
 					MainIP:      "2001:DB8:9000::100",
-					NetworkSize: 64,
+					NetworkSize: "64",
 				},
 			},
 			Label: "my label",
@@ -138,7 +138,323 @@ func TestBareMetalServerServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(bm, expected) {
-		t.Errorf("BareMetalServer.Get returned %+v, expected %+v", bm, expected)
+		t.Errorf("BareMetalServer.GetList returned %+v, expected %+v", bm, expected)
+	}
+}
+
+func TestBareMetalServerServiceHandler_GetListByLabel(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+			{
+				"900000": {
+					"SUBID": "900000",
+					"os": "CentOS 6 x64",
+					"ram": "65536 MB",
+					"disk": "2x 240 GB SSD",
+					"main_ip": "203.0.113.10",
+					"cpu_count": 1,
+					"location": "New Jersey",
+					"DCID": "1",
+					"default_password": "ab81u!ryranq",
+					"date_created": "2017-04-12 18:45:41",
+					"status": "active",
+					"netmask_v4": "255.255.255.0",
+					"gateway_v4": "203.0.113.1",
+					"METALPLANID": 28,
+					"v6_networks": [
+						{
+							"v6_network": "2001:DB8:9000::",
+							"v6_main_ip": "2001:DB8:9000::100",
+							"v6_network_size": 64
+						}
+					],
+					"label": "my label",
+					"tag": "my tag",
+					"OSID": "127",
+					"APPID": "0"
+				}
+			}
+		`
+		fmt.Fprint(writer, response)
+	})
+
+	bm, err := client.BareMetalServer.GetListByLabel(ctx, "my label")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.GetListByLabel returned error: %v", err)
+	}
+
+	expected := []BareMetalServer{
+		{
+			BareMetalServerID: "900000",
+			Os:                "CentOS 6 x64",
+			RAM:               "65536 MB",
+			Disk:              "2x 240 GB SSD",
+			MainIP:            "203.0.113.10",
+			CPUCount:          1,
+			Location:          "New Jersey",
+			RegionID:          1,
+			DefaultPassword:   "ab81u!ryranq",
+			DateCreated:       "2017-04-12 18:45:41",
+			Status:            "active",
+			NetmaskV4:         "255.255.255.0",
+			GatewayV4:         "203.0.113.1",
+			BareMetalPlanID:   28,
+			V6Networks: []V6Network{
+				{
+					Network:     "2001:DB8:9000::",
+					MainIP:      "2001:DB8:9000::100",
+					NetworkSize: "64",
+				},
+			},
+			Label: "my label",
+			Tag:   "my tag",
+			OsID:  "127",
+			AppID: "0",
+		},
+	}
+
+	if !reflect.DeepEqual(bm, expected) {
+		t.Errorf("BareMetalServer.GetListByLabel returned %+v, expected %+v", bm, expected)
+	}
+}
+
+func TestBareMetalServerServiceHandler_GetListByMainIP(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+			{
+				"900000": {
+					"SUBID": "900000",
+					"os": "CentOS 6 x64",
+					"ram": "65536 MB",
+					"disk": "2x 240 GB SSD",
+					"main_ip": "203.0.113.10",
+					"cpu_count": 1,
+					"location": "New Jersey",
+					"DCID": "1",
+					"default_password": "ab81u!ryranq",
+					"date_created": "2017-04-12 18:45:41",
+					"status": "active",
+					"netmask_v4": "255.255.255.0",
+					"gateway_v4": "203.0.113.1",
+					"METALPLANID": 28,
+					"v6_networks": [
+						{
+							"v6_network": "2001:DB8:9000::",
+							"v6_main_ip": "2001:DB8:9000::100",
+							"v6_network_size": 64
+						}
+					],
+					"label": "my label",
+					"tag": "my tag",
+					"OSID": "127",
+					"APPID": "0"
+				}
+			}
+		`
+		fmt.Fprint(writer, response)
+	})
+
+	bm, err := client.BareMetalServer.GetListByMainIP(ctx, "203.0.113.10")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.GetListByMainIP returned error: %v", err)
+	}
+
+	expected := []BareMetalServer{
+		{
+			BareMetalServerID: "900000",
+			Os:                "CentOS 6 x64",
+			RAM:               "65536 MB",
+			Disk:              "2x 240 GB SSD",
+			MainIP:            "203.0.113.10",
+			CPUCount:          1,
+			Location:          "New Jersey",
+			RegionID:          1,
+			DefaultPassword:   "ab81u!ryranq",
+			DateCreated:       "2017-04-12 18:45:41",
+			Status:            "active",
+			NetmaskV4:         "255.255.255.0",
+			GatewayV4:         "203.0.113.1",
+			BareMetalPlanID:   28,
+			V6Networks: []V6Network{
+				{
+					Network:     "2001:DB8:9000::",
+					MainIP:      "2001:DB8:9000::100",
+					NetworkSize: "64",
+				},
+			},
+			Label: "my label",
+			Tag:   "my tag",
+			OsID:  "127",
+			AppID: "0",
+		},
+	}
+
+	if !reflect.DeepEqual(bm, expected) {
+		t.Errorf("BareMetalServer.GetListByMainIP returned %+v, expected %+v", bm, expected)
+	}
+}
+
+func TestBareMetalServerServiceHandler_GetListByTag(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+			{
+				"900000": {
+					"SUBID": "900000",
+					"os": "CentOS 6 x64",
+					"ram": "65536 MB",
+					"disk": "2x 240 GB SSD",
+					"main_ip": "203.0.113.10",
+					"cpu_count": 1,
+					"location": "New Jersey",
+					"DCID": "1",
+					"default_password": "ab81u!ryranq",
+					"date_created": "2017-04-12 18:45:41",
+					"status": "active",
+					"netmask_v4": "255.255.255.0",
+					"gateway_v4": "203.0.113.1",
+					"METALPLANID": 28,
+					"v6_networks": [
+						{
+							"v6_network": "2001:DB8:9000::",
+							"v6_main_ip": "2001:DB8:9000::100",
+							"v6_network_size": 64
+						}
+					],
+					"label": "my label",
+					"tag": "my tag",
+					"OSID": "127",
+					"APPID": "0"
+				}
+			}
+		`
+		fmt.Fprint(writer, response)
+	})
+
+	bm, err := client.BareMetalServer.GetListByTag(ctx, "my tag")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.GetListByTag returned error: %v", err)
+	}
+
+	expected := []BareMetalServer{
+		{
+			BareMetalServerID: "900000",
+			Os:                "CentOS 6 x64",
+			RAM:               "65536 MB",
+			Disk:              "2x 240 GB SSD",
+			MainIP:            "203.0.113.10",
+			CPUCount:          1,
+			Location:          "New Jersey",
+			RegionID:          1,
+			DefaultPassword:   "ab81u!ryranq",
+			DateCreated:       "2017-04-12 18:45:41",
+			Status:            "active",
+			NetmaskV4:         "255.255.255.0",
+			GatewayV4:         "203.0.113.1",
+			BareMetalPlanID:   28,
+			V6Networks: []V6Network{
+				{
+					Network:     "2001:DB8:9000::",
+					MainIP:      "2001:DB8:9000::100",
+					NetworkSize: "64",
+				},
+			},
+			Label: "my label",
+			Tag:   "my tag",
+			OsID:  "127",
+			AppID: "0",
+		},
+	}
+
+	if !reflect.DeepEqual(bm, expected) {
+		t.Errorf("BareMetalServer.GetListByTag returned %+v, expected %+v", bm, expected)
+	}
+}
+
+func TestBareMetalServerServiceHandler_GetServer(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+			{
+				"SUBID": "900000",
+				"os": "CentOS 6 x64",
+				"ram": "65536 MB",
+				"disk": "2x 240 GB SSD",
+				"main_ip": "203.0.113.10",
+				"cpu_count": 1,
+				"location": "New Jersey",
+				"DCID": "1",
+				"default_password": "ab81u!ryranq",
+				"date_created": "2017-04-12 18:45:41",
+				"status": "active",
+				"netmask_v4": "255.255.255.0",
+				"gateway_v4": "203.0.113.1",
+				"METALPLANID": 28,
+				"v6_networks": [
+					{
+						"v6_network": "2001:DB8:9000::",
+						"v6_main_ip": "2001:DB8:9000::100",
+						"v6_network_size": 64
+					}
+				],
+				"label": "my label",
+				"tag": "my tag",
+				"OSID": "127",
+				"APPID": "0"
+			}
+		`
+		fmt.Fprint(writer, response)
+	})
+
+	bm, err := client.BareMetalServer.GetServer(ctx, "900000")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.GetServer returned error: %v", err)
+	}
+
+	expected := &BareMetalServer{
+		BareMetalServerID: "900000",
+		Os:                "CentOS 6 x64",
+		RAM:               "65536 MB",
+		Disk:              "2x 240 GB SSD",
+		MainIP:            "203.0.113.10",
+		CPUCount:          1,
+		Location:          "New Jersey",
+		RegionID:          1,
+		DefaultPassword:   "ab81u!ryranq",
+		DateCreated:       "2017-04-12 18:45:41",
+		Status:            "active",
+		NetmaskV4:         "255.255.255.0",
+		GatewayV4:         "203.0.113.1",
+		BareMetalPlanID:   28,
+		V6Networks: []V6Network{
+			{
+				Network:     "2001:DB8:9000::",
+				MainIP:      "2001:DB8:9000::100",
+				NetworkSize: "64",
+			},
+		},
+		Label: "my label",
+		Tag:   "my tag",
+		OsID:  "127",
+		AppID: "0",
+	}
+
+	if !reflect.DeepEqual(bm, expected) {
+		t.Errorf("BareMetalServer.GetServer returned %+v, expected %+v", bm, expected)
 	}
 }
 
