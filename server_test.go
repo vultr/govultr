@@ -608,3 +608,87 @@ func TestServerServiceHandler_Bandwidth(t *testing.T) {
 		t.Errorf("Server.Bandwidth returned %+v, expected %+v", bandwidth, expected)
 	}
 }
+
+func TestServerServiceHandler_ListReverseIPV6(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/reverse_list_ipv6", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"576965": [{"ip": "2001:DB8:1000::101","reverse": "host1.example.com"}]}`
+		fmt.Fprint(writer, response)
+	})
+
+	reverseIPV6, err := client.Server.ListReverseIPV6(ctx, "123890")
+
+	if err != nil {
+		t.Errorf("Server.ListReverseIPV6 returned error: %v", err)
+	}
+
+	expected := []ReverseIPV6{
+		{IP: "2001:DB8:1000::101", Reverse: "host1.example.com"},
+	}
+
+	if !reflect.DeepEqual(reverseIPV6, expected) {
+		t.Errorf("Server.ListReverseIPV6returned %+v, expected %+v", reverseIPV6, expected)
+	}
+}
+
+func TestServerServiceHandler_SetDefaultReverseIPV4(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/reverse_default_ipv4", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.SetDefaultReverseIPV4(ctx, "1234", "129.123.123.1")
+
+	if err != nil {
+		t.Errorf("Server.SetDefaultReverseIPV4 returned %+v", err)
+	}
+}
+
+func TestServerServiceHandler_DeleteReverseIPV6(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/reverse_delete_ipv6", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.DeleteReverseIPV6(ctx, "1234", "2001:19f0:8001:1480:5400:2ff:fe00:8228")
+
+	if err != nil {
+		t.Errorf("Server.DeleteReverseIPV6 returned %+v", err)
+	}
+}
+
+func TestServerServiceHandler_SetReverseIPV4(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/reverse_set_ipv4", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.SetReverseIPV4(ctx, "1234", "192.168.0.1", "test.com")
+
+	if err != nil {
+		t.Errorf("Server.SetReverseIPV4 returned %+v", err)
+	}
+}
+
+func TestServerServiceHandler_SetReverseIPV6(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/reverse_set_ipv6", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.SetReverseIPV6(ctx, "1234", "2001:19f0:8001:1480:5400:2ff:fe00:8228", "test.com")
+
+	if err != nil {
+		t.Errorf("Server.SetReverseIPV6 returned %+v", err)
+	}
+}

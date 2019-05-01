@@ -42,6 +42,11 @@ type ServerService interface {
 	DestroyIPV4(ctx context.Context, vpsID, ip string) error
 	EnableIPV6(ctx context.Context, vpsID string) error
 	Bandwidth(ctx context.Context, vpsID string) ([]map[string]string, error)
+	ListReverseIPV6(ctx context.Context, vpsID string) ([]ReverseIPV6, error)
+	SetDefaultReverseIPV4(ctx context.Context, vpsID, ip string) error
+	DeleteReverseIPV6(ctx context.Context, vpsID, ip string) error
+	SetReverseIPV4(ctx context.Context, vpsID, ipv4, entry string) error
+	SetReverseIPV6(ctx context.Context, vpsID, ipv6, entry string) error
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -97,6 +102,12 @@ type IPV6 struct {
 	Network     string `json:"network"`
 	NetworkSize string `json:"network_size"`
 	Type        string `json:"type"`
+}
+
+// ReverseIPV6 represents IPV6 reverse DNS entries
+type ReverseIPV6 struct {
+	IP      string `json:"ip"`
+	Reverse string `json:"reverse"`
 }
 
 // ChangeApp changes the VPS to a different application.
@@ -933,4 +944,148 @@ func (s *ServerServiceHandler) Bandwidth(ctx context.Context, vpsID string) ([]m
 	}
 
 	return bandwidth, nil
+}
+
+// ListReverseIPV6 List the IPv6 reverse DNS entries of a virtual machine.
+// Reverse DNS entries are only available for virtual machines in the "active" state.
+// If the virtual machine does not have IPv6 enabled, then an empty array is returned.
+func (s *ServerServiceHandler) ListReverseIPV6(ctx context.Context, vpsID string) ([]ReverseIPV6, error) {
+
+	uri := "/v1/server/reverse_list_ipv6"
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", vpsID)
+	req.URL.RawQuery = q.Encode()
+
+	var reverseMap map[string][]ReverseIPV6
+	err = s.client.DoWithContext(ctx, req, &reverseMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var reverseIPV6 []ReverseIPV6
+	for _, r := range reverseMap {
+
+		if len(r) == 0 {
+			break
+		}
+
+		for _, i := range r {
+			reverseIPV6 = append(reverseIPV6, i)
+		}
+	}
+
+	return reverseIPV6, nil
+}
+
+// SetDefaultReverseIPV4 will set a reverse DNS entry for an IPv4 address of a virtual machine to the original setting.
+// Upon success, DNS changes may take 6-12 hours to become active.
+func (s *ServerServiceHandler) SetDefaultReverseIPV4(ctx context.Context, vpsID, ip string) error {
+
+	uri := "/v1/server/reverse_default_ipv4"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+		"ip":    {ip},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DeleteReverseIPV6 Remove a reverse DNS entry for an IPv6 address of a VPS.
+// Upon success, DNS changes may take 6-12 hours to become active.
+func (s *ServerServiceHandler) DeleteReverseIPV6(ctx context.Context, vpsID, ip string) error {
+
+	uri := "/v1/server/reverse_delete_ipv6"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+		"ip":    {ip},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SetReverseIPV4 will set a reverse DNS entry for an IPv4 address of a virtual machine.
+// Upon success, DNS changes may take 6-12 hours to become active.
+func (s *ServerServiceHandler) SetReverseIPV4(ctx context.Context, vpsID, ipv4, entry string) error {
+
+	uri := "/v1/server/reverse_set_ipv4"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+		"ip":    {ipv4},
+		"entry": {entry},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SetReverseIPV6 will set a reverse DNS entry for an IPv4 address of a virtual machine.
+// Upon success, DNS changes may take 6-12 hours to become active.
+func (s *ServerServiceHandler) SetReverseIPV6(ctx context.Context, vpsID, ipv6, entry string) error {
+	uri := "/v1/server/reverse_set_ipv6"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+		"ip":    {ipv6},
+		"entry": {entry},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
