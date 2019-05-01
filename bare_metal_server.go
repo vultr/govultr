@@ -12,6 +12,8 @@ import (
 // BareMetalServerService is the interface to interact with the bare metal endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#baremetal
 type BareMetalServerService interface {
+	AppInfo(ctx context.Context, serverID string) (*BareMetalServerAppInfo, error)
+	Bandwidth(ctx context.Context, serverID string) ([]map[string]string, error)
 	Create(ctx context.Context, regionID, planID, osID string, options *BareMetalServerOptions) (*BareMetalServer, error)
 	Destroy(ctx context.Context, serverID string) error
 	GetList(ctx context.Context) ([]BareMetalServer, error)
@@ -19,6 +21,7 @@ type BareMetalServerService interface {
 	GetListByMainIP(ctx context.Context, mainIP string) ([]BareMetalServer, error)
 	GetListByTag(ctx context.Context, tag string) ([]BareMetalServer, error)
 	GetServer(ctx context.Context, serverID string) (*BareMetalServer, error)
+	GetUserData(ctx context.Context, serverID string) (*BareMetalServerUserData, error)
 	Halt(ctx context.Context, serverID string) error
 	Reboot(ctx context.Context, serverID string) error
 	Reinstall(ctx context.Context, serverID string) error
@@ -74,6 +77,16 @@ type BareMetalServerOptions struct {
 	ReservedIPV4    string
 }
 
+// BareMetalServerAppInfo represents information about the application on your bare metal server
+type BareMetalServerAppInfo struct {
+	AppInfo string `json:"app_info"`
+}
+
+// BareMetalServerUserData represents the user data you can give a bare metal server
+type BareMetalServerUserData struct {
+	UserData string `json:"userdata"`
+}
+
 // UnmarshalJSON implements a custom unmarshaler on BareMetalServer
 // This is done to help reduce data inconsistency with V1 of the Vultr API
 func (b *BareMetalServer) UnmarshalJSON(data []byte) error {
@@ -104,22 +117,21 @@ func (b *BareMetalServer) UnmarshalJSON(data []byte) error {
 	}
 	b.BareMetalPlanID = plan
 
+	b.BareMetalServerID = b.unmarshalStr(fmt.Sprintf("%v", v["SUBID"]))
+	b.Os = b.unmarshalStr(fmt.Sprintf("%v", v["os"]))
+	b.RAM = b.unmarshalStr(fmt.Sprintf("%v", v["ram"]))
+	b.Label = b.unmarshalStr(fmt.Sprintf("%v", v["label"]))
+	b.Disk = b.unmarshalStr(fmt.Sprintf("%v", v["disk"]))
+	b.MainIP = b.unmarshalStr(fmt.Sprintf("%v", v["main_ip"]))
+	b.Location = b.unmarshalStr(fmt.Sprintf("%v", v["location"]))
+	b.DefaultPassword = b.unmarshalStr(fmt.Sprintf("%v", v["default_password"]))
+	b.DateCreated = b.unmarshalStr(fmt.Sprintf("%v", v["date_created"]))
+	b.Status = b.unmarshalStr(fmt.Sprintf("%v", v["status"]))
+	b.NetmaskV4 = b.unmarshalStr(fmt.Sprintf("%v", v["netmask_v4"]))
+	b.GatewayV4 = b.unmarshalStr(fmt.Sprintf("%v", v["gateway_v4"]))
+	b.Tag = b.unmarshalStr(fmt.Sprintf("%v", v["tag"]))
 	b.OsID = b.unmarshalStr(fmt.Sprintf("%v", v["OSID"]))
 	b.AppID = b.unmarshalStr(fmt.Sprintf("%v", v["APPID"]))
-
-	b.BareMetalServerID = fmt.Sprintf("%v", v["SUBID"])
-	b.Os = fmt.Sprintf("%v", v["os"])
-	b.RAM = fmt.Sprintf("%v", v["ram"])
-	b.Label = fmt.Sprintf("%v", v["label"])
-	b.Disk = fmt.Sprintf("%v", v["disk"])
-	b.MainIP = fmt.Sprintf("%v", v["main_ip"])
-	b.Location = fmt.Sprintf("%v", v["location"])
-	b.DefaultPassword = fmt.Sprintf("%v", v["default_password"])
-	b.DateCreated = fmt.Sprintf("%v", v["date_created"])
-	b.Status = fmt.Sprintf("%v", v["status"])
-	b.NetmaskV4 = fmt.Sprintf("%v", v["netmask_v4"])
-	b.GatewayV4 = fmt.Sprintf("%v", v["gateway_v4"])
-	b.Tag = fmt.Sprintf("%v", v["tag"])
 
 	v6networks := make([]V6Network, 0)
 	if networks, ok := v["v6_networks"].([]interface{}); ok {
@@ -159,6 +171,32 @@ func (b *BareMetalServer) unmarshalStr(value string) string {
 
 	return value
 }
+
+// AppInfo retrieves the application information for a given server ID
+func (b *BareMetalServerServiceHandler) AppInfo(ctx context.Context, serverID string) (*BareMetalServerAppInfo, error) {
+	uri := "/v1/baremetal/get_app_info"
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", serverID)
+	req.URL.RawQuery = q.Encode()
+
+	appInfo := new(BareMetalServerAppInfo)
+
+	err = b.client.DoWithContext(ctx, req, appInfo)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return appInfo, nil
+}
+
 
 // Create a new bare metal server.
 func (b *BareMetalServerServiceHandler) Create(ctx context.Context, regionID, planID, osID string, options *BareMetalServerOptions) (*BareMetalServer, error) {
@@ -222,6 +260,63 @@ func (b *BareMetalServerServiceHandler) Create(ctx context.Context, regionID, pl
 
 	return bm, nil
 }
+
+// Bandwidth will get the bandwidth used by a bare metal server
+func (b *BareMetalServerServiceHandler) Bandwidth(ctx context.Context, serverID string) ([]map[string]string, error) {
+	uri := "/v1/baremetal/bandwidth"
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", serverID)
+	req.URL.RawQuery = q.Encode()
+
+	var bandwidthMap map[string][][]interface{}
+	err = b.client.DoWithContext(ctx, req, &bandwidthMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var bandwidth []map[string]string
+
+	for _, b := range bandwidthMap["incoming_bytes"] {
+		inMap := make(map[string]string)
+		inMap["date"] = fmt.Sprintf("%v", b[0])
+		var bytes int64
+		switch b[1].(type) {
+		case float64:
+			bytes = int64(b[1].(float64))
+		case int64:
+			bytes = b[1].(int64)
+		}
+		inMap["incoming"] = fmt.Sprintf("%v", bytes)
+		bandwidth = append(bandwidth, inMap)
+	}
+
+	for _, b := range bandwidthMap["outgoing_bytes"] {
+		for i := range bandwidth {
+			if bandwidth[i]["date"] == b[0] {
+				var bytes int64
+				switch b[1].(type) {
+				case float64:
+					bytes = int64(b[1].(float64))
+				case int64:
+					bytes = b[1].(int64)
+				}
+				bandwidth[i]["outgoing"] = fmt.Sprintf("%v", bytes)
+				break
+			}
+		}
+	}
+
+	return bandwidth, nil
+}
+
 
 // Destroy (delete) a bare metal server.
 // All data will be permanently lost, and the IP address will be released. There is no going back from this call.
@@ -317,6 +412,30 @@ func (b *BareMetalServerServiceHandler) GetServer(ctx context.Context, serverID 
 	}
 
 	return bms, nil
+}
+
+// GetUserData retrieves the (base64 encoded) user-data for this bare metal server
+func (b *BareMetalServerServiceHandler) GetUserData(ctx context.Context, serverID string) (*BareMetalServerUserData, error) {
+	uri := "/v1/baremetal/get_user_data"
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", serverID)
+	req.URL.RawQuery = q.Encode()
+
+	userData := new(BareMetalServerUserData)
+	err = b.client.DoWithContext(ctx, req, userData)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return userData, nil
 }
 
 // Halt a bare metal server.

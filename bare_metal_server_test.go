@@ -7,6 +7,34 @@ import (
 	"testing"
 )
 
+func TestBareMetalServerServiceHandler_AppInfo(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/get_app_info", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+		{
+			"app_info": "Minecraft Server Details\n\nYour Minecraft server is accessible at: \n\n45.74.196.185:25565\n\nYou can access the console of your Minecraft server by using the \"screen\" utility from the following login:\nUser: minecraft\nPass: NXwdsdZjwJasdZbsc\n\nRead more about this app on Vultr Docs: \n\nhttps://www.vultr.com/docs/one-click-minecraft\n"
+		}
+		`
+		fmt.Fprint(writer, response)
+	})
+
+	appInfo, err := client.BareMetalServer.AppInfo(ctx, "900000")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.AppInfo returned error: %v", err)
+	}
+
+	expected := &BareMetalServerAppInfo{
+		AppInfo: "Minecraft Server Details\n\nYour Minecraft server is accessible at: \n\n45.74.196.185:25565\n\nYou can access the console of your Minecraft server by using the \"screen\" utility from the following login:\nUser: minecraft\nPass: NXwdsdZjwJasdZbsc\n\nRead more about this app on Vultr Docs: \n\nhttps://www.vultr.com/docs/one-click-minecraft\n",
+	}
+
+	if !reflect.DeepEqual(appInfo, expected) {
+		t.Errorf("BareMetalServer.AppInfo returned %+v, expected %+v", appInfo, expected)
+	}
+}
+
 func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
@@ -46,6 +74,64 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 		t.Errorf("BareMetalServer.Create returned %+v, expected %+v", bm, expected)
 	}
 }
+
+func TestBareMetalServerServiceHandler_Bandwidth(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/bandwidth", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+		{
+			"incoming_bytes": [
+				[
+					"2017-04-01",
+					91571055
+				],
+				[
+					"2017-04-02",
+					78355758
+				],
+				[
+					"2017-04-03",
+					85827590
+				]
+			],
+			"outgoing_bytes": [
+				[
+					"2017-04-01",
+					3084731
+				],
+				[
+					"2017-04-02",
+					1810478
+				],
+				[
+					"2017-04-03",
+					2729604
+				]
+			]
+		}
+		`
+		fmt.Fprint(writer, response)
+	})
+
+	bandwidth, err := client.BareMetalServer.Bandwidth(ctx, "123")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.Bandwidth returned %+v", err)
+	}
+
+	expected := []map[string]string{
+		{"date": "2017-04-01", "incoming": "91571055", "outgoing": "3084731"},
+		{"date": "2017-04-02", "incoming": "78355758", "outgoing": "1810478"},
+		{"date": "2017-04-03", "incoming": "85827590", "outgoing": "2729604"},
+	}
+
+	if !reflect.DeepEqual(bandwidth, expected) {
+		t.Errorf("BareMetalServer.Bandwidth returned %+v, expected %+v", bandwidth, expected)
+	}
+}
+
 
 func TestBareMetalServerServiceHandler_Destroy(t *testing.T) {
 	setup()
@@ -457,6 +543,29 @@ func TestBareMetalServerServiceHandler_GetServer(t *testing.T) {
 		t.Errorf("BareMetalServer.GetServer returned %+v, expected %+v", bm, expected)
 	}
 }
+
+func TestBareMetalServerServiceHandler_GetUserData(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/get_user_data", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"userdata": "ZWNobyBIZWxsbyBXb3JsZA=="}`
+		fmt.Fprint(writer, response)
+	})
+
+	userData, err := client.BareMetalServer.GetUserData(ctx, "900000")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.GetUserData return %+v ", err)
+	}
+
+	expected := &BareMetalServerUserData{UserData: "ZWNobyBIZWxsbyBXb3JsZA=="}
+
+	if !reflect.DeepEqual(userData, expected) {
+		t.Errorf("BareMetalServer.GetUserData returned %+v, expected %+v", userData, expected)
+	}
+}
+
 
 func TestBareMetalServerServiceHandler_Halt(t *testing.T) {
 	setup()
