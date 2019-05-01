@@ -36,6 +36,12 @@ type ServerService interface {
 	SetFirewallGroup(ctx context.Context, vpsID, firewallGroupID string) error
 	GetUserData(ctx context.Context, vpsID string) (*UserData, error)
 	SetUserData(ctx context.Context, vpsID, userData string) error
+	IPV4Info(ctx context.Context, vpsID string, public bool) ([]IPV4, error)
+	IPV6Info(ctx context.Context, vpsID string) ([]IPV6, error)
+	AddIPV4(ctx context.Context, vpsID string) error
+	DestroyIPV4(ctx context.Context, vpsID, ip string) error
+	EnableIPV6(ctx context.Context, vpsID string) error
+	Bandwidth(ctx context.Context, vpsID string) ([]map[string]string, error)
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -74,6 +80,23 @@ type ServerIso struct {
 // UserData represents the user data you can give a VPS
 type UserData struct {
 	UserData string `json:"userdata"`
+}
+
+// IPV4 represents IPV4 information for a VPS
+type IPV4 struct {
+	IP      string `json:"ip"`
+	Netmask string `json:"netmask"`
+	Gateway string `json:"gateway"`
+	Type    string `json:"type"`
+	Reverse string `json:"reverse"`
+}
+
+// IPV6 represents IPV6 information for a VPS
+type IPV6 struct {
+	IP          string `json:"ip"`
+	Network     string `json:"network"`
+	NetworkSize string `json:"network_size"`
+	Type        string `json:"type"`
 }
 
 // ChangeApp changes the VPS to a different application.
@@ -727,4 +750,187 @@ func (s *ServerServiceHandler) GetUserData(ctx context.Context, vpsID string) (*
 	}
 
 	return userData, nil
+}
+
+// IPV4Info will list the IPv4 information of a virtual machine.
+// Public if set to 'true', includes information about the public network adapter (such as MAC address) with the "main_ip" entry.
+func (s *ServerServiceHandler) IPV4Info(ctx context.Context, vpsID string, public bool) ([]IPV4, error) {
+
+	uri := "/v1/server/list_ipv4"
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", vpsID)
+
+	if public == true {
+		q.Add("public_network", vpsID)
+	}
+
+	req.URL.RawQuery = q.Encode()
+
+	var ipMap map[string][]IPV4
+	err = s.client.DoWithContext(ctx, req, &ipMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var ipv4 []IPV4
+	for _, i := range ipMap {
+		ipv4 = i
+	}
+
+	return ipv4, nil
+}
+
+// IPV6Info will list the IPv6 information of a virtual machine.
+// If the virtual machine does not have IPv6 enabled, then an empty array is returned.
+func (s *ServerServiceHandler) IPV6Info(ctx context.Context, vpsID string) ([]IPV6, error) {
+	uri := "/v1/server/list_ipv6"
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", vpsID)
+	req.URL.RawQuery = q.Encode()
+
+	var ipMap map[string][]IPV6
+	err = s.client.DoWithContext(ctx, req, &ipMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var ipv6 []IPV6
+	for _, i := range ipMap {
+		ipv6 = i
+	}
+
+	return ipv6, nil
+}
+
+// AddIPV4 will add a new IPv4 address to a server.
+func (s *ServerServiceHandler) AddIPV4(ctx context.Context, vpsID string) error {
+
+	uri := "/v1/server/create_ipv4"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DestroyIPV4 removes a secondary IPv4 address from a server.
+// Your server will be hard-restarted. We suggest halting the machine gracefully before removing IPs.
+func (s *ServerServiceHandler) DestroyIPV4(ctx context.Context, vpsID, ip string) error {
+
+	uri := "/v1/server/destroy_ipv4"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+		"ip":    {ip},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// EnableIPV6 enables IPv6 networking on a server by assigning an IPv6 subnet to it.
+func (s *ServerServiceHandler) EnableIPV6(ctx context.Context, vpsID string) error {
+
+	uri := "/v1/server/ipv6_enable"
+
+	values := url.Values{
+		"SUBID": {vpsID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = s.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Bandwidth will get the bandwidth used by a VPS
+func (s *ServerServiceHandler) Bandwidth(ctx context.Context, vpsID string) ([]map[string]string, error) {
+
+	uri := "/v1/server/bandwidth"
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", vpsID)
+	req.URL.RawQuery = q.Encode()
+
+	var bandwidthMap map[string][][]string
+	err = s.client.DoWithContext(ctx, req, &bandwidthMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var bandwidth []map[string]string
+
+	for _, b := range bandwidthMap["incoming_bytes"] {
+		inMap := make(map[string]string)
+		inMap["date"] = b[0]
+		inMap["incoming"] = b[1]
+		bandwidth = append(bandwidth, inMap)
+	}
+
+	for _, b := range bandwidthMap["outgoing_bytes"] {
+		for i := range bandwidth {
+			if bandwidth[i]["date"] == b[0] {
+				bandwidth[i]["outgoing"] = b[1]
+				break
+			}
+		}
+	}
+
+	return bandwidth, nil
 }
