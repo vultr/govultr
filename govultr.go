@@ -43,25 +43,27 @@ type Client struct {
 	RateLimit time.Duration
 
 	// Services used to interact with the API
-	Account       AccountService
-	API           APIService
-	Application   ApplicationService
-	Backup        BackupService
-	BlockStorage  BlockStorageService
-	DNSDomain     DNSDomainService
-	DNSRecord     DNSRecordService
-	FirewallGroup FirewallGroupService
-	FirewallRule  FireWallRuleService
-	Iso           IsoService
-	OS            OSService
-	Plans         PlansService
-	Regions       RegionsService
-	ReservedIP    ReservedIPService
-	Server        ServerService
-	Snapshot      SnapshotService
-	SSHKey        SSHKeyService
-	StartupScript StartupScriptService
-	User          UserService
+	Account         AccountService
+	API             APIService
+	Application     ApplicationService
+	Backup          BackupService
+	BareMetalServer BareMetalServerService
+	BlockStorage    BlockStorageService
+	DNSDomain       DNSDomainService
+	DNSRecord       DNSRecordService
+	FirewallGroup   FirewallGroupService
+	FirewallRule    FireWallRuleService
+	Iso             IsoService
+	Network         NetworkService
+	OS              OSService
+	Plans           PlansService
+	Regions         RegionsService
+	ReservedIP      ReservedIPService
+	Server          ServerService
+	Snapshot        SnapshotService
+	SSHKey          SSHKeyService
+	StartupScript   StartupScriptService
+	User            UserService
 
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
@@ -90,12 +92,14 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.API = &APIServiceHandler{client}
 	client.Application = &ApplicationServiceHandler{client}
 	client.Backup = &BackupServiceHandler{client}
+	client.BareMetalServer = &BareMetalServerServiceHandler{client}
 	client.BlockStorage = &BlockStorageServiceHandler{client}
 	client.DNSDomain = &DNSDomainServiceHandler{client}
 	client.DNSRecord = &DNSRecordsServiceHandler{client}
 	client.FirewallGroup = &FireWallGroupServiceHandler{client}
 	client.FirewallRule = &FireWallRuleServiceHandler{client}
 	client.Iso = &IsoServiceHandler{client}
+	client.Network = &NetworkServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
 	client.Plans = &PlansServiceHandler{client}
 	client.Regions = &RegionsServiceHandler{client}
