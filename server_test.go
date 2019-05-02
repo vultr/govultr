@@ -822,3 +822,272 @@ func TestServerServiceHandler_Create(t *testing.T) {
 		t.Errorf("Server.Create returned %+v, expected %+v", serverWithNetwork, expected)
 	}
 }
+
+func TestServerServiceHandler_GetList(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"576965": {"SUBID": "576965","os": "CentOS 6 x64","ram": "4096 MB","disk": "Virtual 60 GB","main_ip": "123.123.123.123","vcpu_count": "2","location": "New Jersey","DCID": "1","default_password": "nreqnusibni","date_created": "2013-12-19 14:45:41","pending_charges": "46.67","status": "active","cost_per_month": "10.05","current_bandwidth_gb": 131.512,"allowed_bandwidth_gb": "1000","netmask_v4": "255.255.255.248","gateway_v4": "123.123.123.1","power_status": "running","server_state": "ok","VPSPLANID": "28","v6_main_ip": "2001:DB8:1000::100","v6_network_size": "64","v6_network": "2001:DB8:1000::","v6_networks": [{"v6_network": "2001:DB8:1000::","v6_main_ip": "2001:DB8:1000::100","v6_network_size": "64"}],"label": "my new server","internal_ip": "10.99.0.10","kvm_url": "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV","auto_backups": "yes","tag": "mytag","OSID": "127","APPID": "0","FIREWALLGROUPID": "0"}}`
+		fmt.Fprint(writer, response)
+	})
+
+	server, err := client.Server.GetList(ctx)
+
+	if err != nil {
+		t.Errorf("Server.GetList returned %+v", err)
+	}
+
+	expected := []Server{
+		{
+			VpsID: "576965",
+			OS: "CentOS 6 x64",
+			RAM: "4096 MB",
+			Disk: "Virtual 60 GB",
+			MainIP: "123.123.123.123",
+			VPSCpus: "2",
+			Location: "New Jersey",
+			RegionID: "1",
+			DefaultPassword: "nreqnusibni",
+			Created: "2013-12-19 14:45:41",
+			PendingCharges: "46.67",
+			Status: "active",
+			Cost: "10.05",
+			CurrentBandwidth: 131.512,
+			AllowedBandwidth: "1000",
+			NetmaskV4: "255.255.255.248",
+			GatewayV4: "123.123.123.1",
+			PowerStatus: "running",
+			ServerState: "ok",
+			PlanID: "28",
+			V6Networks: []V6Network{{Network: "2001:DB8:1000::", MainIP: "2001:DB8:1000::100", NetworkSize: "64"}},
+			Label: "my new server",
+			InternalIP: "10.99.0.10",
+			KVMUrl: "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
+			AutoBackups: "yes",
+			Tag: "mytag",
+			OsID: "127",
+			AppID: "0",
+			FirewallGroupID: "0",
+		},
+	}
+
+	if !reflect.DeepEqual(server, expected) {
+		t.Errorf("Server.GetList returned %+v, expected %+v", server, expected)
+	}
+}
+
+func TestServerServiceHandler_GetListByLabel(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"576965": {"SUBID": "576965","os": "CentOS 6 x64","ram": "4096 MB","disk": "Virtual 60 GB","main_ip": "123.123.123.123","vcpu_count": "2","location": "New Jersey","DCID": "1","default_password": "nreqnusibni","date_created": "2013-12-19 14:45:41","pending_charges": "46.67","status": "active","cost_per_month": "10.05","current_bandwidth_gb": 131.512,"allowed_bandwidth_gb": "1000","netmask_v4": "255.255.255.248","gateway_v4": "123.123.123.1","power_status": "running","server_state": "ok","VPSPLANID": "28","v6_main_ip": "2001:DB8:1000::100","v6_network_size": "64","v6_network": "2001:DB8:1000::","v6_networks": [{"v6_network": "2001:DB8:1000::","v6_main_ip": "2001:DB8:1000::100","v6_network_size": "64"}],"label": "my new server","internal_ip": "10.99.0.10","kvm_url": "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV","auto_backups": "yes","tag": "mytag","OSID": "127","APPID": "0","FIREWALLGROUPID": "0"}}`
+		fmt.Fprint(writer, response)
+	})
+
+	server, err := client.Server.GetListByLabel(ctx, "label")
+
+	if err != nil {
+		t.Errorf("Server.GetListByLabel returned %+v", err)
+	}
+
+	expected := []Server{
+		{
+			VpsID: "576965",
+			OS: "CentOS 6 x64",
+			RAM: "4096 MB",
+			Disk: "Virtual 60 GB",
+			MainIP: "123.123.123.123",
+			VPSCpus: "2",
+			Location: "New Jersey",
+			RegionID: "1",
+			DefaultPassword: "nreqnusibni",
+			Created: "2013-12-19 14:45:41",
+			PendingCharges: "46.67",
+			Status: "active",
+			Cost: "10.05",
+			CurrentBandwidth: 131.512,
+			AllowedBandwidth: "1000",
+			NetmaskV4: "255.255.255.248",
+			GatewayV4: "123.123.123.1",
+			PowerStatus: "running",
+			ServerState: "ok",
+			PlanID: "28",
+			V6Networks: []V6Network{{Network: "2001:DB8:1000::", MainIP: "2001:DB8:1000::100", NetworkSize: "64"}},
+			Label: "my new server",
+			InternalIP: "10.99.0.10",
+			KVMUrl: "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
+			AutoBackups: "yes",
+			Tag: "mytag",
+			OsID: "127",
+			AppID: "0",
+			FirewallGroupID: "0",
+		},
+	}
+
+	if !reflect.DeepEqual(server, expected) {
+		t.Errorf("Server.GetListByLabel returned %+v, expected %+v", server, expected)
+	}
+}
+
+func TestServerServiceHandler_GetListByMainIP(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"576965": {"SUBID": "576965","os": "CentOS 6 x64","ram": "4096 MB","disk": "Virtual 60 GB","main_ip": "123.123.123.123","vcpu_count": "2","location": "New Jersey","DCID": "1","default_password": "nreqnusibni","date_created": "2013-12-19 14:45:41","pending_charges": "46.67","status": "active","cost_per_month": "10.05","current_bandwidth_gb": 131.512,"allowed_bandwidth_gb": "1000","netmask_v4": "255.255.255.248","gateway_v4": "123.123.123.1","power_status": "running","server_state": "ok","VPSPLANID": "28","v6_main_ip": "2001:DB8:1000::100","v6_network_size": "64","v6_network": "2001:DB8:1000::","v6_networks": [{"v6_network": "2001:DB8:1000::","v6_main_ip": "2001:DB8:1000::100","v6_network_size": "64"}],"label": "my new server","internal_ip": "10.99.0.10","kvm_url": "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV","auto_backups": "yes","tag": "mytag","OSID": "127","APPID": "0","FIREWALLGROUPID": "0"}}`
+		fmt.Fprint(writer, response)
+	})
+
+	server, err := client.Server.GetListByMainIP(ctx, "label")
+
+	if err != nil {
+		t.Errorf("Server.GetListByMainIP returned %+v", err)
+	}
+
+	expected := []Server{
+		{
+			VpsID: "576965",
+			OS: "CentOS 6 x64",
+			RAM: "4096 MB",
+			Disk: "Virtual 60 GB",
+			MainIP: "123.123.123.123",
+			VPSCpus: "2",
+			Location: "New Jersey",
+			RegionID: "1",
+			DefaultPassword: "nreqnusibni",
+			Created: "2013-12-19 14:45:41",
+			PendingCharges: "46.67",
+			Status: "active",
+			Cost: "10.05",
+			CurrentBandwidth: 131.512,
+			AllowedBandwidth: "1000",
+			NetmaskV4: "255.255.255.248",
+			GatewayV4: "123.123.123.1",
+			PowerStatus: "running",
+			ServerState: "ok",
+			PlanID: "28",
+			V6Networks: []V6Network{{Network: "2001:DB8:1000::", MainIP: "2001:DB8:1000::100", NetworkSize: "64"}},
+			Label: "my new server",
+			InternalIP: "10.99.0.10",
+			KVMUrl: "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
+			AutoBackups: "yes",
+			Tag: "mytag",
+			OsID: "127",
+			AppID: "0",
+			FirewallGroupID: "0",
+		},
+	}
+
+	if !reflect.DeepEqual(server, expected) {
+		t.Errorf("Server.GetListByMainIP returned %+v, expected %+v", server, expected)
+	}
+}
+
+func TestServerServiceHandler_GetListByTag(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"576965": {"SUBID": "576965","os": "CentOS 6 x64","ram": "4096 MB","disk": "Virtual 60 GB","main_ip": "123.123.123.123","vcpu_count": "2","location": "New Jersey","DCID": "1","default_password": "nreqnusibni","date_created": "2013-12-19 14:45:41","pending_charges": "46.67","status": "active","cost_per_month": "10.05","current_bandwidth_gb": 131.512,"allowed_bandwidth_gb": "1000","netmask_v4": "255.255.255.248","gateway_v4": "123.123.123.1","power_status": "running","server_state": "ok","VPSPLANID": "28","v6_main_ip": "2001:DB8:1000::100","v6_network_size": "64","v6_network": "2001:DB8:1000::","v6_networks": [{"v6_network": "2001:DB8:1000::","v6_main_ip": "2001:DB8:1000::100","v6_network_size": "64"}],"label": "my new server","internal_ip": "10.99.0.10","kvm_url": "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV","auto_backups": "yes","tag": "mytag","OSID": "127","APPID": "0","FIREWALLGROUPID": "0"}}`
+		fmt.Fprint(writer, response)
+	})
+
+	server, err := client.Server.GetListByTag(ctx, "label")
+
+	if err != nil {
+		t.Errorf("Server.GetListByTag returned %+v", err)
+	}
+
+	expected := []Server{
+		{
+			VpsID: "576965",
+			OS: "CentOS 6 x64",
+			RAM: "4096 MB",
+			Disk: "Virtual 60 GB",
+			MainIP: "123.123.123.123",
+			VPSCpus: "2",
+			Location: "New Jersey",
+			RegionID: "1",
+			DefaultPassword: "nreqnusibni",
+			Created: "2013-12-19 14:45:41",
+			PendingCharges: "46.67",
+			Status: "active",
+			Cost: "10.05",
+			CurrentBandwidth: 131.512,
+			AllowedBandwidth: "1000",
+			NetmaskV4: "255.255.255.248",
+			GatewayV4: "123.123.123.1",
+			PowerStatus: "running",
+			ServerState: "ok",
+			PlanID: "28",
+			V6Networks: []V6Network{{Network: "2001:DB8:1000::", MainIP: "2001:DB8:1000::100", NetworkSize: "64"}},
+			Label: "my new server",
+			InternalIP: "10.99.0.10",
+			KVMUrl: "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
+			AutoBackups: "yes",
+			Tag: "mytag",
+			OsID: "127",
+			AppID: "0",
+			FirewallGroupID: "0",
+		},
+	}
+
+	if !reflect.DeepEqual(server, expected) {
+		t.Errorf("Server.GetListByTag returned %+v, expected %+v", server, expected)
+	}
+}
+
+func TestServerServiceHandler_GetServer(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"SUBID": "576965","os": "CentOS 6 x64","ram": "4096 MB","disk": "Virtual 60 GB","main_ip": "123.123.123.123","vcpu_count": "2","location": "New Jersey","DCID": "1","default_password": "nreqnusibni","date_created": "2013-12-19 14:45:41","pending_charges": "46.67","status": "active","cost_per_month": "10.05","current_bandwidth_gb": 131.512,"allowed_bandwidth_gb": "1000","netmask_v4": "255.255.255.248","gateway_v4": "123.123.123.1","power_status": "running","server_state": "ok","VPSPLANID": "28","v6_main_ip": "2001:DB8:1000::100","v6_network_size": "64","v6_network": "2001:DB8:1000::","v6_networks": [{"v6_network": "2001:DB8:1000::","v6_main_ip": "2001:DB8:1000::100","v6_network_size": "64"}],"label": "my new server","internal_ip": "10.99.0.10","kvm_url": "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV","auto_backups": "yes","tag": "mytag","OSID": "127","APPID": "0","FIREWALLGROUPID": "0"}`
+		fmt.Fprint(writer, response)
+	})
+
+	server, err := client.Server.GetServer(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.GetServer returned %+v", err)
+	}
+
+	expected := &Server{
+			VpsID: "576965",
+			OS: "CentOS 6 x64",
+			RAM: "4096 MB",
+			Disk: "Virtual 60 GB",
+			MainIP: "123.123.123.123",
+			VPSCpus: "2",
+			Location: "New Jersey",
+			RegionID: "1",
+			DefaultPassword: "nreqnusibni",
+			Created: "2013-12-19 14:45:41",
+			PendingCharges: "46.67",
+			Status: "active",
+			Cost: "10.05",
+			CurrentBandwidth: 131.512,
+			AllowedBandwidth: "1000",
+			NetmaskV4: "255.255.255.248",
+			GatewayV4: "123.123.123.1",
+			PowerStatus: "running",
+			ServerState: "ok",
+			PlanID: "28",
+			V6Networks: []V6Network{{Network: "2001:DB8:1000::", MainIP: "2001:DB8:1000::100", NetworkSize: "64"}},
+			Label: "my new server",
+			InternalIP: "10.99.0.10",
+			KVMUrl: "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
+			AutoBackups: "yes",
+			Tag: "mytag",
+			OsID: "127",
+			AppID: "0",
+			FirewallGroupID: "0",
+		}
+
+
+	if !reflect.DeepEqual(server, expected) {
+		t.Errorf("Server.GetServer returned %+v, expected %+v", server, expected)
+	}
+}

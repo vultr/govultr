@@ -53,6 +53,11 @@ type ServerService interface {
 	Reinstall(ctx context.Context, vpsID string) error
 	Destroy(ctx context.Context, vpsID string) error
 	Create(ctx context.Context, regionID, vpsPlanID, osID int, options *ServerOptions) (*Server, error)
+	GetList(ctx context.Context) ([]Server, error)
+	GetListByLabel(ctx context.Context, label string) ([]Server, error)
+	GetListByMainIP(ctx context.Context, mainIP string) ([]Server, error)
+	GetListByTag(ctx context.Context, tag string) ([]Server, error)
+	GetServer(ctx context.Context, vpsID string) (*Server, error)
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -118,7 +123,42 @@ type ReverseIPV6 struct {
 
 // Server represents a VPS
 type Server struct {
-	VpsID string `json:"SUBID"`
+	VpsID            string      `json:"SUBID"`
+	OS               string      `json:"os"`
+	RAM              string      `json:"ram"`
+	Disk             string      `json:"disk"`
+	MainIP           string      `json:"main_ip"`
+	VPSCpus          string      `json:"vcpu_count"`
+	Location         string      `json:"location"`
+	RegionID         string      `json:"DCID"`
+	DefaultPassword  string      `json:"default_password"`
+	Created          string      `json:"date_created"`
+	PendingCharges   string      `json:"pending_charges"`
+	Status           string      `json:"status"`
+	Cost             string      `json:"cost_per_month"`
+	CurrentBandwidth float64     `json:"current_bandwidth_gb"`
+	AllowedBandwidth string      `json:"allowed_bandwidth_gb"`
+	NetmaskV4        string      `json:"netmask_v4"`
+	GatewayV4        string      `json:"gateway_v4"`
+	PowerStatus      string      `json:"power_status"`
+	ServerState      string      `json:"server_state"`
+	PlanID           string      `json:"VPSPLANID"`
+	V6Networks       []V6Network `json:"v6_networks"`
+	Label            string      `json:"label"`
+	InternalIP       string      `json:"internal_ip"`
+	KVMUrl           string      `json:"kvm_url"`
+	AutoBackups      string      `json:"auto_backups"`
+	Tag              string      `json:"tag"`
+	OsID             string      `json:"OSID"`
+	AppID            string      `json:"APPID"`
+	FirewallGroupID  string      `json:"FIREWALLGROUPID"`
+}
+
+// V6Network represents an IPV6 network on a VPS
+type V6Network struct {
+	Network     string `json:"v6_network"`
+	MainIP      string `json:"v6_main_ip"`
+	NetworkSize string `json:"v6_network_size"`
 }
 
 // ServerOptions are all optional fields that can be used during vps creation
@@ -1340,4 +1380,82 @@ func (s *ServerServiceHandler) Create(ctx context.Context, regionID, vpsPlanID, 
 	}
 
 	return server, nil
+}
+
+// GetList lists all VPS on the current account. This includes both pending and active servers.
+func (s *ServerServiceHandler) GetList(ctx context.Context) ([]Server, error) {
+	return s.getList(ctx, "", "")
+}
+
+// GetListByLabel lists all VPS that match the given label on the current account. This includes both pending and active servers.
+func (s *ServerServiceHandler) GetListByLabel(ctx context.Context, label string) ([]Server, error) {
+	return s.getList(ctx, "label", label)
+}
+
+// GetListByMainIP lists all VPS that match the given IP address on the current account. This includes both pending and active servers.
+func (s *ServerServiceHandler) GetListByMainIP(ctx context.Context, mainIP string) ([]Server, error) {
+	return s.getList(ctx, "main_ip", mainIP)
+}
+
+// GetListByTag lists all VPS that match the given tag on the current account. This includes both pending and active servers.
+func (s *ServerServiceHandler) GetListByTag(ctx context.Context, tag string) ([]Server, error) {
+	return s.getList(ctx, "tag", tag)
+}
+
+// getList is used to consolidate the optional params to get a VPS
+func (s *ServerServiceHandler) getList(ctx context.Context, key, value string) ([]Server, error) {
+
+	uri := "/v1/server/list"
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if key != "" {
+		q := req.URL.Query()
+		q.Add(key, value)
+		req.URL.RawQuery = q.Encode()
+	}
+
+	var serverMap map[string]Server
+	err = s.client.DoWithContext(ctx, req, &serverMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var servers []Server
+	for _, s := range serverMap {
+		servers = append(servers, s)
+	}
+
+	return servers, nil
+}
+
+// GetServer will get the server with the given vpsID
+func (s *ServerServiceHandler) GetServer(ctx context.Context, vpsID string) (*Server, error) {
+
+	uri := "/v1/server/list"
+
+	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", vpsID)
+	req.URL.RawQuery = q.Encode()
+
+	server := new(Server)
+	err = s.client.DoWithContext(ctx, req, server)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return server, nil
+
 }
