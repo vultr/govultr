@@ -17,18 +17,9 @@ func TestOSServiceHandler_GetList(t *testing.T) {
 		{
 			"127": {
 				"OSID": 127,
-<<<<<<< HEAD
-=======
 				"name": "CentOS 6 x64",
 				"arch": "x64",
 				"family": "centos",
-				"windows": false
-			},
-			"148": {
-				"OSID": 148,
-				"name": "Ubuntu 12.04 i386",
-				"arch": "i386",
-				"family": "ubuntu",
 				"windows": false
 			}
 		}
@@ -48,13 +39,6 @@ func TestOSServiceHandler_GetList(t *testing.T) {
 			Name:    "CentOS 6 x64",
 			Arch:    "x64",
 			Family:  "centos",
-			Windows: false,
-		},
-		{
-			OsID:    148,
-			Name:    "Ubuntu 12.04 i386",
-			Arch:    "i386",
-			Family:  "ubuntu",
 			Windows: false,
 		},
 	}
@@ -73,18 +57,10 @@ func TestOSServiceHandler_GetList_StringIDs(t *testing.T) {
 		response := `
 		{
 			"127": {
-				"OSID": "127",
->>>>>>> master
+				"OSID": 127,
 				"name": "CentOS 6 x64",
 				"arch": "x64",
 				"family": "centos",
-				"windows": false
-			},
-			"148": {
-				"OSID": 148,
-				"name": "Ubuntu 12.04 i386",
-				"arch": "i386",
-				"family": "ubuntu",
 				"windows": false
 			}
 		}
@@ -104,13 +80,6 @@ func TestOSServiceHandler_GetList_StringIDs(t *testing.T) {
 			Name:    "CentOS 6 x64",
 			Arch:    "x64",
 			Family:  "centos",
-			Windows: false,
-		},
-		{
-			OsID:    148,
-			Name:    "Ubuntu 12.04 i386",
-			Arch:    "i386",
-			Family:  "ubuntu",
 			Windows: false,
 		},
 	}
