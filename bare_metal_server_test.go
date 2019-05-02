@@ -718,13 +718,6 @@ func TestBareMetalServerServiceHandler_ListApps(t *testing.T) {
 				"short_name": "lemp",
 				"deploy_name": "LEMP on CentOS 6 x64",
 				"surcharge": 0
-			},
-			"2": {
-				"APPID": "2",
-				"name": "WordPress",
-				"short_name": "wordpress",
-				"deploy_name": "WordPress on CentOS 6 x64",
-				"surcharge": 0
 			}
 		}
 		`
@@ -743,13 +736,6 @@ func TestBareMetalServerServiceHandler_ListApps(t *testing.T) {
 			Name:       "LEMP",
 			ShortName:  "lemp",
 			DeployName: "LEMP on CentOS 6 x64",
-			Surcharge:  0,
-		},
-		{
-			AppID:      "2",
-			Name:       "WordPress",
-			ShortName:  "wordpress",
-			DeployName: "WordPress on CentOS 6 x64",
 			Surcharge:  0,
 		},
 	}
@@ -773,14 +759,6 @@ func TestBareMetalServerServiceHandler_ListOS(t *testing.T) {
 				"family": "centos",
 				"windows": false,
 				"surcharge": 0
-			},
-			"148": {
-				"OSID": "148",
-				"name": "Ubuntu 12.04 i386",
-				"arch": "i386",
-				"family": "ubuntu",
-				"windows": false,
-				"surcharge": 0
 			}
 		}
 		`
@@ -799,13 +777,6 @@ func TestBareMetalServerServiceHandler_ListOS(t *testing.T) {
 			Name:    "CentOS 6 x64",
 			Arch:    "x64",
 			Family:  "centos",
-			Windows: false,
-		},
-		{
-			OsID:    148,
-			Name:    "Ubuntu 12.04 i386",
-			Arch:    "i386",
-			Family:  "ubuntu",
 			Windows: false,
 		},
 	}
