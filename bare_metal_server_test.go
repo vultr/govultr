@@ -595,6 +595,60 @@ func TestBareMetalServerServiceHandler_Halt(t *testing.T) {
 	}
 }
 
+func TestBareMetalServerServiceHandler_ListApps(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/app_change_list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+		{
+			"1": {
+				"APPID": "1",
+				"name": "LEMP",
+				"short_name": "lemp",
+				"deploy_name": "LEMP on CentOS 6 x64",
+				"surcharge": 0
+			},
+			"2": {
+				"APPID": "2",
+				"name": "WordPress",
+				"short_name": "wordpress",
+				"deploy_name": "WordPress on CentOS 6 x64",
+				"surcharge": 0
+			}
+		}
+		`
+		fmt.Fprint(writer, response)
+	})
+
+	application, err := client.BareMetalServer.ListApps(ctx, "900000")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.ListApps returned %+v, ", err)
+	}
+
+	expected := []Application{
+		{
+			AppID:      "1",
+			Name:       "LEMP",
+			ShortName:  "lemp",
+			DeployName: "LEMP on CentOS 6 x64",
+			Surcharge:  0,
+		},
+		{
+			AppID:      "2",
+			Name:       "WordPress",
+			ShortName:  "wordpress",
+			DeployName: "WordPress on CentOS 6 x64",
+			Surcharge:  0,
+		},
+	}
+
+	if !reflect.DeepEqual(application, expected) {
+		t.Errorf("BareMetalServer.ListApps returned %+v, expected %+v", application, expected)
+	}
+}
+
 func TestBareMetalServerServiceHandler_ListOS(t *testing.T) {
 	setup()
 	defer teardown()

@@ -25,6 +25,7 @@ type BareMetalServerService interface {
 	GetServer(ctx context.Context, serverID string) (*BareMetalServer, error)
 	GetUserData(ctx context.Context, serverID string) (*BareMetalServerUserData, error)
 	Halt(ctx context.Context, serverID string) error
+	ListApps(ctx context.Context, serverID string) ([]Application, error)
 	ListOS(ctx context.Context, serverID string) ([]OS, error)
 	Reboot(ctx context.Context, serverID string) error
 	Reinstall(ctx context.Context, serverID string) error
@@ -489,6 +490,36 @@ func (b *BareMetalServerServiceHandler) Halt(ctx context.Context, serverID strin
 	}
 
 	return nil
+}
+
+// ListApps retrieves a list of Vultr one-click applications to which a bare metal server can be changed.
+// Always check against this list before trying to switch applications because it is not possible to switch between every application combination.
+func (b *BareMetalServerServiceHandler) ListApps(ctx context.Context, serverID string) ([]Application, error) {
+	uri := "/v1/baremetal/app_change_list"
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", serverID)
+	req.URL.RawQuery = q.Encode()
+
+	var appMap map[string]Application
+	err = b.client.DoWithContext(ctx, req, &appMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var appList []Application
+	for _, a := range appMap {
+		appList = append(appList, a)
+	}
+
+	return appList, nil
 }
 
 // ListOS retrieves a list of operating systems to which a bare metal server can be changed.
