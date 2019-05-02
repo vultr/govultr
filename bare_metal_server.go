@@ -15,6 +15,7 @@ import (
 type BareMetalServerService interface {
 	AppInfo(ctx context.Context, serverID string) (*BareMetalServerAppInfo, error)
 	Bandwidth(ctx context.Context, serverID string) ([]map[string]string, error)
+	ChangeOS(ctx context.Context, serverID, osID string) error
 	Create(ctx context.Context, regionID, planID, osID string, options *BareMetalServerOptions) (*BareMetalServer, error)
 	Destroy(ctx context.Context, serverID string) error
 	GetList(ctx context.Context) ([]BareMetalServer, error)
@@ -24,6 +25,7 @@ type BareMetalServerService interface {
 	GetServer(ctx context.Context, serverID string) (*BareMetalServer, error)
 	GetUserData(ctx context.Context, serverID string) (*BareMetalServerUserData, error)
 	Halt(ctx context.Context, serverID string) error
+	ListOS(ctx context.Context, serverID string) ([]OS, error)
 	Reboot(ctx context.Context, serverID string) error
 	Reinstall(ctx context.Context, serverID string) error
 	SetLabel(ctx context.Context, serverID, label string) error
@@ -199,6 +201,30 @@ func (b *BareMetalServerServiceHandler) AppInfo(ctx context.Context, serverID st
 	}
 
 	return appInfo, nil
+}
+
+// ChangeOS changes the bare metal server to a different operating system. All data will be permanently lost.
+func (b *BareMetalServerServiceHandler) ChangeOS(ctx context.Context, serverID, osID string) error {
+	uri := "/v1/baremetal/os_change"
+
+	values := url.Values{
+		"SUBID": {serverID},
+		"OSID":  {osID},
+	}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Create a new bare metal server.
@@ -463,6 +489,36 @@ func (b *BareMetalServerServiceHandler) Halt(ctx context.Context, serverID strin
 	}
 
 	return nil
+}
+
+// ListOS retrieves a list of operating systems to which a bare metal server can be changed.
+// Always check against this list before trying to switch operating systems because it is not possible to switch between every operating system combination.
+func (b *BareMetalServerServiceHandler) ListOS(ctx context.Context, serverID string) ([]OS, error) {
+	uri := "/v1/baremetal/os_change_list"
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", serverID)
+	req.URL.RawQuery = q.Encode()
+
+	var osMap map[string]OS
+	err = b.client.DoWithContext(ctx, req, &osMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var os []OS
+	for _, o := range osMap {
+		os = append(os, o)
+	}
+
+	return os, nil
 }
 
 // Reboot a bare metal server. This is a hard reboot, which means that the server is powered off, then back on.

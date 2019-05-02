@@ -35,6 +35,21 @@ func TestBareMetalServerServiceHandler_AppInfo(t *testing.T) {
 	}
 }
 
+func TestBareMetalServerServiceHandler_ChangeOS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/os_change", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.BareMetalServer.ChangeOS(ctx, "900000", "302")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.ChangeOS return %+v ", err)
+	}
+}
+
 func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
@@ -577,6 +592,62 @@ func TestBareMetalServerServiceHandler_Halt(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("BareMetalServer.Halt returned %+v, expected %+v", err, nil)
+	}
+}
+
+func TestBareMetalServerServiceHandler_ListOS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/os_change_list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+		{
+			"127": {
+				"OSID": "127",
+				"name": "CentOS 6 x64",
+				"arch": "x64",
+				"family": "centos",
+				"windows": false,
+				"surcharge": 0
+			},
+			"148": {
+				"OSID": "148",
+				"name": "Ubuntu 12.04 i386",
+				"arch": "i386",
+				"family": "ubuntu",
+				"windows": false,
+				"surcharge": 0
+			}
+		}
+		`
+		fmt.Fprint(writer, response)
+	})
+
+	os, err := client.BareMetalServer.ListOS(ctx, "900000")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.ListOS return %+v ", err)
+	}
+
+	expected := []OS{
+		{
+			OsID:    127,
+			Name:    "CentOS 6 x64",
+			Arch:    "x64",
+			Family:  "centos",
+			Windows: false,
+		},
+		{
+			OsID:    148,
+			Name:    "Ubuntu 12.04 i386",
+			Arch:    "i386",
+			Family:  "ubuntu",
+			Windows: false,
+		},
+	}
+
+	if !reflect.DeepEqual(os, expected) {
+		t.Errorf("BareMetalServer.ListOS returned %+v, expected %+v", os, expected)
 	}
 }
 
