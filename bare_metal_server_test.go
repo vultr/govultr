@@ -830,6 +830,21 @@ func TestBareMetalServerServiceHandler_Reboot(t *testing.T) {
 	}
 }
 
+func TestBareMetalServerServiceHandler_Reinstall(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/reinstall", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.BareMetalServer.Reinstall(ctx, "900000")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.Reinstall returned %+v, expected %+v", err, nil)
+	}
+}
+
 func TestBareMetalServerServiceHandler_SetLabel(t *testing.T) {
 	setup()
 	defer teardown()
