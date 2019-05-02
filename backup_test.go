@@ -21,13 +21,6 @@ func TestBackupServiceHandler_GetList(t *testing.T) {
 				"description": "Automatic server backup",
 				"size": "42949672960",
 				"status": "complete"
-			},
-			"543d340f6dbce": {
-				"BACKUPID": "543d340f6dbce",
-				"date_created": "2014-10-13 16:11:46",
-				"description": "",
-				"size": "10000000",
-				"status": "complete"
 			}
 		}
 		`
@@ -46,13 +39,6 @@ func TestBackupServiceHandler_GetList(t *testing.T) {
 			DateCreated: "2014-10-14 12:40:40",
 			Description: "Automatic server backup",
 			Size:        "42949672960",
-			Status:      "complete",
-		},
-		{
-			BackupID:    "543d340f6dbce",
-			DateCreated: "2014-10-13 16:11:46",
-			Description: "",
-			Size:        "10000000",
 			Status:      "complete",
 		},
 	}
@@ -99,13 +85,6 @@ func TestBackupServiceHandler_GetListBySub(t *testing.T) {
 				"description": "Automatic server backup",
 				"size": "42949672960",
 				"status": "complete"
-			},
-			"543d340f6dbce": {
-				"BACKUPID": "543d340f6dbce",
-				"date_created": "2014-10-13 16:11:46",
-				"description": "",
-				"size": "10000000",
-				"status": "complete"
 			}
 		}
 		`
@@ -124,13 +103,6 @@ func TestBackupServiceHandler_GetListBySub(t *testing.T) {
 			DateCreated: "2014-10-14 12:40:40",
 			Description: "Automatic server backup",
 			Size:        "42949672960",
-			Status:      "complete",
-		},
-		{
-			BackupID:    "543d340f6dbce",
-			DateCreated: "2014-10-13 16:11:46",
-			Description: "",
-			Size:        "10000000",
 			Status:      "complete",
 		},
 	}

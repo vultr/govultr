@@ -65,14 +65,6 @@ func TestNetworkServiceHandler_GetList(t *testing.T) {
 				"description": "test1",
 				"v4_subnet": "10.99.0.0",
 				"v4_subnet_mask": 24
-			},
-			"net53962b0f2341f": {
-				"DCID": "1",
-				"NETWORKID": "net53962b0f2341f",
-				"date_created": "2014-06-09 17:45:51",
-				"description": "vultr",
-				"v4_subnet": "0.0.0.0",
-				"v4_subnet_mask": 0
 			}
 		}
 		`
@@ -93,14 +85,6 @@ func TestNetworkServiceHandler_GetList(t *testing.T) {
 			V4Subnet:     "10.99.0.0",
 			V4SubnetMask: 24,
 			DateCreated:  "2017-08-25 12:23:45",
-		},
-		{
-			NetworkID:    "net53962b0f2341f",
-			RegionID:     "1",
-			Description:  "vultr",
-			V4Subnet:     "0.0.0.0",
-			V4SubnetMask: 0,
-			DateCreated:  "2014-06-09 17:45:51",
 		},
 	}
 

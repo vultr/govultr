@@ -84,15 +84,6 @@ func TestSnapshotServiceHandler_GetList(t *testing.T) {
 		"status": "complete",
 		"OSID": "127",
 		"APPID": "0"
-		},
-		"5359435d28b9a": {
-		"SNAPSHOTID": "5359435d28b9a",
-		"date_created": "2014-04-18 12:40:40",
-		"description": "Test snapshot",
-		"size": "42949672960",
-		"status": "complete",
-		"OSID": "127",
-		"APPID": "0"
 		}
 		}
 		`
@@ -106,7 +97,6 @@ func TestSnapshotServiceHandler_GetList(t *testing.T) {
 	}
 	expected := []Snapshot{
 		{SnapshotID: "5359435dc1df3", DateCreated: "2014-04-22 16:11:46", Description: "", Size: "10000000", Status: "complete", OsID: "127", AppID: "0"},
-		{SnapshotID: "5359435d28b9a", DateCreated: "2014-04-18 12:40:40", Description: "Test snapshot", Size: "42949672960", Status: "complete", OsID: "127", AppID: "0"},
 	}
 
 	if !reflect.DeepEqual(snapshots, expected) {

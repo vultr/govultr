@@ -71,14 +71,6 @@ func TestStartupScriptServiceHandler_GetList(t *testing.T) {
 				"name": "foo",
 				"type": "boot",
 				"script": "#!/bin/bash echo Hello World > /root/hello"
-			},
-			"5": {
-				"SCRIPTID": "5",
-				"date_created": "2014-08-22 15:27:18",
-				"date_modified": "2014-09-22 15:27:18",
-				"name": "bar",
-				"type": "pxe",
-				"script": "#!ipxe\necho Hello World\nshell"
 			}
 		}
 		`
@@ -99,14 +91,6 @@ func TestStartupScriptServiceHandler_GetList(t *testing.T) {
 			Script:       "#!/bin/bash echo Hello World > /root/hello",
 			DateCreated:  "2014-05-21 15:27:18",
 			DateModified: "2014-05-21 15:27:18",
-		},
-		{
-			ScriptID:     "5",
-			Name:         "bar",
-			Type:         "pxe",
-			Script:       "#!ipxe\necho Hello World\nshell",
-			DateCreated:  "2014-08-22 15:27:18",
-			DateModified: "2014-09-22 15:27:18",
 		},
 	}
 
