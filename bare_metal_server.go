@@ -15,6 +15,7 @@ import (
 type BareMetalServerService interface {
 	AppInfo(ctx context.Context, serverID string) (*BareMetalServerAppInfo, error)
 	Bandwidth(ctx context.Context, serverID string) ([]map[string]string, error)
+	ChangeApp(ctx context.Context, serverID, appID string) error
 	ChangeOS(ctx context.Context, serverID, osID string) error
 	Create(ctx context.Context, regionID, planID, osID string, options *BareMetalServerOptions) (*BareMetalServer, error)
 	Destroy(ctx context.Context, serverID string) error
@@ -258,6 +259,30 @@ func (b *BareMetalServerServiceHandler) Bandwidth(ctx context.Context, serverID 
 	}
 
 	return bandwidth, nil
+}
+
+// ChangeApp changes the bare metal server to a different application.
+func (b *BareMetalServerServiceHandler) ChangeApp(ctx context.Context, serverID, appID string) error {
+	uri := "/v1/baremetal/app_change"
+
+	values := url.Values{
+		"SUBID": {serverID},
+		"APPID": {appID},
+	}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // ChangeOS changes the bare metal server to a different operating system. All data will be permanently lost.

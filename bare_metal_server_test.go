@@ -92,6 +92,21 @@ func TestBareMetalServerServiceHandler_Bandwidth(t *testing.T) {
 	}
 }
 
+func TestBareMetalServerServiceHandler_ChangeApp(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/app_change", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.BareMetalServer.ChangeApp(ctx, "900000", "15")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.ChangeApp returned %+v, ", err)
+	}
+}
+
 func TestBareMetalServerServiceHandler_ChangeOS(t *testing.T) {
 	setup()
 	defer teardown()
