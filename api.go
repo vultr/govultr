@@ -39,6 +39,6 @@ func (a *APIServiceHandler) GetInfo(ctx context.Context) (*API, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return api, nil
 }
