@@ -2,7 +2,10 @@ package govultr
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 )
 
 // OSService is the interface to interact with the operating system endpoint on the Vultr API
@@ -18,11 +21,41 @@ type OSServiceHandler struct {
 
 // OS represents a Vultr operating system
 type OS struct {
-	OsID    string `json:"OSID"`
+	OsID    int    `json:"OSID"`
 	Name    string `json:"name"`
 	Arch    string `json:"arch"`
 	Family  string `json:"family"`
 	Windows bool   `json:"windows"`
+}
+
+// UnmarshalJSON implements json.Unmarshaller on OS to handle the inconsistent types returned from the Vultr API.
+func (o *OS) UnmarshalJSON(data []byte) (err error) {
+	if o == nil {
+		*o = OS{}
+	}
+
+	var v map[string]interface{}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+
+	i, err := strconv.Atoi(fmt.Sprintf("%v", v["OSID"]))
+	if err != nil {
+		return err
+	}
+	o.OsID = i
+
+	value := fmt.Sprintf("%v", v["windows"])
+	o.Windows = false
+	if value == "true" {
+		o.Windows = true
+	}
+
+	o.Name = fmt.Sprintf("%v", v["name"])
+	o.Arch = fmt.Sprintf("%v", v["arch"])
+	o.Family = fmt.Sprintf("%v", v["family"])
+
+	return nil
 }
 
 // GetList retrieves a list of available operating systems.
