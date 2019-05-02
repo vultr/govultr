@@ -52,6 +52,7 @@ type ServerService interface {
 	Reboot(ctx context.Context, vpsID string) error
 	Reinstall(ctx context.Context, vpsID string) error
 	Destroy(ctx context.Context, vpsID string) error
+	Create(ctx context.Context, regionID, vpsPlanID, osID int, options *ServerOptions) (*Server, error)
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -113,6 +114,32 @@ type IPV6 struct {
 type ReverseIPV6 struct {
 	IP      string `json:"ip"`
 	Reverse string `json:"reverse"`
+}
+
+// Server represents a VPS
+type Server struct {
+	VpsID string `json:"SUBID"`
+}
+
+// ServerOptions are all optional fields that can be used during vps creation
+type ServerOptions struct {
+	IPXEChain            string
+	IsoID                int
+	ScriptID             string
+	EnableIPV6           bool
+	EnablePrivateNetwork bool
+	NetworkID            []string
+	Label                string
+	SSHKeyID             string
+	AutoBackups          bool
+	AppID                string
+	UserData             string
+	NotifyActivate       bool
+	DDOSProtection       bool
+	ReservedIPV4         string
+	Hostname             string
+	Tag                  string
+	FirewallGroupID      string
 }
 
 // ChangeApp changes the VPS to a different application.
@@ -1211,4 +1238,106 @@ func (s *ServerServiceHandler) Destroy(ctx context.Context, vpsID string) error 
 	}
 
 	return nil
+}
+
+// Create will create a new VPS
+// In order to create a server using a snapshot, use OSID 164 and specify a SNAPSHOTID.
+// Similarly, to create a server using an ISO use OSID 159 and specify an ISOID.
+func (s *ServerServiceHandler) Create(ctx context.Context, regionID, vpsPlanID, osID int, options *ServerOptions) (*Server, error) {
+
+	uri := "/v1/server/create"
+
+	values := url.Values{
+		"DCID":      {strconv.Itoa(regionID)},
+		"VPSPLANID": {strconv.Itoa(vpsPlanID)},
+		"OSID":      {strconv.Itoa(osID)},
+	}
+
+	if options != nil {
+		if options.IPXEChain != "" {
+			values.Add("ipxe_chain_url", options.IPXEChain)
+		}
+
+		if options.IsoID != 0 {
+			values.Add("ISOID", strconv.Itoa(options.IsoID))
+		}
+
+		if options.ScriptID != "" {
+			values.Add("SCRIPTID", options.ScriptID)
+		}
+
+		if options.EnableIPV6 == true {
+			values.Add("enable_ipv6", "yes")
+		}
+
+		// Use either EnabledPrivateNetwork or NetworkIDs, not both
+		if options.EnablePrivateNetwork == true {
+			values.Add("enable_private_network", "yes")
+		} else {
+			if options.NetworkID != nil && len(options.NetworkID) != 0 {
+				for _, n := range options.NetworkID {
+					values.Add("NETWORKID[]", n)
+				}
+			}
+		}
+
+		if options.Label != "" {
+			values.Add("label", options.Label)
+		}
+
+		if options.SSHKeyID != "" {
+			values.Add("SSHKEYID", options.SSHKeyID)
+		}
+
+		if options.AutoBackups == true {
+			values.Add("auto_backups", "yes")
+		}
+
+		if options.AppID != "" {
+			values.Add("APPID", options.AppID)
+		}
+
+		if options.UserData != "" {
+			values.Add("userdata", base64.StdEncoding.EncodeToString([]byte(options.UserData)))
+		}
+
+		if options.NotifyActivate == true {
+			values.Add("notify_activate", "yes")
+		}
+
+		if options.DDOSProtection == true {
+			values.Add("ddos_protection", "yes")
+		}
+
+		if options.ReservedIPV4 != "" {
+			values.Add("reserved_ip_v4", options.ReservedIPV4)
+		}
+
+		if options.Hostname != "" {
+			values.Add("hostname", options.Hostname)
+		}
+
+		if options.Tag != "" {
+			values.Add("tag", options.Tag)
+		}
+
+		if options.FirewallGroupID != "" {
+			values.Add("FIREWALLGROUPID", options.FirewallGroupID)
+		}
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return nil, err
+	}
+
+	server := new(Server)
+	err = s.client.DoWithContext(ctx, req, server)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return server, nil
 }

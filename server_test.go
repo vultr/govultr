@@ -767,3 +767,58 @@ func TestServerServiceHandler_Destroy(t *testing.T) {
 		t.Errorf("Server.Destroy returned %+v", err)
 	}
 }
+
+func TestServerServiceHandler_Create(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/create", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"SUBID": "1234151"}`
+		fmt.Fprint(writer, response)
+	})
+
+	optionsWithPrivateNetwork := &ServerOptions{
+		IPXEChain:            "test.org",
+		IsoID:                1,
+		ScriptID:             "213",
+		EnableIPV6:           true,
+		EnablePrivateNetwork: true,
+		AutoBackups:          true,
+		UserData:             "uno-dos-tres",
+		NotifyActivate:       true,
+		DDOSProtection:       true,
+		Hostname:             "hostname-3000",
+		Tag:                  "tagger",
+		Label:                "label-extreme",
+		SSHKeyID:             "1234",
+		ReservedIPV4:         "63.209.35.79",
+		FirewallGroupID:      "1234",
+		AppID:                "1234",
+	}
+
+	server, err := client.Server.Create(ctx, 1, 2, 3, optionsWithPrivateNetwork)
+
+	if err != nil {
+		t.Errorf("Server.Create returned %+v", err)
+	}
+
+	expected := &Server{VpsID: "1234151"}
+
+	if !reflect.DeepEqual(server, expected) {
+		t.Errorf("Server.Create returned %+v, expected %+v", server, expected)
+	}
+
+	options := &ServerOptions{
+		NetworkID: []string{"1", "2", "3"},
+	}
+
+	serverWithNetwork, err := client.Server.Create(ctx, 1, 2, 3, options)
+
+	if err != nil {
+		t.Errorf("Server.Create returned %+v", err)
+	}
+
+	if !reflect.DeepEqual(serverWithNetwork, expected) {
+		t.Errorf("Server.Create returned %+v, expected %+v", serverWithNetwork, expected)
+	}
+}
