@@ -19,6 +19,7 @@ type BareMetalServerService interface {
 	ChangeOS(ctx context.Context, serverID, osID string) error
 	Create(ctx context.Context, regionID, planID, osID string, options *BareMetalServerOptions) (*BareMetalServer, error)
 	Destroy(ctx context.Context, serverID string) error
+	EnableIPV6(ctx context.Context, serverID string) error
 	GetList(ctx context.Context) ([]BareMetalServer, error)
 	GetListByLabel(ctx context.Context, label string) ([]BareMetalServer, error)
 	GetListByMainIP(ctx context.Context, mainIP string) ([]BareMetalServer, error)
@@ -376,6 +377,30 @@ func (b *BareMetalServerServiceHandler) Create(ctx context.Context, regionID, pl
 // All data will be permanently lost, and the IP address will be released. There is no going back from this call.
 func (b *BareMetalServerServiceHandler) Destroy(ctx context.Context, serverID string) error {
 	uri := "/v1/baremetal/destroy"
+
+	values := url.Values{
+		"SUBID": {serverID},
+	}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// EnableIPV6 enables IPv6 networking on a bare metal server by assigning an IPv6 subnet to it.
+// The server will not be rebooted when the subnet is assigned.
+func (b *BareMetalServerServiceHandler) EnableIPV6(ctx context.Context, serverID string) error {
+	uri := "/v1/baremetal/ipv6_enable"
 
 	values := url.Values{
 		"SUBID": {serverID},

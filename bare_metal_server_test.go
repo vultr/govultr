@@ -177,6 +177,21 @@ func TestBareMetalServerServiceHandler_Destroy(t *testing.T) {
 	}
 }
 
+func TestBareMetalServerServiceHandler_EnableIPV6(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/ipv6_enable", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.BareMetalServer.EnableIPV6(ctx, "900000")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.EnableIPV6 returned %+v", err)
+	}
+}
+
 func TestBareMetalServerServiceHandler_GetList(t *testing.T) {
 	setup()
 	defer teardown()
