@@ -15,6 +15,7 @@ import (
 type BareMetalServerService interface {
 	AppInfo(ctx context.Context, serverID string) (*BareMetalServerAppInfo, error)
 	Bandwidth(ctx context.Context, serverID string) ([]map[string]string, error)
+	ChangeApp(ctx context.Context, serverID, appID string) error
 	ChangeOS(ctx context.Context, serverID, osID string) error
 	Create(ctx context.Context, regionID, planID, osID string, options *BareMetalServerOptions) (*BareMetalServer, error)
 	Destroy(ctx context.Context, serverID string) error
@@ -25,6 +26,7 @@ type BareMetalServerService interface {
 	GetServer(ctx context.Context, serverID string) (*BareMetalServer, error)
 	GetUserData(ctx context.Context, serverID string) (*BareMetalServerUserData, error)
 	Halt(ctx context.Context, serverID string) error
+	ListApps(ctx context.Context, serverID string) ([]Application, error)
 	ListOS(ctx context.Context, serverID string) ([]OS, error)
 	Reboot(ctx context.Context, serverID string) error
 	Reinstall(ctx context.Context, serverID string) error
@@ -203,6 +205,86 @@ func (b *BareMetalServerServiceHandler) AppInfo(ctx context.Context, serverID st
 	return appInfo, nil
 }
 
+// Bandwidth will get the bandwidth used by a bare metal server
+func (b *BareMetalServerServiceHandler) Bandwidth(ctx context.Context, serverID string) ([]map[string]string, error) {
+	uri := "/v1/baremetal/bandwidth"
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", serverID)
+	req.URL.RawQuery = q.Encode()
+
+	var bandwidthMap map[string][][]interface{}
+	err = b.client.DoWithContext(ctx, req, &bandwidthMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var bandwidth []map[string]string
+
+	for _, b := range bandwidthMap["incoming_bytes"] {
+		inMap := make(map[string]string)
+		inMap["date"] = fmt.Sprintf("%v", b[0])
+		var bytes int64
+		switch b[1].(type) {
+		case float64:
+			bytes = int64(b[1].(float64))
+		case int64:
+			bytes = b[1].(int64)
+		}
+		inMap["incoming"] = fmt.Sprintf("%v", bytes)
+		bandwidth = append(bandwidth, inMap)
+	}
+
+	for _, b := range bandwidthMap["outgoing_bytes"] {
+		for i := range bandwidth {
+			if bandwidth[i]["date"] == b[0] {
+				var bytes int64
+				switch b[1].(type) {
+				case float64:
+					bytes = int64(b[1].(float64))
+				case int64:
+					bytes = b[1].(int64)
+				}
+				bandwidth[i]["outgoing"] = fmt.Sprintf("%v", bytes)
+				break
+			}
+		}
+	}
+
+	return bandwidth, nil
+}
+
+// ChangeApp changes the bare metal server to a different application.
+func (b *BareMetalServerServiceHandler) ChangeApp(ctx context.Context, serverID, appID string) error {
+	uri := "/v1/baremetal/app_change"
+
+	values := url.Values{
+		"SUBID": {serverID},
+		"APPID": {appID},
+	}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // ChangeOS changes the bare metal server to a different operating system. All data will be permanently lost.
 func (b *BareMetalServerServiceHandler) ChangeOS(ctx context.Context, serverID, osID string) error {
 	uri := "/v1/baremetal/os_change"
@@ -288,62 +370,6 @@ func (b *BareMetalServerServiceHandler) Create(ctx context.Context, regionID, pl
 	}
 
 	return bm, nil
-}
-
-// Bandwidth will get the bandwidth used by a bare metal server
-func (b *BareMetalServerServiceHandler) Bandwidth(ctx context.Context, serverID string) ([]map[string]string, error) {
-	uri := "/v1/baremetal/bandwidth"
-
-	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	q := req.URL.Query()
-	q.Add("SUBID", serverID)
-	req.URL.RawQuery = q.Encode()
-
-	var bandwidthMap map[string][][]interface{}
-	err = b.client.DoWithContext(ctx, req, &bandwidthMap)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var bandwidth []map[string]string
-
-	for _, b := range bandwidthMap["incoming_bytes"] {
-		inMap := make(map[string]string)
-		inMap["date"] = fmt.Sprintf("%v", b[0])
-		var bytes int64
-		switch b[1].(type) {
-		case float64:
-			bytes = int64(b[1].(float64))
-		case int64:
-			bytes = b[1].(int64)
-		}
-		inMap["incoming"] = fmt.Sprintf("%v", bytes)
-		bandwidth = append(bandwidth, inMap)
-	}
-
-	for _, b := range bandwidthMap["outgoing_bytes"] {
-		for i := range bandwidth {
-			if bandwidth[i]["date"] == b[0] {
-				var bytes int64
-				switch b[1].(type) {
-				case float64:
-					bytes = int64(b[1].(float64))
-				case int64:
-					bytes = b[1].(int64)
-				}
-				bandwidth[i]["outgoing"] = fmt.Sprintf("%v", bytes)
-				break
-			}
-		}
-	}
-
-	return bandwidth, nil
 }
 
 // Destroy (delete) a bare metal server.
@@ -489,6 +515,36 @@ func (b *BareMetalServerServiceHandler) Halt(ctx context.Context, serverID strin
 	}
 
 	return nil
+}
+
+// ListApps retrieves a list of Vultr one-click applications to which a bare metal server can be changed.
+// Always check against this list before trying to switch applications because it is not possible to switch between every application combination.
+func (b *BareMetalServerServiceHandler) ListApps(ctx context.Context, serverID string) ([]Application, error) {
+	uri := "/v1/baremetal/app_change_list"
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", serverID)
+	req.URL.RawQuery = q.Encode()
+
+	var appMap map[string]Application
+	err = b.client.DoWithContext(ctx, req, &appMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var appList []Application
+	for _, a := range appMap {
+		appList = append(appList, a)
+	}
+
+	return appList, nil
 }
 
 // ListOS retrieves a list of operating systems to which a bare metal server can be changed.
