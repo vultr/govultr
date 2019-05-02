@@ -177,6 +177,21 @@ func TestBareMetalServerServiceHandler_Destroy(t *testing.T) {
 	}
 }
 
+func TestBareMetalServerServiceHandler_EnableIPV6(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/ipv6_enable", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.BareMetalServer.EnableIPV6(ctx, "900000")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.EnableIPV6 returned %+v", err)
+	}
+}
+
 func TestBareMetalServerServiceHandler_GetList(t *testing.T) {
 	setup()
 	defer teardown()
@@ -607,6 +622,86 @@ func TestBareMetalServerServiceHandler_Halt(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("BareMetalServer.Halt returned %+v, expected %+v", err, nil)
+	}
+}
+
+func TestBareMetalServerServiceHandler_IPV4Info(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/list_ipv4", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+		{
+			"900000": [
+				{
+					"ip": "203.0.113.10",
+					"netmask": "255.255.255.0",
+					"gateway": "203.0.113.1",
+					"type": "main_ip"
+				}
+			]
+		}
+		`
+		fmt.Fprint(writer, response)
+	})
+
+	ipv4, err := client.BareMetalServer.IPV4Info(ctx, "900000")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.IPV4Info returned %+v", err)
+	}
+
+	expected := []BareMetalServerIPV4{
+		{
+			IP:      "203.0.113.10",
+			Netmask: "255.255.255.0",
+			Gateway: "203.0.113.1",
+			Type:    "main_ip",
+		},
+	}
+
+	if !reflect.DeepEqual(ipv4, expected) {
+		t.Errorf("BareMetalServer.IPV4Info returned %+v, expected %+v", ipv4, expected)
+	}
+}
+
+func TestBareMetalServerServiceHandler_IPV6Info(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/list_ipv6", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+		{
+			"900000": [
+				{
+					"ip": "2001:DB8:9000::100",
+					"network": "2001:DB8:9000::",
+					"network_size": 64,
+					"type": "main_ip"
+				}
+			]
+		}
+		`
+		fmt.Fprint(writer, response)
+	})
+
+	ipv4, err := client.BareMetalServer.IPV6Info(ctx, "900000")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.IPV6Info returned %+v", err)
+	}
+
+	expected := []BareMetalServerIPV6{
+		{
+			IP:          "2001:DB8:9000::100",
+			Network:     "2001:DB8:9000::",
+			NetworkSize: 64,
+			Type:        "main_ip",
+		},
+	}
+
+	if !reflect.DeepEqual(ipv4, expected) {
+		t.Errorf("BareMetalServer.IPV6Info returned %+v, expected %+v", ipv4, expected)
 	}
 }
 

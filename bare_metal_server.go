@@ -19,6 +19,7 @@ type BareMetalServerService interface {
 	ChangeOS(ctx context.Context, serverID, osID string) error
 	Create(ctx context.Context, regionID, planID, osID string, options *BareMetalServerOptions) (*BareMetalServer, error)
 	Destroy(ctx context.Context, serverID string) error
+	EnableIPV6(ctx context.Context, serverID string) error
 	GetList(ctx context.Context) ([]BareMetalServer, error)
 	GetListByLabel(ctx context.Context, label string) ([]BareMetalServer, error)
 	GetListByMainIP(ctx context.Context, mainIP string) ([]BareMetalServer, error)
@@ -26,6 +27,8 @@ type BareMetalServerService interface {
 	GetServer(ctx context.Context, serverID string) (*BareMetalServer, error)
 	GetUserData(ctx context.Context, serverID string) (*BareMetalServerUserData, error)
 	Halt(ctx context.Context, serverID string) error
+	IPV4Info(ctx context.Context, serverID string) ([]BareMetalServerIPV4, error)
+	IPV6Info(ctx context.Context, serverID string) ([]BareMetalServerIPV6, error)
 	ListApps(ctx context.Context, serverID string) ([]Application, error)
 	ListOS(ctx context.Context, serverID string) ([]OS, error)
 	Reboot(ctx context.Context, serverID string) error
@@ -93,6 +96,22 @@ type BareMetalServerAppInfo struct {
 // BareMetalServerUserData represents the user data you can give a bare metal server
 type BareMetalServerUserData struct {
 	UserData string `json:"userdata"`
+}
+
+// BareMetalServerIPV4 represents IPV4 information for a bare metal server
+type BareMetalServerIPV4 struct {
+	IP      string `json:"ip"`
+	Netmask string `json:"netmask"`
+	Gateway string `json:"gateway"`
+	Type    string `json:"type"`
+}
+
+// BareMetalServerIPV6 represents IPV6 information for a bare metal server
+type BareMetalServerIPV6 struct {
+	IP          string `json:"ip"`
+	Network     string `json:"network"`
+	NetworkSize int    `json:"network_size"`
+	Type        string `json:"type"`
 }
 
 // UnmarshalJSON implements a custom unmarshaler on BareMetalServer
@@ -396,6 +415,30 @@ func (b *BareMetalServerServiceHandler) Destroy(ctx context.Context, serverID st
 	return nil
 }
 
+// EnableIPV6 enables IPv6 networking on a bare metal server by assigning an IPv6 subnet to it.
+// The server will not be rebooted when the subnet is assigned.
+func (b *BareMetalServerServiceHandler) EnableIPV6(ctx context.Context, serverID string) error {
+	uri := "/v1/baremetal/ipv6_enable"
+
+	values := url.Values{
+		"SUBID": {serverID},
+	}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // GetList lists all bare metal servers on the current account. This includes both pending and active servers.
 func (b *BareMetalServerServiceHandler) GetList(ctx context.Context) ([]BareMetalServer, error) {
 	return b.getList(ctx, "", "")
@@ -515,6 +558,68 @@ func (b *BareMetalServerServiceHandler) Halt(ctx context.Context, serverID strin
 	}
 
 	return nil
+}
+
+// IPV4Info will List the IPv4 information of a bare metal server.
+// IP information is only available for bare metal servers in the "active" state.
+func (b *BareMetalServerServiceHandler) IPV4Info(ctx context.Context, serverID string) ([]BareMetalServerIPV4, error) {
+	uri := "/v1/baremetal/list_ipv4"
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", serverID)
+
+	req.URL.RawQuery = q.Encode()
+
+	var ipMap map[string][]BareMetalServerIPV4
+	err = b.client.DoWithContext(ctx, req, &ipMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var ipv4 []BareMetalServerIPV4
+	for _, i := range ipMap {
+		ipv4 = i
+	}
+
+	return ipv4, nil
+}
+
+// IPV6Info ists the IPv6 information of a bare metal server.
+// IP information is only available for bare metal servers in the "active" state.
+// If the bare metal server does not have IPv6 enabled, then an empty array is returned.
+func (b *BareMetalServerServiceHandler) IPV6Info(ctx context.Context, serverID string) ([]BareMetalServerIPV6, error) {
+	uri := "/v1/baremetal/list_ipv6"
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", serverID)
+	req.URL.RawQuery = q.Encode()
+
+	var ipMap map[string][]BareMetalServerIPV6
+	err = b.client.DoWithContext(ctx, req, &ipMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var ipv6 []BareMetalServerIPV6
+	for _, i := range ipMap {
+		ipv6 = i
+	}
+
+	return ipv6, nil
 }
 
 // ListApps retrieves a list of Vultr one-click applications to which a bare metal server can be changed.
