@@ -35,61 +35,6 @@ func TestBareMetalServerServiceHandler_AppInfo(t *testing.T) {
 	}
 }
 
-func TestBareMetalServerServiceHandler_ChangeOS(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v1/baremetal/os_change", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
-
-	err := client.BareMetalServer.ChangeOS(ctx, "900000", "302")
-
-	if err != nil {
-		t.Errorf("BareMetalServer.ChangeOS return %+v ", err)
-	}
-}
-
-func TestBareMetalServerServiceHandler_Create(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v1/baremetal/create", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-		{
-			"SUBID": "900000"
-		}
-		`
-		fmt.Fprint(writer, response)
-	})
-
-	options := &BareMetalServerOptions{
-		StartupScriptID: "1",
-		SnapshotID:      "1",
-		EnableIPV6:      "yes",
-		Label:           "go-bm-test",
-		SSHKeyID:        "6b80207b1821f",
-		AppID:           "1",
-		UserData:        "ZWNobyBIZWxsbyBXb3JsZA==",
-		NotifyActivate:  "yes",
-		Hostname:        "test",
-		Tag:             "go-test",
-		ReservedIPV4:    "111.111.111.111",
-	}
-
-	bm, err := client.BareMetalServer.Create(ctx, "1", "1", "1", options)
-
-	if err != nil {
-		t.Errorf("BareMetalServer.Create returned error: %v", err)
-	}
-
-	expected := &BareMetalServer{BareMetalServerID: "900000"}
-
-	if !reflect.DeepEqual(bm, expected) {
-		t.Errorf("BareMetalServer.Create returned %+v, expected %+v", bm, expected)
-	}
-}
-
 func TestBareMetalServerServiceHandler_Bandwidth(t *testing.T) {
 	setup()
 	defer teardown()
@@ -144,6 +89,61 @@ func TestBareMetalServerServiceHandler_Bandwidth(t *testing.T) {
 
 	if !reflect.DeepEqual(bandwidth, expected) {
 		t.Errorf("BareMetalServer.Bandwidth returned %+v, expected %+v", bandwidth, expected)
+	}
+}
+
+func TestBareMetalServerServiceHandler_ChangeOS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/os_change", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.BareMetalServer.ChangeOS(ctx, "900000", "302")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.ChangeOS return %+v ", err)
+	}
+}
+
+func TestBareMetalServerServiceHandler_Create(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/create", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+		{
+			"SUBID": "900000"
+		}
+		`
+		fmt.Fprint(writer, response)
+	})
+
+	options := &BareMetalServerOptions{
+		StartupScriptID: "1",
+		SnapshotID:      "1",
+		EnableIPV6:      "yes",
+		Label:           "go-bm-test",
+		SSHKeyID:        "6b80207b1821f",
+		AppID:           "1",
+		UserData:        "ZWNobyBIZWxsbyBXb3JsZA==",
+		NotifyActivate:  "yes",
+		Hostname:        "test",
+		Tag:             "go-test",
+		ReservedIPV4:    "111.111.111.111",
+	}
+
+	bm, err := client.BareMetalServer.Create(ctx, "1", "1", "1", options)
+
+	if err != nil {
+		t.Errorf("BareMetalServer.Create returned error: %v", err)
+	}
+
+	expected := &BareMetalServer{BareMetalServerID: "900000"}
+
+	if !reflect.DeepEqual(bm, expected) {
+		t.Errorf("BareMetalServer.Create returned %+v, expected %+v", bm, expected)
 	}
 }
 
