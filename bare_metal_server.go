@@ -2,6 +2,7 @@ package govultr
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -25,6 +26,9 @@ type BareMetalServerService interface {
 	Halt(ctx context.Context, serverID string) error
 	Reboot(ctx context.Context, serverID string) error
 	Reinstall(ctx context.Context, serverID string) error
+	SetLabel(ctx context.Context, serverID, label string) error
+	SetTag(ctx context.Context, serverID, tag string) error
+	SetUserData(ctx context.Context, serverID, userData string) error
 }
 
 // BareMetalServerServiceHandler handles interaction with the bare metal methods for the Vultr API
@@ -197,7 +201,6 @@ func (b *BareMetalServerServiceHandler) AppInfo(ctx context.Context, serverID st
 	return appInfo, nil
 }
 
-
 // Create a new bare metal server.
 func (b *BareMetalServerServiceHandler) Create(ctx context.Context, regionID, planID, osID string, options *BareMetalServerOptions) (*BareMetalServer, error) {
 	uri := "/v1/baremetal/create"
@@ -316,7 +319,6 @@ func (b *BareMetalServerServiceHandler) Bandwidth(ctx context.Context, serverID 
 
 	return bandwidth, nil
 }
-
 
 // Destroy (delete) a bare metal server.
 // All data will be permanently lost, and the IP address will be released. There is no going back from this call.
@@ -493,6 +495,82 @@ func (b *BareMetalServerServiceHandler) Reinstall(ctx context.Context, serverID 
 
 	values := url.Values{
 		"SUBID": {serverID},
+	}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SetLabel sets the label of a bare metal server.
+func (b *BareMetalServerServiceHandler) SetLabel(ctx context.Context, serverID, label string) error {
+	uri := "/v1/baremetal/label_set"
+
+	values := url.Values{
+		"SUBID": {serverID},
+		"label": {label},
+	}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SetTag sets the tag of a bare metal server.
+func (b *BareMetalServerServiceHandler) SetTag(ctx context.Context, serverID, tag string) error {
+	uri := "/v1/baremetal/tag_set"
+
+	values := url.Values{
+		"SUBID": {serverID},
+		"tag":   {tag},
+	}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SetUserData sets the user-data for this server.
+// User-data is a generic data store, which some provisioning tools and cloud operating systems use as a configuration file.
+// It is generally consumed only once after an instance has been launched, but individual needs may vary.
+func (b *BareMetalServerServiceHandler) SetUserData(ctx context.Context, serverID, userData string) error {
+	uri := "/v1/baremetal/set_user_data"
+
+	encodedUserData := base64.StdEncoding.EncodeToString([]byte(userData))
+
+	values := url.Values{
+		"SUBID":    {serverID},
+		"userdata": {encodedUserData},
 	}
 
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)

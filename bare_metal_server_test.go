@@ -132,7 +132,6 @@ func TestBareMetalServerServiceHandler_Bandwidth(t *testing.T) {
 	}
 }
 
-
 func TestBareMetalServerServiceHandler_Destroy(t *testing.T) {
 	setup()
 	defer teardown()
@@ -566,7 +565,6 @@ func TestBareMetalServerServiceHandler_GetUserData(t *testing.T) {
 	}
 }
 
-
 func TestBareMetalServerServiceHandler_Halt(t *testing.T) {
 	setup()
 	defer teardown()
@@ -597,17 +595,47 @@ func TestBareMetalServerServiceHandler_Reboot(t *testing.T) {
 	}
 }
 
-func TestBareMetalServerServiceHandler_Reinstall(t *testing.T) {
+func TestBareMetalServerServiceHandler_SetLabel(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/baremetal/reinstall", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v1/baremetal/label_set", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.BareMetalServer.Reinstall(ctx, "900000")
+	err := client.BareMetalServer.SetLabel(ctx, "900000", "new label")
 
 	if err != nil {
-		t.Errorf("BareMetalServer.Reinstall returned %+v, expected %+v", err, nil)
+		t.Errorf("BareMetalServer.SetLabel returned %+v, expected %+v", err, nil)
+	}
+}
+
+func TestBareMetalServerServiceHandler_SetTag(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/tag_set", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.BareMetalServer.SetTag(ctx, "900000", "new tag")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.SetTag returned %+v, expected %+v", err, nil)
+	}
+}
+
+func TestBareMetalServerServiceHandler_SetUserData(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/set_user_data", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.BareMetalServer.SetUserData(ctx, "900000", "user-test-data")
+
+	if err != nil {
+		t.Errorf("Server.SetUserData return %+v ", err)
 	}
 }
