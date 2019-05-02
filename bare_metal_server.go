@@ -66,13 +66,6 @@ type BareMetalServer struct {
 	AppID             string      `json:"APPID"`
 }
 
-// V6Network represents a IPv6 network on Vultr
-type V6Network struct {
-	Network     string `json:"v6_network"`
-	MainIP      string `json:"v6_main_ip"`
-	NetworkSize string `json:"v6_network_size"`
-}
-
 // BareMetalServerOptions represents the optional parameters that can be set when creating a bare metal server
 type BareMetalServerOptions struct {
 	StartupScriptID string
