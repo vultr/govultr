@@ -137,15 +137,6 @@ func TestReservedIPServiceHandler_GetList(t *testing.T) {
 				"subnet_size": 32,
 				"label": "my first reserved ip",
 				"attached_SUBID": 123456
-			},
-			"1313045": {
-				"SUBID": 1313045,
-				"DCID": 1,
-				"ip_type": "v6",
-				"subnet": "2001:db8:9999::",
-				"subnet_size": 64,
-				"label": "",
-				"attached_SUBID": false
 			}
 		}
 		`
@@ -167,15 +158,6 @@ func TestReservedIPServiceHandler_GetList(t *testing.T) {
 			SubnetSize:   32,
 			Label:        "my first reserved ip",
 			AttachedID:   "123456",
-		},
-		{
-			ReservedIPID: "1313045",
-			RegionID:     1,
-			IPType:       "v6",
-			Subnet:       "2001:db8:9999::",
-			SubnetSize:   64,
-			Label:        "",
-			AttachedID:   "",
 		},
 	}
 

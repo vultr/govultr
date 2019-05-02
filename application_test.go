@@ -21,13 +21,6 @@ func TestApplicationServiceHandler_GetList(t *testing.T) {
 				"short_name": "lemp",
 				"deploy_name": "LEMP on CentOS 6 x64",
 				"surcharge": 0
-			},
-			"2": {
-				"APPID": "2",
-				"name": "WordPress",
-				"short_name": "wordpress",
-				"deploy_name": "WordPress on CentOS 6 x64",
-				"surcharge": 0
 			}
 		}
 		`
@@ -46,13 +39,6 @@ func TestApplicationServiceHandler_GetList(t *testing.T) {
 			Name:       "LEMP",
 			ShortName:  "lemp",
 			DeployName: "LEMP on CentOS 6 x64",
-			Surcharge:  0,
-		},
-		{
-			AppID:      "2",
-			Name:       "WordPress",
-			ShortName:  "wordpress",
-			DeployName: "WordPress on CentOS 6 x64",
 			Surcharge:  0,
 		},
 	}
