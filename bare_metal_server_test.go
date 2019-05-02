@@ -625,6 +625,46 @@ func TestBareMetalServerServiceHandler_Halt(t *testing.T) {
 	}
 }
 
+func TestBareMetalServerServiceHandler_IPV4Info(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/baremetal/list_ipv4", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+		{
+			"900000": [
+				{
+					"ip": "203.0.113.10",
+					"netmask": "255.255.255.0",
+					"gateway": "203.0.113.1",
+					"type": "main_ip"
+				}
+			]
+		}
+		`
+		fmt.Fprint(writer, response)
+	})
+
+	ipv4, err := client.BareMetalServer.IPV4Info(ctx, "900000")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.IPV4Info returned %+v", err)
+	}
+
+	expected := []BareMetalIPV4{
+		{
+			IP:      "203.0.113.10",
+			Netmask: "255.255.255.0",
+			Gateway: "203.0.113.1",
+			Type:    "main_ip",
+		},
+	}
+
+	if !reflect.DeepEqual(ipv4, expected) {
+		t.Errorf("BareMetalServer.IPV4Info returned %+v, expected %+v", ipv4, expected)
+	}
+}
+
 func TestBareMetalServerServiceHandler_ListApps(t *testing.T) {
 	setup()
 	defer teardown()

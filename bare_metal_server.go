@@ -27,6 +27,7 @@ type BareMetalServerService interface {
 	GetServer(ctx context.Context, serverID string) (*BareMetalServer, error)
 	GetUserData(ctx context.Context, serverID string) (*BareMetalServerUserData, error)
 	Halt(ctx context.Context, serverID string) error
+	IPV4Info(ctx context.Context, serverID string) ([]BareMetalIPV4, error)
 	ListApps(ctx context.Context, serverID string) ([]Application, error)
 	ListOS(ctx context.Context, serverID string) ([]OS, error)
 	Reboot(ctx context.Context, serverID string) error
@@ -94,6 +95,14 @@ type BareMetalServerAppInfo struct {
 // BareMetalServerUserData represents the user data you can give a bare metal server
 type BareMetalServerUserData struct {
 	UserData string `json:"userdata"`
+}
+
+// BareMetalIPV4 represents IPV4 information for a bare metal server
+type BareMetalIPV4 struct {
+	IP      string `json:"ip"`
+	Netmask string `json:"netmask"`
+	Gateway string `json:"gateway"`
+	Type    string `json:"type"`
 }
 
 // UnmarshalJSON implements a custom unmarshaler on BareMetalServer
@@ -540,6 +549,37 @@ func (b *BareMetalServerServiceHandler) Halt(ctx context.Context, serverID strin
 	}
 
 	return nil
+}
+
+// IPV4Info will List the IPv4 information of a bare metal server.
+// IP information is only available for bare metal servers in the "active" state.
+func (b *BareMetalServerServiceHandler) IPV4Info(ctx context.Context, serverID string) ([]BareMetalIPV4, error) {
+	uri := "/v1/baremetal/list_ipv4"
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", serverID)
+
+	req.URL.RawQuery = q.Encode()
+
+	var ipMap map[string][]BareMetalIPV4
+	err = b.client.DoWithContext(ctx, req, &ipMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var ipv4 []BareMetalIPV4
+	for _, i := range ipMap {
+		ipv4 = i
+	}
+
+	return ipv4, nil
 }
 
 // ListApps retrieves a list of Vultr one-click applications to which a bare metal server can be changed.
