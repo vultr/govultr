@@ -13,7 +13,7 @@ import (
 type ServerService interface {
 	ChangeApp(ctx context.Context, vpsID, appID string) error
 	ListApps(ctx context.Context, vpsID string) ([]Application, error)
-	AppInfo(ctx context.Context, vpsID string) (*ServerAppInfo, error)
+	AppInfo(ctx context.Context, vpsID string) (*AppInfo, error)
 	EnableBackup(ctx context.Context, vpsID string) error
 	DisableBackup(ctx context.Context, vpsID string) error
 	GetBackupSchedule(ctx context.Context, vpsID string) (*BackupSchedule, error)
@@ -65,8 +65,8 @@ type ServerServiceHandler struct {
 	client *Client
 }
 
-// ServerAppInfo represents information about the application on your VPS
-type ServerAppInfo struct {
+// AppInfo represents information about the application on your VPS
+type AppInfo struct {
 	AppInfo string `json:"app_info"`
 }
 
@@ -238,7 +238,7 @@ func (s *ServerServiceHandler) ListApps(ctx context.Context, vpsID string) ([]Ap
 }
 
 // AppInfo retrieves the application information for a given VPS ID
-func (s *ServerServiceHandler) AppInfo(ctx context.Context, vpsID string) (*ServerAppInfo, error) {
+func (s *ServerServiceHandler) AppInfo(ctx context.Context, vpsID string) (*AppInfo, error) {
 
 	uri := "/v1/server/get_app_info"
 
@@ -252,7 +252,7 @@ func (s *ServerServiceHandler) AppInfo(ctx context.Context, vpsID string) (*Serv
 	q.Add("SUBID", vpsID)
 	req.URL.RawQuery = q.Encode()
 
-	appInfo := new(ServerAppInfo)
+	appInfo := new(AppInfo)
 
 	err = s.client.DoWithContext(ctx, req, appInfo)
 
