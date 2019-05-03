@@ -102,7 +102,7 @@ func TestBlockStorageServiceHandler_GetList(t *testing.T) {
         	"status": "pending",
         	"size_gb": 100,
         	"DCID": 1,
-        	"attached_to_SUBID": null,
+        	"attached_to_SUBID": "100",
         	"label": "files1"
     	},
 		{
@@ -126,9 +126,9 @@ func TestBlockStorageServiceHandler_GetList(t *testing.T) {
 		t.Errorf("BlockStorage.Get returned error: %v", err)
 	}
 
-	expected := []BlockStorageGet{
-		{BlockStorageID: 1313216, DateCreated: "2016-03-29 10:10:04", Cost: 10, Status: "pending", Size: 100, RegionID: 1, Label: "files1"},
-		{BlockStorageID: 1313216, DateCreated: "2016-03-29 10:10:04", Cost: 10, Status: "pending", Size: 100, RegionID: 1, Label: "files1"},
+	expected := []BlockStorage{
+		{BlockStorageID: "1313216", DateCreated: "2016-03-29 10:10:04", Cost: "10", Status: "pending", Size: 100, RegionID: 1, VpsID: "100", Label: "files1"},
+		{BlockStorageID: "1313216", DateCreated: "2016-03-29 10:10:04", Cost: "10", Status: "pending", Size: 100, RegionID: 1, VpsID: "", Label: "files1"},
 	}
 
 	if !reflect.DeepEqual(blockStorage, expected) {
@@ -162,7 +162,7 @@ func TestBlockStorageServiceHandler_Get(t *testing.T) {
 		t.Errorf("BlockStorage.Get returned error: %v", err)
 	}
 
-	expected := &BlockStorageGet{BlockStorageID: 1313216, DateCreated: "2016-03-29 10:10:04", Cost: 10, Status: "pending", Size: 100, RegionID: 1, Label: "files1"}
+	expected := &BlockStorage{BlockStorageID: "1313216", DateCreated: "2016-03-29 10:10:04", Cost: "10", Status: "pending", Size: 100, RegionID: 1, VpsID: "", Label: "files1"}
 
 	if !reflect.DeepEqual(blockStorage, expected) {
 		t.Errorf("BlockStorage.Get returned %+v, expected %+v", blockStorage, expected)
