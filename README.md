@@ -27,7 +27,7 @@ You can define your own `http.Client` however if you pass in `nil` then you will
 As for the API Key - We recommend you store this as a environmental variable and not hard code it.
 
 
-There are also three parameters you change regarding the client
+There are also three parameters you may change regarding the client
 - BaseUrl: allows you to override the base URL that Vultr defaults to
 - UserAgent: allows you to override the UserAgent that Vultr defaults to
 - RateLimit: Vultr currently rate limits how fast you can make calls back to back. This lets you configure if you want a delay in between calls

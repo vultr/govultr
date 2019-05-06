@@ -31,7 +31,7 @@ go test -v -coverprofile cover.out
 go tool cover -html=cover.out
 ```
 
-Upon a Pull Request we have CodeCov checks to make sure that code coverage meets a minimum requirement. In a addition to CodeCov we have Travis-CI that will run your unit tests on each pull request as well.
+Upon a Pull Request we have CodeCov checks to make sure that code coverage meets a minimum requirement. In addition to CodeCov we have Travis-CI that will run your unit tests on each pull request as well.
 
 ## Versioning 
 
