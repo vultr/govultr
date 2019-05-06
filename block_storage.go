@@ -2,6 +2,8 @@ package govultr
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -15,8 +17,8 @@ type BlockStorageService interface {
 	Delete(ctx context.Context, blockID string) error
 	Detach(ctx context.Context, blockID string) error
 	SetLabel(ctx context.Context, blockID, label string) error
-	GetList(ctx context.Context) ([]BlockStorageGet, error)
-	Get(ctx context.Context, blockID string) (*BlockStorageGet, error)
+	GetList(ctx context.Context) ([]BlockStorage, error)
+	Get(ctx context.Context, blockID string) (*BlockStorage, error)
 	Resize(ctx context.Context, blockID string, size int) error
 }
 
@@ -37,16 +39,83 @@ type BlockStorage struct {
 	Label          string `json:"label"`
 }
 
-// BlockStorageGet represents Vultr Block-Storage with different data Types
-type BlockStorageGet struct {
-	BlockStorageID int    `json:"SUBID"`
-	DateCreated    string `json:"date_created"`
-	Cost           int    `json:"cost_per_month"`
-	Status         string `json:"status"`
-	Size           int    `json:"size_gb"`
-	RegionID       int    `json:"DCID"`
-	VpsID          int    `json:"attached_to_SUBID"`
-	Label          string `json:"label"`
+// UnmarshalJSON implements json.Unmarshaller on BlockStorage to handle the inconsistent types returned from the Vultr v1 API.
+func (b *BlockStorage) UnmarshalJSON(data []byte) (err error) {
+	if b == nil {
+		*b = BlockStorage{}
+	}
+
+	var v map[string]interface{}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+
+	b.BlockStorageID, err = b.unmarshalStr(fmt.Sprintf("%v", v["SUBID"]))
+	if err != nil {
+		return err
+	}
+
+	b.RegionID, err = b.unmarshalInt(fmt.Sprintf("%v", v["DCID"]))
+	if err != nil {
+		return err
+	}
+
+	b.Size, err = b.unmarshalInt(fmt.Sprintf("%v", v["size_gb"]))
+	if err != nil {
+		return err
+	}
+
+	b.VpsID, err = b.unmarshalStr(fmt.Sprintf("%v", v["attached_to_SUBID"]))
+	if err != nil {
+		return err
+	}
+
+	b.Cost, err = b.unmarshalStr(fmt.Sprintf("%v", v["cost_per_month"]))
+	if err != nil {
+		return err
+	}
+
+	date := fmt.Sprintf("%v", v["date_created"])
+	if date == "<nil>" {
+		date = ""
+	}
+	b.DateCreated = date
+
+	status := fmt.Sprintf("%v", v["status"])
+	if status == "<nil>" {
+		status = ""
+	}
+	b.Status = status
+
+	b.Label = fmt.Sprintf("%v", v["label"])
+
+	return nil
+}
+
+func (b *BlockStorage) unmarshalInt(value string) (int, error) {
+	if len(value) == 0 || value == "<nil>" {
+		value = "0"
+	}
+
+	i, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	return int(i), nil
+}
+
+func (b *BlockStorage) unmarshalStr(value string) (string, error) {
+	if len(value) == 0 || value == "<nil>" || value == "0" || value == "false" {
+		return "", nil
+	}
+
+	f, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		return "", err
+	}
+
+	return strconv.FormatFloat(f, 'f', -1, 64), nil
 }
 
 // Attach will link a given block storage to a given Vultr vps
@@ -179,7 +248,7 @@ func (b *BlockStorageServiceHandler) SetLabel(ctx context.Context, blockID, labe
 }
 
 // GetList returns a list of all block storage instances on your Vultr Account
-func (b *BlockStorageServiceHandler) GetList(ctx context.Context) ([]BlockStorageGet, error) {
+func (b *BlockStorageServiceHandler) GetList(ctx context.Context) ([]BlockStorage, error) {
 
 	uri := "/v1/block/list"
 
@@ -189,7 +258,7 @@ func (b *BlockStorageServiceHandler) GetList(ctx context.Context) ([]BlockStorag
 		return nil, err
 	}
 
-	var blockStorage []BlockStorageGet
+	var blockStorage []BlockStorage
 	err = b.client.DoWithContext(ctx, req, &blockStorage)
 
 	if err != nil {
@@ -200,7 +269,7 @@ func (b *BlockStorageServiceHandler) GetList(ctx context.Context) ([]BlockStorag
 }
 
 // Get returns a single block storage instance based ony our blockID you provide from your Vultr Account
-func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID string) (*BlockStorageGet, error) {
+func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID string) (*BlockStorage, error) {
 
 	uri := "/v1/block/list"
 
@@ -214,7 +283,7 @@ func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID string) (*
 	q.Add("SUBID", blockID)
 	req.URL.RawQuery = q.Encode()
 
-	blockStorage := new(BlockStorageGet)
+	blockStorage := new(BlockStorage)
 	err = b.client.DoWithContext(ctx, req, blockStorage)
 
 	if err != nil {
