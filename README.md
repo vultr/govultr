@@ -32,7 +32,7 @@ There are also three parameters you change regarding the client
 - UserAgent: allows you to override the UserAgent that Vultr defaults to
 - RateLimit: Vultr currently rate limits how fast you can make calls back to back. This lets you configure if you want a delay in between calls
 
-###Example client setup 
+### Example client setup 
 ```go
 package main
 
