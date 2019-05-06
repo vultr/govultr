@@ -13,7 +13,7 @@ import (
 // BareMetalServerService is the interface to interact with the bare metal endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#baremetal
 type BareMetalServerService interface {
-	AppInfo(ctx context.Context, serverID string) (*BareMetalServerAppInfo, error)
+	AppInfo(ctx context.Context, serverID string) (*AppInfo, error)
 	Bandwidth(ctx context.Context, serverID string) ([]map[string]string, error)
 	ChangeApp(ctx context.Context, serverID, appID string) error
 	ChangeOS(ctx context.Context, serverID, osID string) error
@@ -25,7 +25,7 @@ type BareMetalServerService interface {
 	GetListByMainIP(ctx context.Context, mainIP string) ([]BareMetalServer, error)
 	GetListByTag(ctx context.Context, tag string) ([]BareMetalServer, error)
 	GetServer(ctx context.Context, serverID string) (*BareMetalServer, error)
-	GetUserData(ctx context.Context, serverID string) (*BareMetalServerUserData, error)
+	GetUserData(ctx context.Context, serverID string) (*UserData, error)
 	Halt(ctx context.Context, serverID string) error
 	IPV4Info(ctx context.Context, serverID string) ([]BareMetalServerIPV4, error)
 	IPV6Info(ctx context.Context, serverID string) ([]BareMetalServerIPV6, error)
@@ -79,16 +79,6 @@ type BareMetalServerOptions struct {
 	Hostname        string
 	Tag             string
 	ReservedIPV4    string
-}
-
-// BareMetalServerAppInfo represents information about the application on your bare metal server
-type BareMetalServerAppInfo struct {
-	AppInfo string `json:"app_info"`
-}
-
-// BareMetalServerUserData represents the user data you can give a bare metal server
-type BareMetalServerUserData struct {
-	UserData string `json:"userdata"`
 }
 
 // BareMetalServerIPV4 represents IPV4 information for a bare metal server
@@ -193,7 +183,7 @@ func (b *BareMetalServer) unmarshalStr(value string) string {
 }
 
 // AppInfo retrieves the application information for a given server ID
-func (b *BareMetalServerServiceHandler) AppInfo(ctx context.Context, serverID string) (*BareMetalServerAppInfo, error) {
+func (b *BareMetalServerServiceHandler) AppInfo(ctx context.Context, serverID string) (*AppInfo, error) {
 	uri := "/v1/baremetal/get_app_info"
 
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -206,7 +196,7 @@ func (b *BareMetalServerServiceHandler) AppInfo(ctx context.Context, serverID st
 	q.Add("SUBID", serverID)
 	req.URL.RawQuery = q.Encode()
 
-	appInfo := new(BareMetalServerAppInfo)
+	appInfo := new(AppInfo)
 
 	err = b.client.DoWithContext(ctx, req, appInfo)
 
@@ -505,7 +495,7 @@ func (b *BareMetalServerServiceHandler) GetServer(ctx context.Context, serverID 
 }
 
 // GetUserData retrieves the (base64 encoded) user-data for this bare metal server
-func (b *BareMetalServerServiceHandler) GetUserData(ctx context.Context, serverID string) (*BareMetalServerUserData, error) {
+func (b *BareMetalServerServiceHandler) GetUserData(ctx context.Context, serverID string) (*UserData, error) {
 	uri := "/v1/baremetal/get_user_data"
 
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -518,7 +508,7 @@ func (b *BareMetalServerServiceHandler) GetUserData(ctx context.Context, serverI
 	q.Add("SUBID", serverID)
 	req.URL.RawQuery = q.Encode()
 
-	userData := new(BareMetalServerUserData)
+	userData := new(UserData)
 	err = b.client.DoWithContext(ctx, req, userData)
 
 	if err != nil {

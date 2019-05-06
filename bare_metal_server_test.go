@@ -26,7 +26,7 @@ func TestBareMetalServerServiceHandler_AppInfo(t *testing.T) {
 		t.Errorf("BareMetalServer.AppInfo returned error: %v", err)
 	}
 
-	expected := &BareMetalServerAppInfo{
+	expected := &AppInfo{
 		AppInfo: "Minecraft Server Details\n\nYour Minecraft server is accessible at: \n\n45.74.196.185:25565\n\nYou can access the console of your Minecraft server by using the \"screen\" utility from the following login:\nUser: minecraft\nPass: NXwdsdZjwJasdZbsc\n\nRead more about this app on Vultr Docs: \n\nhttps://www.vultr.com/docs/one-click-minecraft\n",
 	}
 
@@ -603,7 +603,7 @@ func TestBareMetalServerServiceHandler_GetUserData(t *testing.T) {
 		t.Errorf("BareMetalServer.GetUserData return %+v ", err)
 	}
 
-	expected := &BareMetalServerUserData{UserData: "ZWNobyBIZWxsbyBXb3JsZA=="}
+	expected := &UserData{UserData: "ZWNobyBIZWxsbyBXb3JsZA=="}
 
 	if !reflect.DeepEqual(userData, expected) {
 		t.Errorf("BareMetalServer.GetUserData returned %+v, expected %+v", userData, expected)
