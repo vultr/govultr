@@ -67,7 +67,7 @@ func TestServerServiceHandler_AppInfo(t *testing.T) {
 		t.Errorf("Server.AppInfo returned %+v, ", err)
 	}
 
-	expected := &ServerAppInfo{AppInfo: "test"}
+	expected := &AppInfo{AppInfo: "test"}
 
 	if !reflect.DeepEqual(appInfo, expected) {
 		t.Errorf("Server.AppInfo returned %+v, expected %+v", appInfo, expected)
