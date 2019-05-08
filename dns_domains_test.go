@@ -79,7 +79,7 @@ func TestDNSDomainServiceHandler_DNSSecInfo(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(dnsSec, expected) {
-		t.Errorf("DNSDomain.ToggleDNSSec returned %+v, expected %+v", dnsSec, expected)
+		t.Errorf("DNSDomain.DNSSecInfo returned %+v, expected %+v", dnsSec, expected)
 	}
 }
 

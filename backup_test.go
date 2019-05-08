@@ -125,13 +125,13 @@ func TestBackupServiceHandler_GetListBySubEmpty(t *testing.T) {
 
 	backups, err := client.Backup.GetListBySub(ctx, "test-backupID")
 	if err != nil {
-		t.Errorf("Backup.GetList returned error: %v", err)
+		t.Errorf("Backup.GetListBySub returned error: %v", err)
 	}
 
 	var expected []Backup
 
 	if !reflect.DeepEqual(backups, expected) {
-		t.Errorf("Backup.GetList returned %+v, expected %+v", backups, expected)
+		t.Errorf("Backup.GetListBySub returned %+v, expected %+v", backups, expected)
 	}
 }
 

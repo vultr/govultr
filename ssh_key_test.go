@@ -50,7 +50,7 @@ func TestSSHKeyServiceHandler_Destroy(t *testing.T) {
 	err := client.SSHKey.Destroy(ctx, "foo")
 
 	if err != nil {
-		t.Errorf("SSHKey.Delete returned %+v, expected %+v", err, nil)
+		t.Errorf("SSHKey.Destroy returned %+v, expected %+v", err, nil)
 	}
 }
 
@@ -75,7 +75,7 @@ func TestSSHKeyServiceHandler_GetList(t *testing.T) {
 	sshKeys, err := client.SSHKey.GetList(ctx)
 
 	if err != nil {
-		t.Errorf("SSHKey.List returned error: %v", err)
+		t.Errorf("SSHKey.GetList returned error: %v", err)
 	}
 
 	expected := []SSHKey{

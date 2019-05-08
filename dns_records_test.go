@@ -33,7 +33,7 @@ func TestDNSRecordsServiceHandler_Delete(t *testing.T) {
 	err := client.DNSRecord.Delete(ctx, "domain.com", "12345678")
 
 	if err != nil {
-		t.Errorf("DNSRecord.Create returned %+v, expected %+v", err, nil)
+		t.Errorf("DNSRecord.Delete returned %+v, expected %+v", err, nil)
 	}
 }
 
@@ -82,6 +82,6 @@ func TestDNSRecordsServiceHandler_Update(t *testing.T) {
 	err := client.DNSRecord.Update(ctx, "turnip.services", params)
 
 	if err != nil {
-		t.Errorf("DNSRecord.Create returned %+v, expected %+v", err, nil)
+		t.Errorf("DNSRecord.Update returned %+v, expected %+v", err, nil)
 	}
 }

@@ -20,7 +20,7 @@ func TestSnapshotServiceHandler_Create(t *testing.T) {
 	snapshot, err := client.Snapshot.Create(ctx, "987654321", "unit-test-desc")
 
 	if err != nil {
-		t.Errorf("Account.GetInfo returned error: %v", err)
+		t.Errorf("Snapshot.Create returned error: %v", err)
 	}
 
 	expected := &Snapshot{SnapshotID: "1234567", Description: "unit-test-desc"}
@@ -43,13 +43,13 @@ func TestSnapshotServiceHandler_CreateFromURL(t *testing.T) {
 	snapshot, err := client.Snapshot.CreateFromURL(ctx, "http://localhost/some.iso")
 
 	if err != nil {
-		t.Errorf("Account.GetInfo returned error: %v", err)
+		t.Errorf("Snapshot.CreateFromURL returned error: %v", err)
 	}
 
 	expected := &Snapshot{SnapshotID: "544e52f31c706"}
 
 	if !reflect.DeepEqual(snapshot, expected) {
-		t.Errorf("Snapshot.Create returned %+v, expected %+v", snapshot, expected)
+		t.Errorf("Snapshot.CreateFromURL returned %+v, expected %+v", snapshot, expected)
 	}
 }
 
@@ -64,7 +64,7 @@ func TestSnapshotServiceHandler_Destroy(t *testing.T) {
 	err := client.Snapshot.Destroy(ctx, "7a05cbf361d98")
 
 	if err != nil {
-		t.Errorf("Account.GetInfo returned %+v, expected %+v", err, nil)
+		t.Errorf("Snapshot.Destroy returned %+v, expected %+v", err, nil)
 	}
 
 }
@@ -93,7 +93,7 @@ func TestSnapshotServiceHandler_GetList(t *testing.T) {
 	snapshots, err := client.Snapshot.GetList(ctx)
 
 	if err != nil {
-		t.Errorf("Account.GetInfo returned error: %v", err)
+		t.Errorf("Snapshot.GetList returned error: %v", err)
 	}
 	expected := []Snapshot{
 		{SnapshotID: "5359435dc1df3", DateCreated: "2014-04-22 16:11:46", Description: "", Size: "10000000", Status: "complete", OsID: "127", AppID: "0"},
@@ -129,7 +129,7 @@ func TestSnapshotServiceHandler_Get(t *testing.T) {
 	snapshots, err := client.Snapshot.Get(ctx, "5359435dc1df3")
 
 	if err != nil {
-		t.Errorf("Account.GetInfo returned error: %v", err)
+		t.Errorf("Snapshot.Get returned error: %v", err)
 	}
 	expected := &Snapshot{SnapshotID: "5359435dc1df3", DateCreated: "2014-04-22 16:11:46", Description: "", Size: "10000000", Status: "complete", OsID: "127", AppID: "0"}
 

@@ -94,7 +94,7 @@ func TestUserServiceHandler_GetList(t *testing.T) {
 	Users, err := client.User.GetList(ctx)
 
 	if err != nil {
-		t.Errorf("User.List returned error: %v", err)
+		t.Errorf("User.GetList returned error: %v", err)
 	}
 
 	expected := []User{

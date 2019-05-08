@@ -41,7 +41,7 @@ func TestIsoServiceHandler_Delete(t *testing.T) {
 	err := client.Iso.Delete(ctx, 24)
 
 	if err != nil {
-		t.Errorf("Iso.CreateFromURL returned %+v, expected %+v", err, nil)
+		t.Errorf("Iso.Delete returned %+v, expected %+v", err, nil)
 	}
 }
 
@@ -57,7 +57,7 @@ func TestIsoServiceHandler_GetList(t *testing.T) {
 	iso, err := client.Iso.GetList(ctx)
 
 	if err != nil {
-		t.Errorf("Iso.CreateFromURL returned %+v, expected %+v", err, nil)
+		t.Errorf("Iso.GetList returned %+v, expected %+v", err, nil)
 	}
 
 	expected := []Iso{
@@ -65,7 +65,7 @@ func TestIsoServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(iso, expected) {
-		t.Errorf("Iso.CreateFromURL returned %+v, expected %+v", iso, expected)
+		t.Errorf("Iso.GetList returned %+v, expected %+v", iso, expected)
 	}
 }
 
@@ -81,7 +81,7 @@ func TestIsoServiceHandler_GetPublicList(t *testing.T) {
 	iso, err := client.Iso.GetPublicList(ctx)
 
 	if err != nil {
-		t.Errorf("Iso.CreateFromURL returned %+v, expected %+v", err, nil)
+		t.Errorf("Iso.GetPublicList returned %+v, expected %+v", err, nil)
 	}
 
 	expected := []PublicIso{
@@ -89,6 +89,6 @@ func TestIsoServiceHandler_GetPublicList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(iso, expected) {
-		t.Errorf("Iso.CreateFromURL returned %+v, expected %+v", iso, expected)
+		t.Errorf("Iso.GetPublicList returned %+v, expected %+v", iso, expected)
 	}
 }
