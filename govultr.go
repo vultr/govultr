@@ -56,8 +56,8 @@ type Client struct {
 	Iso             IsoService
 	Network         NetworkService
 	OS              OSService
-	Plans           PlansService
-	Regions         RegionsService
+	Plan            PlanService
+	Region          RegionService
 	ReservedIP      ReservedIPService
 	Server          ServerService
 	Snapshot        SnapshotService
@@ -101,8 +101,8 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.Iso = &IsoServiceHandler{client}
 	client.Network = &NetworkServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
-	client.Plans = &PlansServiceHandler{client}
-	client.Regions = &RegionsServiceHandler{client}
+	client.Plan = &PlanServiceHandler{client}
+	client.Region = &RegionServiceHandler{client}
 	client.Server = &ServerServiceHandler{client}
 	client.ReservedIP = &ReservedIPServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}

@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestPlansServiceHandler_GetAllList(t *testing.T) {
+func TestPlanServiceHandler_GetList(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -16,13 +16,13 @@ func TestPlansServiceHandler_GetAllList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	plans, err := client.Plans.GetAllList(ctx, "vc2")
+	plans, err := client.Plan.GetList(ctx, "vc2")
 
 	if err != nil {
-		t.Errorf("Plans.GetAllList returned %+v", err)
+		t.Errorf("Plan.GetList returned %+v", err)
 	}
 
-	expected := []Plans{{
+	expected := []Plan{{
 		VpsID:       201,
 		Name:        "1024 MB RAM,25 GB SSD,1.00 TB BW",
 		VCpus:       1,
@@ -38,11 +38,11 @@ func TestPlansServiceHandler_GetAllList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(plans, expected) {
-		t.Errorf("Plans.GetAllList  returned %+v, expected %+v", plans, expected)
+		t.Errorf("Plan.GetList  returned %+v, expected %+v", plans, expected)
 	}
 }
 
-func TestPlansServiceHandler_GetBareMetalList(t *testing.T) {
+func TestPlanServiceHandler_GetBareMetalList(t *testing.T) {
 	setup()
 	defer teardown()
 	mux.HandleFunc("/v1/plans/list_baremetal", func(writer http.ResponseWriter, request *http.Request) {
@@ -50,10 +50,10 @@ func TestPlansServiceHandler_GetBareMetalList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bareMetalPlans, err := client.Plans.GetBareMetalList(ctx)
+	bareMetalPlans, err := client.Plan.GetBareMetalList(ctx)
 
 	if err != nil {
-		t.Errorf("Plans.GetBareMetalList returned %+v", err)
+		t.Errorf("Plan.GetBareMetalList returned %+v", err)
 	}
 
 	expected := []BareMetalPlan{
@@ -72,11 +72,11 @@ func TestPlansServiceHandler_GetBareMetalList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(bareMetalPlans, expected) {
-		t.Errorf("Plans.GetBareMetalList  returned %+v, expected %+v", bareMetalPlans, expected)
+		t.Errorf("Plan.GetBareMetalList  returned %+v, expected %+v", bareMetalPlans, expected)
 	}
 }
 
-func TestPlansServiceHandler_GetVc2List(t *testing.T) {
+func TestPlanServiceHandler_GetVc2List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -85,10 +85,10 @@ func TestPlansServiceHandler_GetVc2List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	vc2, err := client.Plans.GetVc2List(ctx)
+	vc2, err := client.Plan.GetVc2List(ctx)
 
 	if err != nil {
-		t.Errorf("Plans.GetVc2List returned %+v", err)
+		t.Errorf("Plan.GetVc2List returned %+v", err)
 	}
 
 	expected := []VCPlan{
@@ -105,11 +105,11 @@ func TestPlansServiceHandler_GetVc2List(t *testing.T) {
 		},
 	}
 	if !reflect.DeepEqual(vc2, expected) {
-		t.Errorf("Plans.GetVc2List  returned %+v, expected %+v", vc2, expected)
+		t.Errorf("Plan.GetVc2List  returned %+v, expected %+v", vc2, expected)
 	}
 }
 
-func TestPlansServiceHandler_GetVdc2List(t *testing.T) {
+func TestPlanServiceHandler_GetVdc2List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -118,10 +118,10 @@ func TestPlansServiceHandler_GetVdc2List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	vdc2, err := client.Plans.GetVdc2List(ctx)
+	vdc2, err := client.Plan.GetVdc2List(ctx)
 
 	if err != nil {
-		t.Errorf("Plans.GetVdc2List returned %+v", err)
+		t.Errorf("Plan.GetVdc2List returned %+v", err)
 	}
 
 	expected := []VCPlan{
@@ -139,6 +139,6 @@ func TestPlansServiceHandler_GetVdc2List(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(vdc2, expected) {
-		t.Errorf("Plans.GetVdc2List  returned %+v, expected %+v", vdc2, expected)
+		t.Errorf("Plan.GetVdc2List  returned %+v, expected %+v", vdc2, expected)
 	}
 }
