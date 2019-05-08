@@ -6,9 +6,9 @@ import (
 	"strconv"
 )
 
-// RegionsService is the interface to interact with Region endpoints on the Vultr API
+// RegionService is the interface to interact with Region endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#regions
-type RegionsService interface {
+type RegionService interface {
 	Availability(ctx context.Context, regionID int, planType string) ([]int, error)
 	BareMetalAvailability(ctx context.Context, regionID int) ([]int, error)
 	Vc2Availability(ctx context.Context, regionID int) ([]int, error)
@@ -16,8 +16,8 @@ type RegionsService interface {
 	GetList(ctx context.Context) ([]Region, error)
 }
 
-// RegionsServiceHandler handles interaction with the region methods for the Vultr API
-type RegionsServiceHandler struct {
+// RegionServiceHandler handles interaction with the region methods for the Vultr API
+type RegionServiceHandler struct {
 	Client *Client
 }
 
@@ -34,7 +34,7 @@ type Region struct {
 }
 
 // Availability retrieves a list of the VPSPLANIDs currently available for a given location.
-func (r *RegionsServiceHandler) Availability(ctx context.Context, regionID int, planType string) ([]int, error) {
+func (r *RegionServiceHandler) Availability(ctx context.Context, regionID int, planType string) ([]int, error) {
 
 	uri := "/v1/regions/availability"
 
@@ -64,7 +64,7 @@ func (r *RegionsServiceHandler) Availability(ctx context.Context, regionID int, 
 }
 
 // BareMetalAvailability retrieve a list of the METALPLANIDs currently available for a given location.
-func (r *RegionsServiceHandler) BareMetalAvailability(ctx context.Context, regionID int) ([]int, error) {
+func (r *RegionServiceHandler) BareMetalAvailability(ctx context.Context, regionID int) ([]int, error) {
 
 	uri := "/v1/regions/availability_baremetal"
 
@@ -78,7 +78,7 @@ func (r *RegionsServiceHandler) BareMetalAvailability(ctx context.Context, regio
 }
 
 // Vc2Availability retrieve a list of the vc2 VPSPLANIDs currently available for a given location.
-func (r *RegionsServiceHandler) Vc2Availability(ctx context.Context, regionID int) ([]int, error) {
+func (r *RegionServiceHandler) Vc2Availability(ctx context.Context, regionID int) ([]int, error) {
 
 	uri := "/v1/regions/availability_vc2"
 
@@ -92,7 +92,7 @@ func (r *RegionsServiceHandler) Vc2Availability(ctx context.Context, regionID in
 }
 
 // Vdc2Availability retrieves a list of the vdc2 VPSPLANIDs currently available for a given location.
-func (r *RegionsServiceHandler) Vdc2Availability(ctx context.Context, regionID int) ([]int, error) {
+func (r *RegionServiceHandler) Vdc2Availability(ctx context.Context, regionID int) ([]int, error) {
 
 	uri := "/v1/regions/availability_vdc2"
 
@@ -106,7 +106,7 @@ func (r *RegionsServiceHandler) Vdc2Availability(ctx context.Context, regionID i
 }
 
 // GetList retrieves a list of all active regions
-func (r *RegionsServiceHandler) GetList(ctx context.Context) ([]Region, error) {
+func (r *RegionServiceHandler) GetList(ctx context.Context) ([]Region, error) {
 
 	uri := "/v1/regions/list"
 
@@ -132,7 +132,7 @@ func (r *RegionsServiceHandler) GetList(ctx context.Context) ([]Region, error) {
 }
 
 // instanceAvailability keeps the similar calls dry
-func (r *RegionsServiceHandler) instanceAvailability(ctx context.Context, uri string, regionID int) ([]int, error) {
+func (r *RegionServiceHandler) instanceAvailability(ctx context.Context, uri string, regionID int) ([]int, error) {
 	req, err := r.Client.NewRequest(ctx, http.MethodGet, uri, nil)
 
 	if err != nil {

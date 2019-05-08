@@ -57,7 +57,7 @@ type Client struct {
 	Network         NetworkService
 	OS              OSService
 	Plan            PlanService
-	Regions         RegionsService
+	Region          RegionService
 	ReservedIP      ReservedIPService
 	Server          ServerService
 	Snapshot        SnapshotService
@@ -102,7 +102,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.Network = &NetworkServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
 	client.Plan = &PlanServiceHandler{client}
-	client.Regions = &RegionsServiceHandler{client}
+	client.Region = &RegionServiceHandler{client}
 	client.Server = &ServerServiceHandler{client}
 	client.ReservedIP = &ReservedIPServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
