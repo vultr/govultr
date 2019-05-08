@@ -5,22 +5,22 @@ import (
 	"net/http"
 )
 
-// PlansService is the interface to interact with the Plans endpoints on the Vultr API
+// PlanService is the interface to interact with the Plans endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#plans
-type PlansService interface {
-	GetAllList(ctx context.Context, planType string) ([]Plans, error)
+type PlanService interface {
+	GetList(ctx context.Context, planType string) ([]Plan, error)
 	GetBareMetalList(ctx context.Context) ([]BareMetalPlan, error)
 	GetVc2List(ctx context.Context) ([]VCPlan, error)
 	GetVdc2List(ctx context.Context) ([]VCPlan, error)
 }
 
-// PlansServiceHandler handles interaction with the Plan methods for the Vultr API
-type PlansServiceHandler struct {
+// PlanServiceHandler handles interaction with the Plans methods for the Vultr API
+type PlanServiceHandler struct {
 	Client *Client
 }
 
-// Plans represents available plans that Vultr offers
-type Plans struct {
+// Plan represents available Plans that Vultr offers
+type Plan struct {
 	VpsID       int    `json:"VPSPLANID,string"`
 	Name        string `json:"name"`
 	VCpus       int    `json:"vcpu_count,string"`
@@ -62,8 +62,9 @@ type VCPlan struct {
 	PlanType    string `json:"plan_type"`
 }
 
-// GetAllList retrieve a list of all active plans.
-func (p *PlansServiceHandler) GetAllList(ctx context.Context, planType string) ([]Plans, error) {
+// GetList retrieves a list of all active plans.
+// planType is optional - pass an empty string to get all plans
+func (p *PlanServiceHandler) GetList(ctx context.Context, planType string) ([]Plan, error) {
 
 	uri := "/v1/plans/list"
 
@@ -79,14 +80,14 @@ func (p *PlansServiceHandler) GetAllList(ctx context.Context, planType string) (
 		req.URL.RawQuery = q.Encode()
 	}
 
-	var planMap map[string]Plans
+	var planMap map[string]Plan
 	err = p.Client.DoWithContext(ctx, req, &planMap)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var plans []Plans
+	var plans []Plan
 	for _, p := range planMap {
 		plans = append(plans, p)
 	}
@@ -95,7 +96,7 @@ func (p *PlansServiceHandler) GetAllList(ctx context.Context, planType string) (
 }
 
 // GetBareMetalList retrieves a list of all active bare metal plans.
-func (p *PlansServiceHandler) GetBareMetalList(ctx context.Context) ([]BareMetalPlan, error) {
+func (p *PlanServiceHandler) GetBareMetalList(ctx context.Context) ([]BareMetalPlan, error) {
 
 	uri := "/v1/plans/list_baremetal"
 
@@ -121,7 +122,7 @@ func (p *PlansServiceHandler) GetBareMetalList(ctx context.Context) ([]BareMetal
 }
 
 // GetVc2List retrieve a list of all active vc2 plans.
-func (p *PlansServiceHandler) GetVc2List(ctx context.Context) ([]VCPlan, error) {
+func (p *PlanServiceHandler) GetVc2List(ctx context.Context) ([]VCPlan, error) {
 	uri := "/v1/plans/list_vc2"
 
 	req, err := p.Client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -146,7 +147,7 @@ func (p *PlansServiceHandler) GetVc2List(ctx context.Context) ([]VCPlan, error) 
 }
 
 // GetVdc2List Retrieve a list of all active vdc2 plans
-func (p *PlansServiceHandler) GetVdc2List(ctx context.Context) ([]VCPlan, error) {
+func (p *PlanServiceHandler) GetVdc2List(ctx context.Context) ([]VCPlan, error) {
 	uri := "/v1/plans/list_vdc2"
 
 	req, err := p.Client.NewRequest(ctx, http.MethodGet, uri, nil)

@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestRegionsServiceHandler_Availability(t *testing.T) {
+func TestRegionServiceHandler_Availability(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -16,20 +16,20 @@ func TestRegionsServiceHandler_Availability(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	region, err := client.Regions.Availability(ctx, 1, "vc2")
+	region, err := client.Region.Availability(ctx, 1, "vc2")
 
 	if err != nil {
-		t.Errorf("Regions.Availability returned error: %v", err)
+		t.Errorf("Region.Availability returned error: %v", err)
 	}
 
 	expected := []int{201, 202, 203, 204, 205, 206, 115, 29, 93, 94, 95, 96, 97, 98, 100}
 
 	if !reflect.DeepEqual(region, expected) {
-		t.Errorf("Regions.Availability returned %+v, expected %+v", region, expected)
+		t.Errorf("Region.Availability returned %+v, expected %+v", region, expected)
 	}
 }
 
-func TestRegionsServiceHandler_BareMetalAvailability(t *testing.T) {
+func TestRegionServiceHandler_BareMetalAvailability(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -38,20 +38,20 @@ func TestRegionsServiceHandler_BareMetalAvailability(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	region, err := client.Regions.BareMetalAvailability(ctx, 1)
+	region, err := client.Region.BareMetalAvailability(ctx, 1)
 
 	if err != nil {
-		t.Errorf("Regions.BareMetalAvailability returned error: %v", err)
+		t.Errorf("Region.BareMetalAvailability returned error: %v", err)
 	}
 
 	expected := []int{1, 2, 3, 4}
 
 	if !reflect.DeepEqual(region, expected) {
-		t.Errorf("Regions.BareMetalAvailability returned %+v, expected %+v", region, expected)
+		t.Errorf("Region.BareMetalAvailability returned %+v, expected %+v", region, expected)
 	}
 }
 
-func TestRegionsServiceHandler_Vc2Availability(t *testing.T) {
+func TestRegionServiceHandler_Vc2Availability(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -60,20 +60,20 @@ func TestRegionsServiceHandler_Vc2Availability(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	region, err := client.Regions.Vc2Availability(ctx, 1)
+	region, err := client.Region.Vc2Availability(ctx, 1)
 
 	if err != nil {
-		t.Errorf("Regions.Vc2Availability returned error: %v", err)
+		t.Errorf("Region.Vc2Availability returned error: %v", err)
 	}
 
 	expected := []int{115, 29, 93, 94, 95, 96, 97, 98, 100}
 
 	if !reflect.DeepEqual(region, expected) {
-		t.Errorf("Regions.Vc2Availability returned %+v, expected %+v", region, expected)
+		t.Errorf("Region.Vc2Availability returned %+v, expected %+v", region, expected)
 	}
 }
 
-func TestRegionsServiceHandler_Vdc2Availability(t *testing.T) {
+func TestRegionServiceHandler_Vdc2Availability(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -82,20 +82,20 @@ func TestRegionsServiceHandler_Vdc2Availability(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	region, err := client.Regions.Vdc2Availability(ctx, 1)
+	region, err := client.Region.Vdc2Availability(ctx, 1)
 
 	if err != nil {
-		t.Errorf("Regions.Vdc2Availability returned error: %v", err)
+		t.Errorf("Region.Vdc2Availability returned error: %v", err)
 	}
 
 	expected := []int{115, 29, 93, 94}
 
 	if !reflect.DeepEqual(region, expected) {
-		t.Errorf("Regions.Vdc2Availability returned %+v, expected %+v", region, expected)
+		t.Errorf("Region.Vdc2Availability returned %+v, expected %+v", region, expected)
 	}
 }
 
-func TestRegionsServiceHandler_GetList(t *testing.T) {
+func TestRegionServiceHandler_GetList(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -104,10 +104,10 @@ func TestRegionsServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	region, err := client.Regions.GetList(ctx)
+	region, err := client.Region.GetList(ctx)
 
 	if err != nil {
-		t.Errorf("Regions.GetList returned error: %v", err)
+		t.Errorf("Region.GetList returned error: %v", err)
 	}
 
 	expected := []Region{
@@ -134,6 +134,6 @@ func TestRegionsServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(region, expected) {
-		t.Errorf("Regions.GetList returned %+v, expected %+v", region, expected)
+		t.Errorf("Region.GetList returned %+v, expected %+v", region, expected)
 	}
 }
