@@ -629,7 +629,7 @@ func TestServerServiceHandler_ListReverseIPV6(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(reverseIPV6, expected) {
-		t.Errorf("Server.ListReverseIPV6returned %+v, expected %+v", reverseIPV6, expected)
+		t.Errorf("Server.ListReverseIPV6 returned %+v, expected %+v", reverseIPV6, expected)
 	}
 }
 
