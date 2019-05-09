@@ -46,7 +46,7 @@ func TestPlanServiceHandler_GetBareMetalList(t *testing.T) {
 	setup()
 	defer teardown()
 	mux.HandleFunc("/v1/plans/list_baremetal", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"99": {"METALPLANID": "99","name": "32768 MB RAM,4x 240 GB SSD,1.00 TB BW","cpu_count": 12,"ram": 32768,"disk": "4x 240 GB SSD","bandwidth_tb": 1,"price_per_month": 600,"plan_type": "SSD","deprecated": false,"available_locations": [1]}}`
+		response := `{"99": {"METALPLANID": "99","name": "32768 MB RAM,4x 240 GB SSD,1.00 TB BW","cpu_count": 12,"cpu_model": "E-2186G","ram": 32768,"disk": "4x 240 GB SSD","bandwidth_tb": 1,"price_per_month": 600,"plan_type": "SSD","deprecated": false,"available_locations": [1]}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -60,10 +60,11 @@ func TestPlanServiceHandler_GetBareMetalList(t *testing.T) {
 		{
 			BareMetalID: "99",
 			Name:        "32768 MB RAM,4x 240 GB SSD,1.00 TB BW",
-			Cpus:        12,
+			CPUCount:    12,
+			CPUModel:    "E-2186G",
 			RAM:         32768,
 			Disk:        "4x 240 GB SSD",
-			Bandwidth:   1,
+			BandwidthTB: 1,
 			Price:       600,
 			PlanType:    "SSD",
 			Deprecated:  false,
