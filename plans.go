@@ -23,7 +23,7 @@ type PlanServiceHandler struct {
 type Plan struct {
 	VpsID       int    `json:"VPSPLANID,string"`
 	Name        string `json:"name"`
-	VCpus       int    `json:"vcpu_count,string"`
+	VCPUCount   int    `json:"vcpu_count,string"`
 	RAM         string `json:"ram"`
 	Disk        string `json:"disk"`
 	Bandwidth   string `json:"bandwidth"`
@@ -39,10 +39,11 @@ type Plan struct {
 type BareMetalPlan struct {
 	BareMetalID string `json:"METALPLANID"`
 	Name        string `json:"name"`
-	Cpus        int    `json:"cpu_count"`
+	CPUCount    int    `json:"cpu_count"`
+	CPUModel    string `json:"cpu_model"`
 	RAM         int    `json:"ram"`
 	Disk        string `json:"disk"`
-	Bandwidth   int    `json:"bandwidth_tb"`
+	BandwidthTB int    `json:"bandwidth_tb"`
 	Price       int    `json:"price_per_month"`
 	PlanType    string `json:"plan_type"`
 	Deprecated  bool   `json:"deprecated"`
@@ -53,7 +54,7 @@ type BareMetalPlan struct {
 type VCPlan struct {
 	VpsID       string `json:"VPSPLANID"`
 	Name        string `json:"name"`
-	Cpus        string `json:"vcpu_count"`
+	VCPUCount   string `json:"vcpu_count"`
 	RAM         string `json:"ram"`
 	Disk        string `json:"disk"`
 	Bandwidth   string `json:"bandwidth"`
