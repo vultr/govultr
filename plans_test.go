@@ -25,7 +25,7 @@ func TestPlanServiceHandler_GetList(t *testing.T) {
 	expected := []Plan{{
 		VpsID:       201,
 		Name:        "1024 MB RAM,25 GB SSD,1.00 TB BW",
-		VCpus:       1,
+		VCPUCount:   1,
 		RAM:         "1024",
 		Disk:        "25",
 		Price:       "5.00",
@@ -96,7 +96,7 @@ func TestPlanServiceHandler_GetVc2List(t *testing.T) {
 		{
 			VpsID:       "201",
 			Name:        "1024 MB RAM,25 GB SSD,1.00 TB BW",
-			Cpus:        "1",
+			VCPUCount:   "1",
 			RAM:         "1024",
 			Disk:        "25",
 			Bandwidth:   "1.00",
@@ -129,7 +129,7 @@ func TestPlanServiceHandler_GetVdc2List(t *testing.T) {
 		{
 			VpsID:       "115",
 			Name:        "8192 MB RAM,110 GB SSD,10.00 TB BW",
-			Cpus:        "2",
+			VCPUCount:   "2",
 			RAM:         "8192",
 			Disk:        "110",
 			Bandwidth:   "10.00",
