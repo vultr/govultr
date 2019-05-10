@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	version     = "0.0.1"
+	version     = "0.1.0"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 200 * time.Millisecond
@@ -141,7 +141,6 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Va
 	}
 
 	req.Header.Add("API-key", c.APIKey.key)
-	// todo review the Accept and content types
 	req.Header.Add("User-Agent", c.UserAgent)
 	req.Header.Add("Accept", "application/json")
 
@@ -167,7 +166,6 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 		c.onRequestCompleted(req, res)
 	}
 
-	//todo handle the error this might throw
 	defer res.Body.Close()
 
 	if err != nil {
