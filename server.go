@@ -165,6 +165,7 @@ type V6Network struct {
 type ServerOptions struct {
 	IPXEChain            string
 	IsoID                int
+	SnapshotID           string
 	ScriptID             string
 	EnableIPV6           bool
 	EnablePrivateNetwork bool
@@ -1300,6 +1301,10 @@ func (s *ServerServiceHandler) Create(ctx context.Context, regionID, vpsPlanID, 
 
 		if options.IsoID != 0 {
 			values.Add("ISOID", strconv.Itoa(options.IsoID))
+		}
+
+		if options.SnapshotID != "" {
+			values.Add("SNAPSHOTID", options.SnapshotID)
 		}
 
 		if options.ScriptID != "" {
