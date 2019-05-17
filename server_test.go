@@ -787,6 +787,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 		UserData:             "uno-dos-tres",
 		NotifyActivate:       true,
 		DDOSProtection:       true,
+		SnapshotID:           "12ab",
 		Hostname:             "hostname-3000",
 		Tag:                  "tagger",
 		Label:                "label-extreme",
