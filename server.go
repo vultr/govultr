@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 // ServerService is the interface to interact with the server endpoints on the Vultr API
@@ -124,7 +125,7 @@ type ReverseIPV6 struct {
 // Server represents a VPS
 type Server struct {
 	VpsID            string      `json:"SUBID"`
-	OS               string      `json:"os"`
+	Os               string      `json:"os"`
 	RAM              string      `json:"ram"`
 	Disk             string      `json:"disk"`
 	MainIP           string      `json:"main_ip"`
@@ -165,12 +166,13 @@ type V6Network struct {
 type ServerOptions struct {
 	IPXEChain            string
 	IsoID                int
+	SnapshotID           string
 	ScriptID             string
 	EnableIPV6           bool
 	EnablePrivateNetwork bool
 	NetworkID            []string
 	Label                string
-	SSHKeyID             string
+	SSHKeyIDs            []string
 	AutoBackups          bool
 	AppID                string
 	UserData             string
@@ -1302,6 +1304,10 @@ func (s *ServerServiceHandler) Create(ctx context.Context, regionID, vpsPlanID, 
 			values.Add("ISOID", strconv.Itoa(options.IsoID))
 		}
 
+		if options.SnapshotID != "" {
+			values.Add("SNAPSHOTID", options.SnapshotID)
+		}
+
 		if options.ScriptID != "" {
 			values.Add("SCRIPTID", options.ScriptID)
 		}
@@ -1325,8 +1331,8 @@ func (s *ServerServiceHandler) Create(ctx context.Context, regionID, vpsPlanID, 
 			values.Add("label", options.Label)
 		}
 
-		if options.SSHKeyID != "" {
-			values.Add("SSHKEYID", options.SSHKeyID)
+		if options.SSHKeyIDs != nil && len(options.SSHKeyIDs) != 0 {
+			values.Add("SSHKEYID", strings.Join(options.SSHKeyIDs, ","))
 		}
 
 		if options.AutoBackups == true {

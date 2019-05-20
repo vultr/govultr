@@ -7,23 +7,23 @@ import (
 	"strconv"
 )
 
-// IsoService is the interface to interact with the ISO endpoints on the Vultr API
-// Link: https://www.vultr.com/api/#iso
-type IsoService interface {
-	CreateFromURL(ctx context.Context, isoURL string) (*Iso, error)
-	Delete(ctx context.Context, isoID int) error
-	GetList(ctx context.Context) ([]Iso, error)
-	GetPublicList(ctx context.Context) ([]PublicIso, error)
+// ISOService is the interface to interact with the ISO endpoints on the Vultr API
+// Link: https://www.vultr.com/api/#ISO
+type ISOService interface {
+	CreateFromURL(ctx context.Context, ISOURL string) (*ISO, error)
+	Delete(ctx context.Context, ISOID int) error
+	GetList(ctx context.Context) ([]ISO, error)
+	GetPublicList(ctx context.Context) ([]PublicISO, error)
 }
 
-// IsoServiceHandler handles interaction with the ISO methods for the Vultr API
-type IsoServiceHandler struct {
+// ISOServiceHandler handles interaction with the ISO methods for the Vultr API
+type ISOServiceHandler struct {
 	Client *Client
 }
 
-// Iso represents ISOs currently available on this account.
-type Iso struct {
-	IsoID       int    `json:"ISOID"`
+// ISO represents ISOs currently available on this account.
+type ISO struct {
+	ISOID       int    `json:"ISOID"`
 	DateCreated string `json:"date_created"`
 	FileName    string `json:"filename"`
 	Size        int    `json:"size"`
@@ -32,20 +32,20 @@ type Iso struct {
 	Status      string `json:"status"`
 }
 
-// PublicIso represents public ISOs offered in the Vultr ISO library.
-type PublicIso struct {
-	IsoID       int    `json:"ISOID"`
+// PublicISO represents public ISOs offered in the Vultr ISO library.
+type PublicISO struct {
+	ISOID       int    `json:"ISOID"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
 // CreateFromURL will create a new ISO image on your account
-func (i *IsoServiceHandler) CreateFromURL(ctx context.Context, isoURL string) (*Iso, error) {
+func (i *ISOServiceHandler) CreateFromURL(ctx context.Context, ISOURL string) (*ISO, error) {
 
 	uri := "/v1/iso/create_from_url"
 
 	values := url.Values{
-		"url": {isoURL},
+		"url": {ISOURL},
 	}
 
 	req, err := i.Client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -54,7 +54,7 @@ func (i *IsoServiceHandler) CreateFromURL(ctx context.Context, isoURL string) (*
 		return nil, err
 	}
 
-	iso := new(Iso)
+	iso := new(ISO)
 	err = i.Client.DoWithContext(ctx, req, iso)
 
 	if err != nil {
@@ -65,7 +65,7 @@ func (i *IsoServiceHandler) CreateFromURL(ctx context.Context, isoURL string) (*
 }
 
 // Delete will delete an ISO image from your account
-func (i *IsoServiceHandler) Delete(ctx context.Context, isoID int) error {
+func (i *ISOServiceHandler) Delete(ctx context.Context, isoID int) error {
 
 	uri := "/v1/iso/destroy"
 
@@ -89,7 +89,7 @@ func (i *IsoServiceHandler) Delete(ctx context.Context, isoID int) error {
 }
 
 // GetList will list all ISOs currently available on your account
-func (i *IsoServiceHandler) GetList(ctx context.Context) ([]Iso, error) {
+func (i *ISOServiceHandler) GetList(ctx context.Context) ([]ISO, error) {
 
 	uri := "/v1/iso/list"
 
@@ -99,15 +99,15 @@ func (i *IsoServiceHandler) GetList(ctx context.Context) ([]Iso, error) {
 		return nil, err
 	}
 
-	var isoMap map[string]Iso
-	err = i.Client.DoWithContext(ctx, req, &isoMap)
+	var ISOMap map[string]ISO
+	err = i.Client.DoWithContext(ctx, req, &ISOMap)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var iso []Iso
-	for _, i := range isoMap {
+	var iso []ISO
+	for _, i := range ISOMap {
 		iso = append(iso, i)
 	}
 
@@ -115,7 +115,7 @@ func (i *IsoServiceHandler) GetList(ctx context.Context) ([]Iso, error) {
 }
 
 // GetPublicList will list public ISOs offered in the Vultr ISO library.
-func (i *IsoServiceHandler) GetPublicList(ctx context.Context) ([]PublicIso, error) {
+func (i *ISOServiceHandler) GetPublicList(ctx context.Context) ([]PublicISO, error) {
 
 	uri := "/v1/iso/list_public"
 
@@ -125,18 +125,18 @@ func (i *IsoServiceHandler) GetPublicList(ctx context.Context) ([]PublicIso, err
 		return nil, err
 	}
 
-	var isoMap map[string]PublicIso
-	err = i.Client.DoWithContext(ctx, req, &isoMap)
+	var ISOMap map[string]PublicISO
+	err = i.Client.DoWithContext(ctx, req, &ISOMap)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var publicIso []PublicIso
+	var publicISO []PublicISO
 
-	for _, p := range isoMap {
-		publicIso = append(publicIso, p)
+	for _, p := range ISOMap {
+		publicISO = append(publicISO, p)
 	}
 
-	return publicIso, nil
+	return publicISO, nil
 }

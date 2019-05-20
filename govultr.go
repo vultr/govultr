@@ -16,7 +16,7 @@ const (
 	version     = "0.1.0"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
-	rateLimit   = 200 * time.Millisecond
+	rateLimit   = 600 * time.Millisecond
 )
 
 // APIKey contains a users API Key for interacting with the API
@@ -31,7 +31,7 @@ type Client struct {
 	client *http.Client
 
 	// BASE URL for APIs
-	baseURL *url.URL
+	BaseURL *url.URL
 
 	// User Agent for the client
 	UserAgent string
@@ -53,7 +53,7 @@ type Client struct {
 	DNSRecord       DNSRecordService
 	FirewallGroup   FirewallGroupService
 	FirewallRule    FireWallRuleService
-	Iso             IsoService
+	ISO             ISOService
 	Network         NetworkService
 	OS              OSService
 	Plan            PlanService
@@ -83,7 +83,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 
 	client := &Client{
 		client:    httpClient,
-		baseURL:   baseURL,
+		BaseURL:   baseURL,
 		UserAgent: userAgent,
 		RateLimit: rateLimit,
 	}
@@ -98,7 +98,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.DNSRecord = &DNSRecordsServiceHandler{client}
 	client.FirewallGroup = &FireWallGroupServiceHandler{client}
 	client.FirewallRule = &FireWallRuleServiceHandler{client}
-	client.Iso = &IsoServiceHandler{client}
+	client.ISO = &ISOServiceHandler{client}
 	client.Network = &NetworkServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
 	client.Plan = &PlanServiceHandler{client}
@@ -120,7 +120,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Values) (*http.Request, error) {
 
 	path, err := url.Parse(uri)
-	resolvedURL := c.baseURL.ResolveReference(path)
+	resolvedURL := c.BaseURL.ResolveReference(path)
 
 	if err != nil {
 		return nil, err
@@ -202,7 +202,7 @@ func (c *Client) SetBaseURL(baseURL string) error {
 		return err
 	}
 
-	c.baseURL = updatedURL
+	c.BaseURL = updatedURL
 	return nil
 }
 

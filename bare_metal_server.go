@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 // BareMetalServerService is the interface to interact with the bare metal endpoints on the Vultr API
@@ -72,7 +73,7 @@ type BareMetalServerOptions struct {
 	SnapshotID      string
 	EnableIPV6      string
 	Label           string
-	SSHKeyID        string
+	SSHKeyIDs       []string
 	AppID           string
 	UserData        string
 	NotifyActivate  string
@@ -334,8 +335,8 @@ func (b *BareMetalServerServiceHandler) Create(ctx context.Context, regionID, pl
 		if options.Label != "" {
 			values.Add("label", options.Label)
 		}
-		if options.SSHKeyID != "" {
-			values.Add("SSHKEYID", options.SSHKeyID)
+		if options.SSHKeyIDs != nil && len(options.SSHKeyIDs) != 0 {
+			values.Add("SSHKEYID", strings.Join(options.SSHKeyIDs, ","))
 		}
 		if options.AppID != "" {
 			values.Add("APPID", options.AppID)

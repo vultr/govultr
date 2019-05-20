@@ -17,13 +17,12 @@ func TestIsoServiceHandler_CreateFromURL(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	iso, err := client.Iso.CreateFromURL(ctx, "domain.com/coolest-iso-ever.iso")
-
+	iso, err := client.ISO.CreateFromURL(ctx, "domain.com/coolest-iso-ever.iso")
 	if err != nil {
 		t.Errorf("Iso.CreateFromURL returned %+v, expected %+v", err, nil)
 	}
 
-	expected := &Iso{IsoID: 24}
+	expected := &ISO{ISOID: 24}
 
 	if !reflect.DeepEqual(iso, expected) {
 		t.Errorf("Iso.CreateFromURL returned %+v, expected %+v", iso, expected)
@@ -38,7 +37,7 @@ func TestIsoServiceHandler_Delete(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.Iso.Delete(ctx, 24)
+	err := client.ISO.Delete(ctx, 24)
 
 	if err != nil {
 		t.Errorf("Iso.Delete returned %+v, expected %+v", err, nil)
@@ -54,14 +53,14 @@ func TestIsoServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	iso, err := client.Iso.GetList(ctx)
+	iso, err := client.ISO.GetList(ctx)
 
 	if err != nil {
 		t.Errorf("Iso.GetList returned %+v, expected %+v", err, nil)
 	}
 
-	expected := []Iso{
-		{IsoID: 24, DateCreated: "2014-04-01 14:10:09", FileName: "CentOS-6.5-x86_64-minimal.iso", Size: 9342976, MD5Sum: "ec066", SHA512Sum: "1741f890bce04613f60b0", Status: "complete"},
+	expected := []ISO{
+		{ISOID: 24, DateCreated: "2014-04-01 14:10:09", FileName: "CentOS-6.5-x86_64-minimal.iso", Size: 9342976, MD5Sum: "ec066", SHA512Sum: "1741f890bce04613f60b0", Status: "complete"},
 	}
 
 	if !reflect.DeepEqual(iso, expected) {
@@ -78,14 +77,14 @@ func TestIsoServiceHandler_GetPublicList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	iso, err := client.Iso.GetPublicList(ctx)
+	iso, err := client.ISO.GetPublicList(ctx)
 
 	if err != nil {
 		t.Errorf("Iso.GetPublicList returned %+v, expected %+v", err, nil)
 	}
 
-	expected := []PublicIso{
-		{IsoID: 204515, Name: "CentOS 7", Description: "7 x86_64 Minimal"},
+	expected := []PublicISO{
+		{ISOID: 204515, Name: "CentOS 7", Description: "7 x86_64 Minimal"},
 	}
 
 	if !reflect.DeepEqual(iso, expected) {
