@@ -31,9 +31,9 @@ type BlockStorageServiceHandler struct {
 type BlockStorage struct {
 	BlockStorageID string `json:"SUBID"`
 	DateCreated    string `json:"date_created"`
-	Cost           string `json:"cost_per_month"`
+	CostPerMonth   string `json:"cost_per_month"`
 	Status         string `json:"status"`
-	Size           int    `json:"size_gb"`
+	SizeGB         int    `json:"size_gb"`
 	RegionID       int    `json:"DCID"`
 	VpsID          string `json:"attached_to_SUBID"`
 	Label          string `json:"label"`
@@ -60,7 +60,7 @@ func (b *BlockStorage) UnmarshalJSON(data []byte) (err error) {
 		return err
 	}
 
-	b.Size, err = b.unmarshalInt(fmt.Sprintf("%v", v["size_gb"]))
+	b.SizeGB, err = b.unmarshalInt(fmt.Sprintf("%v", v["size_gb"]))
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (b *BlockStorage) UnmarshalJSON(data []byte) (err error) {
 		return err
 	}
 
-	b.Cost, err = b.unmarshalStr(fmt.Sprintf("%v", v["cost_per_month"]))
+	b.CostPerMonth, err = b.unmarshalStr(fmt.Sprintf("%v", v["cost_per_month"]))
 	if err != nil {
 		return err
 	}
@@ -144,13 +144,13 @@ func (b *BlockStorageServiceHandler) Attach(ctx context.Context, blockID, vpsID 
 }
 
 // Create builds out a block storage
-func (b *BlockStorageServiceHandler) Create(ctx context.Context, regionID, size int, label string) (*BlockStorage, error) {
+func (b *BlockStorageServiceHandler) Create(ctx context.Context, regionID, sizeGB int, label string) (*BlockStorage, error) {
 
 	uri := "/v1/block/create"
 
 	values := url.Values{
 		"DCID":    {strconv.Itoa(regionID)},
-		"size_gb": {strconv.Itoa(size)},
+		"size_gb": {strconv.Itoa(sizeGB)},
 		"label":   {label},
 	}
 
@@ -170,7 +170,7 @@ func (b *BlockStorageServiceHandler) Create(ctx context.Context, regionID, size 
 
 	blockStorage.RegionID = regionID
 	blockStorage.Label = label
-	blockStorage.Size = size
+	blockStorage.SizeGB = sizeGB
 
 	return blockStorage, nil
 }
@@ -294,13 +294,13 @@ func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID string) (*
 }
 
 // Resize allows you to resize your Vultr block storage instance
-func (b *BlockStorageServiceHandler) Resize(ctx context.Context, blockID string, size int) error {
+func (b *BlockStorageServiceHandler) Resize(ctx context.Context, blockID string, sizeGB int) error {
 
 	uri := "/v1/block/resize"
 
 	values := url.Values{
 		"SUBID":   {blockID},
-		"size_gb": {strconv.Itoa(size)},
+		"size_gb": {strconv.Itoa(sizeGB)},
 	}
 
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
