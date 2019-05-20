@@ -53,7 +53,7 @@ type Client struct {
 	DNSRecord       DNSRecordService
 	FirewallGroup   FirewallGroupService
 	FirewallRule    FireWallRuleService
-	Iso             IsoService
+	ISO             ISOService
 	Network         NetworkService
 	OS              OSService
 	Plan            PlanService
@@ -98,7 +98,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.DNSRecord = &DNSRecordsServiceHandler{client}
 	client.FirewallGroup = &FireWallGroupServiceHandler{client}
 	client.FirewallRule = &FireWallRuleServiceHandler{client}
-	client.Iso = &IsoServiceHandler{client}
+	client.ISO = &ISOServiceHandler{client}
 	client.Network = &NetworkServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
 	client.Plan = &PlanServiceHandler{client}
