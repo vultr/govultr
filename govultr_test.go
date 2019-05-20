@@ -27,7 +27,7 @@ func setup() {
 
 	client = NewClient(nil, "dummy-key")
 	url, _ := url.Parse(server.URL)
-	client.baseURL = url
+	client.BaseURL = url
 }
 
 func teardown() {
@@ -38,11 +38,11 @@ func TestNewClient(t *testing.T) {
 	setup()
 	defer teardown()
 
-	if client.baseURL == nil || client.baseURL.String() != server.URL {
-		t.Errorf("NewClient BaseURL = %v, expected %v", client.baseURL, server.URL)
+	if client.BaseURL == nil || client.BaseURL.String() != server.URL {
+		t.Errorf("NewClient BaseURL = %v, expected %v", client.BaseURL, server.URL)
 	}
 
-	if client.RateLimit == 0 || client.RateLimit.String() != "200ms" {
+	if client.RateLimit == 0 || client.RateLimit.String() != "600ms" {
 		t.Errorf("NewClient RateLimit = %v, expected %v", client.RateLimit, rateLimit.String())
 	}
 
@@ -173,8 +173,8 @@ func TestClient_SetBaseUrl(t *testing.T) {
 		t.Fatalf("SetBaseUrl unexpected error: %v", err)
 	}
 
-	if client.baseURL.String() != base {
-		t.Errorf("NewClient BaseUrl = %v, expected %v", client.baseURL, base)
+	if client.BaseURL.String() != base {
+		t.Errorf("NewClient BaseUrl = %v, expected %v", client.BaseURL, base)
 	}
 }
 
@@ -194,7 +194,7 @@ func TestClient_SetRateLimit(t *testing.T) {
 	setup()
 	defer teardown()
 
-	time := 500 * time.Millisecond
+	time := 600 * time.Millisecond
 	client.SetRateLimit(time)
 
 	if client.RateLimit != time {
