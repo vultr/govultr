@@ -125,7 +125,7 @@ type ReverseIPV6 struct {
 // Server represents a VPS
 type Server struct {
 	VpsID            string      `json:"SUBID"`
-	OS               string      `json:"os"`
+	Os               string      `json:"os"`
 	RAM              string      `json:"ram"`
 	Disk             string      `json:"disk"`
 	MainIP           string      `json:"main_ip"`

@@ -842,7 +842,7 @@ func TestServerServiceHandler_GetList(t *testing.T) {
 	expected := []Server{
 		{
 			VpsID:            "576965",
-			OS:               "CentOS 6 x64",
+			Os:               "CentOS 6 x64",
 			RAM:              "4096 MB",
 			Disk:             "Virtual 60 GB",
 			MainIP:           "123.123.123.123",
@@ -896,7 +896,7 @@ func TestServerServiceHandler_GetListByLabel(t *testing.T) {
 	expected := []Server{
 		{
 			VpsID:            "576965",
-			OS:               "CentOS 6 x64",
+			Os:               "CentOS 6 x64",
 			RAM:              "4096 MB",
 			Disk:             "Virtual 60 GB",
 			MainIP:           "123.123.123.123",
@@ -950,7 +950,7 @@ func TestServerServiceHandler_GetListByMainIP(t *testing.T) {
 	expected := []Server{
 		{
 			VpsID:            "576965",
-			OS:               "CentOS 6 x64",
+			Os:               "CentOS 6 x64",
 			RAM:              "4096 MB",
 			Disk:             "Virtual 60 GB",
 			MainIP:           "123.123.123.123",
@@ -1004,7 +1004,7 @@ func TestServerServiceHandler_GetListByTag(t *testing.T) {
 	expected := []Server{
 		{
 			VpsID:            "576965",
-			OS:               "CentOS 6 x64",
+			Os:               "CentOS 6 x64",
 			RAM:              "4096 MB",
 			Disk:             "Virtual 60 GB",
 			MainIP:           "123.123.123.123",
@@ -1057,7 +1057,7 @@ func TestServerServiceHandler_GetServer(t *testing.T) {
 
 	expected := &Server{
 		VpsID:            "576965",
-		OS:               "CentOS 6 x64",
+		Os:               "CentOS 6 x64",
 		RAM:              "4096 MB",
 		Disk:             "Virtual 60 GB",
 		MainIP:           "123.123.123.123",
