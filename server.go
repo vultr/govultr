@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 // ServerService is the interface to interact with the server endpoints on the Vultr API
@@ -171,7 +172,7 @@ type ServerOptions struct {
 	EnablePrivateNetwork bool
 	NetworkID            []string
 	Label                string
-	SSHKeyID             string
+	SSHKeyIDs            []string
 	AutoBackups          bool
 	AppID                string
 	UserData             string
@@ -1330,8 +1331,8 @@ func (s *ServerServiceHandler) Create(ctx context.Context, regionID, vpsPlanID, 
 			values.Add("label", options.Label)
 		}
 
-		if options.SSHKeyID != "" {
-			values.Add("SSHKEYID", options.SSHKeyID)
+		if options.SSHKeyIDs != nil && len(options.SSHKeyIDs) != 0 {
+			values.Add("SSHKEYID", strings.Join(options.SSHKeyIDs, ","))
 		}
 
 		if options.AutoBackups == true {

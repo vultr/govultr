@@ -140,7 +140,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 		SnapshotID:      "1",
 		EnableIPV6:      "yes",
 		Label:           "go-bm-test",
-		SSHKeyID:        "6b80207b1821f",
+		SSHKeyIDs:       []string{"6b80207b1821f"},
 		AppID:           "1",
 		UserData:        "ZWNobyBIZWxsbyBXb3JsZA==",
 		NotifyActivate:  "yes",
