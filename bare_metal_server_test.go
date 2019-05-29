@@ -162,7 +162,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 	}
 }
 
-func TestBareMetalServerServiceHandler_Destroy(t *testing.T) {
+func TestBareMetalServerServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -170,10 +170,10 @@ func TestBareMetalServerServiceHandler_Destroy(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.BareMetalServer.Destroy(ctx, "900000")
+	err := client.BareMetalServer.Delete(ctx, "900000")
 
 	if err != nil {
-		t.Errorf("BareMetalServer.Destroy returned %+v, expected %+v", err, nil)
+		t.Errorf("BareMetalServer.Delete returned %+v, expected %+v", err, nil)
 	}
 }
 

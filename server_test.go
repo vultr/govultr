@@ -753,7 +753,7 @@ func TestServerServiceHandler_Reinstall(t *testing.T) {
 	}
 }
 
-func TestServerServiceHandler_Destroy(t *testing.T) {
+func TestServerServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -761,10 +761,10 @@ func TestServerServiceHandler_Destroy(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.Server.Destroy(ctx, "1234")
+	err := client.Server.Delete(ctx, "1234")
 
 	if err != nil {
-		t.Errorf("Server.Destroy returned %+v", err)
+		t.Errorf("Server.Delete returned %+v", err)
 	}
 }
 

@@ -19,7 +19,7 @@ type BareMetalServerService interface {
 	ChangeApp(ctx context.Context, serverID, appID string) error
 	ChangeOS(ctx context.Context, serverID, osID string) error
 	Create(ctx context.Context, regionID, planID, osID string, options *BareMetalServerOptions) (*BareMetalServer, error)
-	Destroy(ctx context.Context, serverID string) error
+	Delete(ctx context.Context, serverID string) error
 	EnableIPV6(ctx context.Context, serverID string) error
 	GetList(ctx context.Context) ([]BareMetalServer, error)
 	GetListByLabel(ctx context.Context, label string) ([]BareMetalServer, error)
@@ -375,9 +375,9 @@ func (b *BareMetalServerServiceHandler) Create(ctx context.Context, regionID, pl
 	return bm, nil
 }
 
-// Destroy (delete) a bare metal server.
+// Delete a bare metal server.
 // All data will be permanently lost, and the IP address will be released. There is no going back from this call.
-func (b *BareMetalServerServiceHandler) Destroy(ctx context.Context, serverID string) error {
+func (b *BareMetalServerServiceHandler) Delete(ctx context.Context, serverID string) error {
 	uri := "/v1/baremetal/destroy"
 
 	values := url.Values{

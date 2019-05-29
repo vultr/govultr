@@ -52,7 +52,7 @@ type ServerService interface {
 	Halt(ctx context.Context, vpsID string) error
 	Reboot(ctx context.Context, vpsID string) error
 	Reinstall(ctx context.Context, vpsID string) error
-	Destroy(ctx context.Context, vpsID string) error
+	Delete(ctx context.Context, vpsID string) error
 	Create(ctx context.Context, regionID, vpsPlanID, osID int, options *ServerOptions) (*Server, error)
 	GetList(ctx context.Context) ([]Server, error)
 	GetListByLabel(ctx context.Context, label string) ([]Server, error)
@@ -1258,8 +1258,8 @@ func (s *ServerServiceHandler) Reinstall(ctx context.Context, vpsID string) erro
 	return nil
 }
 
-// Destroy will delete a VPS. All data will be permanently lost, and the IP address will be released
-func (s *ServerServiceHandler) Destroy(ctx context.Context, vpsID string) error {
+// Deletes a VPS. All data will be permanently lost, and the IP address will be released
+func (s *ServerServiceHandler) Delete(ctx context.Context, vpsID string) error {
 
 	uri := "/v1/server/destroy"
 

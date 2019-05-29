@@ -42,7 +42,7 @@ func TestStartupScriptServiceHandler_Create(t *testing.T) {
 	}
 }
 
-func TestStartupScriptServiceHandler_Destroy(t *testing.T) {
+func TestStartupScriptServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -50,10 +50,10 @@ func TestStartupScriptServiceHandler_Destroy(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.StartupScript.Destroy(ctx, "foo")
+	err := client.StartupScript.Delete(ctx, "foo")
 
 	if err != nil {
-		t.Errorf("StartupScript.Destroy returned %+v, expected %+v", err, nil)
+		t.Errorf("StartupScript.Delete returned %+v, expected %+v", err, nil)
 	}
 }
 

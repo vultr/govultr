@@ -53,7 +53,7 @@ func TestSnapshotServiceHandler_CreateFromURL(t *testing.T) {
 	}
 }
 
-func TestSnapshotServiceHandler_Destroy(t *testing.T) {
+func TestSnapshotServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -61,10 +61,10 @@ func TestSnapshotServiceHandler_Destroy(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.Snapshot.Destroy(ctx, "7a05cbf361d98")
+	err := client.Snapshot.Delete(ctx, "7a05cbf361d98")
 
 	if err != nil {
-		t.Errorf("Snapshot.Destroy returned %+v, expected %+v", err, nil)
+		t.Errorf("Snapshot.Delete returned %+v, expected %+v", err, nil)
 	}
 
 }

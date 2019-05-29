@@ -92,7 +92,7 @@ func TestReservedIPServiceHandler_Create(t *testing.T) {
 	}
 }
 
-func TestReservedIPServiceHandler_Destroy(t *testing.T) {
+func TestReservedIPServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -100,10 +100,10 @@ func TestReservedIPServiceHandler_Destroy(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.ReservedIP.Destroy(ctx, "111.111.111.111")
+	err := client.ReservedIP.Delete(ctx, "111.111.111.111")
 
 	if err != nil {
-		t.Errorf("ReservedIP.Destroy returned %+v, expected %+v", err, nil)
+		t.Errorf("ReservedIP.Delete returned %+v, expected %+v", err, nil)
 	}
 }
 

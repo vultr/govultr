@@ -39,7 +39,7 @@ func TestSSHKeyServiceHandler_Create(t *testing.T) {
 	}
 }
 
-func TestSSHKeyServiceHandler_Destroy(t *testing.T) {
+func TestSSHKeyServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -47,10 +47,10 @@ func TestSSHKeyServiceHandler_Destroy(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.SSHKey.Destroy(ctx, "foo")
+	err := client.SSHKey.Delete(ctx, "foo")
 
 	if err != nil {
-		t.Errorf("SSHKey.Destroy returned %+v, expected %+v", err, nil)
+		t.Errorf("SSHKey.Delete returned %+v, expected %+v", err, nil)
 	}
 }
 

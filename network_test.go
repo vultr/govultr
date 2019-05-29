@@ -36,7 +36,7 @@ func TestNetworkServiceHandler_Create(t *testing.T) {
 	}
 }
 
-func TestNetworkServiceHandler_Destroy(t *testing.T) {
+func TestNetworkServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -44,10 +44,10 @@ func TestNetworkServiceHandler_Destroy(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.Network.Destroy(ctx, "foo")
+	err := client.Network.Delete(ctx, "foo")
 
 	if err != nil {
-		t.Errorf("Network.Destroy returned %+v, expected %+v", err, nil)
+		t.Errorf("Network.Delete returned %+v, expected %+v", err, nil)
 	}
 }
 

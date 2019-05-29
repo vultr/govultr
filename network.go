@@ -12,7 +12,7 @@ import (
 // Link: https://www.vultr.com/api/#network
 type NetworkService interface {
 	Create(ctx context.Context, regionID, description, cidrBlock string) (*Network, error)
-	Destroy(ctx context.Context, networkID string) error
+	Delete(ctx context.Context, networkID string) error
 	GetList(ctx context.Context) ([]Network, error)
 }
 
@@ -73,8 +73,8 @@ func (n *NetworkServiceHandler) Create(ctx context.Context, regionID, descriptio
 	return network, nil
 }
 
-// Destroy (delete) a private network. Before destroying, a network must be disabled from all instances. See https://www.vultr.com/api/#server_private_network_disable
-func (n *NetworkServiceHandler) Destroy(ctx context.Context, networkID string) error {
+// Delete a private network. Before deleting, a network must be disabled from all instances. See https://www.vultr.com/api/#server_private_network_disable
+func (n *NetworkServiceHandler) Delete(ctx context.Context, networkID string) error {
 	uri := "/v1/network/destroy"
 
 	values := url.Values{
