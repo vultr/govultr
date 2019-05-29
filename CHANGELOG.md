@@ -29,9 +29,9 @@
 * Renamed all methods named `Destroy` to `Delete`
 * Server Service
     * Renamed `GetListByLabel` to `ListByLabel`
-    * `GetListByMainIP` to `ListByMainIP`
-    * `GetListByTag` to `ListByTag`
+    * Renamed `GetListByMainIP` to `ListByMainIP`
+    * Renamed `GetListByTag` to `ListByTag`
 * Bare Metal Server Service
     * Renamed `GetListByLabel` to `ListByLabel`
-    * `GetListByMainIP` to `ListByMainIP`
-    * `GetListByTag` to `ListByTag`
+    * Renamed `GetListByMainIP` to `ListByMainIP`
+    * Renamed `GetListByTag` to `ListByTag`
