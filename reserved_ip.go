@@ -199,7 +199,7 @@ func (r *ReservedIPServiceHandler) Create(ctx context.Context, regionID int, ipT
 	return rip, nil
 }
 
-// Deletes removes the specified reserved IP from your Vultr account
+// Delete removes the specified reserved IP from your Vultr account
 func (r *ReservedIPServiceHandler) Delete(ctx context.Context, ip string) error {
 
 	uri := "/v1/reservedip/destroy"

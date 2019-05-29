@@ -1258,7 +1258,7 @@ func (s *ServerServiceHandler) Reinstall(ctx context.Context, vpsID string) erro
 	return nil
 }
 
-// Deletes a VPS. All data will be permanently lost, and the IP address will be released
+// Delete a VPS. All data will be permanently lost, and the IP address will be released
 func (s *ServerServiceHandler) Delete(ctx context.Context, vpsID string) error {
 
 	uri := "/v1/server/destroy"
