@@ -8,7 +8,7 @@ import (
 // ApplicationService is the interface to interact with the Application endpoint on the Vultr API
 // Link: https://www.vultr.com/api/#app
 type ApplicationService interface {
-	GetList(ctx context.Context) ([]Application, error)
+	List(ctx context.Context) ([]Application, error)
 }
 
 // ApplicationServiceHandler handles interaction with the application methods for the Vultr API
@@ -25,8 +25,8 @@ type Application struct {
 	Surcharge  float64 `json:"surcharge"`
 }
 
-// GetList retrieves a list of available applications that can be launched when creating a Vultr VPS
-func (a *ApplicationServiceHandler) GetList(ctx context.Context) ([]Application, error) {
+// List retrieves a list of available applications that can be launched when creating a Vultr VPS
+func (a *ApplicationServiceHandler) List(ctx context.Context) ([]Application, error) {
 
 	uri := "/v1/app/list"
 	req, err := a.client.NewRequest(ctx, http.MethodGet, uri, nil)

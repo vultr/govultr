@@ -83,7 +83,7 @@ func TestDNSDomainServiceHandler_DNSSecInfo(t *testing.T) {
 	}
 }
 
-func TestDNSDomainServiceHandler_GetList(t *testing.T) {
+func TestDNSDomainServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -92,10 +92,10 @@ func TestDNSDomainServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	domainList, err := client.DNSDomain.GetList(ctx)
+	domainList, err := client.DNSDomain.List(ctx)
 
 	if err != nil {
-		t.Errorf("DNSDomain.GetList returned %+v, expected %+v", err, nil)
+		t.Errorf("DNSDomain.List returned %+v, expected %+v", err, nil)
 	}
 
 	expected := []DNSDomain{
@@ -104,7 +104,7 @@ func TestDNSDomainServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(domainList, expected) {
-		t.Errorf("DNSDomain.GetList returned %+v, expected %+v", domainList, expected)
+		t.Errorf("DNSDomain.List returned %+v, expected %+v", domainList, expected)
 	}
 }
 

@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestOSServiceHandler_GetList(t *testing.T) {
+func TestOSServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -28,9 +28,9 @@ func TestOSServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	apps, err := client.OS.GetList(ctx)
+	apps, err := client.OS.List(ctx)
 	if err != nil {
-		t.Errorf("OS.GetList returned error: %v", err)
+		t.Errorf("OS.List returned error: %v", err)
 	}
 
 	expected := []OS{
@@ -44,11 +44,11 @@ func TestOSServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(apps, expected) {
-		t.Errorf("OS.GetList returned %+v, expected %+v", apps, expected)
+		t.Errorf("OS.List returned %+v, expected %+v", apps, expected)
 	}
 }
 
-func TestOSServiceHandler_GetList_StringIDs(t *testing.T) {
+func TestOSServiceHandler_List_StringIDs(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -69,9 +69,9 @@ func TestOSServiceHandler_GetList_StringIDs(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	apps, err := client.OS.GetList(ctx)
+	apps, err := client.OS.List(ctx)
 	if err != nil {
-		t.Errorf("OS.GetList returned error: %v", err)
+		t.Errorf("OS.List returned error: %v", err)
 	}
 
 	expected := []OS{
@@ -85,11 +85,11 @@ func TestOSServiceHandler_GetList_StringIDs(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(apps, expected) {
-		t.Errorf("OS.GetList returned %+v, expected %+v", apps, expected)
+		t.Errorf("OS.List returned %+v, expected %+v", apps, expected)
 	}
 }
 
-func TestOSServiceHandler_GetListEmpty(t *testing.T) {
+func TestOSServiceHandler_ListEmpty(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -100,14 +100,14 @@ func TestOSServiceHandler_GetListEmpty(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	apps, err := client.OS.GetList(ctx)
+	apps, err := client.OS.List(ctx)
 	if err != nil {
-		t.Errorf("OS.GetList returned error: %v", err)
+		t.Errorf("OS.List returned error: %v", err)
 	}
 
 	var expected []OS
 
 	if !reflect.DeepEqual(apps, expected) {
-		t.Errorf("OS.GetList returned %+v, expected %+v", apps, expected)
+		t.Errorf("OS.List returned %+v, expected %+v", apps, expected)
 	}
 }

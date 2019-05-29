@@ -12,7 +12,7 @@ import (
 type ISOService interface {
 	CreateFromURL(ctx context.Context, ISOURL string) (*ISO, error)
 	Delete(ctx context.Context, ISOID int) error
-	GetList(ctx context.Context) ([]ISO, error)
+	List(ctx context.Context) ([]ISO, error)
 	GetPublicList(ctx context.Context) ([]PublicISO, error)
 }
 
@@ -88,8 +88,8 @@ func (i *ISOServiceHandler) Delete(ctx context.Context, isoID int) error {
 	return nil
 }
 
-// GetList will list all ISOs currently available on your account
-func (i *ISOServiceHandler) GetList(ctx context.Context) ([]ISO, error) {
+// List will list all ISOs currently available on your account
+func (i *ISOServiceHandler) List(ctx context.Context) ([]ISO, error) {
 
 	uri := "/v1/iso/list"
 

@@ -11,7 +11,7 @@ import (
 // OSService is the interface to interact with the operating system endpoint on the Vultr API
 // Link: https://www.vultr.com/api/#os
 type OSService interface {
-	GetList(ctx context.Context) ([]OS, error)
+	List(ctx context.Context) ([]OS, error)
 }
 
 // OSServiceHandler handles interaction with the operating system methods for the Vultr API
@@ -58,9 +58,9 @@ func (o *OS) UnmarshalJSON(data []byte) (err error) {
 	return nil
 }
 
-// GetList retrieves a list of available operating systems.
+// List retrieves a list of available operating systems.
 // If the Windows flag is true, a Windows license will be included with the instance, which will increase the cost.
-func (o *OSServiceHandler) GetList(ctx context.Context) ([]OS, error) {
+func (o *OSServiceHandler) List(ctx context.Context) ([]OS, error) {
 	uri := "/v1/os/list"
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
 

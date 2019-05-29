@@ -12,8 +12,8 @@ import (
 // Link: https://www.vultr.com/api/#network
 type NetworkService interface {
 	Create(ctx context.Context, regionID, description, cidrBlock string) (*Network, error)
-	Destroy(ctx context.Context, networkID string) error
-	GetList(ctx context.Context) ([]Network, error)
+	Delete(ctx context.Context, networkID string) error
+	List(ctx context.Context) ([]Network, error)
 }
 
 // NetworkServiceHandler handles interaction with the network methods for the Vultr API
@@ -73,8 +73,8 @@ func (n *NetworkServiceHandler) Create(ctx context.Context, regionID, descriptio
 	return network, nil
 }
 
-// Destroy (delete) a private network. Before destroying, a network must be disabled from all instances. See https://www.vultr.com/api/#server_private_network_disable
-func (n *NetworkServiceHandler) Destroy(ctx context.Context, networkID string) error {
+// Delete a private network. Before deleting, a network must be disabled from all instances. See https://www.vultr.com/api/#server_private_network_disable
+func (n *NetworkServiceHandler) Delete(ctx context.Context, networkID string) error {
 	uri := "/v1/network/destroy"
 
 	values := url.Values{
@@ -96,8 +96,8 @@ func (n *NetworkServiceHandler) Destroy(ctx context.Context, networkID string) e
 	return nil
 }
 
-// GetList lists all private networks on the current account
-func (n *NetworkServiceHandler) GetList(ctx context.Context) ([]Network, error) {
+// List lists all private networks on the current account
+func (n *NetworkServiceHandler) List(ctx context.Context) ([]Network, error) {
 	uri := "/v1/network/list"
 
 	req, err := n.client.NewRequest(ctx, http.MethodGet, uri, nil)

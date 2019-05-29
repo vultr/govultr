@@ -44,7 +44,7 @@ func TestIsoServiceHandler_Delete(t *testing.T) {
 	}
 }
 
-func TestIsoServiceHandler_GetList(t *testing.T) {
+func TestIsoServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -53,10 +53,10 @@ func TestIsoServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	iso, err := client.ISO.GetList(ctx)
+	iso, err := client.ISO.List(ctx)
 
 	if err != nil {
-		t.Errorf("Iso.GetList returned %+v, expected %+v", err, nil)
+		t.Errorf("Iso.List returned %+v, expected %+v", err, nil)
 	}
 
 	expected := []ISO{
@@ -64,7 +64,7 @@ func TestIsoServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(iso, expected) {
-		t.Errorf("Iso.GetList returned %+v, expected %+v", iso, expected)
+		t.Errorf("Iso.List returned %+v, expected %+v", iso, expected)
 	}
 }
 

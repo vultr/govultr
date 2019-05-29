@@ -39,7 +39,7 @@ func TestSSHKeyServiceHandler_Create(t *testing.T) {
 	}
 }
 
-func TestSSHKeyServiceHandler_Destroy(t *testing.T) {
+func TestSSHKeyServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -47,14 +47,14 @@ func TestSSHKeyServiceHandler_Destroy(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.SSHKey.Destroy(ctx, "foo")
+	err := client.SSHKey.Delete(ctx, "foo")
 
 	if err != nil {
-		t.Errorf("SSHKey.Destroy returned %+v, expected %+v", err, nil)
+		t.Errorf("SSHKey.Delete returned %+v, expected %+v", err, nil)
 	}
 }
 
-func TestSSHKeyServiceHandler_GetList(t *testing.T) {
+func TestSSHKeyServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -72,10 +72,10 @@ func TestSSHKeyServiceHandler_GetList(t *testing.T) {
 		fmt.Fprintf(writer, response)
 	})
 
-	sshKeys, err := client.SSHKey.GetList(ctx)
+	sshKeys, err := client.SSHKey.List(ctx)
 
 	if err != nil {
-		t.Errorf("SSHKey.GetList returned error: %v", err)
+		t.Errorf("SSHKey.List returned error: %v", err)
 	}
 
 	expected := []SSHKey{
@@ -88,7 +88,7 @@ func TestSSHKeyServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(sshKeys, expected) {
-		t.Errorf("SSHKey.GetList returned %+v, expected %+v", sshKeys, expected)
+		t.Errorf("SSHKey.List returned %+v, expected %+v", sshKeys, expected)
 	}
 }
 

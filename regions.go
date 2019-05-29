@@ -13,7 +13,7 @@ type RegionService interface {
 	BareMetalAvailability(ctx context.Context, regionID int) ([]int, error)
 	Vc2Availability(ctx context.Context, regionID int) ([]int, error)
 	Vdc2Availability(ctx context.Context, regionID int) ([]int, error)
-	GetList(ctx context.Context) ([]Region, error)
+	List(ctx context.Context) ([]Region, error)
 }
 
 // RegionServiceHandler handles interaction with the region methods for the Vultr API
@@ -105,8 +105,8 @@ func (r *RegionServiceHandler) Vdc2Availability(ctx context.Context, regionID in
 	return regions, nil
 }
 
-// GetList retrieves a list of all active regions
-func (r *RegionServiceHandler) GetList(ctx context.Context) ([]Region, error) {
+// List retrieves a list of all active regions
+func (r *RegionServiceHandler) List(ctx context.Context) ([]Region, error) {
 
 	uri := "/v1/regions/list"
 

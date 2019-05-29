@@ -8,9 +8,9 @@ import (
 // BackupService is the interface to interact with the backup endpoint on the Vultr API
 // Link: https://www.vultr.com/api/#backup
 type BackupService interface {
-	GetList(ctx context.Context) ([]Backup, error)
+	List(ctx context.Context) ([]Backup, error)
 	Get(ctx context.Context, backupID string) (*Backup, error)
-	GetListBySub(ctx context.Context, subID string) ([]Backup, error)
+	ListBySub(ctx context.Context, subID string) ([]Backup, error)
 }
 
 // BackupServiceHandler handles interaction with the backup methods for the Vultr API
@@ -27,8 +27,8 @@ type Backup struct {
 	Status      string `json:"status"`
 }
 
-// GetList retrieves a list of all backups on the current account
-func (b *BackupServiceHandler) GetList(ctx context.Context) ([]Backup, error) {
+// List retrieves a list of all backups on the current account
+func (b *BackupServiceHandler) List(ctx context.Context) ([]Backup, error) {
 	uri := "/v1/backup/list"
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 
@@ -77,8 +77,8 @@ func (b *BackupServiceHandler) Get(ctx context.Context, backupID string) (*Backu
 	return backup, nil
 }
 
-// GetListBySub retrieves a list of all backups on the current account that match the given subID
-func (b *BackupServiceHandler) GetListBySub(ctx context.Context, subID string) ([]Backup, error) {
+// ListBySub retrieves a list of all backups on the current account that match the given subID
+func (b *BackupServiceHandler) ListBySub(ctx context.Context, subID string) ([]Backup, error) {
 	uri := "/v1/backup/list"
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 

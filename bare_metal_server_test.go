@@ -142,7 +142,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 		Label:           "go-bm-test",
 		SSHKeyIDs:       []string{"6b80207b1821f"},
 		AppID:           "1",
-		UserData:        "ZWNobyBIZWxsbyBXb3JsZA==",
+		UserData:        "echo Hello World",
 		NotifyActivate:  "yes",
 		Hostname:        "test",
 		Tag:             "go-test",
@@ -162,7 +162,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 	}
 }
 
-func TestBareMetalServerServiceHandler_Destroy(t *testing.T) {
+func TestBareMetalServerServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -170,10 +170,10 @@ func TestBareMetalServerServiceHandler_Destroy(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.BareMetalServer.Destroy(ctx, "900000")
+	err := client.BareMetalServer.Delete(ctx, "900000")
 
 	if err != nil {
-		t.Errorf("BareMetalServer.Destroy returned %+v, expected %+v", err, nil)
+		t.Errorf("BareMetalServer.Delete returned %+v, expected %+v", err, nil)
 	}
 }
 
@@ -192,7 +192,7 @@ func TestBareMetalServerServiceHandler_EnableIPV6(t *testing.T) {
 	}
 }
 
-func TestBareMetalServerServiceHandler_GetList(t *testing.T) {
+func TestBareMetalServerServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -231,10 +231,10 @@ func TestBareMetalServerServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bm, err := client.BareMetalServer.GetList(ctx)
+	bm, err := client.BareMetalServer.List(ctx)
 
 	if err != nil {
-		t.Errorf("BareMetalServer.GetList returned error: %v", err)
+		t.Errorf("BareMetalServer.List returned error: %v", err)
 	}
 
 	expected := []BareMetalServer{
@@ -268,11 +268,11 @@ func TestBareMetalServerServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(bm, expected) {
-		t.Errorf("BareMetalServer.GetList returned %+v, expected %+v", bm, expected)
+		t.Errorf("BareMetalServer.List returned %+v, expected %+v", bm, expected)
 	}
 }
 
-func TestBareMetalServerServiceHandler_GetListByLabel(t *testing.T) {
+func TestBareMetalServerServiceHandler_ListByLabel(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -311,10 +311,10 @@ func TestBareMetalServerServiceHandler_GetListByLabel(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bm, err := client.BareMetalServer.GetListByLabel(ctx, "my label")
+	bm, err := client.BareMetalServer.ListByLabel(ctx, "my label")
 
 	if err != nil {
-		t.Errorf("BareMetalServer.GetListByLabel returned error: %v", err)
+		t.Errorf("BareMetalServer.ListByLabel returned error: %v", err)
 	}
 
 	expected := []BareMetalServer{
@@ -348,11 +348,11 @@ func TestBareMetalServerServiceHandler_GetListByLabel(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(bm, expected) {
-		t.Errorf("BareMetalServer.GetListByLabel returned %+v, expected %+v", bm, expected)
+		t.Errorf("BareMetalServer.ListByLabel returned %+v, expected %+v", bm, expected)
 	}
 }
 
-func TestBareMetalServerServiceHandler_GetListByMainIP(t *testing.T) {
+func TestBareMetalServerServiceHandler_ListByMainIP(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -391,10 +391,10 @@ func TestBareMetalServerServiceHandler_GetListByMainIP(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bm, err := client.BareMetalServer.GetListByMainIP(ctx, "203.0.113.10")
+	bm, err := client.BareMetalServer.ListByMainIP(ctx, "203.0.113.10")
 
 	if err != nil {
-		t.Errorf("BareMetalServer.GetListByMainIP returned error: %v", err)
+		t.Errorf("BareMetalServer.ListByMainIP returned error: %v", err)
 	}
 
 	expected := []BareMetalServer{
@@ -428,11 +428,11 @@ func TestBareMetalServerServiceHandler_GetListByMainIP(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(bm, expected) {
-		t.Errorf("BareMetalServer.GetListByMainIP returned %+v, expected %+v", bm, expected)
+		t.Errorf("BareMetalServer.ListByMainIP returned %+v, expected %+v", bm, expected)
 	}
 }
 
-func TestBareMetalServerServiceHandler_GetListByTag(t *testing.T) {
+func TestBareMetalServerServiceHandler_ListByTag(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -471,10 +471,10 @@ func TestBareMetalServerServiceHandler_GetListByTag(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bm, err := client.BareMetalServer.GetListByTag(ctx, "my tag")
+	bm, err := client.BareMetalServer.ListByTag(ctx, "my tag")
 
 	if err != nil {
-		t.Errorf("BareMetalServer.GetListByTag returned error: %v", err)
+		t.Errorf("BareMetalServer.ListByTag returned error: %v", err)
 	}
 
 	expected := []BareMetalServer{
@@ -508,7 +508,7 @@ func TestBareMetalServerServiceHandler_GetListByTag(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(bm, expected) {
-		t.Errorf("BareMetalServer.GetListByTag returned %+v, expected %+v", bm, expected)
+		t.Errorf("BareMetalServer.ListByTag returned %+v, expected %+v", bm, expected)
 	}
 }
 

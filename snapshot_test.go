@@ -53,7 +53,7 @@ func TestSnapshotServiceHandler_CreateFromURL(t *testing.T) {
 	}
 }
 
-func TestSnapshotServiceHandler_Destroy(t *testing.T) {
+func TestSnapshotServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -61,15 +61,15 @@ func TestSnapshotServiceHandler_Destroy(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.Snapshot.Destroy(ctx, "7a05cbf361d98")
+	err := client.Snapshot.Delete(ctx, "7a05cbf361d98")
 
 	if err != nil {
-		t.Errorf("Snapshot.Destroy returned %+v, expected %+v", err, nil)
+		t.Errorf("Snapshot.Delete returned %+v, expected %+v", err, nil)
 	}
 
 }
 
-func TestSnapshotServiceHandler_GetList(t *testing.T) {
+func TestSnapshotServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -90,17 +90,17 @@ func TestSnapshotServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	snapshots, err := client.Snapshot.GetList(ctx)
+	snapshots, err := client.Snapshot.List(ctx)
 
 	if err != nil {
-		t.Errorf("Snapshot.GetList returned error: %v", err)
+		t.Errorf("Snapshot.List returned error: %v", err)
 	}
 	expected := []Snapshot{
 		{SnapshotID: "5359435dc1df3", DateCreated: "2014-04-22 16:11:46", Description: "", Size: "10000000", Status: "complete", OsID: "127", AppID: "0"},
 	}
 
 	if !reflect.DeepEqual(snapshots, expected) {
-		t.Errorf("Snapshot.GetList returned %+v, expected %+v", snapshots, expected)
+		t.Errorf("Snapshot.List returned %+v, expected %+v", snapshots, expected)
 
 	}
 }

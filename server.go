@@ -52,12 +52,12 @@ type ServerService interface {
 	Halt(ctx context.Context, vpsID string) error
 	Reboot(ctx context.Context, vpsID string) error
 	Reinstall(ctx context.Context, vpsID string) error
-	Destroy(ctx context.Context, vpsID string) error
+	Delete(ctx context.Context, vpsID string) error
 	Create(ctx context.Context, regionID, vpsPlanID, osID int, options *ServerOptions) (*Server, error)
-	GetList(ctx context.Context) ([]Server, error)
-	GetListByLabel(ctx context.Context, label string) ([]Server, error)
-	GetListByMainIP(ctx context.Context, mainIP string) ([]Server, error)
-	GetListByTag(ctx context.Context, tag string) ([]Server, error)
+	List(ctx context.Context) ([]Server, error)
+	ListByLabel(ctx context.Context, label string) ([]Server, error)
+	ListByMainIP(ctx context.Context, mainIP string) ([]Server, error)
+	ListByTag(ctx context.Context, tag string) ([]Server, error)
 	GetServer(ctx context.Context, vpsID string) (*Server, error)
 }
 
@@ -1258,8 +1258,8 @@ func (s *ServerServiceHandler) Reinstall(ctx context.Context, vpsID string) erro
 	return nil
 }
 
-// Destroy will delete a VPS. All data will be permanently lost, and the IP address will be released
-func (s *ServerServiceHandler) Destroy(ctx context.Context, vpsID string) error {
+// Delete a VPS. All data will be permanently lost, and the IP address will be released
+func (s *ServerServiceHandler) Delete(ctx context.Context, vpsID string) error {
 
 	uri := "/v1/server/destroy"
 
@@ -1349,6 +1349,8 @@ func (s *ServerServiceHandler) Create(ctx context.Context, regionID, vpsPlanID, 
 
 		if options.NotifyActivate == true {
 			values.Add("notify_activate", "yes")
+		} else if options.NotifyActivate == false {
+			values.Add("notify_activate", "no")
 		}
 
 		if options.DDOSProtection == true {
@@ -1388,28 +1390,28 @@ func (s *ServerServiceHandler) Create(ctx context.Context, regionID, vpsPlanID, 
 	return server, nil
 }
 
-// GetList lists all VPS on the current account. This includes both pending and active servers.
-func (s *ServerServiceHandler) GetList(ctx context.Context) ([]Server, error) {
-	return s.getList(ctx, "", "")
+// List lists all VPS on the current account. This includes both pending and active servers.
+func (s *ServerServiceHandler) List(ctx context.Context) ([]Server, error) {
+	return s.list(ctx, "", "")
 }
 
-// GetListByLabel lists all VPS that match the given label on the current account. This includes both pending and active servers.
-func (s *ServerServiceHandler) GetListByLabel(ctx context.Context, label string) ([]Server, error) {
-	return s.getList(ctx, "label", label)
+// ListByLabel lists all VPS that match the given label on the current account. This includes both pending and active servers.
+func (s *ServerServiceHandler) ListByLabel(ctx context.Context, label string) ([]Server, error) {
+	return s.list(ctx, "label", label)
 }
 
-// GetListByMainIP lists all VPS that match the given IP address on the current account. This includes both pending and active servers.
-func (s *ServerServiceHandler) GetListByMainIP(ctx context.Context, mainIP string) ([]Server, error) {
-	return s.getList(ctx, "main_ip", mainIP)
+// ListByMainIP lists all VPS that match the given IP address on the current account. This includes both pending and active servers.
+func (s *ServerServiceHandler) ListByMainIP(ctx context.Context, mainIP string) ([]Server, error) {
+	return s.list(ctx, "main_ip", mainIP)
 }
 
-// GetListByTag lists all VPS that match the given tag on the current account. This includes both pending and active servers.
-func (s *ServerServiceHandler) GetListByTag(ctx context.Context, tag string) ([]Server, error) {
-	return s.getList(ctx, "tag", tag)
+// ListByTag lists all VPS that match the given tag on the current account. This includes both pending and active servers.
+func (s *ServerServiceHandler) ListByTag(ctx context.Context, tag string) ([]Server, error) {
+	return s.list(ctx, "tag", tag)
 }
 
-// getList is used to consolidate the optional params to get a VPS
-func (s *ServerServiceHandler) getList(ctx context.Context, key, value string) ([]Server, error) {
+// list is used to consolidate the optional params to get a VPS
+func (s *ServerServiceHandler) list(ctx context.Context, key, value string) ([]Server, error) {
 
 	uri := "/v1/server/list"
 

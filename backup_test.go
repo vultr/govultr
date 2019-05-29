@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestBackupServiceHandler_GetList(t *testing.T) {
+func TestBackupServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -28,9 +28,9 @@ func TestBackupServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	backups, err := client.Backup.GetList(ctx)
+	backups, err := client.Backup.List(ctx)
 	if err != nil {
-		t.Errorf("Backup.GetList returned error: %v", err)
+		t.Errorf("Backup.List returned error: %v", err)
 	}
 
 	expected := []Backup{
@@ -44,11 +44,11 @@ func TestBackupServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(backups, expected) {
-		t.Errorf("Backup.GetList returned %+v, expected %+v", backups, expected)
+		t.Errorf("Backup.List returned %+v, expected %+v", backups, expected)
 	}
 }
 
-func TestBackupServiceHandler_GetListEmpty(t *testing.T) {
+func TestBackupServiceHandler_ListEmpty(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -59,19 +59,19 @@ func TestBackupServiceHandler_GetListEmpty(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	backups, err := client.Backup.GetList(ctx)
+	backups, err := client.Backup.List(ctx)
 	if err != nil {
-		t.Errorf("Backup.GetList returned error: %v", err)
+		t.Errorf("Backup.List returned error: %v", err)
 	}
 
 	var expected []Backup
 
 	if !reflect.DeepEqual(backups, expected) {
-		t.Errorf("Backup.GetList returned %+v, expected %+v", backups, expected)
+		t.Errorf("Backup.List returned %+v, expected %+v", backups, expected)
 	}
 }
 
-func TestBackupServiceHandler_GetListBySub(t *testing.T) {
+func TestBackupServiceHandler_ListBySub(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -92,9 +92,9 @@ func TestBackupServiceHandler_GetListBySub(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	backups, err := client.Backup.GetListBySub(ctx, "test-backupID")
+	backups, err := client.Backup.ListBySub(ctx, "test-backupID")
 	if err != nil {
-		t.Errorf("Backup.GetListBySub returned error: %v", err)
+		t.Errorf("Backup.ListBySub returned error: %v", err)
 	}
 
 	expected := []Backup{
@@ -108,11 +108,11 @@ func TestBackupServiceHandler_GetListBySub(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(backups, expected) {
-		t.Errorf("Backup.GetListBySub returned %+v, expected %+v", backups, expected)
+		t.Errorf("Backup.ListBySub returned %+v, expected %+v", backups, expected)
 	}
 }
 
-func TestBackupServiceHandler_GetListBySubEmpty(t *testing.T) {
+func TestBackupServiceHandler_ListBySubEmpty(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -123,15 +123,15 @@ func TestBackupServiceHandler_GetListBySubEmpty(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	backups, err := client.Backup.GetListBySub(ctx, "test-backupID")
+	backups, err := client.Backup.ListBySub(ctx, "test-backupID")
 	if err != nil {
-		t.Errorf("Backup.GetListBySub returned error: %v", err)
+		t.Errorf("Backup.ListBySub returned error: %v", err)
 	}
 
 	var expected []Backup
 
 	if !reflect.DeepEqual(backups, expected) {
-		t.Errorf("Backup.GetListBySub returned %+v, expected %+v", backups, expected)
+		t.Errorf("Backup.ListBySub returned %+v, expected %+v", backups, expected)
 	}
 }
 

@@ -11,8 +11,8 @@ import (
 type SnapshotService interface {
 	Create(ctx context.Context, vpsID, description string) (*Snapshot, error)
 	CreateFromURL(ctx context.Context, snapshotURL string) (*Snapshot, error)
-	Destroy(ctx context.Context, snapshotID string) error
-	GetList(ctx context.Context) ([]Snapshot, error)
+	Delete(ctx context.Context, snapshotID string) error
+	List(ctx context.Context) ([]Snapshot, error)
 	Get(ctx context.Context, snapshotID string) (*Snapshot, error)
 }
 
@@ -86,8 +86,8 @@ func (s *SnapshotServiceHandler) CreateFromURL(ctx context.Context, snapshotURL 
 	return snapshot, nil
 }
 
-// Destroy a snapshot based on snapshotID
-func (s *SnapshotServiceHandler) Destroy(ctx context.Context, snapshotID string) error {
+// Delete a snapshot based on snapshotID
+func (s *SnapshotServiceHandler) Delete(ctx context.Context, snapshotID string) error {
 	uri := "/v1/snapshot/destroy"
 
 	values := url.Values{
@@ -109,8 +109,8 @@ func (s *SnapshotServiceHandler) Destroy(ctx context.Context, snapshotID string)
 	return nil
 }
 
-// GetList of snapshots details
-func (s *SnapshotServiceHandler) GetList(ctx context.Context) ([]Snapshot, error) {
+// List of snapshots details
+func (s *SnapshotServiceHandler) List(ctx context.Context) ([]Snapshot, error) {
 	uri := "/v1/snapshot/list"
 
 	req, err := s.Client.NewRequest(ctx, http.MethodGet, uri, nil)

@@ -89,7 +89,7 @@ func TestBlockStorageServiceHandler_SetLabel(t *testing.T) {
 	}
 }
 
-func TestBlockStorageServiceHandler_GetList(t *testing.T) {
+func TestBlockStorageServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -120,7 +120,7 @@ func TestBlockStorageServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	blockStorage, err := client.BlockStorage.GetList(ctx)
+	blockStorage, err := client.BlockStorage.List(ctx)
 
 	if err != nil {
 		t.Errorf("BlockStorage.Get returned error: %v", err)

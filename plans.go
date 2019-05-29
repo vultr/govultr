@@ -8,7 +8,7 @@ import (
 // PlanService is the interface to interact with the Plans endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#plans
 type PlanService interface {
-	GetList(ctx context.Context, planType string) ([]Plan, error)
+	List(ctx context.Context, planType string) ([]Plan, error)
 	GetBareMetalList(ctx context.Context) ([]BareMetalPlan, error)
 	GetVc2List(ctx context.Context) ([]VCPlan, error)
 	GetVdc2List(ctx context.Context) ([]VCPlan, error)
@@ -63,9 +63,9 @@ type VCPlan struct {
 	PlanType    string `json:"plan_type"`
 }
 
-// GetList retrieves a list of all active plans.
+// List retrieves a list of all active plans.
 // planType is optional - pass an empty string to get all plans
-func (p *PlanServiceHandler) GetList(ctx context.Context, planType string) ([]Plan, error) {
+func (p *PlanServiceHandler) List(ctx context.Context, planType string) ([]Plan, error) {
 
 	uri := "/v1/plans/list"
 

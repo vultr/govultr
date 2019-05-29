@@ -16,7 +16,7 @@ import (
 type FireWallRuleService interface {
 	Create(ctx context.Context, groupID, protocol, port, network, notes string) (*FirewallRule, error)
 	Delete(ctx context.Context, groupID, ruleID string) error
-	GetList(ctx context.Context, groupID, ipType string) ([]FirewallRule, error)
+	List(ctx context.Context, groupID, ipType string) ([]FirewallRule, error)
 	GetAll(ctx context.Context, groupID string) ([]FirewallRule, error)
 }
 
@@ -186,9 +186,9 @@ func (f *FireWallRuleServiceHandler) Delete(ctx context.Context, groupID, ruleID
 	return nil
 }
 
-// GetList will list the current firewall rules in a firewall group.
+// List will list the current firewall rules in a firewall group.
 // ipType values that can be passed in are "v4", "v6"
-func (f *FireWallRuleServiceHandler) GetList(ctx context.Context, groupID, ipType string) ([]FirewallRule, error) {
+func (f *FireWallRuleServiceHandler) List(ctx context.Context, groupID, ipType string) ([]FirewallRule, error) {
 
 	uri := "/v1/firewall/rule_list"
 

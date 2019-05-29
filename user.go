@@ -11,7 +11,7 @@ import (
 type UserService interface {
 	Create(ctx context.Context, email, name, password, apiEnabled string, acls []string) (*User, error)
 	Delete(ctx context.Context, userID string) error
-	GetList(ctx context.Context) ([]User, error)
+	List(ctx context.Context) ([]User, error)
 	Update(ctx context.Context, user *User) error
 }
 
@@ -93,8 +93,8 @@ func (u *UserServiceHandler) Delete(ctx context.Context, userID string) error {
 	return nil
 }
 
-// GetList will list all the users associated with your Vultr account
-func (u *UserServiceHandler) GetList(ctx context.Context) ([]User, error) {
+// List will list all the users associated with your Vultr account
+func (u *UserServiceHandler) List(ctx context.Context) ([]User, error) {
 
 	uri := "/v1/user/list"
 

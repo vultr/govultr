@@ -12,8 +12,8 @@ import (
 // Link: https://www.vultr.com/api/#startupscript
 type StartupScriptService interface {
 	Create(ctx context.Context, name, script, scriptType string) (*StartupScript, error)
-	Destroy(ctx context.Context, scriptID string) error
-	GetList(ctx context.Context) ([]StartupScript, error)
+	Delete(ctx context.Context, scriptID string) error
+	List(ctx context.Context) ([]StartupScript, error)
 	Update(ctx context.Context, script *StartupScript) error
 }
 
@@ -90,8 +90,8 @@ func (s *StartupScriptServiceHandler) Create(ctx context.Context, name, script, 
 	return ss, nil
 }
 
-// Destroy will delete the specified startup script from your Vultr account
-func (s *StartupScriptServiceHandler) Destroy(ctx context.Context, scriptID string) error {
+// Delete will delete the specified startup script from your Vultr account
+func (s *StartupScriptServiceHandler) Delete(ctx context.Context, scriptID string) error {
 
 	uri := "/v1/startupscript/destroy"
 
@@ -114,8 +114,8 @@ func (s *StartupScriptServiceHandler) Destroy(ctx context.Context, scriptID stri
 	return nil
 }
 
-// GetList will list all the startup scripts associated with your Vultr account
-func (s *StartupScriptServiceHandler) GetList(ctx context.Context) ([]StartupScript, error) {
+// List will list all the startup scripts associated with your Vultr account
+func (s *StartupScriptServiceHandler) List(ctx context.Context) ([]StartupScript, error) {
 
 	uri := "/v1/startupscript/list"
 

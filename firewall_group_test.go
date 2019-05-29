@@ -45,7 +45,7 @@ func TestFireWallGroupServiceHandler_Delete(t *testing.T) {
 	}
 }
 
-func TestFireWallGroupServiceHandler_GetList(t *testing.T) {
+func TestFireWallGroupServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -54,10 +54,10 @@ func TestFireWallGroupServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	firewallGroup, err := client.FirewallGroup.GetList(ctx)
+	firewallGroup, err := client.FirewallGroup.List(ctx)
 
 	if err != nil {
-		t.Errorf("FirewallGroup.GetList returned error: %v", err)
+		t.Errorf("FirewallGroup.List returned error: %v", err)
 	}
 
 	expected := []FirewallGroup{
@@ -73,7 +73,7 @@ func TestFireWallGroupServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(firewallGroup, expected) {
-		t.Errorf("FirewallGroup.GetList returned %+v, expected %+v", firewallGroup, expected)
+		t.Errorf("FirewallGroup.List returned %+v, expected %+v", firewallGroup, expected)
 	}
 
 }
