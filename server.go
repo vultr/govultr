@@ -1349,6 +1349,8 @@ func (s *ServerServiceHandler) Create(ctx context.Context, regionID, vpsPlanID, 
 
 		if options.NotifyActivate == true {
 			values.Add("notify_activate", "yes")
+		} else if options.NotifyActivate == false {
+			values.Add("notify_activate", "no")
 		}
 
 		if options.DDOSProtection == true {

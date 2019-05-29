@@ -142,7 +142,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 		Label:           "go-bm-test",
 		SSHKeyIDs:       []string{"6b80207b1821f"},
 		AppID:           "1",
-		UserData:        "ZWNobyBIZWxsbyBXb3JsZA==",
+		UserData:        "echo Hello World",
 		NotifyActivate:  "yes",
 		Hostname:        "test",
 		Tag:             "go-test",
