@@ -11,7 +11,7 @@ import (
 type SSHKeyService interface {
 	Create(ctx context.Context, name, sshKey string) (*SSHKey, error)
 	Delete(ctx context.Context, sshKeyID string) error
-	GetList(ctx context.Context) ([]SSHKey, error)
+	List(ctx context.Context) ([]SSHKey, error)
 	Update(ctx context.Context, sshKey *SSHKey) error
 }
 
@@ -82,8 +82,8 @@ func (s *SSHKeyServiceHandler) Delete(ctx context.Context, sshKeyID string) erro
 	return nil
 }
 
-// GetList will list all the SSH Keys associated with your Vultr account
-func (s *SSHKeyServiceHandler) GetList(ctx context.Context) ([]SSHKey, error) {
+// List will list all the SSH Keys associated with your Vultr account
+func (s *SSHKeyServiceHandler) List(ctx context.Context) ([]SSHKey, error) {
 
 	uri := "/v1/sshkey/list"
 

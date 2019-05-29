@@ -13,7 +13,7 @@ import (
 type NetworkService interface {
 	Create(ctx context.Context, regionID, description, cidrBlock string) (*Network, error)
 	Delete(ctx context.Context, networkID string) error
-	GetList(ctx context.Context) ([]Network, error)
+	List(ctx context.Context) ([]Network, error)
 }
 
 // NetworkServiceHandler handles interaction with the network methods for the Vultr API
@@ -96,8 +96,8 @@ func (n *NetworkServiceHandler) Delete(ctx context.Context, networkID string) er
 	return nil
 }
 
-// GetList lists all private networks on the current account
-func (n *NetworkServiceHandler) GetList(ctx context.Context) ([]Network, error) {
+// List lists all private networks on the current account
+func (n *NetworkServiceHandler) List(ctx context.Context) ([]Network, error) {
 	uri := "/v1/network/list"
 
 	req, err := n.client.NewRequest(ctx, http.MethodGet, uri, nil)

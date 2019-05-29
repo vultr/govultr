@@ -824,7 +824,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 	}
 }
 
-func TestServerServiceHandler_GetList(t *testing.T) {
+func TestServerServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -833,10 +833,10 @@ func TestServerServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	server, err := client.Server.GetList(ctx)
+	server, err := client.Server.List(ctx)
 
 	if err != nil {
-		t.Errorf("Server.GetList returned %+v", err)
+		t.Errorf("Server.List returned %+v", err)
 	}
 
 	expected := []Server{
@@ -874,11 +874,11 @@ func TestServerServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(server, expected) {
-		t.Errorf("Server.GetList returned %+v, expected %+v", server, expected)
+		t.Errorf("Server.List returned %+v, expected %+v", server, expected)
 	}
 }
 
-func TestServerServiceHandler_GetListByLabel(t *testing.T) {
+func TestServerServiceHandler_ListByLabel(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -887,10 +887,10 @@ func TestServerServiceHandler_GetListByLabel(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	server, err := client.Server.GetListByLabel(ctx, "label")
+	server, err := client.Server.ListByLabel(ctx, "label")
 
 	if err != nil {
-		t.Errorf("Server.GetListByLabel returned %+v", err)
+		t.Errorf("Server.ListByLabel returned %+v", err)
 	}
 
 	expected := []Server{
@@ -928,11 +928,11 @@ func TestServerServiceHandler_GetListByLabel(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(server, expected) {
-		t.Errorf("Server.GetListByLabel returned %+v, expected %+v", server, expected)
+		t.Errorf("Server.ListByLabel returned %+v, expected %+v", server, expected)
 	}
 }
 
-func TestServerServiceHandler_GetListByMainIP(t *testing.T) {
+func TestServerServiceHandler_ListByMainIP(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -941,10 +941,10 @@ func TestServerServiceHandler_GetListByMainIP(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	server, err := client.Server.GetListByMainIP(ctx, "label")
+	server, err := client.Server.ListByMainIP(ctx, "label")
 
 	if err != nil {
-		t.Errorf("Server.GetListByMainIP returned %+v", err)
+		t.Errorf("Server.ListByMainIP returned %+v", err)
 	}
 
 	expected := []Server{
@@ -982,11 +982,11 @@ func TestServerServiceHandler_GetListByMainIP(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(server, expected) {
-		t.Errorf("Server.GetListByMainIP returned %+v, expected %+v", server, expected)
+		t.Errorf("Server.ListByMainIP returned %+v, expected %+v", server, expected)
 	}
 }
 
-func TestServerServiceHandler_GetListByTag(t *testing.T) {
+func TestServerServiceHandler_ListByTag(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -995,10 +995,10 @@ func TestServerServiceHandler_GetListByTag(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	server, err := client.Server.GetListByTag(ctx, "label")
+	server, err := client.Server.ListByTag(ctx, "label")
 
 	if err != nil {
-		t.Errorf("Server.GetListByTag returned %+v", err)
+		t.Errorf("Server.ListByTag returned %+v", err)
 	}
 
 	expected := []Server{
@@ -1036,7 +1036,7 @@ func TestServerServiceHandler_GetListByTag(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(server, expected) {
-		t.Errorf("Server.GetListByTag returned %+v, expected %+v", server, expected)
+		t.Errorf("Server.ListByTag returned %+v, expected %+v", server, expected)
 	}
 }
 

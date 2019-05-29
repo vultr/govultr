@@ -11,7 +11,7 @@ import (
 type FirewallGroupService interface {
 	Create(ctx context.Context, description string) (*FirewallGroup, error)
 	Delete(ctx context.Context, groupID string) error
-	GetList(ctx context.Context) ([]FirewallGroup, error)
+	List(ctx context.Context) ([]FirewallGroup, error)
 	Get(ctx context.Context, groupID string) (*FirewallGroup, error)
 	ChangeDescription(ctx context.Context, groupID, description string) error
 }
@@ -81,8 +81,8 @@ func (f *FireWallGroupServiceHandler) Delete(ctx context.Context, groupID string
 	return nil
 }
 
-// GetList will return a list of  all firewall groups on your Vultr account
-func (f *FireWallGroupServiceHandler) GetList(ctx context.Context) ([]FirewallGroup, error) {
+// List will return a list of  all firewall groups on your Vultr account
+func (f *FireWallGroupServiceHandler) List(ctx context.Context) ([]FirewallGroup, error) {
 
 	uri := "/v1/firewall/group_list"
 

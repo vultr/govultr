@@ -57,7 +57,7 @@ func TestUserServiceHandler_Delete(t *testing.T) {
 	}
 }
 
-func TestUserServiceHandler_GetList(t *testing.T) {
+func TestUserServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -91,10 +91,10 @@ func TestUserServiceHandler_GetList(t *testing.T) {
 		fmt.Fprintf(writer, response)
 	})
 
-	Users, err := client.User.GetList(ctx)
+	Users, err := client.User.List(ctx)
 
 	if err != nil {
-		t.Errorf("User.GetList returned error: %v", err)
+		t.Errorf("User.List returned error: %v", err)
 	}
 
 	expected := []User{
@@ -115,7 +115,7 @@ func TestUserServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(Users, expected) {
-		t.Errorf("User.GetList returned %+v, expected %+v", Users, expected)
+		t.Errorf("User.List returned %+v, expected %+v", Users, expected)
 	}
 }
 

@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestPlanServiceHandler_GetList(t *testing.T) {
+func TestPlanServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -16,10 +16,10 @@ func TestPlanServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	plans, err := client.Plan.GetList(ctx, "vc2")
+	plans, err := client.Plan.List(ctx, "vc2")
 
 	if err != nil {
-		t.Errorf("Plan.GetList returned %+v", err)
+		t.Errorf("Plan.List returned %+v", err)
 	}
 
 	expected := []Plan{{
@@ -38,7 +38,7 @@ func TestPlanServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(plans, expected) {
-		t.Errorf("Plan.GetList  returned %+v, expected %+v", plans, expected)
+		t.Errorf("Plan.List  returned %+v, expected %+v", plans, expected)
 	}
 }
 

@@ -21,10 +21,10 @@ type BareMetalServerService interface {
 	Create(ctx context.Context, regionID, planID, osID string, options *BareMetalServerOptions) (*BareMetalServer, error)
 	Delete(ctx context.Context, serverID string) error
 	EnableIPV6(ctx context.Context, serverID string) error
-	GetList(ctx context.Context) ([]BareMetalServer, error)
-	GetListByLabel(ctx context.Context, label string) ([]BareMetalServer, error)
-	GetListByMainIP(ctx context.Context, mainIP string) ([]BareMetalServer, error)
-	GetListByTag(ctx context.Context, tag string) ([]BareMetalServer, error)
+	List(ctx context.Context) ([]BareMetalServer, error)
+	ListByLabel(ctx context.Context, label string) ([]BareMetalServer, error)
+	ListByMainIP(ctx context.Context, mainIP string) ([]BareMetalServer, error)
+	ListByTag(ctx context.Context, tag string) ([]BareMetalServer, error)
 	GetServer(ctx context.Context, serverID string) (*BareMetalServer, error)
 	GetUserData(ctx context.Context, serverID string) (*UserData, error)
 	Halt(ctx context.Context, serverID string) error
@@ -423,27 +423,27 @@ func (b *BareMetalServerServiceHandler) EnableIPV6(ctx context.Context, serverID
 	return nil
 }
 
-// GetList lists all bare metal servers on the current account. This includes both pending and active servers.
-func (b *BareMetalServerServiceHandler) GetList(ctx context.Context) ([]BareMetalServer, error) {
-	return b.getList(ctx, "", "")
+// List lists all bare metal servers on the current account. This includes both pending and active servers.
+func (b *BareMetalServerServiceHandler) List(ctx context.Context) ([]BareMetalServer, error) {
+	return b.list(ctx, "", "")
 }
 
-// GetListByLabel lists all bare metal servers that match the given label on the current account. This includes both pending and active servers.
-func (b *BareMetalServerServiceHandler) GetListByLabel(ctx context.Context, label string) ([]BareMetalServer, error) {
-	return b.getList(ctx, "label", label)
+// ListByLabel lists all bare metal servers that match the given label on the current account. This includes both pending and active servers.
+func (b *BareMetalServerServiceHandler) ListByLabel(ctx context.Context, label string) ([]BareMetalServer, error) {
+	return b.list(ctx, "label", label)
 }
 
-// GetListByMainIP lists all bare metal servers that match the given IP address on the current account. This includes both pending and active servers.
-func (b *BareMetalServerServiceHandler) GetListByMainIP(ctx context.Context, mainIP string) ([]BareMetalServer, error) {
-	return b.getList(ctx, "main_ip", mainIP)
+// ListByMainIP lists all bare metal servers that match the given IP address on the current account. This includes both pending and active servers.
+func (b *BareMetalServerServiceHandler) ListByMainIP(ctx context.Context, mainIP string) ([]BareMetalServer, error) {
+	return b.list(ctx, "main_ip", mainIP)
 }
 
-// GetListByTag lists all bare metal servers that match the given tag on the current account. This includes both pending and active servers.
-func (b *BareMetalServerServiceHandler) GetListByTag(ctx context.Context, tag string) ([]BareMetalServer, error) {
-	return b.getList(ctx, "tag", tag)
+// ListByTag lists all bare metal servers that match the given tag on the current account. This includes both pending and active servers.
+func (b *BareMetalServerServiceHandler) ListByTag(ctx context.Context, tag string) ([]BareMetalServer, error) {
+	return b.list(ctx, "tag", tag)
 }
 
-func (b *BareMetalServerServiceHandler) getList(ctx context.Context, key, value string) ([]BareMetalServer, error) {
+func (b *BareMetalServerServiceHandler) list(ctx context.Context, key, value string) ([]BareMetalServer, error) {
 	uri := "/v1/baremetal/list"
 
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)

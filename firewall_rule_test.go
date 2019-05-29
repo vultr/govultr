@@ -68,9 +68,9 @@ func TestFireWallRuleServiceHandler_GetAll(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	firewallRule, err := client.FirewallRule.GetList(ctx, "12345", "v4")
+	firewallRule, err := client.FirewallRule.List(ctx, "12345", "v4")
 	if err != nil {
-		t.Errorf("FirewallRule.GetList returned error: %v", err)
+		t.Errorf("FirewallRule.List returned error: %v", err)
 	}
 
 	expected := []FirewallRule{
@@ -83,12 +83,12 @@ func TestFireWallRuleServiceHandler_GetAll(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(firewallRule, expected) {
-		t.Errorf("FirewallRule.GetList returned %+v, expected %+v", firewallRule, expected)
+		t.Errorf("FirewallRule.List returned %+v, expected %+v", firewallRule, expected)
 	}
 
-	firewallRule, err = client.FirewallRule.GetList(ctx, "12345", "v6")
+	firewallRule, err = client.FirewallRule.List(ctx, "12345", "v6")
 	if err != nil {
-		t.Errorf("FirewallRule.GetList returned error: %v", err)
+		t.Errorf("FirewallRule.List returned error: %v", err)
 	}
 
 	expected = []FirewallRule{
@@ -101,11 +101,11 @@ func TestFireWallRuleServiceHandler_GetAll(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(firewallRule, expected) {
-		t.Errorf("FirewallRule.GetList returned %+v, expected %+v", firewallRule, expected)
+		t.Errorf("FirewallRule.List returned %+v, expected %+v", firewallRule, expected)
 	}
 }
 
-func TestFireWallRuleServiceHandler_GetList(t *testing.T) {
+func TestFireWallRuleServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 

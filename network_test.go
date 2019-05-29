@@ -51,7 +51,7 @@ func TestNetworkServiceHandler_Delete(t *testing.T) {
 	}
 }
 
-func TestNetworkServiceHandler_GetList(t *testing.T) {
+func TestNetworkServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -71,10 +71,10 @@ func TestNetworkServiceHandler_GetList(t *testing.T) {
 		fmt.Fprintf(writer, response)
 	})
 
-	networks, err := client.Network.GetList(ctx)
+	networks, err := client.Network.List(ctx)
 
 	if err != nil {
-		t.Errorf("Network.GetList returned error: %v", err)
+		t.Errorf("Network.List returned error: %v", err)
 	}
 
 	expected := []Network{
@@ -89,6 +89,6 @@ func TestNetworkServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(networks, expected) {
-		t.Errorf("Network.GetList returned %+v, expected %+v", networks, expected)
+		t.Errorf("Network.List returned %+v, expected %+v", networks, expected)
 	}
 }

@@ -12,7 +12,7 @@ import (
 type DNSRecordService interface {
 	Create(ctx context.Context, domain, recordType, name, data string, ttl, priority int) error
 	Delete(ctx context.Context, domain, recordID string) error
-	GetList(ctx context.Context, domain string) ([]DNSRecord, error)
+	List(ctx context.Context, domain string) ([]DNSRecord, error)
 	Update(ctx context.Context, domain string, dnsRecord *DNSRecord) error
 }
 
@@ -85,8 +85,8 @@ func (d *DNSRecordsServiceHandler) Delete(ctx context.Context, domain, recordID 
 	return nil
 }
 
-// GetList will list all the records associated with a particular domain on Vultr
-func (d *DNSRecordsServiceHandler) GetList(ctx context.Context, domain string) ([]DNSRecord, error) {
+// List will list all the records associated with a particular domain on Vultr
+func (d *DNSRecordsServiceHandler) List(ctx context.Context, domain string) ([]DNSRecord, error) {
 
 	uri := "/v1/dns/records"
 

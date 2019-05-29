@@ -95,7 +95,7 @@ func TestRegionServiceHandler_Vdc2Availability(t *testing.T) {
 	}
 }
 
-func TestRegionServiceHandler_GetList(t *testing.T) {
+func TestRegionServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -104,10 +104,10 @@ func TestRegionServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	region, err := client.Region.GetList(ctx)
+	region, err := client.Region.List(ctx)
 
 	if err != nil {
-		t.Errorf("Region.GetList returned error: %v", err)
+		t.Errorf("Region.List returned error: %v", err)
 	}
 
 	expected := []Region{
@@ -134,6 +134,6 @@ func TestRegionServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(region, expected) {
-		t.Errorf("Region.GetList returned %+v, expected %+v", region, expected)
+		t.Errorf("Region.List returned %+v, expected %+v", region, expected)
 	}
 }

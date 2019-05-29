@@ -17,7 +17,7 @@ type ReservedIPService interface {
 	Create(ctx context.Context, regionID int, ipType, label string) (*ReservedIP, error)
 	Delete(ctx context.Context, ip string) error
 	Detach(ctx context.Context, ip, vpsID string) error
-	GetList(ctx context.Context) ([]ReservedIP, error)
+	List(ctx context.Context) ([]ReservedIP, error)
 }
 
 // ReservedIPServiceHandler handles interaction with the reserved IP methods for the Vultr API
@@ -247,8 +247,8 @@ func (r *ReservedIPServiceHandler) Detach(ctx context.Context, ip, vpsID string)
 	return nil
 }
 
-// GetList lists all the reserved IPs associated with your Vultr account
-func (r *ReservedIPServiceHandler) GetList(ctx context.Context) ([]ReservedIP, error) {
+// List lists all the reserved IPs associated with your Vultr account
+func (r *ReservedIPServiceHandler) List(ctx context.Context) ([]ReservedIP, error) {
 
 	uri := "/v1/reservedip/list"
 

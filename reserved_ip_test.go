@@ -122,7 +122,7 @@ func TestReservedIPServiceHandler_Detach(t *testing.T) {
 	}
 }
 
-func TestReservedIPServiceHandler_GetList(t *testing.T) {
+func TestReservedIPServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -143,10 +143,10 @@ func TestReservedIPServiceHandler_GetList(t *testing.T) {
 		fmt.Fprintf(writer, response)
 	})
 
-	ips, err := client.ReservedIP.GetList(ctx)
+	ips, err := client.ReservedIP.List(ctx)
 
 	if err != nil {
-		t.Errorf("ReservedIP.GetList returned error: %v", err)
+		t.Errorf("ReservedIP.List returned error: %v", err)
 	}
 
 	expected := []ReservedIP{
@@ -162,6 +162,6 @@ func TestReservedIPServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(ips, expected) {
-		t.Errorf("ReservedIP.GetList returned %+v, expected %+v", ips, expected)
+		t.Errorf("ReservedIP.List returned %+v, expected %+v", ips, expected)
 	}
 }

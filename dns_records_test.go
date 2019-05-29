@@ -37,7 +37,7 @@ func TestDNSRecordsServiceHandler_Delete(t *testing.T) {
 	}
 }
 
-func TestDNSRecordsServiceHandler_GetList(t *testing.T) {
+func TestDNSRecordsServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -47,9 +47,9 @@ func TestDNSRecordsServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	records, err := client.DNSRecord.GetList(ctx, "domain.com")
+	records, err := client.DNSRecord.List(ctx, "domain.com")
 	if err != nil {
-		t.Errorf("DNSRecord.GetList returned %+v, expected %+v", err, nil)
+		t.Errorf("DNSRecord.List returned %+v, expected %+v", err, nil)
 	}
 
 	expected := []DNSRecord{
@@ -58,7 +58,7 @@ func TestDNSRecordsServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(records, expected) {
-		t.Errorf("DNSRecord.GetList returned %+v, expected %+v", records, expected)
+		t.Errorf("DNSRecord.List returned %+v, expected %+v", records, expected)
 	}
 }
 

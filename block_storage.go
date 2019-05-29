@@ -17,7 +17,7 @@ type BlockStorageService interface {
 	Delete(ctx context.Context, blockID string) error
 	Detach(ctx context.Context, blockID string) error
 	SetLabel(ctx context.Context, blockID, label string) error
-	GetList(ctx context.Context) ([]BlockStorage, error)
+	List(ctx context.Context) ([]BlockStorage, error)
 	Get(ctx context.Context, blockID string) (*BlockStorage, error)
 	Resize(ctx context.Context, blockID string, size int) error
 }
@@ -247,8 +247,8 @@ func (b *BlockStorageServiceHandler) SetLabel(ctx context.Context, blockID, labe
 	return nil
 }
 
-// GetList returns a list of all block storage instances on your Vultr Account
-func (b *BlockStorageServiceHandler) GetList(ctx context.Context) ([]BlockStorage, error) {
+// List returns a list of all block storage instances on your Vultr Account
+func (b *BlockStorageServiceHandler) List(ctx context.Context) ([]BlockStorage, error) {
 
 	uri := "/v1/block/list"
 

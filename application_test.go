@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestApplicationServiceHandler_GetList(t *testing.T) {
+func TestApplicationServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -28,9 +28,9 @@ func TestApplicationServiceHandler_GetList(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	apps, err := client.Application.GetList(ctx)
+	apps, err := client.Application.List(ctx)
 	if err != nil {
-		t.Errorf("Application.GetList returned error: %v", err)
+		t.Errorf("Application.List returned error: %v", err)
 	}
 
 	expected := []Application{
@@ -44,11 +44,11 @@ func TestApplicationServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(apps, expected) {
-		t.Errorf("Application.GetList returned %+v, expected %+v", apps, expected)
+		t.Errorf("Application.List returned %+v, expected %+v", apps, expected)
 	}
 }
 
-func TestApplicationServiceHandler_GetListEmpty(t *testing.T) {
+func TestApplicationServiceHandler_ListEmpty(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -59,14 +59,14 @@ func TestApplicationServiceHandler_GetListEmpty(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	apps, err := client.Application.GetList(ctx)
+	apps, err := client.Application.List(ctx)
 	if err != nil {
-		t.Errorf("Application.GetList returned error: %v", err)
+		t.Errorf("Application.List returned error: %v", err)
 	}
 
 	var expected []Application
 
 	if !reflect.DeepEqual(apps, expected) {
-		t.Errorf("Application.GetList returned %+v, expected %+v", apps, expected)
+		t.Errorf("Application.List returned %+v, expected %+v", apps, expected)
 	}
 }

@@ -57,7 +57,7 @@ func TestStartupScriptServiceHandler_Delete(t *testing.T) {
 	}
 }
 
-func TestStartupScriptServiceHandler_GetList(t *testing.T) {
+func TestStartupScriptServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -77,10 +77,10 @@ func TestStartupScriptServiceHandler_GetList(t *testing.T) {
 		fmt.Fprintf(writer, response)
 	})
 
-	scripts, err := client.StartupScript.GetList(ctx)
+	scripts, err := client.StartupScript.List(ctx)
 
 	if err != nil {
-		t.Errorf("StartupScript.GetList returned error: %v", err)
+		t.Errorf("StartupScript.List returned error: %v", err)
 	}
 
 	expected := []StartupScript{
@@ -95,7 +95,7 @@ func TestStartupScriptServiceHandler_GetList(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(scripts, expected) {
-		t.Errorf("StartupScript.GetList returned %+v, expected %+v", scripts, expected)
+		t.Errorf("StartupScript.List returned %+v, expected %+v", scripts, expected)
 	}
 }
 
