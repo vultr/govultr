@@ -19,3 +19,19 @@
 * BareMetal & Server 
   * Change `SSHKeyID` to `SSHKeyIDs` which are now `[]string` instead of `string`
   * Renamed `OS` to `Os`
+
+## [v0.1.2](https://github.com/vultr/govultr/compare/v0.1.1..v0.1.2) (2019-05-29)
+### Fixes
+* Fixed Server Option `NotifyActivate` bug that ignored a `false` value
+* Fixed Bare Metal Server Option `UserData` to be based64encoded 
+### Breaking Changes
+* Renamed all methods named `GetList` to `List`
+* Renamed all methods named `Destroy` to `Delete`
+* Server Service
+    * Renamed `GetListByLabel` to `ListByLabel`
+    * `GetListByMainIP` to `ListByMainIP`
+    * `GetListByTag` to `ListByTag`
+* Bare Metal Server Service
+    * Renamed `GetListByLabel` to `ListByLabel`
+    * `GetListByMainIP` to `ListByMainIP`
+    * `GetListByTag` to `ListByTag`
