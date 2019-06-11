@@ -12,6 +12,7 @@ type PlanService interface {
 	GetBareMetalList(ctx context.Context) ([]BareMetalPlan, error)
 	GetVc2List(ctx context.Context) ([]VCPlan, error)
 	GetVdc2List(ctx context.Context) ([]VCPlan, error)
+	GetVc2zList(ctx context.Context) ([]VCPlan, error)
 }
 
 // PlanServiceHandler handles interaction with the Plans methods for the Vultr API
@@ -23,7 +24,7 @@ type PlanServiceHandler struct {
 type Plan struct {
 	VpsID       int    `json:"VPSPLANID,string"`
 	Name        string `json:"name"`
-	VCPUCount   int    `json:"vcpu_count,string"`
+	VCPUs       int    `json:"vcpu_count,string"`
 	RAM         string `json:"ram"`
 	Disk        string `json:"disk"`
 	Bandwidth   string `json:"bandwidth"`
@@ -39,7 +40,7 @@ type Plan struct {
 type BareMetalPlan struct {
 	BareMetalID string `json:"METALPLANID"`
 	Name        string `json:"name"`
-	CPUCount    int    `json:"cpu_count"`
+	CPUs        int    `json:"cpu_count"`
 	CPUModel    string `json:"cpu_model"`
 	RAM         int    `json:"ram"`
 	Disk        string `json:"disk"`
@@ -54,12 +55,12 @@ type BareMetalPlan struct {
 type VCPlan struct {
 	VpsID       string `json:"VPSPLANID"`
 	Name        string `json:"name"`
-	VCPUCount   string `json:"vcpu_count"`
+	VCPUs       string `json:"vcpu_count"`
 	RAM         string `json:"ram"`
 	Disk        string `json:"disk"`
 	Bandwidth   string `json:"bandwidth"`
 	BandwidthGB string `json:"bandwidth_gb"`
-	Cost        string `json:"price_per_month"`
+	Price       string `json:"price_per_month"`
 	PlanType    string `json:"plan_type"`
 }
 
@@ -170,4 +171,29 @@ func (p *PlanServiceHandler) GetVdc2List(ctx context.Context) ([]VCPlan, error) 
 	}
 
 	return vdc2, nil
+}
+
+// GetVdc2List Retrieve a list of all active vc2z plans (high frequency)
+func (p *PlanServiceHandler) GetVc2zList(ctx context.Context) ([]VCPlan, error) {
+	uri := "/v1/plans/list_vc2z"
+
+	req, err := p.Client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var vc2zMap map[string]VCPlan
+	err = p.Client.DoWithContext(ctx, req, &vc2zMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var vc2z []VCPlan
+	for _, p := range vc2zMap {
+		vc2z = append(vc2z, p)
+	}
+
+	return vc2z, nil
 }

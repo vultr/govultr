@@ -68,9 +68,9 @@ func TestFireWallRuleServiceHandler_GetAll(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	firewallRule, err := client.FirewallRule.List(ctx, "12345", "v4")
+	firewallRule, err := client.FirewallRule.ListByIPType(ctx, "12345", "v4")
 	if err != nil {
-		t.Errorf("FirewallRule.List returned error: %v", err)
+		t.Errorf("FirewallRule.ListByIPType returned error: %v", err)
 	}
 
 	expected := []FirewallRule{
@@ -83,12 +83,12 @@ func TestFireWallRuleServiceHandler_GetAll(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(firewallRule, expected) {
-		t.Errorf("FirewallRule.List returned %+v, expected %+v", firewallRule, expected)
+		t.Errorf("FirewallRule.ListByIPType returned %+v, expected %+v", firewallRule, expected)
 	}
 
-	firewallRule, err = client.FirewallRule.List(ctx, "12345", "v6")
+	firewallRule, err = client.FirewallRule.ListByIPType(ctx, "12345", "v6")
 	if err != nil {
-		t.Errorf("FirewallRule.List returned error: %v", err)
+		t.Errorf("FirewallRule.ListByIPType returned error: %v", err)
 	}
 
 	expected = []FirewallRule{
@@ -101,7 +101,7 @@ func TestFireWallRuleServiceHandler_GetAll(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(firewallRule, expected) {
-		t.Errorf("FirewallRule.List returned %+v, expected %+v", firewallRule, expected)
+		t.Errorf("FirewallRule.ListByIPType returned %+v, expected %+v", firewallRule, expected)
 	}
 }
 
@@ -114,9 +114,9 @@ func TestFireWallRuleServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	firewallRule, err := client.FirewallRule.GetAll(ctx, "12345")
+	firewallRule, err := client.FirewallRule.Get(ctx, "12345")
 	if err != nil {
-		t.Errorf("FirewallRule.GetAll returned error: %v", err)
+		t.Errorf("FirewallRule.Get returned error: %v", err)
 	}
 
 	_, ip, _ := net.ParseCIDR("10.0.0.0/32")
@@ -131,6 +131,6 @@ func TestFireWallRuleServiceHandler_List(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(firewallRule, expected) {
-		t.Errorf("FirewallRule.GetAll returned %+v, expected %+v", firewallRule, expected)
+		t.Errorf("FirewallRule.Get returned %+v, expected %+v", firewallRule, expected)
 	}
 }

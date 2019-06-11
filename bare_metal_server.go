@@ -51,7 +51,7 @@ type BareMetalServer struct {
 	RAM               string      `json:"ram"`
 	Disk              string      `json:"disk"`
 	MainIP            string      `json:"main_ip"`
-	CPUCount          int         `json:"cpu_count"`
+	CPUs              int         `json:"cpu_count"`
 	Location          string      `json:"location"`
 	RegionID          int         `json:"DCID"`
 	DefaultPassword   string      `json:"default_password"`
@@ -114,7 +114,7 @@ func (b *BareMetalServer) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	b.CPUCount = cpu
+	b.CPUs = cpu
 
 	region, err := b.unmarshalInt(fmt.Sprintf("%v", v["DCID"]))
 	if err != nil {
