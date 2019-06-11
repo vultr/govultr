@@ -173,7 +173,7 @@ func (p *PlanServiceHandler) GetVdc2List(ctx context.Context) ([]VCPlan, error) 
 	return vdc2, nil
 }
 
-// GetVdc2List Retrieve a list of all active vc2z plans (high frequency)
+// GetVc2zList Retrieve a list of all active vc2z plans (high frequency)
 func (p *PlanServiceHandler) GetVc2zList(ctx context.Context) ([]VCPlan, error) {
 	uri := "/v1/plans/list_vc2z"
 
