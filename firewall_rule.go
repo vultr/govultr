@@ -16,8 +16,8 @@ import (
 type FireWallRuleService interface {
 	Create(ctx context.Context, groupID, protocol, port, network, notes string) (*FirewallRule, error)
 	Delete(ctx context.Context, groupID, ruleID string) error
-	List(ctx context.Context, groupID, ipType string) ([]FirewallRule, error)
-	GetAll(ctx context.Context, groupID string) ([]FirewallRule, error)
+	ListByIPType(ctx context.Context, groupID, ipType string) ([]FirewallRule, error)
+	List(ctx context.Context, groupID string) ([]FirewallRule, error)
 }
 
 // FireWallRuleServiceHandler handles interaction with the firewall rule methods for the Vultr API
@@ -188,7 +188,7 @@ func (f *FireWallRuleServiceHandler) Delete(ctx context.Context, groupID, ruleID
 
 // List will list the current firewall rules in a firewall group.
 // ipType values that can be passed in are "v4", "v6"
-func (f *FireWallRuleServiceHandler) List(ctx context.Context, groupID, ipType string) ([]FirewallRule, error) {
+func (f *FireWallRuleServiceHandler) ListByIPType(ctx context.Context, groupID, ipType string) ([]FirewallRule, error) {
 
 	uri := "/v1/firewall/rule_list"
 
@@ -219,8 +219,8 @@ func (f *FireWallRuleServiceHandler) List(ctx context.Context, groupID, ipType s
 	return firewallRule, nil
 }
 
-// GetAll will return both ipv4 an ipv6 firewall rules that are defined within a firewall group
-func (f *FireWallRuleServiceHandler) GetAll(ctx context.Context, groupID string) ([]FirewallRule, error) {
+// List will return both ipv4 an ipv6 firewall rules that are defined within a firewall group
+func (f *FireWallRuleServiceHandler) List(ctx context.Context, groupID string) ([]FirewallRule, error) {
 	uri := "/v1/firewall/rule_list"
 
 	req, err := f.client.NewRequest(ctx, http.MethodGet, uri, nil)
