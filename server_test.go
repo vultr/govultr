@@ -803,7 +803,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 		t.Errorf("Server.Create returned %+v", err)
 	}
 
-	expected := &Server{VpsID: "1234151"}
+	expected := &Server{InstanceID: "1234151"}
 
 	if !reflect.DeepEqual(server, expected) {
 		t.Errorf("Server.Create returned %+v, expected %+v", server, expected)
@@ -841,7 +841,7 @@ func TestServerServiceHandler_List(t *testing.T) {
 
 	expected := []Server{
 		{
-			VpsID:            "576965",
+			InstanceID:       "576965",
 			Os:               "CentOS 6 x64",
 			RAM:              "4096 MB",
 			Disk:             "Virtual 60 GB",
@@ -895,7 +895,7 @@ func TestServerServiceHandler_ListByLabel(t *testing.T) {
 
 	expected := []Server{
 		{
-			VpsID:            "576965",
+			InstanceID:       "576965",
 			Os:               "CentOS 6 x64",
 			RAM:              "4096 MB",
 			Disk:             "Virtual 60 GB",
@@ -949,7 +949,7 @@ func TestServerServiceHandler_ListByMainIP(t *testing.T) {
 
 	expected := []Server{
 		{
-			VpsID:            "576965",
+			InstanceID:       "576965",
 			Os:               "CentOS 6 x64",
 			RAM:              "4096 MB",
 			Disk:             "Virtual 60 GB",
@@ -1003,7 +1003,7 @@ func TestServerServiceHandler_ListByTag(t *testing.T) {
 
 	expected := []Server{
 		{
-			VpsID:            "576965",
+			InstanceID:       "576965",
 			Os:               "CentOS 6 x64",
 			RAM:              "4096 MB",
 			Disk:             "Virtual 60 GB",
@@ -1056,7 +1056,7 @@ func TestServerServiceHandler_GetServer(t *testing.T) {
 	}
 
 	expected := &Server{
-		VpsID:            "576965",
+		InstanceID:       "576965",
 		Os:               "CentOS 6 x64",
 		RAM:              "4096 MB",
 		Disk:             "Virtual 60 GB",

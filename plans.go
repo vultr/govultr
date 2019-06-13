@@ -22,7 +22,7 @@ type PlanServiceHandler struct {
 
 // Plan represents available Plans that Vultr offers
 type Plan struct {
-	VpsID       int    `json:"VPSPLANID,string"`
+	InstanceID  int    `json:"VPSPLANID,string"`
 	Name        string `json:"name"`
 	VCPUs       int    `json:"vcpu_count,string"`
 	RAM         string `json:"ram"`
@@ -53,7 +53,7 @@ type BareMetalPlan struct {
 
 // VCPlan represents either a vdc2 or a vc2 plan
 type VCPlan struct {
-	VpsID       string `json:"VPSPLANID"`
+	InstanceID  string `json:"VPSPLANID"`
 	Name        string `json:"name"`
 	VCPUs       string `json:"vcpu_count"`
 	RAM         string `json:"ram"`

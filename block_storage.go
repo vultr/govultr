@@ -12,7 +12,7 @@ import (
 // BlockStorageService is the interface to interact with Block-Storage endpoint on the Vultr API
 // Link: https://www.vultr.com/api/#block
 type BlockStorageService interface {
-	Attach(ctx context.Context, blockID, vpsID string) error
+	Attach(ctx context.Context, blockID, InstanceID string) error
 	Create(ctx context.Context, regionID, size int, label string) (*BlockStorage, error)
 	Delete(ctx context.Context, blockID string) error
 	Detach(ctx context.Context, blockID string) error
@@ -35,7 +35,7 @@ type BlockStorage struct {
 	Status         string `json:"status"`
 	SizeGB         int    `json:"size_gb"`
 	RegionID       int    `json:"DCID"`
-	VpsID          string `json:"attached_to_SUBID"`
+	InstanceID     string `json:"attached_to_SUBID"`
 	Label          string `json:"label"`
 }
 
@@ -65,7 +65,7 @@ func (b *BlockStorage) UnmarshalJSON(data []byte) (err error) {
 		return err
 	}
 
-	b.VpsID, err = b.unmarshalStr(fmt.Sprintf("%v", v["attached_to_SUBID"]))
+	b.InstanceID, err = b.unmarshalStr(fmt.Sprintf("%v", v["attached_to_SUBID"]))
 	if err != nil {
 		return err
 	}
@@ -119,13 +119,13 @@ func (b *BlockStorage) unmarshalStr(value string) (string, error) {
 }
 
 // Attach will link a given block storage to a given Vultr vps
-func (b *BlockStorageServiceHandler) Attach(ctx context.Context, blockID, vpsID string) error {
+func (b *BlockStorageServiceHandler) Attach(ctx context.Context, blockID, InstanceID string) error {
 
 	uri := "/v1/block/attach"
 
 	values := url.Values{
 		"SUBID":           {blockID},
-		"attach_to_SUBID": {vpsID},
+		"attach_to_SUBID": {InstanceID},
 	}
 
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
