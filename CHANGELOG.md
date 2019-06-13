@@ -35,3 +35,21 @@
     * Renamed `GetListByLabel` to `ListByLabel`
     * Renamed `GetListByMainIP` to `ListByMainIP`
     * Renamed `GetListByTag` to `ListByTag`
+    
+## [v0.1.3](https://github.com/vultr/govultr/compare/v0.1.2..v0.1.3) (2019-06-13)
+### Features
+* added `GetVc2zList` to Plans to retrieve `high-frequency compute` plans [#13](https://github.com/vultr/govultr/pull/13)
+
+### Breaking Changes
+* Renamed all variables named `vpsID` to `instanceID` [#14](https://github.com/vultr/govultr/pull/14)
+* Server
+    * Renamed Server struct field `VpsID` to `InstanceID` [#14](https://github.com/vultr/govultr/pull/14)
+* Plans
+    * Renamed Plan struct field `VpsID` to `PlanID` [#14](https://github.com/vultr/govultr/pull/14)
+    * Renamed BareMetalPlan struct field `BareMetalID` to `PlanID` [#14](https://github.com/vultr/govultr/pull/14)
+    * Renamed VCPlan struct field `VpsID` to `PlanID` [#14](https://github.com/vultr/govultr/pull/14)
+    * Renamed Plan struct field `VCPUCount` to `vCPUs` [#13](https://github.com/vultr/govultr/pull/13)
+    * Renamed BaremMetalPlan struct field `CPUCount` to `CPUs` [#13](https://github.com/vultr/govultr/pull/13)
+    * Renamed VCPlan struct field `VCPUCount` to `vCPUs` [#13](https://github.com/vultr/govultr/pull/13)
+    * Renamed VCPlan struct field `Cost` to `Price` [#13](https://github.com/vultr/govultr/pull/13)
+    
