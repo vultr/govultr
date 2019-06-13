@@ -9,7 +9,7 @@ import (
 // DNSDomainService is the interface to interact with the DNS endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#dns
 type DNSDomainService interface {
-	Create(ctx context.Context, domain, vpsIP string) error
+	Create(ctx context.Context, domain, InstanceIP string) error
 	Delete(ctx context.Context, domain string) error
 	ToggleDNSSec(ctx context.Context, domain string, enabled bool) error
 	DNSSecInfo(ctx context.Context, domain string) ([]string, error)
@@ -36,13 +36,13 @@ type Soa struct {
 }
 
 // Create will create a DNS Domain entry on Vultr
-func (d *DNSDomainServiceHandler) Create(ctx context.Context, domain, vpsIP string) error {
+func (d *DNSDomainServiceHandler) Create(ctx context.Context, domain, InstanceIP string) error {
 
 	uri := "/v1/dns/create_domain"
 
 	values := url.Values{
 		"domain":   {domain},
-		"serverip": {vpsIP},
+		"serverip": {InstanceIP},
 	}
 
 	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, values)

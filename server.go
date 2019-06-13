@@ -12,53 +12,53 @@ import (
 // ServerService is the interface to interact with the server endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#server
 type ServerService interface {
-	ChangeApp(ctx context.Context, vpsID, appID string) error
-	ListApps(ctx context.Context, vpsID string) ([]Application, error)
-	AppInfo(ctx context.Context, vpsID string) (*AppInfo, error)
-	EnableBackup(ctx context.Context, vpsID string) error
-	DisableBackup(ctx context.Context, vpsID string) error
-	GetBackupSchedule(ctx context.Context, vpsID string) (*BackupSchedule, error)
-	SetBackupSchedule(ctx context.Context, vpsID string, backup *BackupSchedule) error
-	RestoreBackup(ctx context.Context, vpsID, backupID string) error
-	RestoreSnapshot(ctx context.Context, vpsID, snapshotID string) error
-	SetLabel(ctx context.Context, vpsID, label string) error
-	SetTag(ctx context.Context, vpsID, tag string) error
-	Neighbors(ctx context.Context, vpsID string) ([]int, error)
-	EnablePrivateNetwork(ctx context.Context, vpsID, networkID string) error
-	DisablePrivateNetwork(ctx context.Context, vpsID, networkID string) error
-	ListPrivateNetworks(ctx context.Context, vpsID string) ([]PrivateNetwork, error)
-	ListUpgradePlan(ctx context.Context, vpsID string) ([]int, error)
-	UpgradePlan(ctx context.Context, vpsID, vpsPlanID string) error
-	ListOS(ctx context.Context, vpsID string) ([]OS, error)
-	ChangeOS(ctx context.Context, vpsID, osID string) error
-	IsoAttach(ctx context.Context, vpsID, isoID string) error
-	IsoDetach(ctx context.Context, vpsID string) error
-	IsoStatus(ctx context.Context, vpsID string) (*ServerIso, error)
-	SetFirewallGroup(ctx context.Context, vpsID, firewallGroupID string) error
-	GetUserData(ctx context.Context, vpsID string) (*UserData, error)
-	SetUserData(ctx context.Context, vpsID, userData string) error
-	IPV4Info(ctx context.Context, vpsID string, public bool) ([]IPV4, error)
-	IPV6Info(ctx context.Context, vpsID string) ([]IPV6, error)
-	AddIPV4(ctx context.Context, vpsID string) error
-	DestroyIPV4(ctx context.Context, vpsID, ip string) error
-	EnableIPV6(ctx context.Context, vpsID string) error
-	Bandwidth(ctx context.Context, vpsID string) ([]map[string]string, error)
-	ListReverseIPV6(ctx context.Context, vpsID string) ([]ReverseIPV6, error)
-	SetDefaultReverseIPV4(ctx context.Context, vpsID, ip string) error
-	DeleteReverseIPV6(ctx context.Context, vpsID, ip string) error
-	SetReverseIPV4(ctx context.Context, vpsID, ipv4, entry string) error
-	SetReverseIPV6(ctx context.Context, vpsID, ipv6, entry string) error
-	Start(ctx context.Context, vpsID string) error
-	Halt(ctx context.Context, vpsID string) error
-	Reboot(ctx context.Context, vpsID string) error
-	Reinstall(ctx context.Context, vpsID string) error
-	Delete(ctx context.Context, vpsID string) error
+	ChangeApp(ctx context.Context, instanceID, appID string) error
+	ListApps(ctx context.Context, instanceID string) ([]Application, error)
+	AppInfo(ctx context.Context, instanceID string) (*AppInfo, error)
+	EnableBackup(ctx context.Context, instanceID string) error
+	DisableBackup(ctx context.Context, instanceID string) error
+	GetBackupSchedule(ctx context.Context, instanceID string) (*BackupSchedule, error)
+	SetBackupSchedule(ctx context.Context, instanceID string, backup *BackupSchedule) error
+	RestoreBackup(ctx context.Context, instanceID, backupID string) error
+	RestoreSnapshot(ctx context.Context, instanceID, snapshotID string) error
+	SetLabel(ctx context.Context, instanceID, label string) error
+	SetTag(ctx context.Context, instanceID, tag string) error
+	Neighbors(ctx context.Context, instanceID string) ([]int, error)
+	EnablePrivateNetwork(ctx context.Context, instanceID, networkID string) error
+	DisablePrivateNetwork(ctx context.Context, instanceID, networkID string) error
+	ListPrivateNetworks(ctx context.Context, instanceID string) ([]PrivateNetwork, error)
+	ListUpgradePlan(ctx context.Context, instanceID string) ([]int, error)
+	UpgradePlan(ctx context.Context, instanceID, vpsPlanID string) error
+	ListOS(ctx context.Context, instanceID string) ([]OS, error)
+	ChangeOS(ctx context.Context, instanceID, osID string) error
+	IsoAttach(ctx context.Context, instanceID, isoID string) error
+	IsoDetach(ctx context.Context, instanceID string) error
+	IsoStatus(ctx context.Context, instanceID string) (*ServerIso, error)
+	SetFirewallGroup(ctx context.Context, instanceID, firewallGroupID string) error
+	GetUserData(ctx context.Context, instanceID string) (*UserData, error)
+	SetUserData(ctx context.Context, instanceID, userData string) error
+	IPV4Info(ctx context.Context, instanceID string, public bool) ([]IPV4, error)
+	IPV6Info(ctx context.Context, instanceID string) ([]IPV6, error)
+	AddIPV4(ctx context.Context, instanceID string) error
+	DestroyIPV4(ctx context.Context, instanceID, ip string) error
+	EnableIPV6(ctx context.Context, instanceID string) error
+	Bandwidth(ctx context.Context, instanceID string) ([]map[string]string, error)
+	ListReverseIPV6(ctx context.Context, instanceID string) ([]ReverseIPV6, error)
+	SetDefaultReverseIPV4(ctx context.Context, instanceID, ip string) error
+	DeleteReverseIPV6(ctx context.Context, instanceID, ip string) error
+	SetReverseIPV4(ctx context.Context, instanceID, ipv4, entry string) error
+	SetReverseIPV6(ctx context.Context, instanceID, ipv6, entry string) error
+	Start(ctx context.Context, instanceID string) error
+	Halt(ctx context.Context, instanceID string) error
+	Reboot(ctx context.Context, instanceID string) error
+	Reinstall(ctx context.Context, instanceID string) error
+	Delete(ctx context.Context, instanceID string) error
 	Create(ctx context.Context, regionID, vpsPlanID, osID int, options *ServerOptions) (*Server, error)
 	List(ctx context.Context) ([]Server, error)
 	ListByLabel(ctx context.Context, label string) ([]Server, error)
 	ListByMainIP(ctx context.Context, mainIP string) ([]Server, error)
 	ListByTag(ctx context.Context, tag string) ([]Server, error)
-	GetServer(ctx context.Context, vpsID string) (*Server, error)
+	GetServer(ctx context.Context, instanceID string) (*Server, error)
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -124,7 +124,7 @@ type ReverseIPV6 struct {
 
 // Server represents a VPS
 type Server struct {
-	VpsID            string      `json:"SUBID"`
+	InstanceID       string      `json:"SUBID"`
 	Os               string      `json:"os"`
 	RAM              string      `json:"ram"`
 	Disk             string      `json:"disk"`
@@ -185,12 +185,12 @@ type ServerOptions struct {
 }
 
 // ChangeApp changes the VPS to a different application.
-func (s *ServerServiceHandler) ChangeApp(ctx context.Context, vpsID, appID string) error {
+func (s *ServerServiceHandler) ChangeApp(ctx context.Context, instanceID, appID string) error {
 
 	uri := "/v1/server/app_change"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 		"APPID": {appID},
 	}
 
@@ -210,7 +210,7 @@ func (s *ServerServiceHandler) ChangeApp(ctx context.Context, vpsID, appID strin
 }
 
 // ListApps retrieves a list of applications to which a virtual machine can be changed.
-func (s *ServerServiceHandler) ListApps(ctx context.Context, vpsID string) ([]Application, error) {
+func (s *ServerServiceHandler) ListApps(ctx context.Context, instanceID string) ([]Application, error) {
 
 	uri := "/v1/server/app_change_list"
 
@@ -221,7 +221,7 @@ func (s *ServerServiceHandler) ListApps(ctx context.Context, vpsID string) ([]Ap
 	}
 
 	q := req.URL.Query()
-	q.Add("SUBID", vpsID)
+	q.Add("SUBID", instanceID)
 	req.URL.RawQuery = q.Encode()
 
 	var appMap map[string]Application
@@ -240,7 +240,7 @@ func (s *ServerServiceHandler) ListApps(ctx context.Context, vpsID string) ([]Ap
 }
 
 // AppInfo retrieves the application information for a given VPS ID
-func (s *ServerServiceHandler) AppInfo(ctx context.Context, vpsID string) (*AppInfo, error) {
+func (s *ServerServiceHandler) AppInfo(ctx context.Context, instanceID string) (*AppInfo, error) {
 
 	uri := "/v1/server/get_app_info"
 
@@ -251,7 +251,7 @@ func (s *ServerServiceHandler) AppInfo(ctx context.Context, vpsID string) (*AppI
 	}
 
 	q := req.URL.Query()
-	q.Add("SUBID", vpsID)
+	q.Add("SUBID", instanceID)
 	req.URL.RawQuery = q.Encode()
 
 	appInfo := new(AppInfo)
@@ -266,12 +266,12 @@ func (s *ServerServiceHandler) AppInfo(ctx context.Context, vpsID string) (*AppI
 }
 
 // EnableBackup enables automatic backups on a given VPS
-func (s *ServerServiceHandler) EnableBackup(ctx context.Context, vpsID string) error {
+func (s *ServerServiceHandler) EnableBackup(ctx context.Context, instanceID string) error {
 
 	uri := "/v1/server/backup_enable"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -290,12 +290,12 @@ func (s *ServerServiceHandler) EnableBackup(ctx context.Context, vpsID string) e
 }
 
 // DisableBackup disable automatic backups on a given VPS
-func (s *ServerServiceHandler) DisableBackup(ctx context.Context, vpsID string) error {
+func (s *ServerServiceHandler) DisableBackup(ctx context.Context, instanceID string) error {
 
 	uri := "/v1/server/backup_disable"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -314,12 +314,12 @@ func (s *ServerServiceHandler) DisableBackup(ctx context.Context, vpsID string) 
 }
 
 // GetBackupSchedule retrieves the backup schedule for a given vps - all time values are in UTC
-func (s *ServerServiceHandler) GetBackupSchedule(ctx context.Context, vpsID string) (*BackupSchedule, error) {
+func (s *ServerServiceHandler) GetBackupSchedule(ctx context.Context, instanceID string) (*BackupSchedule, error) {
 
 	uri := "/v1/server/backup_get_schedule"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -339,12 +339,12 @@ func (s *ServerServiceHandler) GetBackupSchedule(ctx context.Context, vpsID stri
 }
 
 // SetBackupSchedule sets the backup schedule for a given vps - all time values are in UTC
-func (s *ServerServiceHandler) SetBackupSchedule(ctx context.Context, vpsID string, backup *BackupSchedule) error {
+func (s *ServerServiceHandler) SetBackupSchedule(ctx context.Context, instanceID string, backup *BackupSchedule) error {
 
 	uri := "/v1/server/backup_set_schedule"
 
 	values := url.Values{
-		"SUBID":     {vpsID},
+		"SUBID":     {instanceID},
 		"cron_type": {backup.CronType},
 		"hour":      {strconv.Itoa(backup.Hour)},
 		"dow":       {strconv.Itoa(backup.Dow)},
@@ -367,12 +367,12 @@ func (s *ServerServiceHandler) SetBackupSchedule(ctx context.Context, vpsID stri
 }
 
 // RestoreBackup will restore the specified backup to the given VPS
-func (s *ServerServiceHandler) RestoreBackup(ctx context.Context, vpsID, backupID string) error {
+func (s *ServerServiceHandler) RestoreBackup(ctx context.Context, instanceID, backupID string) error {
 
 	uri := "/v1/server/restore_backup"
 
 	values := url.Values{
-		"SUBID":    {vpsID},
+		"SUBID":    {instanceID},
 		"BACKUPID": {backupID},
 	}
 
@@ -392,12 +392,12 @@ func (s *ServerServiceHandler) RestoreBackup(ctx context.Context, vpsID, backupI
 }
 
 // RestoreSnapshot will restore the specified snapshot to the given VPS
-func (s *ServerServiceHandler) RestoreSnapshot(ctx context.Context, vpsID, snapshotID string) error {
+func (s *ServerServiceHandler) RestoreSnapshot(ctx context.Context, instanceID, snapshotID string) error {
 
 	uri := "/v1/server/restore_snapshot"
 
 	values := url.Values{
-		"SUBID":      {vpsID},
+		"SUBID":      {instanceID},
 		"SNAPSHOTID": {snapshotID},
 	}
 
@@ -417,12 +417,12 @@ func (s *ServerServiceHandler) RestoreSnapshot(ctx context.Context, vpsID, snaps
 }
 
 // SetLabel will set a label for a given VPS
-func (s *ServerServiceHandler) SetLabel(ctx context.Context, vpsID, label string) error {
+func (s *ServerServiceHandler) SetLabel(ctx context.Context, instanceID, label string) error {
 
 	uri := "/v1/server/label_set"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 		"label": {label},
 	}
 
@@ -442,12 +442,12 @@ func (s *ServerServiceHandler) SetLabel(ctx context.Context, vpsID, label string
 }
 
 // SetTag will set a tag for a given VPS
-func (s *ServerServiceHandler) SetTag(ctx context.Context, vpsID, tag string) error {
+func (s *ServerServiceHandler) SetTag(ctx context.Context, instanceID, tag string) error {
 
 	uri := "/v1/server/tag_set"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 		"tag":   {tag},
 	}
 
@@ -467,7 +467,7 @@ func (s *ServerServiceHandler) SetTag(ctx context.Context, vpsID, tag string) er
 }
 
 // Neighbors will determine what other vps are hosted on the same physical host as a given vps.
-func (s *ServerServiceHandler) Neighbors(ctx context.Context, vpsID string) ([]int, error) {
+func (s *ServerServiceHandler) Neighbors(ctx context.Context, instanceID string) ([]int, error) {
 
 	uri := "/v1/server/neighbors"
 
@@ -478,7 +478,7 @@ func (s *ServerServiceHandler) Neighbors(ctx context.Context, vpsID string) ([]i
 	}
 
 	q := req.URL.Query()
-	q.Add("SUBID", vpsID)
+	q.Add("SUBID", instanceID)
 	req.URL.RawQuery = q.Encode()
 
 	var neighbors []int
@@ -494,12 +494,12 @@ func (s *ServerServiceHandler) Neighbors(ctx context.Context, vpsID string) ([]i
 // EnablePrivateNetwork enables private networking on a server.
 // The server will be automatically rebooted to complete the request.
 // No action occurs if private networking was already enabled
-func (s *ServerServiceHandler) EnablePrivateNetwork(ctx context.Context, vpsID, networkID string) error {
+func (s *ServerServiceHandler) EnablePrivateNetwork(ctx context.Context, instanceID, networkID string) error {
 
 	uri := "/v1/server/private_network_enable"
 
 	values := url.Values{
-		"SUBID":     {vpsID},
+		"SUBID":     {instanceID},
 		"NETWORKID": {networkID},
 	}
 
@@ -520,12 +520,12 @@ func (s *ServerServiceHandler) EnablePrivateNetwork(ctx context.Context, vpsID, 
 
 // DisablePrivateNetwork removes a private network from a server.
 // The server will be automatically rebooted to complete the request.
-func (s *ServerServiceHandler) DisablePrivateNetwork(ctx context.Context, vpsID, networkID string) error {
+func (s *ServerServiceHandler) DisablePrivateNetwork(ctx context.Context, instanceID, networkID string) error {
 
 	uri := "/v1/server/private_network_disable"
 
 	values := url.Values{
-		"SUBID":     {vpsID},
+		"SUBID":     {instanceID},
 		"NETWORKID": {networkID},
 	}
 
@@ -545,7 +545,7 @@ func (s *ServerServiceHandler) DisablePrivateNetwork(ctx context.Context, vpsID,
 }
 
 // ListPrivateNetworks will list private networks attached to a vps
-func (s *ServerServiceHandler) ListPrivateNetworks(ctx context.Context, vpsID string) ([]PrivateNetwork, error) {
+func (s *ServerServiceHandler) ListPrivateNetworks(ctx context.Context, instanceID string) ([]PrivateNetwork, error) {
 
 	uri := "/v1/server/private_networks"
 
@@ -556,7 +556,7 @@ func (s *ServerServiceHandler) ListPrivateNetworks(ctx context.Context, vpsID st
 	}
 
 	q := req.URL.Query()
-	q.Add("SUBID", vpsID)
+	q.Add("SUBID", instanceID)
 	req.URL.RawQuery = q.Encode()
 
 	var networkMap map[string]PrivateNetwork
@@ -576,7 +576,7 @@ func (s *ServerServiceHandler) ListPrivateNetworks(ctx context.Context, vpsID st
 
 // ListUpgradePlan Retrieve a list of the planIDs for which the vps can be upgraded.
 // An empty response array means that there are currently no upgrades available
-func (s *ServerServiceHandler) ListUpgradePlan(ctx context.Context, vpsID string) ([]int, error) {
+func (s *ServerServiceHandler) ListUpgradePlan(ctx context.Context, instanceID string) ([]int, error) {
 
 	uri := "/v1/server/upgrade_plan_list"
 
@@ -587,7 +587,7 @@ func (s *ServerServiceHandler) ListUpgradePlan(ctx context.Context, vpsID string
 	}
 
 	q := req.URL.Query()
-	q.Add("SUBID", vpsID)
+	q.Add("SUBID", instanceID)
 	req.URL.RawQuery = q.Encode()
 
 	var plans []int
@@ -602,12 +602,12 @@ func (s *ServerServiceHandler) ListUpgradePlan(ctx context.Context, vpsID string
 
 // UpgradePlan will upgrade the plan of a virtual machine.
 // The vps will be rebooted upon a successful upgrade.
-func (s *ServerServiceHandler) UpgradePlan(ctx context.Context, vpsID, vpsPlanID string) error {
+func (s *ServerServiceHandler) UpgradePlan(ctx context.Context, instanceID, vpsPlanID string) error {
 
 	uri := "/v1/server/upgrade_plan"
 
 	values := url.Values{
-		"SUBID":     {vpsID},
+		"SUBID":     {instanceID},
 		"VPSPLANID": {vpsPlanID},
 	}
 
@@ -627,7 +627,7 @@ func (s *ServerServiceHandler) UpgradePlan(ctx context.Context, vpsID, vpsPlanID
 }
 
 // ListOS retrieves a list of operating systems to which the VPS can be changed to.
-func (s *ServerServiceHandler) ListOS(ctx context.Context, vpsID string) ([]OS, error) {
+func (s *ServerServiceHandler) ListOS(ctx context.Context, instanceID string) ([]OS, error) {
 
 	uri := "/v1/server/os_change_list"
 
@@ -638,7 +638,7 @@ func (s *ServerServiceHandler) ListOS(ctx context.Context, vpsID string) ([]OS, 
 	}
 
 	q := req.URL.Query()
-	q.Add("SUBID", vpsID)
+	q.Add("SUBID", instanceID)
 	req.URL.RawQuery = q.Encode()
 
 	var osMap map[string]OS
@@ -658,12 +658,12 @@ func (s *ServerServiceHandler) ListOS(ctx context.Context, vpsID string) ([]OS, 
 
 // ChangeOS changes the VPS to a different operating system.
 // All data will be permanently lost.
-func (s *ServerServiceHandler) ChangeOS(ctx context.Context, vpsID, osID string) error {
+func (s *ServerServiceHandler) ChangeOS(ctx context.Context, instanceID, osID string) error {
 
 	uri := "/v1/server/os_change"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 		"OSID":  {osID},
 	}
 
@@ -683,12 +683,12 @@ func (s *ServerServiceHandler) ChangeOS(ctx context.Context, vpsID, osID string)
 }
 
 // IsoAttach will attach an ISO to the given VPS and reboot it
-func (s *ServerServiceHandler) IsoAttach(ctx context.Context, vpsID, isoID string) error {
+func (s *ServerServiceHandler) IsoAttach(ctx context.Context, instanceID, isoID string) error {
 
 	uri := "/v1/server/iso_attach"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 		"ISOID": {isoID},
 	}
 
@@ -708,12 +708,12 @@ func (s *ServerServiceHandler) IsoAttach(ctx context.Context, vpsID, isoID strin
 }
 
 // IsoDetach will detach the currently mounted ISO and reboot the server.
-func (s *ServerServiceHandler) IsoDetach(ctx context.Context, vpsID string) error {
+func (s *ServerServiceHandler) IsoDetach(ctx context.Context, instanceID string) error {
 
 	uri := "/v1/server/iso_detach"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -733,7 +733,7 @@ func (s *ServerServiceHandler) IsoDetach(ctx context.Context, vpsID string) erro
 
 // IsoStatus retrieves the current ISO state for a given VPS.
 // The returned state may be one of: ready | isomounting | isomounted.
-func (s *ServerServiceHandler) IsoStatus(ctx context.Context, vpsID string) (*ServerIso, error) {
+func (s *ServerServiceHandler) IsoStatus(ctx context.Context, instanceID string) (*ServerIso, error) {
 
 	uri := "/v1/server/iso_status"
 
@@ -744,7 +744,7 @@ func (s *ServerServiceHandler) IsoStatus(ctx context.Context, vpsID string) (*Se
 	}
 
 	q := req.URL.Query()
-	q.Add("SUBID", vpsID)
+	q.Add("SUBID", instanceID)
 	req.URL.RawQuery = q.Encode()
 
 	serverIso := new(ServerIso)
@@ -759,12 +759,12 @@ func (s *ServerServiceHandler) IsoStatus(ctx context.Context, vpsID string) (*Se
 
 // SetFirewallGroup will set, change, or remove the firewall group currently applied to a vps.
 //  A value of "0" means "no firewall group"
-func (s *ServerServiceHandler) SetFirewallGroup(ctx context.Context, vpsID, firewallGroupID string) error {
+func (s *ServerServiceHandler) SetFirewallGroup(ctx context.Context, instanceID, firewallGroupID string) error {
 
 	uri := "/v1/server/firewall_group_set"
 
 	values := url.Values{
-		"SUBID":           {vpsID},
+		"SUBID":           {instanceID},
 		"FIREWALLGROUPID": {firewallGroupID},
 	}
 
@@ -786,14 +786,14 @@ func (s *ServerServiceHandler) SetFirewallGroup(ctx context.Context, vpsID, fire
 // SetUserData sets the user-data for this subscription.
 // User-data is a generic data store, which some provisioning tools and cloud operating systems use as a configuration file.
 // It is generally consumed only once after an instance has been launched, but individual needs may vary.
-func (s *ServerServiceHandler) SetUserData(ctx context.Context, vpsID, userData string) error {
+func (s *ServerServiceHandler) SetUserData(ctx context.Context, instanceID, userData string) error {
 
 	uri := "/v1/server/set_user_data"
 
 	encodedUserData := base64.StdEncoding.EncodeToString([]byte(userData))
 
 	values := url.Values{
-		"SUBID":    {vpsID},
+		"SUBID":    {instanceID},
 		"userdata": {encodedUserData},
 	}
 
@@ -813,7 +813,7 @@ func (s *ServerServiceHandler) SetUserData(ctx context.Context, vpsID, userData 
 }
 
 // GetUserData retrieves the (base64 encoded) user-data for this VPS
-func (s *ServerServiceHandler) GetUserData(ctx context.Context, vpsID string) (*UserData, error) {
+func (s *ServerServiceHandler) GetUserData(ctx context.Context, instanceID string) (*UserData, error) {
 
 	uri := "/v1/server/get_user_data"
 
@@ -824,7 +824,7 @@ func (s *ServerServiceHandler) GetUserData(ctx context.Context, vpsID string) (*
 	}
 
 	q := req.URL.Query()
-	q.Add("SUBID", vpsID)
+	q.Add("SUBID", instanceID)
 	req.URL.RawQuery = q.Encode()
 
 	userData := new(UserData)
@@ -839,7 +839,7 @@ func (s *ServerServiceHandler) GetUserData(ctx context.Context, vpsID string) (*
 
 // IPV4Info will list the IPv4 information of a virtual machine.
 // Public if set to 'true', includes information about the public network adapter (such as MAC address) with the "main_ip" entry.
-func (s *ServerServiceHandler) IPV4Info(ctx context.Context, vpsID string, public bool) ([]IPV4, error) {
+func (s *ServerServiceHandler) IPV4Info(ctx context.Context, instanceID string, public bool) ([]IPV4, error) {
 
 	uri := "/v1/server/list_ipv4"
 
@@ -850,10 +850,10 @@ func (s *ServerServiceHandler) IPV4Info(ctx context.Context, vpsID string, publi
 	}
 
 	q := req.URL.Query()
-	q.Add("SUBID", vpsID)
+	q.Add("SUBID", instanceID)
 
 	if public == true {
-		q.Add("public_network", vpsID)
+		q.Add("public_network", instanceID)
 	}
 
 	req.URL.RawQuery = q.Encode()
@@ -875,7 +875,7 @@ func (s *ServerServiceHandler) IPV4Info(ctx context.Context, vpsID string, publi
 
 // IPV6Info will list the IPv6 information of a virtual machine.
 // If the virtual machine does not have IPv6 enabled, then an empty array is returned.
-func (s *ServerServiceHandler) IPV6Info(ctx context.Context, vpsID string) ([]IPV6, error) {
+func (s *ServerServiceHandler) IPV6Info(ctx context.Context, instanceID string) ([]IPV6, error) {
 	uri := "/v1/server/list_ipv6"
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -885,7 +885,7 @@ func (s *ServerServiceHandler) IPV6Info(ctx context.Context, vpsID string) ([]IP
 	}
 
 	q := req.URL.Query()
-	q.Add("SUBID", vpsID)
+	q.Add("SUBID", instanceID)
 	req.URL.RawQuery = q.Encode()
 
 	var ipMap map[string][]IPV6
@@ -904,12 +904,12 @@ func (s *ServerServiceHandler) IPV6Info(ctx context.Context, vpsID string) ([]IP
 }
 
 // AddIPV4 will add a new IPv4 address to a server.
-func (s *ServerServiceHandler) AddIPV4(ctx context.Context, vpsID string) error {
+func (s *ServerServiceHandler) AddIPV4(ctx context.Context, instanceID string) error {
 
 	uri := "/v1/server/create_ipv4"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -929,12 +929,12 @@ func (s *ServerServiceHandler) AddIPV4(ctx context.Context, vpsID string) error 
 
 // DestroyIPV4 removes a secondary IPv4 address from a server.
 // Your server will be hard-restarted. We suggest halting the machine gracefully before removing IPs.
-func (s *ServerServiceHandler) DestroyIPV4(ctx context.Context, vpsID, ip string) error {
+func (s *ServerServiceHandler) DestroyIPV4(ctx context.Context, instanceID, ip string) error {
 
 	uri := "/v1/server/destroy_ipv4"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 		"ip":    {ip},
 	}
 
@@ -954,12 +954,12 @@ func (s *ServerServiceHandler) DestroyIPV4(ctx context.Context, vpsID, ip string
 }
 
 // EnableIPV6 enables IPv6 networking on a server by assigning an IPv6 subnet to it.
-func (s *ServerServiceHandler) EnableIPV6(ctx context.Context, vpsID string) error {
+func (s *ServerServiceHandler) EnableIPV6(ctx context.Context, instanceID string) error {
 
 	uri := "/v1/server/ipv6_enable"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -978,7 +978,7 @@ func (s *ServerServiceHandler) EnableIPV6(ctx context.Context, vpsID string) err
 }
 
 // Bandwidth will get the bandwidth used by a VPS
-func (s *ServerServiceHandler) Bandwidth(ctx context.Context, vpsID string) ([]map[string]string, error) {
+func (s *ServerServiceHandler) Bandwidth(ctx context.Context, instanceID string) ([]map[string]string, error) {
 
 	uri := "/v1/server/bandwidth"
 
@@ -989,7 +989,7 @@ func (s *ServerServiceHandler) Bandwidth(ctx context.Context, vpsID string) ([]m
 	}
 
 	q := req.URL.Query()
-	q.Add("SUBID", vpsID)
+	q.Add("SUBID", instanceID)
 	req.URL.RawQuery = q.Encode()
 
 	var bandwidthMap map[string][][]string
@@ -1023,7 +1023,7 @@ func (s *ServerServiceHandler) Bandwidth(ctx context.Context, vpsID string) ([]m
 // ListReverseIPV6 List the IPv6 reverse DNS entries of a virtual machine.
 // Reverse DNS entries are only available for virtual machines in the "active" state.
 // If the virtual machine does not have IPv6 enabled, then an empty array is returned.
-func (s *ServerServiceHandler) ListReverseIPV6(ctx context.Context, vpsID string) ([]ReverseIPV6, error) {
+func (s *ServerServiceHandler) ListReverseIPV6(ctx context.Context, instanceID string) ([]ReverseIPV6, error) {
 
 	uri := "/v1/server/reverse_list_ipv6"
 
@@ -1034,7 +1034,7 @@ func (s *ServerServiceHandler) ListReverseIPV6(ctx context.Context, vpsID string
 	}
 
 	q := req.URL.Query()
-	q.Add("SUBID", vpsID)
+	q.Add("SUBID", instanceID)
 	req.URL.RawQuery = q.Encode()
 
 	var reverseMap map[string][]ReverseIPV6
@@ -1061,12 +1061,12 @@ func (s *ServerServiceHandler) ListReverseIPV6(ctx context.Context, vpsID string
 
 // SetDefaultReverseIPV4 will set a reverse DNS entry for an IPv4 address of a virtual machine to the original setting.
 // Upon success, DNS changes may take 6-12 hours to become active.
-func (s *ServerServiceHandler) SetDefaultReverseIPV4(ctx context.Context, vpsID, ip string) error {
+func (s *ServerServiceHandler) SetDefaultReverseIPV4(ctx context.Context, instanceID, ip string) error {
 
 	uri := "/v1/server/reverse_default_ipv4"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 		"ip":    {ip},
 	}
 
@@ -1087,12 +1087,12 @@ func (s *ServerServiceHandler) SetDefaultReverseIPV4(ctx context.Context, vpsID,
 
 // DeleteReverseIPV6 Remove a reverse DNS entry for an IPv6 address of a VPS.
 // Upon success, DNS changes may take 6-12 hours to become active.
-func (s *ServerServiceHandler) DeleteReverseIPV6(ctx context.Context, vpsID, ip string) error {
+func (s *ServerServiceHandler) DeleteReverseIPV6(ctx context.Context, instanceID, ip string) error {
 
 	uri := "/v1/server/reverse_delete_ipv6"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 		"ip":    {ip},
 	}
 
@@ -1113,12 +1113,12 @@ func (s *ServerServiceHandler) DeleteReverseIPV6(ctx context.Context, vpsID, ip 
 
 // SetReverseIPV4 will set a reverse DNS entry for an IPv4 address of a virtual machine.
 // Upon success, DNS changes may take 6-12 hours to become active.
-func (s *ServerServiceHandler) SetReverseIPV4(ctx context.Context, vpsID, ipv4, entry string) error {
+func (s *ServerServiceHandler) SetReverseIPV4(ctx context.Context, instanceID, ipv4, entry string) error {
 
 	uri := "/v1/server/reverse_set_ipv4"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 		"ip":    {ipv4},
 		"entry": {entry},
 	}
@@ -1140,11 +1140,11 @@ func (s *ServerServiceHandler) SetReverseIPV4(ctx context.Context, vpsID, ipv4, 
 
 // SetReverseIPV6 will set a reverse DNS entry for an IPv4 address of a virtual machine.
 // Upon success, DNS changes may take 6-12 hours to become active.
-func (s *ServerServiceHandler) SetReverseIPV6(ctx context.Context, vpsID, ipv6, entry string) error {
+func (s *ServerServiceHandler) SetReverseIPV6(ctx context.Context, instanceID, ipv6, entry string) error {
 	uri := "/v1/server/reverse_set_ipv6"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 		"ip":    {ipv6},
 		"entry": {entry},
 	}
@@ -1165,11 +1165,11 @@ func (s *ServerServiceHandler) SetReverseIPV6(ctx context.Context, vpsID, ipv6, 
 }
 
 // Start will start a vps. If the machine is already running, it will be restarted.
-func (s *ServerServiceHandler) Start(ctx context.Context, vpsID string) error {
+func (s *ServerServiceHandler) Start(ctx context.Context, instanceID string) error {
 	uri := "/v1/server/start"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -1188,12 +1188,12 @@ func (s *ServerServiceHandler) Start(ctx context.Context, vpsID string) error {
 }
 
 // Halt will halt a virtual machine. This is a hard power off
-func (s *ServerServiceHandler) Halt(ctx context.Context, vpsID string) error {
+func (s *ServerServiceHandler) Halt(ctx context.Context, instanceID string) error {
 
 	uri := "/v1/server/halt"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -1212,12 +1212,12 @@ func (s *ServerServiceHandler) Halt(ctx context.Context, vpsID string) error {
 }
 
 // Reboot will reboot a VPS. This is a hard reboot
-func (s *ServerServiceHandler) Reboot(ctx context.Context, vpsID string) error {
+func (s *ServerServiceHandler) Reboot(ctx context.Context, instanceID string) error {
 
 	uri := "/v1/server/reboot"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -1236,11 +1236,11 @@ func (s *ServerServiceHandler) Reboot(ctx context.Context, vpsID string) error {
 }
 
 // Reinstall will reinstall the operating system on a VPS.
-func (s *ServerServiceHandler) Reinstall(ctx context.Context, vpsID string) error {
+func (s *ServerServiceHandler) Reinstall(ctx context.Context, instanceID string) error {
 	uri := "/v1/server/reinstall"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -1259,12 +1259,12 @@ func (s *ServerServiceHandler) Reinstall(ctx context.Context, vpsID string) erro
 }
 
 // Delete a VPS. All data will be permanently lost, and the IP address will be released
-func (s *ServerServiceHandler) Delete(ctx context.Context, vpsID string) error {
+func (s *ServerServiceHandler) Delete(ctx context.Context, instanceID string) error {
 
 	uri := "/v1/server/destroy"
 
 	values := url.Values{
-		"SUBID": {vpsID},
+		"SUBID": {instanceID},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -1442,8 +1442,8 @@ func (s *ServerServiceHandler) list(ctx context.Context, key, value string) ([]S
 	return servers, nil
 }
 
-// GetServer will get the server with the given vpsID
-func (s *ServerServiceHandler) GetServer(ctx context.Context, vpsID string) (*Server, error) {
+// GetServer will get the server with the given instanceID
+func (s *ServerServiceHandler) GetServer(ctx context.Context, instanceID string) (*Server, error) {
 
 	uri := "/v1/server/list"
 
@@ -1454,7 +1454,7 @@ func (s *ServerServiceHandler) GetServer(ctx context.Context, vpsID string) (*Se
 	}
 
 	q := req.URL.Query()
-	q.Add("SUBID", vpsID)
+	q.Add("SUBID", instanceID)
 	req.URL.RawQuery = q.Encode()
 
 	server := new(Server)

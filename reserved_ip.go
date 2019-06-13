@@ -12,11 +12,11 @@ import (
 // ReservedIPService is the interface to interact with the reserved IP endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#reservedip
 type ReservedIPService interface {
-	Attach(ctx context.Context, ip, vpsID string) error
-	Convert(ctx context.Context, ip, vpsID, label string) (*ReservedIP, error)
+	Attach(ctx context.Context, ip, InstanceID string) error
+	Convert(ctx context.Context, ip, InstanceID, label string) (*ReservedIP, error)
 	Create(ctx context.Context, regionID int, ipType, label string) (*ReservedIP, error)
 	Delete(ctx context.Context, ip string) error
-	Detach(ctx context.Context, ip, vpsID string) error
+	Detach(ctx context.Context, ip, InstanceID string) error
 	List(ctx context.Context) ([]ReservedIP, error)
 }
 
@@ -109,12 +109,12 @@ func (r *ReservedIP) unmarshalStr(value string) (string, error) {
 }
 
 // Attach a reserved IP to an existing subscription
-func (r *ReservedIPServiceHandler) Attach(ctx context.Context, ip, vpsID string) error {
+func (r *ReservedIPServiceHandler) Attach(ctx context.Context, ip, InstanceID string) error {
 	uri := "/v1/reservedip/attach"
 
 	values := url.Values{
 		"ip_address":   {ip},
-		"attach_SUBID": {vpsID},
+		"attach_SUBID": {InstanceID},
 	}
 
 	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -133,11 +133,11 @@ func (r *ReservedIPServiceHandler) Attach(ctx context.Context, ip, vpsID string)
 }
 
 // Convert an existing IP on a subscription to a reserved IP.
-func (r *ReservedIPServiceHandler) Convert(ctx context.Context, ip, vpsID, label string) (*ReservedIP, error) {
+func (r *ReservedIPServiceHandler) Convert(ctx context.Context, ip, InstanceID, label string) (*ReservedIP, error) {
 	uri := "/v1/reservedip/convert"
 
 	values := url.Values{
-		"SUBID":      {vpsID},
+		"SUBID":      {InstanceID},
 		"ip_address": {ip},
 	}
 
@@ -224,12 +224,12 @@ func (r *ReservedIPServiceHandler) Delete(ctx context.Context, ip string) error 
 }
 
 // Detach a reserved IP from an existing subscription.
-func (r *ReservedIPServiceHandler) Detach(ctx context.Context, ip, vpsID string) error {
+func (r *ReservedIPServiceHandler) Detach(ctx context.Context, ip, InstanceID string) error {
 	uri := "/v1/reservedip/detach"
 
 	values := url.Values{
 		"ip_address":   {ip},
-		"detach_SUBID": {vpsID},
+		"detach_SUBID": {InstanceID},
 	}
 
 	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, values)

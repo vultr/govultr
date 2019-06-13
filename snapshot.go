@@ -9,7 +9,7 @@ import (
 // SnapshotService is the interface to interact with Snapshot endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#snapshot
 type SnapshotService interface {
-	Create(ctx context.Context, vpsID, description string) (*Snapshot, error)
+	Create(ctx context.Context, InstanceID, description string) (*Snapshot, error)
 	CreateFromURL(ctx context.Context, snapshotURL string) (*Snapshot, error)
 	Delete(ctx context.Context, snapshotID string) error
 	List(ctx context.Context) ([]Snapshot, error)
@@ -36,12 +36,12 @@ type Snapshot struct {
 type Snapshots []Snapshot
 
 // Create makes a snapshot of a provided server
-func (s *SnapshotServiceHandler) Create(ctx context.Context, vpsID, description string) (*Snapshot, error) {
+func (s *SnapshotServiceHandler) Create(ctx context.Context, InstanceID, description string) (*Snapshot, error) {
 
 	uri := "/v1/snapshot/create"
 
 	values := url.Values{
-		"SUBID":       {vpsID},
+		"SUBID":       {InstanceID},
 		"description": {description},
 	}
 
