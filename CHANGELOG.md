@@ -49,7 +49,7 @@
     * Renamed BareMetalPlan struct field `BareMetalID` to `PlanID` [#14](https://github.com/vultr/govultr/pull/14)
     * Renamed VCPlan struct field `VpsID` to `PlanID` [#14](https://github.com/vultr/govultr/pull/14)
     * Renamed Plan struct field `VCPUCount` to `vCPUs` [#13](https://github.com/vultr/govultr/pull/13)
-    * Renamed BaremMetalPlan struct field `CPUCount` to `CPUs` [#13](https://github.com/vultr/govultr/pull/13)
+    * Renamed BareMetalPlan struct field `CPUCount` to `CPUs` [#13](https://github.com/vultr/govultr/pull/13)
     * Renamed VCPlan struct field `VCPUCount` to `vCPUs` [#13](https://github.com/vultr/govultr/pull/13)
     * Renamed VCPlan struct field `Cost` to `Price` [#13](https://github.com/vultr/govultr/pull/13)
     
