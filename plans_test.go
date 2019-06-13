@@ -23,7 +23,7 @@ func TestPlanServiceHandler_List(t *testing.T) {
 	}
 
 	expected := []Plan{{
-		InstanceID:  201,
+		PlanID:      201,
 		Name:        "1024 MB RAM,25 GB SSD,1.00 TB BW",
 		VCPUs:       1,
 		RAM:         "1024",
@@ -58,7 +58,7 @@ func TestPlanServiceHandler_GetBareMetalList(t *testing.T) {
 
 	expected := []BareMetalPlan{
 		{
-			BareMetalID: "99",
+			PlanID:      "99",
 			Name:        "32768 MB RAM,4x 240 GB SSD,1.00 TB BW",
 			CPUs:        12,
 			CPUModel:    "E-2186G",
@@ -94,7 +94,7 @@ func TestPlanServiceHandler_GetVc2List(t *testing.T) {
 
 	expected := []VCPlan{
 		{
-			InstanceID:  "201",
+			PlanID:      "201",
 			Name:        "1024 MB RAM,25 GB SSD,1.00 TB BW",
 			VCPUs:       "1",
 			RAM:         "1024",
@@ -127,7 +127,7 @@ func TestPlanServiceHandler_GetVdc2List(t *testing.T) {
 
 	expected := []VCPlan{
 		{
-			InstanceID:  "115",
+			PlanID:      "115",
 			Name:        "8192 MB RAM,110 GB SSD,10.00 TB BW",
 			VCPUs:       "2",
 			RAM:         "8192",
@@ -161,14 +161,14 @@ func TestPlanServiceHandler_GetVc2zList(t *testing.T) {
 
 	expected := []VCPlan{
 		{
-			InstanceID: "401",
-			Name:       "2048 MB RAM,64 GB SSD,2.00 TB BW",
-			VCPUs:      "1",
-			RAM:        "2048",
-			Disk:       "64",
-			Bandwidth:  "2.00",
-			Price:      "12.00",
-			PlanType:   "HIGHFREQUENCY",
+			PlanID:    "401",
+			Name:      "2048 MB RAM,64 GB SSD,2.00 TB BW",
+			VCPUs:     "1",
+			RAM:       "2048",
+			Disk:      "64",
+			Bandwidth: "2.00",
+			Price:     "12.00",
+			PlanType:  "HIGHFREQUENCY",
 		},
 	}
 
