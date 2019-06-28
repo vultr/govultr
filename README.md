@@ -47,7 +47,7 @@ func main() {
 	vultrClient := govultr.NewClient(nil, apiKey)
 	
 	// Optional changes
-	_ = vultrClient.SetBaseURL("http://api.vultr.com")
+	_ = vultrClient.SetBaseURL("https://api.vultr.com")
 	vultrClient.SetUserAgent("mycool-app")
 	vultrClient.SetRateLimit(500)
 }
