@@ -56,20 +56,20 @@ func main() {
 ### Example Usage
 Create a VPS
 ```go
-	vpsOptions := &govultr.ServerOptions{
-		Label:                "awesome-go-app",
-		Hostname:             "awesome-go.com",
-		EnablePrivateNetwork: true,
-		AutoBackups:          true,
-		EnableIPV6:           true,
-	}
+vpsOptions := &govultr.ServerOptions{
+	Label:                "awesome-go-app",
+	Hostname:             "awesome-go.com",
+	EnablePrivateNetwork: true,
+	AutoBackups:          true,
+	EnableIPV6:           true,
+}
 
-	// RegionId, VpsPlanID, OsID can be grabbed from their respective API calls
-	res, err := vultrClient.Server.Create(context.Background(), 1, 201, 1, vpsOptions)
+// RegionId, VpsPlanID, OsID can be grabbed from their respective API calls
+res, err := vultrClient.Server.Create(context.Background(), 1, 201, 1, vpsOptions)
 
-	if err != nil {
-		fmt.Println(err)
-	}
+if err != nil {
+	fmt.Println(err)
+}
 ```
 
 
