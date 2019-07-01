@@ -1,6 +1,6 @@
 # GoVultr
 
-[![Build Status](https://travis-ci.com/vultr/govultr.svg?token=AjUFpVAwGmwAec3be81A&branch=master)](https://travis-ci.com/vultr/govultr)
+[![Build Status](https://travis-ci.org/vultr/govultr.svg?branch=master)](https://travis-ci.org/vultr/govultr)
 [![GoDoc](https://godoc.org/github.com/vultr/govultr?status.svg)](https://godoc.org/github.com/vultr/govultr)
 [![codecov](https://codecov.io/gh/vultr/govultr/branch/master/graph/badge.svg?token=PDJXBc7Rci)](https://codecov.io/gh/vultr/govultr)
 [![Go Report Card](https://goreportcard.com/badge/github.com/vultr/govultr)](https://goreportcard.com/report/github.com/vultr/govultr)
