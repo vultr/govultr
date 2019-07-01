@@ -8,7 +8,8 @@
 The official Vultr Go client - GoVultr allows you to interact with the Vultr V1 API.
 
 ## Installation
-```sh 
+
+```sh
 go get -u github.com/vultr/govultr
 ```
 
@@ -17,22 +18,22 @@ go get -u github.com/vultr/govultr
 Vultr uses a PAT (Personal Access token) to interact/authenticate with the APIs. An API Key can be generated and acquired from the API menu in [settings](https://my.vultr.com/settings/#settingsapi).
 
 To instantiate a govultr client you invoke `NewClient()`.
- 
-This takes in two parameters 
-- *http.Client
-- API Key  
 
-You can define your own `http.Client` however if you pass in `nil` then you will be defaulted to use `http.DefaultClient`
+This takes in two parameters:
 
-As for the API Key - We recommend you store this as a environmental variable and not hard code it.
+- \*http.Client
+- API Key
 
+You can define your own `http.Client` however if you pass in `nil` then you will be defaulted to use `http.DefaultClient`. For the API key, we recommend you store this as a environment variable and not hard code it.
 
-There are also three parameters you may change regarding the client
+There are also three optional parameters you may change regarding the client:
+
 - BaseUrl: allows you to override the base URL that Vultr defaults to
 - UserAgent: allows you to override the UserAgent that Vultr defaults to
 - RateLimit: Vultr currently rate limits how fast you can make calls back to back. This lets you configure if you want a delay in between calls
 
-### Example client setup 
+### Example Client Setup
+
 ```go
 package main
 
@@ -43,9 +44,9 @@ import (
 
 func main() {
 	apiKey := os.Getenv("VultrAPIKey")
-	
+
 	vultrClient := govultr.NewClient(nil, apiKey)
-	
+
 	// Optional changes
 	_ = vultrClient.SetBaseURL("https://api.vultr.com")
 	vultrClient.SetUserAgent("mycool-app")
@@ -54,7 +55,9 @@ func main() {
 ```
 
 ### Example Usage
+
 Create a VPS
+
 ```go
 vpsOptions := &govultr.ServerOptions{
 	Label:                "awesome-go-app",
@@ -72,17 +75,20 @@ if err != nil {
 }
 ```
 
-
 ## Versioning
+
 This project follows [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/vultr/govultr/tags).
 
 ## Documentation
-For detailed information about our V1 API head over to our [API documentation](https://www.vultr.com/api/) 
 
-Want more details about this clients functionality then checkout our [GoDoc](https://godoc.org/github.com/vultr/govultr) documentation.
+For detailed information about our V1 API head over to our [API documentation](https://www.vultr.com/api/).
+
+If you want more details about this client's functionality then check out our [GoDoc](https://godoc.org/github.com/vultr/govultr) documentation.
 
 ## Contributing
+
 Feel free to send pull requests our way! Please see the [contributing guidelines](CONTRIBUTING.md).
 
 ## License
+
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details.
