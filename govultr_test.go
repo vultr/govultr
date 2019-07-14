@@ -2,6 +2,7 @@ package govultr
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -120,6 +121,36 @@ func TestClient_DoWithContextFailure(t *testing.T) {
 
 	if !reflect.DeepEqual(err.Error(), expected) {
 		t.Fatalf("DoWithContext(): %v: expected %v", err, expected)
+	}
+}
+
+type errRoundTripper struct{}
+
+func (errRoundTripper) RoundTrip(*http.Request) (*http.Response, error) {
+	return nil, errors.New("fake error")
+}
+
+func TestClient_DoWithContextError(t *testing.T) {
+	setup()
+	defer teardown()
+
+	client = NewClient(&http.Client{
+		Transport: errRoundTripper{},
+	}, "dummy-key")
+
+	req, _ := client.NewRequest(ctx, http.MethodGet, "/", nil)
+
+	var panicked string
+	func() {
+		defer func() {
+			if err := recover(); err != nil {
+				panicked = fmt.Sprint(err)
+			}
+		}()
+		client.DoWithContext(context.Background(), req, nil)
+	}()
+	if panicked != "" {
+		t.Errorf("unexpected panic: %s", panicked)
 	}
 }
 
