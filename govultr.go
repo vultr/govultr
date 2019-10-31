@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strings"
@@ -183,41 +184,43 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Va
 // have their own implements of unmarshal.
 func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) error {
 
-	// Sleep this call
-	time.Sleep(c.RateLimit)
+	var body []byte
+	for tryCount := 1; tryCount <= c.RetryLimit; tryCount++ {
+		req := r.WithContext(ctx)
+		res, err := c.client.Do(req)
 
-	req := r.WithContext(ctx)
-	res, err := c.client.Do(req)
+		if c.onRequestCompleted != nil {
+			c.onRequestCompleted(req, res)
+		}
 
-	if c.onRequestCompleted != nil {
-		c.onRequestCompleted(req, res)
-	}
+		if err != nil {
+			return err
+		}
 
-	if err != nil {
-		return err
-	}
+		defer res.Body.Close()
 
-	defer res.Body.Close()
+		body, err = ioutil.ReadAll(res.Body)
 
-	body, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return err
+		}
 
-	if err != nil {
-		return err
-	}
-
-	if res.StatusCode == http.StatusOK {
-		if data != nil {
-			if string(body) == "[]" {
-				data = nil
-			} else {
-				if err := json.Unmarshal(body, data); err != nil {
-					return err
+		if res.StatusCode == http.StatusOK {
+			if data != nil {
+				if string(body) == "[]" {
+					data = nil
+				} else {
+					if err := json.Unmarshal(body, data); err != nil {
+						return err
+					}
 				}
 			}
+			return nil
 		}
-		return nil
+		rand.Seed(time.Now().UnixNano())
+		delay := (1 << uint(3)) * rand.Intn(1500)
+		time.Sleep(time.Duration(rand.Intn(delay)) * time.Millisecond)
 	}
-
 	return errors.New(string(body))
 }
 
