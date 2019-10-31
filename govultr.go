@@ -184,6 +184,9 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Va
 // have their own implements of unmarshal.
 func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) error {
 
+	// Initial sleep on the call
+	time.Sleep(c.RateLimit)
+
 	var body []byte
 	for tryCount := 1; tryCount <= c.RetryLimit; tryCount++ {
 		req := r.WithContext(ctx)
@@ -218,8 +221,8 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 			return nil
 		}
 		rand.Seed(time.Now().UnixNano())
-		delay := (1 << uint(3)) * rand.Intn(1500)
-		time.Sleep(time.Duration(rand.Intn(delay)) * time.Millisecond)
+		delay := (1 << uint(3)) * (rand.Intn(1000) + rand.Intn(500))
+		time.Sleep(time.Duration(delay) * time.Millisecond)
 	}
 	return errors.New(string(body))
 }
