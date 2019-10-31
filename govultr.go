@@ -17,6 +17,7 @@ const (
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 600 * time.Millisecond
+	retryLimit  = 3
 )
 
 // whiteListURI is an array of endpoints that should not have the API Key passed to them
@@ -56,6 +57,9 @@ type Client struct {
 
 	// API Rate Limit - Vultr rate limits based on time
 	RateLimit time.Duration
+
+	// RetryLimit how many times the client should retry a failed API call
+	RetryLimit int
 
 	// Services used to interact with the API
 	Account         AccountService
@@ -97,10 +101,11 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	baseURL, _ := url.Parse(defaultBase)
 
 	client := &Client{
-		client:    httpClient,
-		BaseURL:   baseURL,
-		UserAgent: userAgent,
-		RateLimit: rateLimit,
+		client:     httpClient,
+		BaseURL:    baseURL,
+		UserAgent:  userAgent,
+		RateLimit:  rateLimit,
+		RetryLimit: retryLimit,
 	}
 
 	client.Account = &AccountServiceHandler{client}
@@ -241,4 +246,9 @@ func (c *Client) SetUserAgent(ua string) {
 // OnRequestCompleted sets the API request completion callback
 func (c *Client) OnRequestCompleted(rc RequestCompletionCallback) {
 	c.onRequestCompleted = rc
+}
+
+// SetRetryLimit overrides the default RetryLimit
+func (c *Client) SetRetryLimit(retry int) {
+	c.RetryLimit = retry
 }
