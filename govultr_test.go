@@ -275,3 +275,14 @@ func TestClient_OnRequestCompleted(t *testing.T) {
 		t.Errorf("expected response to contain %v, Response = %v", expected, completedRes)
 	}
 }
+
+func TestClient_SetRetryLimit(t *testing.T) {
+	setup()
+	defer teardown()
+
+	client.SetRetryLimit(4)
+
+	if client.RetryLimit != 4 {
+		t.Errorf("NewClient RateLimit = %v, expected %v", client.RetryLimit, 4)
+	}
+}
