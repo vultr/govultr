@@ -179,50 +179,63 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Va
 	return req, nil
 }
 
-// DoWithContext sends an API Request and returns back the response. The API response is checked  to see if it was
-// a successful call. A successful call is then checked to see if we need to unmarshal since some resources
-// have their own implements of unmarshal.
+// DoWithContext handles the retry mechanism while handing off the API request and returning back errors.
 func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) error {
 
 	// Initial sleep on the call
 	time.Sleep(c.RateLimit)
 
-	var body []byte
+	var err error
 	for tryCount := 1; tryCount <= c.RetryLimit; tryCount++ {
-		req := r.WithContext(ctx)
-		res, err := c.client.Do(req)
 
-		if c.onRequestCompleted != nil {
-			c.onRequestCompleted(req, res)
-		}
+		err = c.executeHTTP(ctx, r, data)
 
-		if err != nil {
-			return err
-		}
-
-		defer res.Body.Close()
-
-		body, err = ioutil.ReadAll(res.Body)
-
-		if err != nil {
-			return err
-		}
-
-		if res.StatusCode == http.StatusOK {
-			if data != nil {
-				if string(body) == "[]" {
-					data = nil
-				} else {
-					if err := json.Unmarshal(body, data); err != nil {
-						return err
-					}
-				}
-			}
+		if err == nil {
 			return nil
 		}
+
 		rand.Seed(time.Now().UnixNano())
 		delay := (1 << uint(3)) * (rand.Intn(1000) + rand.Intn(500))
 		time.Sleep(time.Duration(delay) * time.Millisecond)
+	}
+	return errors.New(err.Error())
+}
+
+// executeHttp handles the http requests. This was moved into its own method since this will be called by the retry mech and we are using a defer to close out the request body
+// sends an API Request and returns back the response. The API response is checked  to see if it was
+// a successful call. A successful call is then checked to see if we need to unmarshal since some resources
+// have their own implements of unmarshal.
+func (c *Client) executeHTTP(ctx context.Context, r *http.Request, data interface{}) error {
+
+	req := r.WithContext(ctx)
+	res, err := c.client.Do(req)
+
+	if c.onRequestCompleted != nil {
+		c.onRequestCompleted(req, res)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		return err
+	}
+	if res.StatusCode == http.StatusOK {
+		if data != nil {
+			if string(body) == "[]" {
+				data = nil
+			} else {
+				if err := json.Unmarshal(body, data); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
 	}
 	return errors.New(string(body))
 }
