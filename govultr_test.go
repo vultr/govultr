@@ -113,10 +113,8 @@ func TestClient_DoWithContextFailure(t *testing.T) {
 
 	err := client.DoWithContext(context.Background(), req, nil)
 
-	expected := `{Error}`
-
-	if !reflect.DeepEqual(err.Error(), expected) {
-		t.Fatalf("DoWithContext(): %v: expected %v", err, expected)
+	if !strings.Contains(err.Error(), "gave up after") || !strings.Contains(err.Error(), "last error") {
+		t.Fatalf("DoWithContext(): %v: expected 'gave up after ..., last error ...'", err)
 	}
 }
 
