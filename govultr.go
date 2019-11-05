@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -104,6 +105,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 
 	client.client.HTTPClient = httpClient
 	client.client.Logger = nil
+	client.client.ErrorHandler = client.vultrErrorHandler
 	client.SetRetryLimit(retryLimit)
 	client.SetRateLimit(rateLimit)
 
@@ -256,4 +258,12 @@ func (c *Client) OnRequestCompleted(rc RequestCompletionCallback) {
 // SetRetryLimit overrides the default RetryLimit
 func (c *Client) SetRetryLimit(n int) {
 	c.client.RetryMax = n
+}
+
+func (c *Client) vultrErrorHandler(resp *http.Response, err error, numTries int) (*http.Response, error) {
+	buf, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("gave up after %d attempts, last error unavailable (error reading response body: %v)", c.client.RetryMax+1, err)
+	}
+	return nil, fmt.Errorf("gave up after %d attempts, last error: %#v", c.client.RetryMax+1, strings.TrimSpace(string(buf)))
 }
