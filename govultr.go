@@ -261,6 +261,10 @@ func (c *Client) SetRetryLimit(n int) {
 }
 
 func (c *Client) vultrErrorHandler(resp *http.Response, err error, numTries int) (*http.Response, error) {
+	if resp == nil {
+		return nil, fmt.Errorf("gave up after %d attempts, last error unavailable (resp == nil)", c.client.RetryMax+1)
+	}
+
 	buf, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("gave up after %d attempts, last error unavailable (error reading response body: %v)", c.client.RetryMax+1, err)
