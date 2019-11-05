@@ -103,6 +103,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	}
 
 	client.client.HTTPClient = httpClient
+	client.client.Logger = nil
 	client.SetRetryLimit(retryLimit)
 	client.SetRateLimit(rateLimit)
 
