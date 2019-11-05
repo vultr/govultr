@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/go-retryablehttp"
 )
 
 const (
@@ -17,6 +19,7 @@ const (
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 600 * time.Millisecond
+	retryLimit  = 3
 )
 
 // whiteListURI is an array of endpoints that should not have the API Key passed to them
@@ -43,7 +46,7 @@ type APIKey struct {
 // Client manages interaction with the Vultr V1 API
 type Client struct {
 	// Http Client used to interact with the Vultr V1 API
-	client *http.Client
+	client *retryablehttp.Client
 
 	// BASE URL for APIs
 	BaseURL *url.URL
@@ -53,9 +56,6 @@ type Client struct {
 
 	// API Key
 	APIKey APIKey
-
-	// API Rate Limit - Vultr rate limits based on time
-	RateLimit time.Duration
 
 	// Services used to interact with the API
 	Account         AccountService
@@ -97,11 +97,14 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	baseURL, _ := url.Parse(defaultBase)
 
 	client := &Client{
-		client:    httpClient,
+		client:    retryablehttp.NewClient(),
 		BaseURL:   baseURL,
 		UserAgent: userAgent,
-		RateLimit: rateLimit,
 	}
+
+	client.client.HTTPClient = httpClient
+	client.SetRetryLimit(retryLimit)
+	client.SetRateLimit(rateLimit)
 
 	client.Account = &AccountServiceHandler{client}
 	client.API = &APIServiceHandler{client}
@@ -178,14 +181,18 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Va
 // have their own implements of unmarshal.
 func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) error {
 
-	// Sleep this call
-	time.Sleep(c.RateLimit)
+	rreq, err := retryablehttp.FromRequest(r)
 
-	req := r.WithContext(ctx)
-	res, err := c.client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	rreq = rreq.WithContext(ctx)
+
+	res, err := c.client.Do(rreq)
 
 	if c.onRequestCompleted != nil {
-		c.onRequestCompleted(req, res)
+		c.onRequestCompleted(r, res)
 	}
 
 	if err != nil {
@@ -228,9 +235,11 @@ func (c *Client) SetBaseURL(baseURL string) error {
 	return nil
 }
 
-// SetRateLimit Overrides the default rateLimit
+// SetRateLimit Overrides the default rateLimit. For performance, exponential
+// backoff is used with the minimum wait being 2/3rds the time provided.
 func (c *Client) SetRateLimit(time time.Duration) {
-	c.RateLimit = time
+	c.client.RetryWaitMin = time / 3 * 2
+	c.client.RetryWaitMax = time
 }
 
 // SetUserAgent Overrides the default UserAgent
@@ -241,4 +250,9 @@ func (c *Client) SetUserAgent(ua string) {
 // OnRequestCompleted sets the API request completion callback
 func (c *Client) OnRequestCompleted(rc RequestCompletionCallback) {
 	c.onRequestCompleted = rc
+}
+
+// SetRetryLimit overrides the default RetryLimit
+func (c *Client) SetRetryLimit(n int) {
+	c.client.RetryMax = n
 }

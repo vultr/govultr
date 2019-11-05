@@ -43,10 +43,6 @@ func TestNewClient(t *testing.T) {
 		t.Errorf("NewClient BaseURL = %v, expected %v", client.BaseURL, server.URL)
 	}
 
-	if client.RateLimit == 0 || client.RateLimit.String() != "600ms" {
-		t.Errorf("NewClient RateLimit = %v, expected %v", client.RateLimit, rateLimit.String())
-	}
-
 	if client.APIKey.key != "dummy-key" {
 		t.Errorf("NewClient ApiKey = %v, expected %v", client.APIKey.key, "dummy-key")
 	}
@@ -228,8 +224,8 @@ func TestClient_SetRateLimit(t *testing.T) {
 	time := 600 * time.Millisecond
 	client.SetRateLimit(time)
 
-	if client.RateLimit != time {
-		t.Errorf("NewClient RateLimit = %v, expected %v", client.RateLimit, time)
+	if client.client.RetryWaitMax != time {
+		t.Errorf("NewClient max RateLimit = %v, expected %v", client.client.RetryWaitMax, time)
 	}
 }
 
@@ -273,5 +269,16 @@ func TestClient_OnRequestCompleted(t *testing.T) {
 	expected := `{"Vultr":"bird"}`
 	if !strings.Contains(completedRes, expected) {
 		t.Errorf("expected response to contain %v, Response = %v", expected, completedRes)
+	}
+}
+
+func TestClient_SetRetryLimit(t *testing.T) {
+	setup()
+	defer teardown()
+
+	client.SetRetryLimit(4)
+
+	if client.client.RetryMax != 4 {
+		t.Errorf("NewClient RateLimit = %v, expected %v", client.client.RetryMax, 4)
 	}
 }
