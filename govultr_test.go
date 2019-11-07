@@ -35,6 +35,28 @@ func teardown() {
 	server.Close()
 }
 
+func handleString(method, pattern, resp string) {
+	var failed bool // fail every other request to test retries but still work consistently
+	mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+		if method != r.Method {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			w.Write([]byte(`Invalid HTTP method. Check that the method (POST|GET) matches what the documentation indicates.`))
+			return
+		}
+
+		failed = !failed
+		if failed {
+			w.WriteHeader(http.StatusServiceUnavailable) // this is the Vultr status for rate limits
+			w.Write([]byte(`Rate limit hit. API requests are limited to an average of 3/s. Try your request again later.`))
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(resp))
+	})
+}
+
 func TestNewClient(t *testing.T) {
 	setup()
 	defer teardown()
