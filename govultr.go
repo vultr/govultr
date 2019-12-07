@@ -24,8 +24,10 @@ const (
 )
 
 // whiteListURI is an array of endpoints that should not have the API Key passed to them
-var whiteListURI = [12]string{"/v1/regions/availability",
+var whiteListURI = [13]string{
+	"/v1/regions/availability",
 	"/v1/app/list",
+	"/v1/objectstorage/list_cluster",
 	"/v1/os/list",
 	"/v1/plans/list",
 	"/v1/plans/list_baremetal",
@@ -71,6 +73,7 @@ type Client struct {
 	FirewallRule    FireWallRuleService
 	ISO             ISOService
 	Network         NetworkService
+	ObjectStorage   ObjectStorageService
 	OS              OSService
 	Plan            PlanService
 	Region          RegionService
@@ -121,6 +124,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.FirewallRule = &FireWallRuleServiceHandler{client}
 	client.ISO = &ISOServiceHandler{client}
 	client.Network = &NetworkServiceHandler{client}
+	client.ObjectStorage = &ObjectStorageServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
 	client.Plan = &PlanServiceHandler{client}
 	client.Region = &RegionServiceHandler{client}
