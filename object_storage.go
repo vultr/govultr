@@ -35,7 +35,7 @@ type ObjectStorage struct {
 	S3Keys
 }
 
-// // ObjectStorageCluster represents a Vultr Object Storage cluster.
+// ObjectStorageCluster represents a Vultr Object Storage cluster.
 type ObjectStorageCluster struct {
 	ObjectStoreClusterID string `json:"OBJSTORECLUSTERID"`
 	DCID                 string
@@ -51,13 +51,14 @@ type S3Keys struct {
 	S3SecretKey string `json:"s3_secret_key"`
 }
 
-// todo bug in the API with labels - If you have two `object storages` with the same label you can not use the label on them
 // ObjectListOptions are your optional params you have available to list data.
 type ObjectListOptions struct {
 	IncludeS3 bool
-	Label     string
+	// todo bug in the API with labels - If you have two `object storages` with the same label you can not use the label on them
+	Label string
 }
 
+// Create an object storage subscription
 func (o *ObjectStorageServiceHandler) Create() {
 	panic("implement me")
 }
