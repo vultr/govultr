@@ -70,6 +70,7 @@ type Client struct {
 	FirewallGroup   FirewallGroupService
 	FirewallRule    FireWallRuleService
 	ISO             ISOService
+	LoadBalancer    LoadBalancerService
 	Network         NetworkService
 	OS              OSService
 	Plan            PlanService
@@ -120,6 +121,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.FirewallGroup = &FireWallGroupServiceHandler{client}
 	client.FirewallRule = &FireWallRuleServiceHandler{client}
 	client.ISO = &ISOServiceHandler{client}
+	client.LoadBalancer = &LoadBalancerHandler{client}
 	client.Network = &NetworkServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
 	client.Plan = &PlanServiceHandler{client}
