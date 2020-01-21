@@ -27,9 +27,9 @@ type LoadBalancerHandler struct {
 
 // LoadBalancers represent a basic structure of a load balancer
 type LoadBalancers struct {
-	ID          int `json:"SUBID"`
-	DateCreated string
-	RegionID    int `json:"DCID"`
+	ID          int    `json:"SUBID"`
+	DateCreated string `json:"date_created"`
+	RegionID    int    `json:"DCID"`
 	Location    string
 	Label       string
 	Status      string
