@@ -185,8 +185,6 @@ func TestLoadBalancerHandler_GetGenericInfo(t *testing.T) {
 		fmt.Fprintf(writer, response)
 	})
 
-
-
 	info, err := client.LoadBalancer.GetGenericInfo(ctx, 12345)
 
 	if err != nil {
@@ -201,4 +199,35 @@ func TestLoadBalancerHandler_GetGenericInfo(t *testing.T) {
 
 	if !reflect.DeepEqual(info, expected) {
 		t.Errorf("LoadBalancer.GetGenericInfo returned %+v, expected %+v", info, expected)
-	}}
+	}
+}
+
+
+func TestLoadBalancerHandler_ListForwardingRules(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/loadbalancer/forward_rule_list", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"forward_rule_list":[{"RULEID":"0690a322c25890bc","frontend_protocol":"http","frontend_port":80,"backend_protocol":"http","backend_port":80}]}`
+		fmt.Fprintf(writer, response)
+	})
+
+	list, err := client.LoadBalancer.ListForwardingRules(ctx, 12345)
+
+	if err != nil {
+		t.Errorf("LoadBalancer.ListForwardingRules returned %+v, ", err)
+	}
+
+
+	expected := &ForwardingRules{ForwardRuleList: []ForwardingRule{{
+		RuleID:           "0690a322c25890bc",
+		FrontendProtocol: "http",
+		FrontendPort:     80,
+		BackendProtocol:  "http",
+		BackendPort:      80,
+	}}}
+
+	if !reflect.DeepEqual(list, expected) {
+		t.Errorf("LoadBalancer.ListForwardingRules returned %+v, expected %+v", list, expected)
+	}
+}
