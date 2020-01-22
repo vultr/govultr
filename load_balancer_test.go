@@ -231,3 +231,18 @@ func TestLoadBalancerHandler_ListForwardingRules(t *testing.T) {
 		t.Errorf("LoadBalancer.ListForwardingRules returned %+v, expected %+v", list, expected)
 	}
 }
+
+func TestLoadBalancerHandler_DeleteForwardingRule(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/loadbalancer/forward_rule_delete", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.LoadBalancer.DeleteForwardingRule(ctx, 12345, "abcde1234")
+
+	if err != nil {
+		t.Errorf("LoadBalancer.DeleteForwardingRule returned %+v, ", err)
+	}
+}

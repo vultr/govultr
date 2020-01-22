@@ -20,6 +20,7 @@ type LoadBalancerService interface {
 	SetHealthCheck(ctx context.Context, ID int, healthConfig *HealthCheck) error
 	GetGenericInfo(ctx context.Context, ID int) (*GenericInfo, error)
 	ListForwardingRules(ctx context.Context, ID int) (*ForwardingRules, error)
+	DeleteForwardingRule(ctx context.Context, ID int, RuleID string) error
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -347,4 +348,28 @@ func (l *LoadBalancerHandler) ListForwardingRules(ctx context.Context, ID int) (
 	}
 
 	return &frList, nil
+}
+
+// DeleteForwardingRule removes a forwarding rule from a load balancer subscription
+func (l *LoadBalancerHandler) DeleteForwardingRule(ctx context.Context, ID int, RuleID string) error {
+	uri := "/v1/loadbalancer/forward_rule_delete"
+
+	values := url.Values{
+		"SUBID": {strconv.Itoa(ID)},
+		"RULEID": {RuleID},
+	}
+
+	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return err
+	}
+
+	err = l.client.DoWithContext(ctx, req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
