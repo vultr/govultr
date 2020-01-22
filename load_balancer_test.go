@@ -202,7 +202,6 @@ func TestLoadBalancerHandler_GetGenericInfo(t *testing.T) {
 	}
 }
 
-
 func TestLoadBalancerHandler_ListForwardingRules(t *testing.T) {
 	setup()
 	defer teardown()
@@ -217,7 +216,6 @@ func TestLoadBalancerHandler_ListForwardingRules(t *testing.T) {
 	if err != nil {
 		t.Errorf("LoadBalancer.ListForwardingRules returned %+v, ", err)
 	}
-
 
 	expected := &ForwardingRules{ForwardRuleList: []ForwardingRule{{
 		RuleID:           "0690a322c25890bc",
@@ -244,5 +242,34 @@ func TestLoadBalancerHandler_DeleteForwardingRule(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("LoadBalancer.DeleteForwardingRule returned %+v, ", err)
+	}
+}
+
+func TestLoadBalancerHandler_CreateForwardingRule(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/loadbalancer/forward_rule_create", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"RULEID": "abc123"}`
+		fmt.Fprintf(writer, response)
+	})
+
+	rule := &ForwardingRule{
+		FrontendProtocol: "http",
+		FrontendPort:     8080,
+		BackendProtocol:  "http",
+		BackendPort:      8080,
+	}
+	ruleID, err := client.LoadBalancer.CreateForwardingRule(ctx, 123, rule)
+	if err != nil {
+		t.Errorf("LoadBalancer.CreateForwardingRule returned %+v, ", err)
+	}
+
+	expected := &ForwardingRule{
+		RuleID: "abc123",
+	}
+
+	if !reflect.DeepEqual(ruleID, expected) {
+		t.Errorf("LoadBalancer.CreateForwardingRule returned %+v, expected %+v", ruleID, expected)
 	}
 }
