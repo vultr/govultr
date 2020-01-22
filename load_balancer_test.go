@@ -175,3 +175,30 @@ func TestLoadBalancerHandler_SetHealthCheck(t *testing.T) {
 		t.Errorf("LoadBalancer.SetHealthCheck returned %+v, ", err)
 	}
 }
+
+func TestLoadBalancerHandler_GetGenericInfo(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/loadbalancer/generic_info", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"balancing_algorithm":"roundrobin","ssl_redirect":false,"sticky_sessions":{"cookie_name":"test"}}`
+		fmt.Fprintf(writer, response)
+	})
+
+
+
+	info, err := client.LoadBalancer.GetGenericInfo(ctx, 12345)
+
+	if err != nil {
+		t.Errorf("LoadBalancer.GetGenericInfo returned %+v, ", err)
+	}
+
+	expected := &GenericInfo{
+		BalancingAlgorithm: "roundrobin",
+		SSLRedirect:        false,
+		StickySessions:     CookieName{CookieName: "test"},
+	}
+
+	if !reflect.DeepEqual(info, expected) {
+		t.Errorf("LoadBalancer.GetGenericInfo returned %+v, expected %+v", info, expected)
+	}}
