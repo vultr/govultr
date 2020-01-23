@@ -18,6 +18,7 @@ type LoadBalancerService interface {
 	DetachInstance(ctx context.Context, ID, backendNode int) error
 	GetHealthCheck(ctx context.Context, ID int) (*HealthCheck, error)
 	SetHealthCheck(ctx context.Context, ID int, healthConfig *HealthCheck) error
+	GetGenericInfo(ctx context.Context, ID int) (*GenericInfo, error)
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -37,12 +38,12 @@ type LoadBalancers struct {
 	IPV6        string `json:"main_ipv6"`
 }
 
-// InstanceList represent instances that attached to your load balancer
+// InstanceList represents instances that attached to your load balancer
 type InstanceList struct {
 	InstanceList []string `json:"instance_list"`
 }
 
-// HealthCheck represent your health check configuration for your load balancer.
+// HealthCheck represents your health check configuration for your load balancer.
 type HealthCheck struct {
 	Protocol           string
 	Port               int
@@ -51,6 +52,18 @@ type HealthCheck struct {
 	ResponseTimeout    int `json:"response_timeout"`
 	UnhealthyThreshold int `json:"unhealthy_threshold"`
 	HealthyThreshold   int `json:"healthy_threshold"`
+}
+
+// GenericInfo represents generic configuration of your load balancer
+type GenericInfo struct {
+	BalancingAlgorithm string     `json:"balancing_algorithm"`
+	SSLRedirect        bool       `json:"ssl_redirect"`
+	StickySessions     CookieName `json:"sticky_sessions"`
+}
+
+// CookieName represents cookie for your load balancer
+type CookieName struct {
+	CookieName string `json:"cookie_name"`
 }
 
 // List all load balancer subscriptions on the current account.
@@ -269,4 +282,29 @@ func (l *LoadBalancerHandler) SetHealthCheck(ctx context.Context, ID int, health
 	}
 
 	return nil
+}
+
+// GetGenericInfo is the generic configuration of a load balancer subscription
+func (l *LoadBalancerHandler) GetGenericInfo(ctx context.Context, ID int) (*GenericInfo, error) {
+	uri := "/v1/loadbalancer/generic_info"
+
+	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", strconv.Itoa(ID))
+	req.URL.RawQuery = q.Encode()
+
+	var info GenericInfo
+
+	err = l.client.DoWithContext(ctx, req, &info)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &info, err
 }
