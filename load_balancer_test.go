@@ -19,7 +19,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 	list, err := client.LoadBalancer.List(ctx)
 
 	if err != nil {
-		t.Errorf("LoadBalancer.List returned %+v, ", err)
+		t.Errorf("LoadBalancer.List returned %+v", err)
 	}
 
 	expected := []LoadBalancers{
@@ -51,7 +51,7 @@ func TestLoadBalancerHandler_Delete(t *testing.T) {
 	err := client.LoadBalancer.Delete(ctx, 12345)
 
 	if err != nil {
-		t.Errorf("LoadBalancer.Delete returned %+v, ", err)
+		t.Errorf("LoadBalancer.Delete returned %+v", err)
 	}
 }
 
@@ -66,7 +66,7 @@ func TestLoadBalancerHandler_SetLabel(t *testing.T) {
 	err := client.LoadBalancer.SetLabel(ctx, 12345, "label")
 
 	if err != nil {
-		t.Errorf("LoadBalancer.SetLabel returned %+v, ", err)
+		t.Errorf("LoadBalancer.SetLabel returned %+v", err)
 	}
 }
 
@@ -82,7 +82,7 @@ func TestLoadBalancerHandler_AttachedInstances(t *testing.T) {
 	instanceList, err := client.LoadBalancer.AttachedInstances(ctx, 12345)
 
 	if err != nil {
-		t.Errorf("LoadBalancer.AttachedInstances returned %+v, ", err)
+		t.Errorf("LoadBalancer.AttachedInstances returned %+v ", err)
 	}
 
 	expected := &InstanceList{InstanceList: []string{"1234", "2341"}}
@@ -103,7 +103,7 @@ func TestLoadBalancerHandler_AttachInstance(t *testing.T) {
 	err := client.LoadBalancer.AttachInstance(ctx, 12345, 45678)
 
 	if err != nil {
-		t.Errorf("LoadBalancer.AttachInstance returned %+v, ", err)
+		t.Errorf("LoadBalancer.AttachInstance returned %+v", err)
 	}
 }
 
@@ -118,7 +118,7 @@ func TestLoadBalancerHandler_DetachInstance(t *testing.T) {
 	err := client.LoadBalancer.DetachInstance(ctx, 12345, 45678)
 
 	if err != nil {
-		t.Errorf("LoadBalancer.DetachInstance returned %+v, ", err)
+		t.Errorf("LoadBalancer.DetachInstance returned %+v", err)
 	}
 }
 
@@ -134,7 +134,7 @@ func TestLoadBalancerHandler_GetHealthCheck(t *testing.T) {
 	health, err := client.LoadBalancer.GetHealthCheck(ctx, 12345)
 
 	if err != nil {
-		t.Errorf("LoadBalancer.GetHealthCheck returned %+v, ", err)
+		t.Errorf("LoadBalancer.GetHealthCheck returned %+v ", err)
 	}
 
 	expected := &HealthCheck{
@@ -172,7 +172,7 @@ func TestLoadBalancerHandler_SetHealthCheck(t *testing.T) {
 	err := client.LoadBalancer.SetHealthCheck(ctx, 12345, health)
 
 	if err != nil {
-		t.Errorf("LoadBalancer.SetHealthCheck returned %+v, ", err)
+		t.Errorf("LoadBalancer.SetHealthCheck returned %+v", err)
 	}
 }
 
@@ -188,7 +188,7 @@ func TestLoadBalancerHandler_GetGenericInfo(t *testing.T) {
 	info, err := client.LoadBalancer.GetGenericInfo(ctx, 12345)
 
 	if err != nil {
-		t.Errorf("LoadBalancer.GetGenericInfo returned %+v, ", err)
+		t.Errorf("LoadBalancer.GetGenericInfo returned %+v", err)
 	}
 
 	expected := &GenericInfo{
@@ -214,7 +214,7 @@ func TestLoadBalancerHandler_ListForwardingRules(t *testing.T) {
 	list, err := client.LoadBalancer.ListForwardingRules(ctx, 12345)
 
 	if err != nil {
-		t.Errorf("LoadBalancer.ListForwardingRules returned %+v, ", err)
+		t.Errorf("LoadBalancer.ListForwardingRules returned %+v", err)
 	}
 
 	expected := &ForwardingRules{ForwardRuleList: []ForwardingRule{{
@@ -241,7 +241,7 @@ func TestLoadBalancerHandler_DeleteForwardingRule(t *testing.T) {
 	err := client.LoadBalancer.DeleteForwardingRule(ctx, 12345, "abcde1234")
 
 	if err != nil {
-		t.Errorf("LoadBalancer.DeleteForwardingRule returned %+v, ", err)
+		t.Errorf("LoadBalancer.DeleteForwardingRule returned %+v", err)
 	}
 }
 
@@ -262,7 +262,7 @@ func TestLoadBalancerHandler_CreateForwardingRule(t *testing.T) {
 	}
 	ruleID, err := client.LoadBalancer.CreateForwardingRule(ctx, 123, rule)
 	if err != nil {
-		t.Errorf("LoadBalancer.CreateForwardingRule returned %+v, ", err)
+		t.Errorf("LoadBalancer.CreateForwardingRule returned %+v", err)
 	}
 
 	expected := &ForwardingRule{
