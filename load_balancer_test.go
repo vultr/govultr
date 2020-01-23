@@ -172,6 +172,6 @@ func TestLoadBalancerHandler_SetHealthCheck(t *testing.T) {
 	err := client.LoadBalancer.SetHealthCheck(ctx, 12345, health)
 
 	if err != nil {
-		t.Errorf("LoadBalancer.SetHealthCheck returned %+v, ", err)
+		t.Errorf("LoadBalancer.SetHealthCheck returned %+v", err)
 	}
 }
