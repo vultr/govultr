@@ -185,12 +185,10 @@ func TestLoadBalancerHandler_GetGenericInfo(t *testing.T) {
 		fmt.Fprintf(writer, response)
 	})
 
-
-
 	info, err := client.LoadBalancer.GetGenericInfo(ctx, 12345)
 
 	if err != nil {
-		t.Errorf("LoadBalancer.GetGenericInfo returned %+v, ", err)
+		t.Errorf("LoadBalancer.GetGenericInfo returned %+v ", err)
 	}
 
 	expected := &GenericInfo{
@@ -201,4 +199,5 @@ func TestLoadBalancerHandler_GetGenericInfo(t *testing.T) {
 
 	if !reflect.DeepEqual(info, expected) {
 		t.Errorf("LoadBalancer.GetGenericInfo returned %+v, expected %+v", info, expected)
-	}}
+	}
+}
