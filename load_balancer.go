@@ -19,6 +19,9 @@ type LoadBalancerService interface {
 	GetHealthCheck(ctx context.Context, ID int) (*HealthCheck, error)
 	SetHealthCheck(ctx context.Context, ID int, healthConfig *HealthCheck) error
 	GetGenericInfo(ctx context.Context, ID int) (*GenericInfo, error)
+	ListForwardingRules(ctx context.Context, ID int) (*ForwardingRules, error)
+	DeleteForwardingRule(ctx context.Context, ID int, RuleID string) error
+	CreateForwardingRule(ctx context.Context, ID int, rule *ForwardingRule) (*ForwardingRule, error)
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -66,12 +69,25 @@ type CookieName struct {
 	CookieName string `json:"cookie_name"`
 }
 
+// ForwardingRules represent a list of forwarding rules
+type ForwardingRules struct {
+	ForwardRuleList []ForwardingRule `json:"forward_rule_list"`
+}
+
+// ForwardingRule represent a single forwarding rule
+type ForwardingRule struct {
+	RuleID           string `json:"RULEID,omitempty"`
+	FrontendProtocol string `json:"frontend_protocol,omitempty"`
+	FrontendPort     int    `json:"frontend_port,omitempty"`
+	BackendProtocol  string `json:"backend_protocol,omitempty"`
+	BackendPort      int    `json:"backend_port,omitempty"`
+}
+
 // List all load balancer subscriptions on the current account.
 func (l *LoadBalancerHandler) List(ctx context.Context) ([]LoadBalancers, error) {
 	uri := "/v1/loadbalancer/list"
 
 	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +95,6 @@ func (l *LoadBalancerHandler) List(ctx context.Context) ([]LoadBalancers, error)
 	var lbList []LoadBalancers
 
 	err = l.client.DoWithContext(ctx, req, &lbList)
-
 	if err != nil {
 		return nil, err
 	}
@@ -96,13 +111,11 @@ func (l *LoadBalancerHandler) Delete(ctx context.Context, ID int) error {
 	}
 
 	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
-
 	if err != nil {
 		return err
 	}
 
 	err = l.client.DoWithContext(ctx, req, nil)
-
 	if err != nil {
 		return err
 	}
@@ -120,13 +133,11 @@ func (l *LoadBalancerHandler) SetLabel(ctx context.Context, ID int, label string
 	}
 
 	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
-
 	if err != nil {
 		return err
 	}
 
 	err = l.client.DoWithContext(ctx, req, nil)
-
 	if err != nil {
 		return nil
 	}
@@ -139,7 +150,6 @@ func (l *LoadBalancerHandler) AttachedInstances(ctx context.Context, ID int) (*I
 	uri := "/v1/loadbalancer/instance_list"
 
 	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +161,6 @@ func (l *LoadBalancerHandler) AttachedInstances(ctx context.Context, ID int) (*I
 	var instances InstanceList
 
 	err = l.client.DoWithContext(ctx, req, &instances)
-
 	if err != nil {
 		return nil, err
 	}
@@ -169,13 +178,11 @@ func (l *LoadBalancerHandler) AttachInstance(ctx context.Context, ID, backendNod
 	}
 
 	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
-
 	if err != nil {
 		return err
 	}
 
 	err = l.client.DoWithContext(ctx, req, nil)
-
 	if err != nil {
 		return err
 	}
@@ -193,13 +200,11 @@ func (l *LoadBalancerHandler) DetachInstance(ctx context.Context, ID, backendNod
 	}
 
 	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
-
 	if err != nil {
 		return err
 	}
 
 	err = l.client.DoWithContext(ctx, req, nil)
-
 	if err != nil {
 		return err
 	}
@@ -212,7 +217,6 @@ func (l *LoadBalancerHandler) GetHealthCheck(ctx context.Context, ID int) (*Heal
 	uri := "/v1/loadbalancer/health_check_info"
 
 	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, err
 	}
@@ -223,7 +227,6 @@ func (l *LoadBalancerHandler) GetHealthCheck(ctx context.Context, ID int) (*Heal
 
 	var healthCheck HealthCheck
 	err = l.client.DoWithContext(ctx, req, &healthCheck)
-
 	if err != nil {
 		return nil, err
 	}
@@ -270,13 +273,11 @@ func (l *LoadBalancerHandler) SetHealthCheck(ctx context.Context, ID int, health
 	}
 
 	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
-
 	if err != nil {
 		return err
 	}
 
 	err = l.client.DoWithContext(ctx, req, nil)
-
 	if err != nil {
 		return err
 	}
@@ -289,7 +290,6 @@ func (l *LoadBalancerHandler) GetGenericInfo(ctx context.Context, ID int) (*Gene
 	uri := "/v1/loadbalancer/generic_info"
 
 	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, err
 	}
@@ -301,10 +301,81 @@ func (l *LoadBalancerHandler) GetGenericInfo(ctx context.Context, ID int) (*Gene
 	var info GenericInfo
 
 	err = l.client.DoWithContext(ctx, req, &info)
-
 	if err != nil {
 		return nil, err
 	}
 
 	return &info, err
+}
+
+// ListForwardingRules lists all forwarding rules for a load balancer subscription
+func (l *LoadBalancerHandler) ListForwardingRules(ctx context.Context, ID int) (*ForwardingRules, error) {
+	uri := "v1/loadbalancer/forward_rule_list"
+
+	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", strconv.Itoa(ID))
+	req.URL.RawQuery = q.Encode()
+
+	var frList ForwardingRules
+
+	err = l.client.DoWithContext(ctx, req, &frList)
+	if err != nil {
+		return nil, err
+	}
+
+	return &frList, nil
+}
+
+// DeleteForwardingRule removes a forwarding rule from a load balancer subscription
+func (l *LoadBalancerHandler) DeleteForwardingRule(ctx context.Context, ID int, RuleID string) error {
+	uri := "/v1/loadbalancer/forward_rule_delete"
+
+	values := url.Values{
+		"SUBID":  {strconv.Itoa(ID)},
+		"RULEID": {RuleID},
+	}
+
+	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
+	if err != nil {
+		return err
+	}
+
+	err = l.client.DoWithContext(ctx, req, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// CreateForwardingRule will create a new forwarding rule for your load balancer subscription.
+// Note the RuleID will be returned in the ForwardingRule struct
+func (l *LoadBalancerHandler) CreateForwardingRule(ctx context.Context, ID int, rule *ForwardingRule) (*ForwardingRule, error) {
+	uri := "/v1/loadbalancer/forward_rule_create"
+
+	values := url.Values{
+		"SUBID":             {strconv.Itoa(ID)},
+		"frontend_protocol": {rule.FrontendProtocol},
+		"backend_protocol":  {rule.BackendProtocol},
+		"frontend_port":     {strconv.Itoa(rule.FrontendPort)},
+		"backend_port":      {strconv.Itoa(rule.BackendPort)},
+	}
+
+	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
+	if err != nil {
+		return nil, err
+	}
+
+	var fr ForwardingRule
+	err = l.client.DoWithContext(ctx, req, &fr)
+	if err != nil {
+		return nil, err
+	}
+
+	return &fr, nil
 }
