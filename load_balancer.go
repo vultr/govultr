@@ -22,6 +22,7 @@ type LoadBalancerService interface {
 	ListForwardingRules(ctx context.Context, ID int) (*ForwardingRules, error)
 	DeleteForwardingRule(ctx context.Context, ID int, RuleID string) error
 	CreateForwardingRule(ctx context.Context, ID int, rule *ForwardingRule) (*ForwardingRule, error)
+	GetFullConfig(ctx context.Context, ID int) (*LBConfig, error)
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -81,6 +82,15 @@ type ForwardingRule struct {
 	FrontendPort     int    `json:"frontend_port,omitempty"`
 	BackendProtocol  string `json:"backend_protocol,omitempty"`
 	BackendPort      int    `json:"backend_port,omitempty"`
+}
+
+// LBConfig represents the full config with all components of a load balancer
+type LBConfig struct {
+	GenericInfo `json:"generic_info"`
+	HealthCheck `json:"health_checks_info"`
+	SSLInfo     bool `json:"ssl_info"`
+	ForwardingRules
+	InstanceList
 }
 
 // List all load balancer subscriptions on the current account.
@@ -378,4 +388,26 @@ func (l *LoadBalancerHandler) CreateForwardingRule(ctx context.Context, ID int, 
 	}
 
 	return &fr, nil
+}
+
+// GetFullConfig retrieves the entire configuration of a load balancer subscription.
+func (l *LoadBalancerHandler) GetFullConfig(ctx context.Context, ID int) (*LBConfig, error) {
+	uri := "/v1/loadbalancer/conf_info"
+
+	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", strconv.Itoa(ID))
+	req.URL.RawQuery = q.Encode()
+
+	var lbConfig LBConfig
+	err = l.client.DoWithContext(ctx, req, &lbConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	return &lbConfig, nil
 }
