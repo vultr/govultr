@@ -318,3 +318,26 @@ func TestLoadBalancerHandler_GetFullConfig(t *testing.T) {
 		t.Errorf("LoadBalancer.GetFullConfigreturned %+v, expected %+v", config, expected)
 	}
 }
+
+func TestLoadBalancerHandler_HasSSL(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/loadbalancer/ssl_info", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"has_ssl":true}`
+		fmt.Fprintf(writer, response)
+	})
+
+	ssl, err := client.LoadBalancer.HasSSL(ctx, 123)
+	if err != nil {
+		t.Errorf("LoadBalancer.HasSSL returned %+v", err)
+	}
+
+	expected := &struct {
+		SSLInfo bool `json:"has_ssl"`
+	}{SSLInfo: true}
+
+	if !reflect.DeepEqual(ssl, expected) {
+		t.Errorf("LoadBalancer.HasSSL returned %+v, expected %+v", ssl, expected)
+	}
+}
