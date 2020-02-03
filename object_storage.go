@@ -4,18 +4,19 @@ import (
 	"context"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 // ObjectStorageService is the interface to interact with the object storage endpoints on the Vultr API.
 // Link: https://www.vultr.com/api/#objectstorage
 type ObjectStorageService interface {
-	Create()
-	Delete(ctx context.Context, id string) error
-	SetLabel(ctx context.Context, id, label string) error
+	Create(ctx context.Context, objectStoreClusterID int, Label string) (*struct{ ID int `json:"SUBID"` }, error)
+	Delete(ctx context.Context, id int) error
+	SetLabel(ctx context.Context, id int, label string) error
 	List(ctx context.Context, options *ObjectListOptions) ([]ObjectStorage, error)
-	Get(ctx context.Context, id string) (*ObjectStorage, error)
+	Get(ctx context.Context, id int) (*ObjectStorage, error)
 	ListCluster(ctx context.Context) ([]ObjectStorageCluster, error)
-	RegenerateKeys(ctx context.Context, id, s3AccessKey string) (*S3Keys, error)
+	RegenerateKeys(ctx context.Context, id int, s3AccessKey string) (*S3Keys, error)
 }
 
 // ObjectStorageServiceHandler handles interaction with the firewall rule methods for the Vultr API.
@@ -25,10 +26,10 @@ type ObjectStorageServiceHandler struct {
 
 // ObjectStorage represents a Vultr Object Storage subscription.
 type ObjectStorage struct {
-	ID                   string `json:"SUBID"`
+	ID                   int    `json:"SUBID"`
 	DateCreated          string `json:"date_created"`
-	ObjectStoreClusterID string `json:"OBJSTORECLUSTERID"`
-	DCID                 string
+	ObjectStoreClusterID int    `json:"OBJSTORECLUSTERID"`
+	RegionID             int    `json:"DCID"`
 	Location             string
 	Label                string
 	Status               string
@@ -37,8 +38,8 @@ type ObjectStorage struct {
 
 // ObjectStorageCluster represents a Vultr Object Storage cluster.
 type ObjectStorageCluster struct {
-	ObjectStoreClusterID string `json:"OBJSTORECLUSTERID"`
-	DCID                 string
+	ObjectStoreClusterID int `json:"OBJSTORECLUSTERID"`
+	RegionID             int `json:"DCID"`
 	Location             string
 	Hostname             string
 	Deploy               string
@@ -54,21 +55,42 @@ type S3Keys struct {
 // ObjectListOptions are your optional params you have available to list data.
 type ObjectListOptions struct {
 	IncludeS3 bool
-	// todo bug in the API with labels - If you have two `object storages` with the same label you can not use the label on them
-	Label string
+	Label     string
 }
 
 // Create an object storage subscription
-func (o *ObjectStorageServiceHandler) Create() {
-	panic("implement me")
+func (o *ObjectStorageServiceHandler) Create(ctx context.Context, objectStoreClusterID int, Label string) (*struct{ ID int `json:"SUBID"` }, error) {
+	uri := "/v1/objectstorage/create"
+
+	values := url.Values{
+		"OBJSTORECLUSTERID": {strconv.Itoa(objectStoreClusterID)},
+		"label":             {Label},
+	}
+
+	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, values)
+
+	if err != nil {
+		return nil, err
+	}
+
+	id := struct {
+		ID int `json:"SUBID"`
+	}{}
+
+	err = o.client.DoWithContext(ctx, req, &id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &id, nil
 }
 
 // Delete an object storage subscription.
-func (o *ObjectStorageServiceHandler) Delete(ctx context.Context, id string) error {
+func (o *ObjectStorageServiceHandler) Delete(ctx context.Context, id int) error {
 	uri := "/v1/objectstorage/destroy"
 
 	values := url.Values{
-		"SUBID": {id},
+		"SUBID": {strconv.Itoa(id)},
 	}
 
 	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -87,11 +109,11 @@ func (o *ObjectStorageServiceHandler) Delete(ctx context.Context, id string) err
 }
 
 // SetLabel of an object storage subscription.
-func (o *ObjectStorageServiceHandler) SetLabel(ctx context.Context, id, label string) error {
+func (o *ObjectStorageServiceHandler) SetLabel(ctx context.Context, id int, label string) error {
 	uri := "/v1/objectstorage/label_set"
 
 	values := url.Values{
-		"SUBID": {id},
+		"SUBID": {strconv.Itoa(id)},
 		"label": {label},
 	}
 
@@ -153,7 +175,7 @@ func (o *ObjectStorageServiceHandler) List(ctx context.Context, options *ObjectL
 }
 
 // Get returns a specified object storage by the provided ID
-func (o *ObjectStorageServiceHandler) Get(ctx context.Context, id string) (*ObjectStorage, error) {
+func (o *ObjectStorageServiceHandler) Get(ctx context.Context, id int) (*ObjectStorage, error) {
 	uri := "/v1/objectstorage/list"
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -162,9 +184,9 @@ func (o *ObjectStorageServiceHandler) Get(ctx context.Context, id string) (*Obje
 		return nil, err
 	}
 
-	if id != "" {
+	if id != 0 {
 		q := req.URL.Query()
-		q.Add("SUBID", id)
+		q.Add("SUBID", strconv.Itoa(id))
 		req.URL.RawQuery = q.Encode()
 	}
 
@@ -207,11 +229,11 @@ func (o *ObjectStorageServiceHandler) ListCluster(ctx context.Context) ([]Object
 }
 
 // RegenerateKeys of the S3 API Keys for an object storage subscription
-func (o *ObjectStorageServiceHandler) RegenerateKeys(ctx context.Context, id, s3AccessKey string) (*S3Keys, error) {
+func (o *ObjectStorageServiceHandler) RegenerateKeys(ctx context.Context, id int, s3AccessKey string) (*S3Keys, error) {
 	uri := "/v1/objectstorage/s3key_regenerate"
 
 	values := url.Values{
-		"SUBID":         {id},
+		"SUBID":         {strconv.Itoa(id)},
 		"s3_access_key": {s3AccessKey},
 	}
 
