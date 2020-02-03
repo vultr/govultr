@@ -303,7 +303,7 @@ func TestLoadBalancerHandler_GetFullConfig(t *testing.T) {
 			UnhealthyThreshold: 5,
 			HealthyThreshold:   5,
 		},
-		SSLInfo: false,
+		SSLInfo: true,
 		ForwardingRules: ForwardingRules{ForwardRuleList: []ForwardingRule{{
 			RuleID:           "b06ce4cd520eea15",
 			FrontendProtocol: "http",
