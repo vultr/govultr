@@ -23,6 +23,7 @@ type LoadBalancerService interface {
 	DeleteForwardingRule(ctx context.Context, ID int, RuleID string) error
 	CreateForwardingRule(ctx context.Context, ID int, rule *ForwardingRule) (*ForwardingRule, error)
 	GetFullConfig(ctx context.Context, ID int) (*LBConfig, error)
+	HasSSL(ctx context.Context, ID int) (*struct{ SSLInfo bool `json:"has_ssl"` }, error)
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -88,7 +89,7 @@ type ForwardingRule struct {
 type LBConfig struct {
 	GenericInfo `json:"generic_info"`
 	HealthCheck `json:"health_checks_info"`
-	SSLInfo     bool `json:"ssl_info"`
+	SSLInfo     bool `json:"has_ssl"`
 	ForwardingRules
 	InstanceList
 }
@@ -410,4 +411,28 @@ func (l *LoadBalancerHandler) GetFullConfig(ctx context.Context, ID int) (*LBCon
 	}
 
 	return &lbConfig, nil
+}
+
+// HasSSL retrieves whether or not your load balancer subscription has an SSL cert attached.
+func (l *LoadBalancerHandler) HasSSL(ctx context.Context, ID int) (*struct{ SSLInfo bool `json:"has_ssl"` }, error) {
+	uri := "/v1/loadbalancer/ssl_info"
+
+	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("SUBID", strconv.Itoa(ID))
+	req.URL.RawQuery = q.Encode()
+
+	ssl := &struct {
+		SSLInfo bool `json:"has_ssl"`
+	}{}
+	err = l.client.DoWithContext(ctx, req, ssl)
+	if err != nil {
+		return nil, err
+	}
+
+	return ssl, nil
 }
