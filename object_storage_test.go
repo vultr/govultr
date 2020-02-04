@@ -48,7 +48,6 @@ func TestObjectStorageServiceHandler_Get(t *testing.T) {
 	setup()
 	defer teardown()
 	mux.HandleFunc("/v1/objectstorage/list", func(writer http.ResponseWriter, request *http.Request) {
-		//response := `{"1314217": {"SUBID": 1314217,"date_created": "2019-04-17 17:33:00","OBJSTORECLUSTERID": 1,"DCID": 1,"location": "New Jersey","label": "object1","status": "active","s3_hostname": "nj1.vultrobjects.com","s3_access_key": "abc1234","s3_secret_key": "def5678"}}`
 		response := `{"SUBID": 1314217,"date_created": "2019-04-17 17:33:00","OBJSTORECLUSTERID": 1,"DCID": 1,"location": "New Jersey","label": "object1","status": "active","s3_hostname": "nj1.vultrobjects.com","s3_access_key": "abc1234","s3_secret_key": "def5678"}`
 		fmt.Fprint(writer, response)
 	})
