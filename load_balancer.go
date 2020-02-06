@@ -2,6 +2,7 @@ package govultr
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -24,6 +25,7 @@ type LoadBalancerService interface {
 	CreateForwardingRule(ctx context.Context, ID int, rule *ForwardingRule) (*ForwardingRule, error)
 	GetFullConfig(ctx context.Context, ID int) (*LBConfig, error)
 	HasSSL(ctx context.Context, ID int) (*struct{ SSLInfo bool `json:"has_ssl"` }, error)
+	Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (int, error)
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -50,25 +52,26 @@ type InstanceList struct {
 
 // HealthCheck represents your health check configuration for your load balancer.
 type HealthCheck struct {
-	Protocol           string
-	Port               int
-	Path               string
-	CheckInterval      int `json:"check_interval"`
-	ResponseTimeout    int `json:"response_timeout"`
-	UnhealthyThreshold int `json:"unhealthy_threshold"`
-	HealthyThreshold   int `json:"healthy_threshold"`
+	Protocol           string `json:"protocol,omitempty"`
+	Port               int    `json:"port,omitempty"`
+	Path               string `json:"path,omitempty"`
+	CheckInterval      int    `json:"check_interval,omitempty"`
+	ResponseTimeout    int    `json:"response_timeout,omitempty"`
+	UnhealthyThreshold int    `json:"unhealthy_threshold,omitempty"`
+	HealthyThreshold   int    `json:"healthy_threshold,omitempty"`
 }
 
 // GenericInfo represents generic configuration of your load balancer
 type GenericInfo struct {
-	BalancingAlgorithm string     `json:"balancing_algorithm"`
-	SSLRedirect        bool       `json:"ssl_redirect"`
-	StickySessions     CookieName `json:"sticky_sessions"`
+	BalancingAlgorithm string          `json:"balancing_algorithm"`
+	SSLRedirect        bool            `json:"ssl_redirect"`
+	StickySessions     *StickySessions `json:"sticky_sessions"`
 }
 
 // CookieName represents cookie for your load balancer
-type CookieName struct {
-	CookieName string `json:"cookie_name"`
+type StickySessions struct {
+	StickySessionsEnabled string `json:"sticky_sessions"`
+	CookieName            string `json:"cookie_name"`
 }
 
 // ForwardingRules represent a list of forwarding rules
@@ -435,4 +438,56 @@ func (l *LoadBalancerHandler) HasSSL(ctx context.Context, ID int) (*struct{ SSLI
 	}
 
 	return ssl, nil
+}
+
+func (l *LoadBalancerHandler) Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (int, error) {
+	uri := "/v1/loadbalancer/create"
+
+	//todo validate all of the
+
+	values := url.Values{
+		"DCID": {strconv.Itoa(region)},
+	}
+
+	// Check generic info struct
+	if genericInfo != nil {
+		if genericInfo.SSLRedirect == true {
+			values.Add("config_ssl_redirect", "true")
+		}
+
+		if genericInfo.BalancingAlgorithm != "" {
+			values.Add("algorithm", genericInfo.BalancingAlgorithm)
+		}
+
+		if genericInfo.StickySessions != nil {
+			if genericInfo.StickySessions.StickySessionsEnabled == "on" {
+				values.Add("sticky_sessions", genericInfo.StickySessions.StickySessionsEnabled)
+				values.Add("cookie_name", genericInfo.StickySessions.CookieName)
+			}
+		}
+	}
+
+	if healthCheck != nil {
+		t, _ := json.Marshal(healthCheck)
+		values.Add("health_check", string(t))
+	}
+
+	if rules != nil {
+		t, e := json.Marshal(rules)
+		if e != nil {
+			panic(e)
+		}
+		values.Add("forwarding_rules", string(t))
+	}
+
+	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
+	if err != nil {
+		return 0, err
+	}
+
+
+	//todo clean up the err and res here
+	l.client.DoWithContext(ctx, req, nil)
+
+	return 0, nil
 }
