@@ -25,7 +25,7 @@ type LoadBalancerService interface {
 	CreateForwardingRule(ctx context.Context, ID int, rule *ForwardingRule) (*ForwardingRule, error)
 	GetFullConfig(ctx context.Context, ID int) (*LBConfig, error)
 	HasSSL(ctx context.Context, ID int) (*struct{ SSLInfo bool `json:"has_ssl"` }, error)
-	Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (int, error)
+	Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (*LoadBalancers, error)
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -35,14 +35,14 @@ type LoadBalancerHandler struct {
 
 // LoadBalancers represent a basic structure of a load balancer
 type LoadBalancers struct {
-	ID          int    `json:"SUBID"`
-	DateCreated string `json:"date_created"`
-	RegionID    int    `json:"DCID"`
-	Location    string
-	Label       string
-	Status      string
-	IPV4        string `json:"main_ipv4"`
-	IPV6        string `json:"main_ipv6"`
+	ID          int    `json:"SUBID,omitempty"`
+	DateCreated string `json:"date_created,omitempty"`
+	RegionID    int    `json:"DCID,omitempty"`
+	Location    string `json:"location,omitempty"`
+	Label       string `json:"label,omitempty"`
+	Status      string `json:"status,omitempty"`
+	IPV4        string `json:"main_ipv4,omitempty"`
+	IPV6        string `json:"main_ipv6,omitempty"`
 }
 
 // InstanceList represents instances that attached to your load balancer
@@ -440,10 +440,8 @@ func (l *LoadBalancerHandler) HasSSL(ctx context.Context, ID int) (*struct{ SSLI
 	return ssl, nil
 }
 
-func (l *LoadBalancerHandler) Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (int, error) {
+func (l *LoadBalancerHandler) Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (*LoadBalancers, error) {
 	uri := "/v1/loadbalancer/create"
-
-	//todo validate all of the
 
 	values := url.Values{
 		"DCID": {strconv.Itoa(region)},
@@ -482,12 +480,14 @@ func (l *LoadBalancerHandler) Create(ctx context.Context, region int, genericInf
 
 	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
+	var lb LoadBalancers
+	err = l.client.DoWithContext(ctx, req, &lb)
+	if err != nil {
+		return nil, err
+	}
 
-	//todo clean up the err and res here
-	l.client.DoWithContext(ctx, req, nil)
-
-	return 0, nil
+	return &lb, nil
 }
