@@ -26,6 +26,7 @@ type LoadBalancerService interface {
 	GetFullConfig(ctx context.Context, ID int) (*LBConfig, error)
 	HasSSL(ctx context.Context, ID int) (*struct{ SSLInfo bool `json:"has_ssl"` }, error)
 	Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (*LoadBalancers, error)
+	UpdateGenericInfo(ctx context.Context, ID int, label string, genericInfo *GenericInfo) error
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -64,7 +65,7 @@ type HealthCheck struct {
 // GenericInfo represents generic configuration of your load balancer
 type GenericInfo struct {
 	BalancingAlgorithm string          `json:"balancing_algorithm"`
-	SSLRedirect        bool            `json:"ssl_redirect"`
+	SSLRedirect        *bool           `json:"ssl_redirect,omitempty"`
 	StickySessions     *StickySessions `json:"sticky_sessions"`
 }
 
@@ -440,6 +441,7 @@ func (l *LoadBalancerHandler) HasSSL(ctx context.Context, ID int) (*struct{ SSLI
 	return ssl, nil
 }
 
+// Create a load balancer
 func (l *LoadBalancerHandler) Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (*LoadBalancers, error) {
 	uri := "/v1/loadbalancer/create"
 
@@ -449,7 +451,7 @@ func (l *LoadBalancerHandler) Create(ctx context.Context, region int, genericInf
 
 	// Check generic info struct
 	if genericInfo != nil {
-		if genericInfo.SSLRedirect == true {
+		if *genericInfo.SSLRedirect == true {
 			values.Add("config_ssl_redirect", "true")
 		}
 
@@ -490,4 +492,44 @@ func (l *LoadBalancerHandler) Create(ctx context.Context, region int, genericInf
 	}
 
 	return &lb, nil
+}
+
+// UpdateGenericInfo will update portions of your generic info section
+func (l *LoadBalancerHandler) UpdateGenericInfo(ctx context.Context, ID int, label string, genericInfo *GenericInfo) error {
+	uri := "/v1/loadbalancer/generic_update"
+
+	values := url.Values{
+		"SUBID": {strconv.Itoa(ID)},
+	}
+
+	if label != "" {
+		values.Add("label", label)
+	}
+
+	if genericInfo != nil {
+		if genericInfo.StickySessions != nil {
+			values.Add("sticky_sessions", genericInfo.StickySessions.StickySessionsEnabled)
+			values.Add("cookie_name", genericInfo.StickySessions.CookieName)
+		}
+
+		if genericInfo.SSLRedirect != nil {
+			values.Add("ssl_redirect", strconv.FormatBool(*genericInfo.SSLRedirect))
+		}
+
+		if genericInfo.BalancingAlgorithm != "" {
+			values.Add("balancing_algorithm", genericInfo.BalancingAlgorithm)
+		}
+	}
+
+	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
+	if err != nil {
+		return err
+	}
+
+	err = l.client.DoWithContext(ctx, req, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

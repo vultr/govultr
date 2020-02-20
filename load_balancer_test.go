@@ -191,9 +191,10 @@ func TestLoadBalancerHandler_GetGenericInfo(t *testing.T) {
 		t.Errorf("LoadBalancer.GetGenericInfo returned %+v", err)
 	}
 
+	redirect := false
 	expected := &GenericInfo{
 		BalancingAlgorithm: "roundrobin",
-		SSLRedirect:        false,
+		SSLRedirect:        &redirect,
 		StickySessions: &StickySessions{
 			CookieName: "test",
 		},
@@ -290,10 +291,11 @@ func TestLoadBalancerHandler_GetFullConfig(t *testing.T) {
 		t.Errorf("LoadBalancer.GetFullConfig returned %+v", err)
 	}
 
+	redirect := true
 	expected := &LBConfig{
 		GenericInfo: GenericInfo{
 			BalancingAlgorithm: "roundrobin",
-			SSLRedirect:        true,
+			SSLRedirect:        &redirect,
 			StickySessions:     &StickySessions{CookieName: "cookiename"},
 		},
 		HealthCheck: HealthCheck{
@@ -353,9 +355,10 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		fmt.Fprintf(writer, response)
 	})
 
+	redirect := true
 	info := GenericInfo{
 		BalancingAlgorithm: "roundrobin",
-		SSLRedirect:        true,
+		SSLRedirect:        &redirect,
 		StickySessions: &StickySessions{
 			StickySessionsEnabled: "on",
 			CookieName:            "cookie",
@@ -392,5 +395,29 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 
 	if !reflect.DeepEqual(lb, &expected) {
 		t.Errorf("LoadBalancer.Create returned %+v, expected %+v", lb, expected)
+	}
+}
+
+func TestLoadBalancerHandler_UpdateGenericInfo(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/loadbalancer/generic_update", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	redirect := true
+	info := GenericInfo{
+		BalancingAlgorithm: "roundrobin",
+		SSLRedirect:        &redirect,
+		StickySessions: &StickySessions{
+			StickySessionsEnabled: "on",
+			CookieName:            "cookie_name",
+		},
+	}
+	err := client.LoadBalancer.UpdateGenericInfo(ctx, 12345, "label", &info)
+
+	if err != nil {
+		t.Errorf("LoadBalancer.UpdateGenericInfo returned %+v", err)
 	}
 }
