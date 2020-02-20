@@ -194,7 +194,9 @@ func TestLoadBalancerHandler_GetGenericInfo(t *testing.T) {
 	expected := &GenericInfo{
 		BalancingAlgorithm: "roundrobin",
 		SSLRedirect:        false,
-		StickySessions:     CookieName{CookieName: "test"},
+		StickySessions: &StickySessions{
+			CookieName: "test",
+		},
 	}
 
 	if !reflect.DeepEqual(info, expected) {
@@ -292,7 +294,7 @@ func TestLoadBalancerHandler_GetFullConfig(t *testing.T) {
 		GenericInfo: GenericInfo{
 			BalancingAlgorithm: "roundrobin",
 			SSLRedirect:        true,
-			StickySessions:     CookieName{CookieName: "cookiename"},
+			StickySessions:     &StickySessions{CookieName: "cookiename"},
 		},
 		HealthCheck: HealthCheck{
 			Protocol:           "http",
@@ -339,5 +341,56 @@ func TestLoadBalancerHandler_HasSSL(t *testing.T) {
 
 	if !reflect.DeepEqual(ssl, expected) {
 		t.Errorf("LoadBalancer.HasSSL returned %+v, expected %+v", ssl, expected)
+	}
+}
+
+func TestLoadBalancerHandler_Create(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/loadbalancer/create", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"SUBID": 1314840}`
+		fmt.Fprintf(writer, response)
+	})
+
+	info := GenericInfo{
+		BalancingAlgorithm: "roundrobin",
+		SSLRedirect:        true,
+		StickySessions: &StickySessions{
+			StickySessionsEnabled: "on",
+			CookieName:            "cookie",
+		},
+	}
+
+	health := HealthCheck{
+		Protocol:           "http",
+		Port:               80,
+		Path:               "/",
+		CheckInterval:      5,
+		ResponseTimeout:    5,
+		UnhealthyThreshold: 5,
+		HealthyThreshold:   5,
+	}
+
+	rules := []ForwardingRule{
+		{
+			FrontendProtocol: "http",
+			FrontendPort:     80,
+			BackendProtocol:  "http",
+			BackendPort:      80,
+		},
+	}
+
+	lb, err := client.LoadBalancer.Create(ctx, 1, &info, &health, rules)
+	if err != nil {
+		t.Errorf("LoadBalancer.Create returned %+v", err)
+	}
+
+	expected := LoadBalancers{
+		ID: 1314840,
+	}
+
+	if !reflect.DeepEqual(lb, &expected) {
+		t.Errorf("LoadBalancer.Create returned %+v, expected %+v", lb, expected)
 	}
 }

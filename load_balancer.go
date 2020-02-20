@@ -2,6 +2,7 @@ package govultr
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -24,6 +25,7 @@ type LoadBalancerService interface {
 	CreateForwardingRule(ctx context.Context, ID int, rule *ForwardingRule) (*ForwardingRule, error)
 	GetFullConfig(ctx context.Context, ID int) (*LBConfig, error)
 	HasSSL(ctx context.Context, ID int) (*struct{ SSLInfo bool `json:"has_ssl"` }, error)
+	Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (*LoadBalancers, error)
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -33,14 +35,14 @@ type LoadBalancerHandler struct {
 
 // LoadBalancers represent a basic structure of a load balancer
 type LoadBalancers struct {
-	ID          int    `json:"SUBID"`
-	DateCreated string `json:"date_created"`
-	RegionID    int    `json:"DCID"`
-	Location    string
-	Label       string
-	Status      string
-	IPV4        string `json:"main_ipv4"`
-	IPV6        string `json:"main_ipv6"`
+	ID          int    `json:"SUBID,omitempty"`
+	DateCreated string `json:"date_created,omitempty"`
+	RegionID    int    `json:"DCID,omitempty"`
+	Location    string `json:"location,omitempty"`
+	Label       string `json:"label,omitempty"`
+	Status      string `json:"status,omitempty"`
+	IPV4        string `json:"main_ipv4,omitempty"`
+	IPV6        string `json:"main_ipv6,omitempty"`
 }
 
 // InstanceList represents instances that attached to your load balancer
@@ -50,25 +52,26 @@ type InstanceList struct {
 
 // HealthCheck represents your health check configuration for your load balancer.
 type HealthCheck struct {
-	Protocol           string
-	Port               int
-	Path               string
-	CheckInterval      int `json:"check_interval"`
-	ResponseTimeout    int `json:"response_timeout"`
-	UnhealthyThreshold int `json:"unhealthy_threshold"`
-	HealthyThreshold   int `json:"healthy_threshold"`
+	Protocol           string `json:"protocol,omitempty"`
+	Port               int    `json:"port,omitempty"`
+	Path               string `json:"path,omitempty"`
+	CheckInterval      int    `json:"check_interval,omitempty"`
+	ResponseTimeout    int    `json:"response_timeout,omitempty"`
+	UnhealthyThreshold int    `json:"unhealthy_threshold,omitempty"`
+	HealthyThreshold   int    `json:"healthy_threshold,omitempty"`
 }
 
 // GenericInfo represents generic configuration of your load balancer
 type GenericInfo struct {
-	BalancingAlgorithm string     `json:"balancing_algorithm"`
-	SSLRedirect        bool       `json:"ssl_redirect"`
-	StickySessions     CookieName `json:"sticky_sessions"`
+	BalancingAlgorithm string          `json:"balancing_algorithm"`
+	SSLRedirect        bool            `json:"ssl_redirect"`
+	StickySessions     *StickySessions `json:"sticky_sessions"`
 }
 
 // CookieName represents cookie for your load balancer
-type CookieName struct {
-	CookieName string `json:"cookie_name"`
+type StickySessions struct {
+	StickySessionsEnabled string `json:"sticky_sessions"`
+	CookieName            string `json:"cookie_name"`
 }
 
 // ForwardingRules represent a list of forwarding rules
@@ -435,4 +438,56 @@ func (l *LoadBalancerHandler) HasSSL(ctx context.Context, ID int) (*struct{ SSLI
 	}
 
 	return ssl, nil
+}
+
+func (l *LoadBalancerHandler) Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (*LoadBalancers, error) {
+	uri := "/v1/loadbalancer/create"
+
+	values := url.Values{
+		"DCID": {strconv.Itoa(region)},
+	}
+
+	// Check generic info struct
+	if genericInfo != nil {
+		if genericInfo.SSLRedirect == true {
+			values.Add("config_ssl_redirect", "true")
+		}
+
+		if genericInfo.BalancingAlgorithm != "" {
+			values.Add("algorithm", genericInfo.BalancingAlgorithm)
+		}
+
+		if genericInfo.StickySessions != nil {
+			if genericInfo.StickySessions.StickySessionsEnabled == "on" {
+				values.Add("sticky_sessions", genericInfo.StickySessions.StickySessionsEnabled)
+				values.Add("cookie_name", genericInfo.StickySessions.CookieName)
+			}
+		}
+	}
+
+	if healthCheck != nil {
+		t, _ := json.Marshal(healthCheck)
+		values.Add("health_check", string(t))
+	}
+
+	if rules != nil {
+		t, e := json.Marshal(rules)
+		if e != nil {
+			panic(e)
+		}
+		values.Add("forwarding_rules", string(t))
+	}
+
+	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
+	if err != nil {
+		return nil, err
+	}
+
+	var lb LoadBalancers
+	err = l.client.DoWithContext(ctx, req, &lb)
+	if err != nil {
+		return nil, err
+	}
+
+	return &lb, nil
 }
