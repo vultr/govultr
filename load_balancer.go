@@ -42,8 +42,8 @@ type LoadBalancers struct {
 	Location    string `json:"location,omitempty"`
 	Label       string `json:"label,omitempty"`
 	Status      string `json:"status,omitempty"`
-	IPV4        string `json:"main_ipv4,omitempty"`
-	IPV6        string `json:"main_ipv6,omitempty"`
+	IPV4        string `json:"ipv4,omitempty"`
+	IPV6        string `json:"ipv6,omitempty"`
 }
 
 // InstanceList represents instances that attached to your load balancer
