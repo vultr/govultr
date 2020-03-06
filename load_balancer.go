@@ -48,7 +48,7 @@ type LoadBalancers struct {
 
 // InstanceList represents instances that attached to your load balancer
 type InstanceList struct {
-	InstanceList []string `json:"instance_list"`
+	InstanceList []int `json:"instance_list"`
 }
 
 // HealthCheck represents your health check configuration for your load balancer.

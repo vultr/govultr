@@ -75,7 +75,7 @@ func TestLoadBalancerHandler_AttachedInstances(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v1/loadbalancer/instance_list", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"instance_list": ["1234", "2341"]}`
+		response := `{"instance_list": [1234, 2341]}`
 		fmt.Fprintf(writer, response)
 	})
 
@@ -85,7 +85,7 @@ func TestLoadBalancerHandler_AttachedInstances(t *testing.T) {
 		t.Errorf("LoadBalancer.AttachedInstances returned %+v ", err)
 	}
 
-	expected := &InstanceList{InstanceList: []string{"1234", "2341"}}
+	expected := &InstanceList{InstanceList: []int{1234, 2341}}
 
 	if !reflect.DeepEqual(instanceList, expected) {
 		t.Errorf("LoadBalancer.AttachedInstances returned %+v, expected %+v", instanceList, expected)
@@ -282,7 +282,7 @@ func TestLoadBalancerHandler_GetFullConfig(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v1/loadbalancer/conf_info", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"generic_info":{"balancing_algorithm":"roundrobin","ssl_redirect":true,"sticky_sessions":{"cookie_name":"cookiename"}},"health_checks_info":{"protocol":"http","port":80,"path":"\/","check_interval":15,"response_timeout":5,"unhealthy_threshold":5,"healthy_threshold":5},"has_ssl":true,"forward_rule_list":[{"RULEID":"b06ce4cd520eea15","frontend_protocol":"http","frontend_port":80,"backend_protocol":"http","backend_port":80}],"instance_list":["1317615"]}`
+		response := `{"generic_info":{"balancing_algorithm":"roundrobin","ssl_redirect":true,"sticky_sessions":{"cookie_name":"cookiename"}},"health_checks_info":{"protocol":"http","port":80,"path":"\/","check_interval":15,"response_timeout":5,"unhealthy_threshold":5,"healthy_threshold":5},"has_ssl":true,"forward_rule_list":[{"RULEID":"b06ce4cd520eea15","frontend_protocol":"http","frontend_port":80,"backend_protocol":"http","backend_port":80}],"instance_list":[1317615]}`
 		fmt.Fprintf(writer, response)
 	})
 
@@ -315,7 +315,7 @@ func TestLoadBalancerHandler_GetFullConfig(t *testing.T) {
 			BackendProtocol:  "http",
 			BackendPort:      80,
 		}}},
-		InstanceList: InstanceList{InstanceList: []string{"1317615"}},
+		InstanceList: InstanceList{InstanceList: []int{1317615}},
 	}
 
 	if !reflect.DeepEqual(config, expected) {
