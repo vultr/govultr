@@ -28,7 +28,7 @@ type LoadBalancerService interface {
 	Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (*LoadBalancers, error)
 	UpdateGenericInfo(ctx context.Context, ID int, label string, genericInfo *GenericInfo) error
 	AddSSL(ctx context.Context, ID int, ssl *SSL) error
-	//RemoveSSL(ctx context.Context, ID int) error
+	RemoveSSL(ctx context.Context, ID int) error
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -567,5 +567,25 @@ func (l *LoadBalancerHandler) AddSSL(ctx context.Context, ID int, ssl *SSL) erro
 		return err
 	}
 
+	return nil
+}
+
+// RemoveSSL will remove an SSL certificate from a load balancer
+func (l *LoadBalancerHandler) RemoveSSL(ctx context.Context, ID int) error {
+	uri := "/v1/loadbalancer/ssl_remove"
+
+	values := url.Values{
+		"SUBID": {strconv.Itoa(ID)},
+	}
+
+	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
+	if err != nil {
+		return err
+	}
+
+	err = l.client.DoWithContext(ctx, req, nil)
+	if err != nil {
+		return err
+	}
 	return nil
 }
