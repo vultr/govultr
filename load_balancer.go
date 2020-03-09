@@ -27,6 +27,8 @@ type LoadBalancerService interface {
 	HasSSL(ctx context.Context, ID int) (*struct{ SSLInfo bool `json:"has_ssl"` }, error)
 	Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (*LoadBalancers, error)
 	UpdateGenericInfo(ctx context.Context, ID int, label string, genericInfo *GenericInfo) error
+	AddSSL(ctx context.Context, ID int, ssl *SSL) error
+	//RemoveSSL(ctx context.Context, ID int) error
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -96,6 +98,13 @@ type LBConfig struct {
 	SSLInfo     bool `json:"has_ssl"`
 	ForwardingRules
 	InstanceList
+}
+
+// SSL represents valid SSL config
+type SSL struct {
+	PrivateKey  string `json:"ssl_private_key"`
+	Certificate string `json:"ssl_certificate"`
+	Chain       string `json:"chain,omitempty"`
 }
 
 // List all load balancer subscriptions on the current account.
@@ -519,6 +528,33 @@ func (l *LoadBalancerHandler) UpdateGenericInfo(ctx context.Context, ID int, lab
 		if genericInfo.BalancingAlgorithm != "" {
 			values.Add("balancing_algorithm", genericInfo.BalancingAlgorithm)
 		}
+	}
+
+	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
+	if err != nil {
+		return err
+	}
+
+	err = l.client.DoWithContext(ctx, req, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// AddSSL will attach an SSL certificate to a given load balancer
+func (l *LoadBalancerHandler) AddSSL(ctx context.Context, ID int, ssl *SSL) error {
+	uri := "/v1/loadbalancer/ssl_add"
+
+	values := url.Values{
+		"SUBID":           {strconv.Itoa(ID)},
+		"ssl_private_key": {ssl.PrivateKey},
+		"ssl_certificate": {ssl.Certificate},
+	}
+
+	if ssl.Chain != "" {
+		values.Add("ssl_chain", ssl.Chain)
 	}
 
 	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
