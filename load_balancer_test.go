@@ -421,3 +421,39 @@ func TestLoadBalancerHandler_UpdateGenericInfo(t *testing.T) {
 		t.Errorf("LoadBalancer.UpdateGenericInfo returned %+v", err)
 	}
 }
+
+func TestLoadBalancerHandler_AddSSL (t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/loadbalancer/ssl_add", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+
+	ssl := &SSL{
+		PrivateKey:  "key",
+		Certificate: "crt",
+		Chain:       "chain",
+	}
+	err := client.LoadBalancer.AddSSL(ctx, 12345, ssl)
+
+	if err != nil {
+		t.Errorf("LoadBalancer.AddSSL returned %+v", err)
+	}
+}
+
+func TestLoadBalancerHandler_RemoveSSL (t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/loadbalancer/ssl_remove", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.LoadBalancer.RemoveSSL(ctx, 12345)
+
+	if err != nil {
+		t.Errorf("LoadBalancer.RemoveSSL returned %+v", err)
+	}
+}
