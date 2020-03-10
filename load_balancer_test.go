@@ -377,14 +377,20 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 
 	rules := []ForwardingRule{
 		{
-			FrontendProtocol: "http",
+			FrontendProtocol: "https",
 			FrontendPort:     80,
 			BackendProtocol:  "http",
 			BackendPort:      80,
 		},
 	}
 
-	lb, err := client.LoadBalancer.Create(ctx, 1, &info, &health, rules)
+	ssl := SSL{
+		PrivateKey:  "key",
+		Certificate: "cert",
+		Chain:       "chain",
+	}
+
+	lb, err := client.LoadBalancer.Create(ctx, 1, "label", &info, &health, rules, &ssl)
 	if err != nil {
 		t.Errorf("LoadBalancer.Create returned %+v", err)
 	}
@@ -422,14 +428,13 @@ func TestLoadBalancerHandler_UpdateGenericInfo(t *testing.T) {
 	}
 }
 
-func TestLoadBalancerHandler_AddSSL (t *testing.T) {
+func TestLoadBalancerHandler_AddSSL(t *testing.T) {
 	setup()
 	defer teardown()
 
 	mux.HandleFunc("/v1/loadbalancer/ssl_add", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
-
 
 	ssl := &SSL{
 		PrivateKey:  "key",
@@ -443,7 +448,7 @@ func TestLoadBalancerHandler_AddSSL (t *testing.T) {
 	}
 }
 
-func TestLoadBalancerHandler_RemoveSSL (t *testing.T) {
+func TestLoadBalancerHandler_RemoveSSL(t *testing.T) {
 	setup()
 	defer teardown()
 

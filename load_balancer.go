@@ -25,7 +25,7 @@ type LoadBalancerService interface {
 	CreateForwardingRule(ctx context.Context, ID int, rule *ForwardingRule) (*ForwardingRule, error)
 	GetFullConfig(ctx context.Context, ID int) (*LBConfig, error)
 	HasSSL(ctx context.Context, ID int) (*struct{ SSLInfo bool `json:"has_ssl"` }, error)
-	Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (*LoadBalancers, error)
+	Create(ctx context.Context, region int, label string, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule, ssl *SSL) (*LoadBalancers, error)
 	UpdateGenericInfo(ctx context.Context, ID int, label string, genericInfo *GenericInfo) error
 	AddSSL(ctx context.Context, ID int, ssl *SSL) error
 	RemoveSSL(ctx context.Context, ID int) error
@@ -451,11 +451,15 @@ func (l *LoadBalancerHandler) HasSSL(ctx context.Context, ID int) (*struct{ SSLI
 }
 
 // Create a load balancer
-func (l *LoadBalancerHandler) Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (*LoadBalancers, error) {
+func (l *LoadBalancerHandler) Create(ctx context.Context, region int, label string, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule, ssl *SSL) (*LoadBalancers, error) {
 	uri := "/v1/loadbalancer/create"
 
 	values := url.Values{
 		"DCID": {strconv.Itoa(region)},
+	}
+
+	if label != "" {
+		values.Add("label", label)
 	}
 
 	// Check generic info struct
@@ -487,6 +491,15 @@ func (l *LoadBalancerHandler) Create(ctx context.Context, region int, genericInf
 			panic(e)
 		}
 		values.Add("forwarding_rules", string(t))
+	}
+
+	if ssl != nil {
+		values.Add("ssl_private_key", ssl.PrivateKey)
+		values.Add("ssl_certificate", ssl.Certificate)
+
+		if ssl.Chain != "" {
+			values.Add("ssl_chain", ssl.Chain)
+		}
 	}
 
 	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
