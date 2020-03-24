@@ -15,7 +15,7 @@ func TestBlockStorageServiceHandler_Attach(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.BlockStorage.Attach(ctx, "123456", "876521")
+	err := client.BlockStorage.Attach(ctx, "123456", "876521", "yes")
 
 	if err != nil {
 		t.Errorf("BlockStorage.Attach returned %+v, expected %+v", err, nil)
@@ -67,7 +67,7 @@ func TestBlockStorageServiceHandler_Detach(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.BlockStorage.Detach(ctx, "123456")
+	err := client.BlockStorage.Detach(ctx, "123456", "yes")
 
 	if err != nil {
 		t.Errorf("BlockStorage.Detach returned %+v, expected %+v", err, nil)
