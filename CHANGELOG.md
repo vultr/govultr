@@ -1,5 +1,9 @@
 # Change Log
 
+## [v0.3.3](https://github.com/vultr/govultr/compare/v0.3.2..v0.3.3) (2020-04-15)
+### Dependencies
+*  go-retryablehttp 0.6.4 -> 0.6.6 [#58](https://github.com/vultr/govultr/pull/58)
+
 ## [v0.3.2](https://github.com/vultr/govultr/compare/v0.3.1..v0.3.2) (2020-03-25)
 ### Enhancement
 *  Added support to live attach/detach blockstorage [#55](https://github.com/vultr/govultr/pull/55)
