@@ -24,7 +24,9 @@ type LoadBalancerService interface {
 	DeleteForwardingRule(ctx context.Context, ID int, RuleID string) error
 	CreateForwardingRule(ctx context.Context, ID int, rule *ForwardingRule) (*ForwardingRule, error)
 	GetFullConfig(ctx context.Context, ID int) (*LBConfig, error)
-	HasSSL(ctx context.Context, ID int) (*struct{ SSLInfo bool `json:"has_ssl"` }, error)
+	HasSSL(ctx context.Context, ID int) (*struct {
+		SSLInfo bool `json:"has_ssl"`
+	}, error)
 	Create(ctx context.Context, region int, label string, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule, ssl *SSL) (*LoadBalancers, error)
 	UpdateGenericInfo(ctx context.Context, ID int, label string, genericInfo *GenericInfo) error
 	AddSSL(ctx context.Context, ID int, ssl *SSL) error
@@ -427,7 +429,9 @@ func (l *LoadBalancerHandler) GetFullConfig(ctx context.Context, ID int) (*LBCon
 }
 
 // HasSSL retrieves whether or not your load balancer subscription has an SSL cert attached.
-func (l *LoadBalancerHandler) HasSSL(ctx context.Context, ID int) (*struct{ SSLInfo bool `json:"has_ssl"` }, error) {
+func (l *LoadBalancerHandler) HasSSL(ctx context.Context, ID int) (*struct {
+	SSLInfo bool `json:"has_ssl"`
+}, error) {
 	uri := "/v1/loadbalancer/ssl_info"
 
 	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -469,7 +473,7 @@ func (l *LoadBalancerHandler) Create(ctx context.Context, region int, label stri
 		}
 
 		if genericInfo.BalancingAlgorithm != "" {
-			values.Add("algorithm", genericInfo.BalancingAlgorithm)
+			values.Add("balancing_algorithm", genericInfo.BalancingAlgorithm)
 		}
 
 		if genericInfo.StickySessions != nil {
