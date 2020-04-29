@@ -27,7 +27,7 @@ type LoadBalancerService interface {
 	HasSSL(ctx context.Context, ID int) (*struct {
 		SSLInfo bool `json:"has_ssl"`
 	}, error)
-	Create(ctx context.Context, region int, label string, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule, ssl *SSL) (*LoadBalancers, error)
+	Create(ctx context.Context, region int, label string, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule, ssl *SSL, instances *InstanceList) (*LoadBalancers, error)
 	UpdateGenericInfo(ctx context.Context, ID int, label string, genericInfo *GenericInfo) error
 	AddSSL(ctx context.Context, ID int, ssl *SSL) error
 	RemoveSSL(ctx context.Context, ID int) error
@@ -71,6 +71,7 @@ type GenericInfo struct {
 	BalancingAlgorithm string          `json:"balancing_algorithm"`
 	SSLRedirect        *bool           `json:"ssl_redirect,omitempty"`
 	StickySessions     *StickySessions `json:"sticky_sessions"`
+	ProxyProtocol      *bool           `json:"proxy_protocol"`
 }
 
 // CookieName represents cookie for your load balancer
@@ -455,7 +456,7 @@ func (l *LoadBalancerHandler) HasSSL(ctx context.Context, ID int) (*struct {
 }
 
 // Create a load balancer
-func (l *LoadBalancerHandler) Create(ctx context.Context, region int, label string, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule, ssl *SSL) (*LoadBalancers, error) {
+func (l *LoadBalancerHandler) Create(ctx context.Context, region int, label string, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule, ssl *SSL, instances *InstanceList) (*LoadBalancers, error) {
 	uri := "/v1/loadbalancer/create"
 
 	values := url.Values{
@@ -482,6 +483,14 @@ func (l *LoadBalancerHandler) Create(ctx context.Context, region int, label stri
 				values.Add("cookie_name", genericInfo.StickySessions.CookieName)
 			}
 		}
+
+		if genericInfo.ProxyProtocol != nil {
+			value := "off"
+			if strconv.FormatBool(*genericInfo.ProxyProtocol) == "true" {
+				value = "on"
+			}
+			values.Add("proxy_protocol", value)
+		}
 	}
 
 	if healthCheck != nil {
@@ -504,6 +513,14 @@ func (l *LoadBalancerHandler) Create(ctx context.Context, region int, label stri
 		if ssl.Chain != "" {
 			values.Add("ssl_chain", ssl.Chain)
 		}
+	}
+
+	if instances != nil {
+		t, e := json.Marshal(instances.InstanceList)
+		if e != nil {
+			panic(e)
+		}
+		values.Add("attached_nodes", string(t))
 	}
 
 	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -544,6 +561,14 @@ func (l *LoadBalancerHandler) UpdateGenericInfo(ctx context.Context, ID int, lab
 
 		if genericInfo.BalancingAlgorithm != "" {
 			values.Add("balancing_algorithm", genericInfo.BalancingAlgorithm)
+		}
+
+		if genericInfo.ProxyProtocol != nil {
+			value := "off"
+			if strconv.FormatBool(*genericInfo.ProxyProtocol) == "true" {
+				value = "on"
+			}
+			values.Add("proxy_protocol", value)
 		}
 	}
 
