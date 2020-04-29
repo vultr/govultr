@@ -181,7 +181,7 @@ func TestLoadBalancerHandler_GetGenericInfo(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v1/loadbalancer/generic_info", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"balancing_algorithm":"roundrobin","ssl_redirect":false,"sticky_sessions":{"cookie_name":"test"}}`
+		response := `{"balancing_algorithm":"roundrobin","ssl_redirect":false,"proxy_protocol": true,"sticky_sessions":{"cookie_name":"test"}}`
 		fmt.Fprintf(writer, response)
 	})
 
@@ -192,9 +192,11 @@ func TestLoadBalancerHandler_GetGenericInfo(t *testing.T) {
 	}
 
 	redirect := false
+	proxy := true
 	expected := &GenericInfo{
 		BalancingAlgorithm: "roundrobin",
 		SSLRedirect:        &redirect,
+		ProxyProtocol:      &proxy,
 		StickySessions: &StickySessions{
 			CookieName: "test",
 		},
@@ -282,7 +284,7 @@ func TestLoadBalancerHandler_GetFullConfig(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v1/loadbalancer/conf_info", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"generic_info":{"balancing_algorithm":"roundrobin","ssl_redirect":true,"sticky_sessions":{"cookie_name":"cookiename"}},"health_checks_info":{"protocol":"http","port":80,"path":"\/","check_interval":15,"response_timeout":5,"unhealthy_threshold":5,"healthy_threshold":5},"has_ssl":true,"forward_rule_list":[{"RULEID":"b06ce4cd520eea15","frontend_protocol":"http","frontend_port":80,"backend_protocol":"http","backend_port":80}],"instance_list":[1317615]}`
+		response := `{"generic_info":{"balancing_algorithm":"roundrobin","ssl_redirect":true,"proxy_protocol": true,"sticky_sessions":{"cookie_name":"cookiename"}},"health_checks_info":{"protocol":"http","port":80,"path":"\/","check_interval":15,"response_timeout":5,"unhealthy_threshold":5,"healthy_threshold":5},"has_ssl":true,"forward_rule_list":[{"RULEID":"b06ce4cd520eea15","frontend_protocol":"http","frontend_port":80,"backend_protocol":"http","backend_port":80}],"instance_list":[1317615]}`
 		fmt.Fprintf(writer, response)
 	})
 
@@ -292,10 +294,12 @@ func TestLoadBalancerHandler_GetFullConfig(t *testing.T) {
 	}
 
 	redirect := true
+	proxy := true
 	expected := &LBConfig{
 		GenericInfo: GenericInfo{
 			BalancingAlgorithm: "roundrobin",
 			SSLRedirect:        &redirect,
+			ProxyProtocol:      &proxy,
 			StickySessions:     &StickySessions{CookieName: "cookiename"},
 		},
 		HealthCheck: HealthCheck{
@@ -413,9 +417,11 @@ func TestLoadBalancerHandler_UpdateGenericInfo(t *testing.T) {
 	})
 
 	redirect := true
+	proxy := true
 	info := GenericInfo{
 		BalancingAlgorithm: "roundrobin",
 		SSLRedirect:        &redirect,
+		ProxyProtocol:      &proxy,
 		StickySessions: &StickySessions{
 			StickySessionsEnabled: "on",
 			CookieName:            "cookie_name",

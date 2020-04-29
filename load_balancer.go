@@ -71,6 +71,7 @@ type GenericInfo struct {
 	BalancingAlgorithm string          `json:"balancing_algorithm"`
 	SSLRedirect        *bool           `json:"ssl_redirect,omitempty"`
 	StickySessions     *StickySessions `json:"sticky_sessions"`
+	ProxyProtocol      *bool           `json:"proxy_protocol"`
 }
 
 // CookieName represents cookie for your load balancer
@@ -544,6 +545,14 @@ func (l *LoadBalancerHandler) UpdateGenericInfo(ctx context.Context, ID int, lab
 
 		if genericInfo.BalancingAlgorithm != "" {
 			values.Add("balancing_algorithm", genericInfo.BalancingAlgorithm)
+		}
+
+		if genericInfo.ProxyProtocol != nil {
+			value := "off"
+			if strconv.FormatBool(*genericInfo.ProxyProtocol) == "true" {
+				value = "on"
+			}
+			values.Add("proxy_protocol", value)
 		}
 	}
 
