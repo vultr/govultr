@@ -360,9 +360,11 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 	})
 
 	redirect := true
+	proxy := true
 	info := GenericInfo{
 		BalancingAlgorithm: "roundrobin",
 		SSLRedirect:        &redirect,
+		ProxyProtocol:      &proxy,
 		StickySessions: &StickySessions{
 			StickySessionsEnabled: "on",
 			CookieName:            "cookie",
@@ -394,7 +396,9 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		Chain:       "chain",
 	}
 
-	lb, err := client.LoadBalancer.Create(ctx, 1, "label", &info, &health, rules, &ssl)
+	instances := InstanceList{[]int{1234}}
+
+	lb, err := client.LoadBalancer.Create(ctx, 1, "label", &info, &health, rules, &ssl, &instances)
 	if err != nil {
 		t.Errorf("LoadBalancer.Create returned %+v", err)
 	}
