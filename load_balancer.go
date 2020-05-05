@@ -469,8 +469,10 @@ func (l *LoadBalancerHandler) Create(ctx context.Context, region int, label stri
 
 	// Check generic info struct
 	if genericInfo != nil {
-		if *genericInfo.SSLRedirect == true {
-			values.Add("config_ssl_redirect", "true")
+		if genericInfo.SSLRedirect != nil {
+			if strconv.FormatBool(*genericInfo.SSLRedirect) == "true" {
+				values.Add("config_ssl_redirect", "true")
+			}
 		}
 
 		if genericInfo.BalancingAlgorithm != "" {
