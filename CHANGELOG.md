@@ -1,5 +1,9 @@
 # Change Log
 
+## [v0.4.1](https://github.com/vultr/govultr/compare/v0.4.0..v0.4.1) (2020-05-08)
+### Bug Fix
+*  LoadBalancers: Fix nil pointer in create call [#65](https://github.com/vultr/govultr/pull/65)
+
 ## [v0.4.0](https://github.com/vultr/govultr/compare/v0.3.3..v0.4.0) (2020-04-29)
 ### Enhancement
 *  LoadBalancers: Proxy protocol is now available as an option [#62](https://github.com/vultr/govultr/pull/62)
