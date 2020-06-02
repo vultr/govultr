@@ -51,10 +51,10 @@ func TestDNSRecordsServiceHandler_List(t *testing.T) {
 	if err != nil {
 		t.Errorf("DNSRecord.List returned %+v, expected %+v", err, nil)
 	}
-
+	p := 0
 	expected := []DNSRecord{
-		{Type: "A", Name: "", Data: "127.0.0.1", Priority: 0, RecordID: 1265276, TTL: 300},
-		{Type: "A", Name: "", Data: "127.0.0.1", Priority: 0, RecordID: 1265276, TTL: 300},
+		{Type: "A", Name: "", Data: "127.0.0.1", Priority: &p, RecordID: 1265276, TTL: 300},
+		{Type: "A", Name: "", Data: "127.0.0.1", Priority: &p, RecordID: 1265276, TTL: 300},
 	}
 
 	if !reflect.DeepEqual(records, expected) {
@@ -70,13 +70,13 @@ func TestDNSRecordsServiceHandler_Update(t *testing.T) {
 
 		fmt.Fprint(writer)
 	})
-
+	p := 10
 	params := &DNSRecord{
 		RecordID: 14283638,
 		Name:     "api",
 		Data:     "turnip.data",
 		TTL:      120,
-		Priority: 10,
+		Priority: &p,
 	}
 
 	err := client.DNSRecord.Update(ctx, "turnip.services", params)
