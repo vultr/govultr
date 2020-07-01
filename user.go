@@ -2,18 +2,24 @@ package govultr
 
 import (
 	"context"
+	"fmt"
 	"net/http"
-	"net/url"
+
+	"github.com/google/go-querystring/query"
 )
 
+const path = "/v2/users"
+
 // UserService is the interface to interact with the user management endpoints on the Vultr API
-// Link: https://www.vultr.com/api/#user
 type UserService interface {
-	Create(ctx context.Context, email, name, password, apiEnabled string, acls []string) (*User, error)
+	Create(ctx context.Context, userCreate *UserReq) (*User, error)
+	Get(ctx context.Context, userID string) (*User, error)
+	Update(ctx context.Context, userID string, userReq *UserReq) error
 	Delete(ctx context.Context, userID string) error
-	List(ctx context.Context) ([]User, error)
-	Update(ctx context.Context, user *User) error
+	List(ctx context.Context, options *ListOptions) ([]User, *Meta, error)
 }
+
+var _ UserService = &UserServiceHandler{}
 
 // UserServiceHandler handles interaction with the user methods for the Vultr API
 type UserServiceHandler struct {
@@ -22,63 +28,88 @@ type UserServiceHandler struct {
 
 // User represents an user on Vultr
 type User struct {
-	UserID     string   `json:"USERID"`
+	ID         string   `json:"id"`
 	Name       string   `json:"name"`
 	Email      string   `json:"email"`
-	Password   string   `json:"password"`
 	APIEnabled string   `json:"api_enabled"`
-	ACL        []string `json:"acls"`
 	APIKey     string   `json:"api_key"`
+	ACL        []string `json:"acls,omitempty"`
+	Password   string   `json:"password,omitempty"`
+}
+
+// UserReq is the user struct for create and update calls
+type UserReq struct {
+	Email      string   `json:"email"`
+	Name       string   `json:"name"`
+	APIEnabled string   `json:"api_enabled"`
+	ACL        []string `json:"acl"`
+	Password   string   `json:"password"`
+}
+
+type usersBase struct {
+	Users []User `json:"users"`
+	Meta  *Meta  `json:"meta"`
+}
+
+type userBase struct {
+	User *User `json:"user"`
 }
 
 // Create will add the specified user to your Vultr account
-func (u *UserServiceHandler) Create(ctx context.Context, email, name, password, apiEnabled string, acls []string) (*User, error) {
-
-	uri := "/v1/user/create"
-
-	values := url.Values{
-		"email":    {email},
-		"name":     {name},
-		"password": {password},
-		"acls[]":   acls,
-	}
-
-	if apiEnabled != "" {
-		values.Add("api_enabled", apiEnabled)
-	}
-
-	req, err := u.client.NewRequest(ctx, http.MethodPost, uri, values)
+func (u *UserServiceHandler) Create(ctx context.Context, userCreate *UserReq) (*User, error) {
+	req, err := u.client.NewRequest(ctx, http.MethodPost, path, userCreate)
 
 	if err != nil {
 		return nil, err
 	}
 
-	user := new(User)
-
-	err = u.client.DoWithContext(ctx, req, user)
-
-	if err != nil {
+	user := new(userBase)
+	if err = u.client.DoWithContext(ctx, req, user); err != nil {
 		return nil, err
 	}
 
-	user.Name = name
-	user.Email = email
-	user.APIEnabled = apiEnabled
-	user.ACL = acls
-
-	return user, nil
+	return user.User, nil
 }
 
-// Delete will remove the specified user from your Vultr account
-func (u *UserServiceHandler) Delete(ctx context.Context, userID string) error {
+// Get will retrieve a specific user account
+func (u *UserServiceHandler) Get(ctx context.Context, userID string) (*User, error) {
+	uri := fmt.Sprintf("%s/%s", path, userID)
 
-	uri := "/v1/user/delete"
+	req, err := u.client.NewRequest(ctx, http.MethodGet, uri, nil)
 
-	values := url.Values{
-		"USERID": {userID},
+	if err != nil {
+		return nil, err
 	}
 
-	req, err := u.client.NewRequest(ctx, http.MethodPost, uri, values)
+	user := new(userBase)
+	if err = u.client.DoWithContext(ctx, req, user); err != nil {
+		return nil, err
+	}
+
+	return user.User, nil
+}
+
+// Update will update the given user. Empty strings will be ignored.
+func (u *UserServiceHandler) Update(ctx context.Context, userID string, userReq *UserReq) error {
+	uri := fmt.Sprintf("%s/%s", path, userID)
+	req, err := u.client.NewRequest(ctx, http.MethodPatch, uri, userReq)
+
+	if err != nil {
+		return err
+	}
+
+	if err = u.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//Delete will remove the specified user from your Vultr account
+func (u *UserServiceHandler) Delete(ctx context.Context, userID string) error {
+	uri := fmt.Sprintf("%s/%s", path, userID)
+
+	req, err := u.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 
 	if err != nil {
 		return err
@@ -94,64 +125,25 @@ func (u *UserServiceHandler) Delete(ctx context.Context, userID string) error {
 }
 
 // List will list all the users associated with your Vultr account
-func (u *UserServiceHandler) List(ctx context.Context) ([]User, error) {
+func (u *UserServiceHandler) List(ctx context.Context, options *ListOptions) ([]User, *Meta, error) {
+	req, err := u.client.NewRequest(ctx, http.MethodGet, path, nil)
 
-	uri := "/v1/user/list"
-
-	req, err := u.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
+	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	var users []User
+	req.URL.RawQuery = newValues.Encode()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	users := new(usersBase)
 	err = u.client.DoWithContext(ctx, req, &users)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return users, nil
-}
-
-// Update will update the given user. Empty strings will be ignored.
-func (u *UserServiceHandler) Update(ctx context.Context, user *User) error {
-
-	uri := "/v1/user/update"
-
-	values := url.Values{
-		"USERID": {user.UserID},
-	}
-
-	// Optional
-	if user.Email != "" {
-		values.Add("email", user.Email)
-	}
-	if user.Name != "" {
-		values.Add("name", user.Name)
-	}
-	if user.Password != "" {
-		values.Add("password", user.Password)
-	}
-	if user.APIEnabled != "" {
-		values.Add("api_enabled", user.APIEnabled)
-	}
-	if len(user.ACL) > 0 {
-		for _, acl := range user.ACL {
-			values.Add("acls[]", acl)
-		}
-	}
-
-	req, err := u.client.NewRequest(ctx, http.MethodPost, uri, values)
-
-	if err != nil {
-		return err
-	}
-
-	err = u.client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return users.Users, users.Meta, nil
 }

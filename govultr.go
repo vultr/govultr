@@ -1,11 +1,11 @@
 package govultr
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -24,6 +24,7 @@ const (
 )
 
 // whiteListURI is an array of endpoints that should not have the API Key passed to them
+// todo update white list routes
 var whiteListURI = [13]string{
 	"/v1/regions/availability",
 	"/v1/app/list",
@@ -93,7 +94,7 @@ type Client struct {
 type RequestCompletionCallback func(*http.Request, *http.Response)
 
 // NewClient returns a Vultr API Client
-func NewClient(httpClient *http.Client, key string) *Client {
+func NewClient(httpClient *http.Client) *Client {
 
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -137,14 +138,14 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.StartupScript = &StartupScriptServiceHandler{client}
 	client.User = &UserServiceHandler{client}
 
-	apiKey := APIKey{key: key}
-	client.APIKey = apiKey
+	//apiKey := APIKey{key: key}
+	//client.APIKey = apiKey
 
 	return client
 }
 
 // NewRequest creates an API Request
-func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Values) (*http.Request, error) {
+func (c *Client) NewRequest(ctx context.Context, method, uri string, body interface{}) (*http.Request, error) {
 
 	path, err := url.Parse(uri)
 	resolvedURL := c.BaseURL.ResolveReference(path)
@@ -153,34 +154,23 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Va
 		return nil, err
 	}
 
-	var reqBody io.Reader
-
+	buf := new(bytes.Buffer)
 	if body != nil {
-		reqBody = strings.NewReader(body.Encode())
-	} else {
-		reqBody = nil
+		err = json.NewEncoder(buf).Encode(body)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	req, err := http.NewRequest(method, resolvedURL.String(), reqBody)
+	req, err := http.NewRequest(method, resolvedURL.String(), buf)
 
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Add("API-key", c.APIKey.key)
-	for _, v := range whiteListURI {
-		if v == uri {
-			req.Header.Del("API-key")
-			break
-		}
-	}
-
 	req.Header.Add("User-Agent", c.UserAgent)
 	req.Header.Add("Accept", "application/json")
-
-	if req.Method == "POST" {
-		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	}
+	req.Header.Add("Content-Type", "application/json")
 
 	return req, nil
 }
@@ -216,15 +206,12 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 		return err
 	}
 
-	if res.StatusCode == http.StatusOK {
+	//todo we may want to revisit this
+	if res.StatusCode >= http.StatusOK && res.StatusCode <= http.StatusNoContent{
 		if data != nil {
-			if string(body) == "[]" {
-				data = nil
-			} else {
 				if err := json.Unmarshal(body, data); err != nil {
 					return err
 				}
-			}
 		}
 		return nil
 	}
