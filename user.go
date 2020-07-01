@@ -32,9 +32,8 @@ type User struct {
 	Name       string   `json:"name"`
 	Email      string   `json:"email"`
 	APIEnabled string   `json:"api_enabled"`
-	APIKey     string   `json:"api_key"`
+	APIKey     string   `json:"api_key,omitempty"`
 	ACL        []string `json:"acls,omitempty"`
-	Password   string   `json:"password,omitempty"`
 }
 
 // UserReq is the user struct for create and update calls
