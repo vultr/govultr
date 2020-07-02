@@ -3,12 +3,13 @@ package govultr
 import (
 	"context"
 	"net/http"
+
+	"github.com/google/go-querystring/query"
 )
 
 // ApplicationService is the interface to interact with the Application endpoint on the Vultr API
-// Link: https://www.vultr.com/api/#app
 type ApplicationService interface {
-	List(ctx context.Context) ([]Application, error)
+	List(ctx context.Context, options *ListOptions) ([]Application, *Meta, error)
 }
 
 // ApplicationServiceHandler handles interaction with the application methods for the Vultr API
@@ -18,34 +19,39 @@ type ApplicationServiceHandler struct {
 
 // Application represents a Vultr application
 type Application struct {
-	AppID      string  `json:"APPID"`
-	Name       string  `json:"name"`
-	ShortName  string  `json:"short_name"`
-	DeployName string  `json:"deploy_name"`
-	Surcharge  float64 `json:"surcharge"`
+	ID         int    `json:"id"`
+	Name       string `json:"name"`
+	ShortName  string `json:"short_name"`
+	DeployName string `json:"deploy_name"`
 }
 
-// List retrieves a list of available applications that can be launched when creating a Vultr VPS
-func (a *ApplicationServiceHandler) List(ctx context.Context) ([]Application, error) {
+type applicationBase struct {
+	Applications []Application `json:"applications"`
+	Meta         *Meta         `json:"meta"`
+}
 
-	uri := "/v1/app/list"
+// List retrieves a list of available applications that can be launched when creating a Vultr instance
+func (a *ApplicationServiceHandler) List(ctx context.Context, options *ListOptions) ([]Application, *Meta, error) {
+
+	uri := "/v2/applications"
 	req, err := a.client.NewRequest(ctx, http.MethodGet, uri, nil)
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	appsMap := make(map[string]Application)
-
-	err = a.client.DoWithContext(ctx, req, &appsMap)
+	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	var apps []Application
-	for _, app := range appsMap {
-		apps = append(apps, app)
+	req.URL.RawQuery = newValues.Encode()
+	apps := new(applicationBase)
+
+	err = a.client.DoWithContext(ctx, req, apps)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return apps, nil
+	return apps.Applications, apps.Meta, nil
 }
