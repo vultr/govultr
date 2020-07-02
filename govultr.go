@@ -27,7 +27,7 @@ const (
 // todo update white list routes
 var whiteListURI = [13]string{
 	"/v1/regions/availability",
-	"/v1/app/list",
+	"/v2/applications",
 	"/v1/objectstorage/list_cluster",
 	"/v1/os/list",
 	"/v1/plans/list",
