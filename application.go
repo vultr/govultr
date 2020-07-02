@@ -2,8 +2,9 @@ package govultr
 
 import (
 	"context"
-	"github.com/google/go-querystring/query"
 	"net/http"
+
+	"github.com/google/go-querystring/query"
 )
 
 // ApplicationService is the interface to interact with the Application endpoint on the Vultr API
@@ -29,7 +30,7 @@ type applicationBase struct {
 	Meta         *Meta         `json:"meta"`
 }
 
-// List retrieves a list of available applications that can be launched when creating a Vultr VPS
+// List retrieves a list of available applications that can be launched when creating a Vultr instance
 func (a *ApplicationServiceHandler) List(ctx context.Context, options *ListOptions) ([]Application, *Meta, error) {
 
 	uri := "/v2/applications"
