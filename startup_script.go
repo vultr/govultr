@@ -24,7 +24,7 @@ type StartupScriptServiceHandler struct {
 
 // StartupScript represents an startup script on Vultr
 type StartupScript struct {
-	Id           int    `json:"id"`
+	ID           int    `json:"id"`
 	DateCreated  string `json:"date_created"`
 	DateModified string `json:"date_modified"`
 	Name         string `json:"name"`
