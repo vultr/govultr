@@ -63,7 +63,6 @@ type Client struct {
 
 	// Services used to interact with the API
 	Account         AccountService
-	API             APIService
 	Application     ApplicationService
 	Backup          BackupService
 	BareMetalServer BareMetalServerService
@@ -115,7 +114,6 @@ func NewClient(httpClient *http.Client) *Client {
 	client.SetRateLimit(rateLimit)
 
 	client.Account = &AccountServiceHandler{client}
-	client.API = &APIServiceHandler{client}
 	client.Application = &ApplicationServiceHandler{client}
 	client.Backup = &BackupServiceHandler{client}
 	client.BareMetalServer = &BareMetalServerServiceHandler{client}
