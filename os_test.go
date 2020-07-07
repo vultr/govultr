@@ -11,103 +11,34 @@ func TestOSServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/os/list", func(w http.ResponseWriter, r *http.Request) {
-
-		response := `
-		{
-			"127": {
-				"OSID": 127,
-				"name": "CentOS 6 x64",
-				"arch": "x64",
-				"family": "centos",
-				"windows": false
-			}
-		}
-		`
-
+	mux.HandleFunc("/v2/os", func(w http.ResponseWriter, r *http.Request) {
+		response := `{"os":[{"id":124,"name":"Windows 2012 R2 x64","arch":"x64","family":"windows"}],"meta":{"total":27,"links":{"next":"","prev":""}}}`
 		fmt.Fprint(w, response)
 	})
 
-	apps, err := client.OS.List(ctx)
+	os, meta, err := client.OS.List(ctx, nil)
 	if err != nil {
 		t.Errorf("OS.List returned error: %v", err)
 	}
 
-	expected := []OS{
+	expectedOS := []OS{
 		{
-			OsID:    127,
-			Name:    "CentOS 6 x64",
-			Arch:    "x64",
-			Family:  "centos",
-			Windows: false,
+			ID:     124,
+			Name:   "Windows 2012 R2 x64",
+			Arch:   "x64",
+			Family: "windows",
 		},
 	}
-
-	if !reflect.DeepEqual(apps, expected) {
-		t.Errorf("OS.List returned %+v, expected %+v", apps, expected)
-	}
-}
-
-func TestOSServiceHandler_List_StringIDs(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v1/os/list", func(w http.ResponseWriter, r *http.Request) {
-
-		response := `
-		{
-			"127": {
-				"OSID": 127,
-				"name": "CentOS 6 x64",
-				"arch": "x64",
-				"family": "centos",
-				"windows": false
-			}
-		}
-		`
-
-		fmt.Fprint(w, response)
-	})
-
-	apps, err := client.OS.List(ctx)
-	if err != nil {
-		t.Errorf("OS.List returned error: %v", err)
+	expectedMeta := &Meta{
+		Total: 27,
+		Links: &Links{},
 	}
 
-	expected := []OS{
-		{
-			OsID:    127,
-			Name:    "CentOS 6 x64",
-			Arch:    "x64",
-			Family:  "centos",
-			Windows: false,
-		},
+	if !reflect.DeepEqual(os, expectedOS) {
+		t.Errorf("OS.List os returned %+v, expected %+v", os, expectedOS)
 	}
 
-	if !reflect.DeepEqual(apps, expected) {
-		t.Errorf("OS.List returned %+v, expected %+v", apps, expected)
-	}
-}
-
-func TestOSServiceHandler_ListEmpty(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v1/os/list", func(w http.ResponseWriter, r *http.Request) {
-
-		response := `[]`
-
-		fmt.Fprint(w, response)
-	})
-
-	apps, err := client.OS.List(ctx)
-	if err != nil {
-		t.Errorf("OS.List returned error: %v", err)
-	}
-
-	var expected []OS
-
-	if !reflect.DeepEqual(apps, expected) {
-		t.Errorf("OS.List returned %+v, expected %+v", apps, expected)
+	if !reflect.DeepEqual(meta, expectedMeta) {
+		t.Errorf("OS.List meta returned %+v, expected %+v", meta, expectedMeta)
 	}
 }
