@@ -25,7 +25,7 @@ type RegionServiceHandler struct {
 type Region struct {
 	ID        string   `json:"id"`
 	Country   string   `json:"country"`
-	Continent string   `json:"continent"`
+	Continent string   `json:"continent,omitempty"`
 	Options   []string `json:"options"`
 }
 
