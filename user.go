@@ -134,10 +134,6 @@ func (u *UserServiceHandler) List(ctx context.Context, options *ListOptions) ([]
 
 	req.URL.RawQuery = newValues.Encode()
 
-	if err != nil {
-		return nil, nil, err
-	}
-
 	users := new(usersBase)
 	err = u.client.DoWithContext(ctx, req, &users)
 	if err != nil {
