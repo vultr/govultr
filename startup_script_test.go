@@ -12,29 +12,29 @@ func TestStartupScriptServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/startupscript/create", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-		{
-			"SCRIPTID": 5
-		}
-		`
-
+	mux.HandleFunc("/v2/startup-scripts", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"startup_script": {"id": 14356,"date_created": "2020-07-07 18:52:56","date_modified": "2020-07-07 18:59:54","name": "govultr","type": "boot","script": "dGVzdGFwaXVwZGF0ZQ=="}}`
 		fmt.Fprint(writer, response)
 	})
 
-	s, err := client.StartupScript.Create(context.Background(), "foo", "#!/bin/bash\necho hello world > /root/hello", "pxe")
+	script := &StartupScriptReq{
+		Name:   "govultr",
+		Type:   "boot",
+		Script: "dGVzdGFwaXVwZGF0ZQ==",
+	}
+	s, err := client.StartupScript.Create(context.Background(), script)
 
 	if err != nil {
 		t.Errorf("StartupScript.Create returned %+v, expected %+v", err, nil)
 	}
 
 	expected := &StartupScript{
-		ScriptID:     "5",
-		DateCreated:  "",
-		DateModified: "",
-		Name:         "foo",
-		Type:         "pxe",
-		Script:       "#!/bin/bash\necho hello world > /root/hello",
+		ID:           14356,
+		DateCreated:  "2020-07-07 18:52:56",
+		DateModified: "2020-07-07 18:59:54",
+		Name:         "govultr",
+		Type:         "boot",
+		Script:       "dGVzdGFwaXVwZGF0ZQ==",
 	}
 
 	if !reflect.DeepEqual(s, expected) {
@@ -42,15 +42,65 @@ func TestStartupScriptServiceHandler_Create(t *testing.T) {
 	}
 }
 
+func TestStartupScriptServiceHandler_GET(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/startup-scripts/14350", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"startup_script": {"id": 14350,"date_created": "2020-06-08 17:58:10","date_modified": "2020-06-08 17:59:54","name": "govultr","type": "pxe","script": "dGVzdA=="}}`
+		fmt.Fprintf(writer, response)
+	})
+
+	scripts, err := client.StartupScript.Get(ctx, 14350)
+
+	if err != nil {
+		t.Errorf("StartupScript.Get returned error: %v", err)
+	}
+
+	expectedScript := &StartupScript{
+		ID:           14350,
+		DateCreated:  "2020-06-08 17:58:10",
+		DateModified: "2020-06-08 17:59:54",
+		Name:         "govultr",
+		Type:         "pxe",
+		Script:       "dGVzdA==",
+	}
+
+	if !reflect.DeepEqual(scripts, expectedScript) {
+		t.Errorf("StartupScript.Get scripts returned %+v, expected %+v", scripts, expectedScript)
+	}
+}
+
+func TestStartupScriptServiceHandler_Update(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/startup-scripts/1234", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	script := &StartupScriptReq{
+		Name:   "foo",
+		Type:   "boot",
+		Script: "dGVzdA==",
+	}
+
+	err := client.StartupScript.Update(ctx, 1234, script)
+
+	if err != nil {
+		t.Errorf("StartupScript.Update returned error: %+v", err)
+	}
+}
+
 func TestStartupScriptServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/startupscript/destroy", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/startup-scripts/1234", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.StartupScript.Delete(ctx, "foo")
+	err := client.StartupScript.Delete(ctx, 1234)
 
 	if err != nil {
 		t.Errorf("StartupScript.Delete returned %+v, expected %+v", err, nil)
@@ -61,63 +111,38 @@ func TestStartupScriptServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/startupscript/list", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-		{
-			"3": {
-				"SCRIPTID": "3",
-				"date_created": "2014-05-21 15:27:18",
-				"date_modified": "2014-05-21 15:27:18",
-				"name": "foo",
-				"type": "boot",
-				"script": "#!/bin/bash echo Hello World > /root/hello"
-			}
-		}
-		`
+	mux.HandleFunc("/v2/startup-scripts", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"startup_scripts": [{"id": 14350,"date_created": "2020-06-08 17:58:10","date_modified": "2020-06-08 17:59:54","name": "govultr","type": "pxe","script": "dGVzdA=="}],"meta": {"total": 1,"links": {"next": "","prev": ""}}}`
 		fmt.Fprintf(writer, response)
 	})
 
-	scripts, err := client.StartupScript.List(ctx)
+	scripts, meta, err := client.StartupScript.List(ctx, nil)
 
 	if err != nil {
 		t.Errorf("StartupScript.List returned error: %v", err)
 	}
 
-	expected := []StartupScript{
+	expectedScript := []StartupScript{
 		{
-			ScriptID:     "3",
-			Name:         "foo",
-			Type:         "boot",
-			Script:       "#!/bin/bash echo Hello World > /root/hello",
-			DateCreated:  "2014-05-21 15:27:18",
-			DateModified: "2014-05-21 15:27:18",
+			ID:           14350,
+			DateCreated:  "2020-06-08 17:58:10",
+			DateModified: "2020-06-08 17:59:54",
+			Name:         "govultr",
+			Type:         "pxe",
+			Script:       "dGVzdA==",
 		},
 	}
 
-	if !reflect.DeepEqual(scripts, expected) {
-		t.Errorf("StartupScript.List returned %+v, expected %+v", scripts, expected)
-	}
-}
-
-func TestStartupScriptServiceHandler_Update(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v1/startupscript/update", func(writer http.ResponseWriter, request *http.Request) {
-
-		fmt.Fprint(writer)
-	})
-
-	script := &StartupScript{
-		ScriptID: "1",
-		Name:     "foo",
-		Type:     "boot",
-		Script:   "#!/bin/bash echo Hello World > /root/hello",
+	expectedMeta := &Meta{
+		Total: 1,
+		Links: &Links{},
 	}
 
-	err := client.StartupScript.Update(ctx, script)
+	if !reflect.DeepEqual(scripts, expectedScript) {
+		t.Errorf("StartupScript.List scripts returned %+v, expected %+v", scripts, expectedScript)
+	}
 
-	if err != nil {
-		t.Errorf("StartupScript.Update returned error: %+v", err)
+	if !reflect.DeepEqual(meta, expectedMeta) {
+		t.Errorf("StartupScript.List meta returned %+v, expected %+v", meta, expectedMeta)
 	}
 }
