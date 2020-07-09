@@ -2,24 +2,25 @@ package govultr
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
-	"strconv"
+
+	"github.com/google/go-querystring/query"
 )
 
+type RequestBody map[string]interface{}
+
 // BlockStorageService is the interface to interact with Block-Storage endpoint on the Vultr API
-// Link: https://www.vultr.com/api/#block
 type BlockStorageService interface {
-	Attach(ctx context.Context, blockID, InstanceID, liveAttach string) error
-	Create(ctx context.Context, regionID, size int, label string) (*BlockStorage, error)
-	Delete(ctx context.Context, blockID string) error
-	Detach(ctx context.Context, blockID, liveDetach string) error
-	SetLabel(ctx context.Context, blockID, label string) error
-	List(ctx context.Context) ([]BlockStorage, error)
-	Get(ctx context.Context, blockID string) (*BlockStorage, error)
-	Resize(ctx context.Context, blockID string, size int) error
+	Create(ctx context.Context, blockReq *BlockStorageReq) (*BlockStorage, error)
+	Get(ctx context.Context, blockID int) (*BlockStorage, error)
+	Update(ctx context.Context, blockID int, label string) error
+	Delete(ctx context.Context, blockID int) error
+	List(ctx context.Context, options *ListOptions) ([]BlockStorage, *Meta, error)
+
+	Attach(ctx context.Context, blockID, instanceID int, liveAttach string) error
+	Detach(ctx context.Context, blockID int, liveDetach string) error
+	Resize(ctx context.Context, blockID int, sizeGB int) error
 }
 
 // BlockStorageServiceHandler handles interaction with the block-storage methods for the Vultr API
@@ -29,227 +30,95 @@ type BlockStorageServiceHandler struct {
 
 // BlockStorage represents Vultr Block-Storage
 type BlockStorage struct {
-	BlockStorageID string `json:"SUBID"`
-	DateCreated    string `json:"date_created"`
-	CostPerMonth   string `json:"cost_per_month"`
-	Status         string `json:"status"`
-	SizeGB         int    `json:"size_gb"`
-	RegionID       int    `json:"DCID"`
-	InstanceID     string `json:"attached_to_SUBID"`
-	Label          string `json:"label"`
+	ID                 int    `json:"id"`
+	Cost               int    `json:"cost"`
+	Status             string `json:"status"`
+	SizeGB             int    `json:"size_gb"`
+	Region             string `json:"region"`
+	DateCreated        string `json:"date_created"`
+	AttachedToInstance int    `json:"attached_to_instance"`
+	Label              string `json:"label"`
 }
 
-// UnmarshalJSON implements json.Unmarshaller on BlockStorage to handle the inconsistent types returned from the Vultr v1 API.
-func (b *BlockStorage) UnmarshalJSON(data []byte) (err error) {
-	if b == nil {
-		*b = BlockStorage{}
-	}
-
-	var v map[string]interface{}
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
-	}
-
-	b.BlockStorageID, err = b.unmarshalStr(fmt.Sprintf("%v", v["SUBID"]))
-	if err != nil {
-		return err
-	}
-
-	b.RegionID, err = b.unmarshalInt(fmt.Sprintf("%v", v["DCID"]))
-	if err != nil {
-		return err
-	}
-
-	b.SizeGB, err = b.unmarshalInt(fmt.Sprintf("%v", v["size_gb"]))
-	if err != nil {
-		return err
-	}
-
-	b.InstanceID, err = b.unmarshalStr(fmt.Sprintf("%v", v["attached_to_SUBID"]))
-	if err != nil {
-		return err
-	}
-
-	b.CostPerMonth, err = b.unmarshalStr(fmt.Sprintf("%v", v["cost_per_month"]))
-	if err != nil {
-		return err
-	}
-
-	date := fmt.Sprintf("%v", v["date_created"])
-	if date == "<nil>" {
-		date = ""
-	}
-	b.DateCreated = date
-
-	status := fmt.Sprintf("%v", v["status"])
-	if status == "<nil>" {
-		status = ""
-	}
-	b.Status = status
-
-	b.Label = fmt.Sprintf("%v", v["label"])
-
-	return nil
+// BlockStorageReq
+type BlockStorageReq struct {
+	Region string `json:"region"`
+	SizeGB int    `json:"size_gb"`
+	Label  string `json:"label,omitempty"`
 }
 
-func (b *BlockStorage) unmarshalInt(value string) (int, error) {
-	if len(value) == 0 || value == "<nil>" {
-		value = "0"
-	}
-
-	i, err := strconv.ParseInt(value, 10, 64)
-	if err != nil {
-		return 0, err
-	}
-
-	return int(i), nil
+type blockStoragesBase struct {
+	Blocks []BlockStorage `json:"blocks"`
+	Meta   *Meta          `json:"meta"`
 }
 
-func (b *BlockStorage) unmarshalStr(value string) (string, error) {
-	if len(value) == 0 || value == "<nil>" || value == "0" || value == "false" {
-		return "", nil
-	}
-
-	f, err := strconv.ParseFloat(value, 64)
-	if err != nil {
-		return "", err
-	}
-
-	return strconv.FormatFloat(f, 'f', -1, 64), nil
-}
-
-// Attach will link a given block storage to a given Vultr vps
-// If liveAttach is set to "yes" the block storage will be attached without reloading the instance
-func (b *BlockStorageServiceHandler) Attach(ctx context.Context, blockID, InstanceID, liveAttach string) error {
-
-	uri := "/v1/block/attach"
-
-	values := url.Values{
-		"SUBID":           {blockID},
-		"attach_to_SUBID": {InstanceID},
-	}
-
-	if liveAttach == "yes" {
-		values.Add("live", "yes")
-	}
-
-	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
-
-	if err != nil {
-		return err
-	}
-
-	err = b.client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+type blockStorageBase struct {
+	Block *BlockStorage `json:"block"`
 }
 
 // Create builds out a block storage
-func (b *BlockStorageServiceHandler) Create(ctx context.Context, regionID, sizeGB int, label string) (*BlockStorage, error) {
+func (b *BlockStorageServiceHandler) Create(ctx context.Context, blockReq *BlockStorageReq) (*BlockStorage, error) {
+	uri := "/v2/blocks"
 
-	uri := "/v1/block/create"
-
-	values := url.Values{
-		"DCID":    {strconv.Itoa(regionID)},
-		"size_gb": {strconv.Itoa(sizeGB)},
-		"label":   {label},
-	}
-
-	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
-
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, blockReq)
 	if err != nil {
 		return nil, err
 	}
 
-	blockStorage := new(BlockStorage)
-
-	err = b.client.DoWithContext(ctx, req, blockStorage)
-
+	block := new(blockStorageBase)
+	err = b.client.DoWithContext(ctx, req, block)
 	if err != nil {
 		return nil, err
 	}
 
-	blockStorage.RegionID = regionID
-	blockStorage.Label = label
-	blockStorage.SizeGB = sizeGB
-
-	return blockStorage, nil
+	return block.Block, nil
 }
 
-// Delete will remove block storage instance from your Vultr account
-func (b *BlockStorageServiceHandler) Delete(ctx context.Context, blockID string) error {
+// Get returns a single block storage instance based ony our blockID you provide from your Vultr Account
+func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID int) (*BlockStorage, error) {
+	uri := fmt.Sprintf("/v2/blocks/%d", blockID)
 
-	uri := "/v1/block/delete"
-
-	values := url.Values{
-		"SUBID": {blockID},
-	}
-
-	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
-
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	err = b.client.DoWithContext(ctx, req, nil)
-
+	block := new(blockStorageBase)
+	err = b.client.DoWithContext(ctx, req, block)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
-}
-
-// Detach will de-link a given block storage to the Vultr vps it is attached to
-// If liveDetach is set to "yes" the block storage will be detached without reloading the instance
-func (b *BlockStorageServiceHandler) Detach(ctx context.Context, blockID, liveDetach string) error {
-
-	uri := "/v1/block/detach"
-
-	values := url.Values{
-		"SUBID": {blockID},
-	}
-
-	if liveDetach == "yes" {
-		values.Add("live", "yes")
-	}
-
-	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
-
-	if err != nil {
-		return err
-	}
-
-	err = b.client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return block.Block, nil
 }
 
 // SetLabel allows you to set/update the label on your Vultr Block storage
-func (b *BlockStorageServiceHandler) SetLabel(ctx context.Context, blockID, label string) error {
-	uri := "/v1/block/label_set"
-
-	values := url.Values{
-		"SUBID": {blockID},
-		"label": {label},
-	}
-
-	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
-
+func (b *BlockStorageServiceHandler) Update(ctx context.Context, blockID int, label string) error {
+	uri := fmt.Sprintf("/v2/blocks/%d", blockID)
+	put := &RequestBody{"label": label}
+	req, err := b.client.NewRequest(ctx, http.MethodPatch, uri, put)
 	if err != nil {
 		return err
 	}
 
 	err = b.client.DoWithContext(ctx, req, nil)
+	if err != nil {
+		return err
+	}
 
+	return nil
+}
+
+// Delete will remove block storage instance from your Vultr account
+func (b *BlockStorageServiceHandler) Delete(ctx context.Context, blockID int) error {
+	uri := fmt.Sprintf("/v2/blocks/%d", blockID)
+
+	req, err := b.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
 	if err != nil {
 		return err
 	}
@@ -258,69 +127,96 @@ func (b *BlockStorageServiceHandler) SetLabel(ctx context.Context, blockID, labe
 }
 
 // List returns a list of all block storage instances on your Vultr Account
-func (b *BlockStorageServiceHandler) List(ctx context.Context) ([]BlockStorage, error) {
-
-	uri := "/v1/block/list"
-
-	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var blockStorage []BlockStorage
-	err = b.client.DoWithContext(ctx, req, &blockStorage)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return blockStorage, nil
-}
-
-// Get returns a single block storage instance based ony our blockID you provide from your Vultr Account
-func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID string) (*BlockStorage, error) {
-
-	uri := "/v1/block/list"
+func (b *BlockStorageServiceHandler) List(ctx context.Context, options *ListOptions) ([]BlockStorage, *Meta, error) {
+	uri := "/v2/blocks"
 
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	q := req.URL.Query()
-	q.Add("SUBID", blockID)
-	req.URL.RawQuery = q.Encode()
-
-	blockStorage := new(BlockStorage)
-	err = b.client.DoWithContext(ctx, req, blockStorage)
-
+	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return blockStorage, nil
+	req.URL.RawQuery = newValues.Encode()
+
+	blocks := new(blockStoragesBase)
+	err = b.client.DoWithContext(ctx, req, blocks)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return blocks.Blocks, blocks.Meta, nil
 }
 
-// Resize allows you to resize your Vultr block storage instance
-func (b *BlockStorageServiceHandler) Resize(ctx context.Context, blockID string, sizeGB int) error {
+// Attach will link a given block storage to a given Vultr vps
+// If liveAttach is set to "yes" the block storage will be attached without reloading the instance
+func (b *BlockStorageServiceHandler) Attach(ctx context.Context, blockID, instanceID int, liveAttach string) error {
+	uri := fmt.Sprintf("/v2/blocks/%d/attach", blockID)
 
-	uri := "/v1/block/resize"
-
-	values := url.Values{
-		"SUBID":   {blockID},
-		"size_gb": {strconv.Itoa(sizeGB)},
+	t := make(map[string]interface{})
+	t["instance_id"] = instanceID
+	if liveAttach == "yes" {
+		t["live"] = liveAttach
 	}
 
-	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
+	updates := RequestBody{}
+	updates = t
 
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, updates)
 	if err != nil {
 		return err
 	}
 
 	err = b.client.DoWithContext(ctx, req, nil)
+	if err != nil {
+		return err
+	}
 
+	return nil
+}
+
+//
+// Detach will de-link a given block storage to the Vultr instance it is attached to
+// If liveDetach is set to "yes" the block storage will be detached without reloading the instance
+func (b *BlockStorageServiceHandler) Detach(ctx context.Context, blockID int, liveDetach string) error {
+	uri := fmt.Sprintf("/v2/blocks/%d/detach", blockID)
+
+	t := make(map[string]interface{})
+	if liveDetach == "yes" {
+		t["live"] = liveDetach
+	}
+
+	updates := RequestBody{}
+	updates = t
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, updates)
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Resize allows you to resize your Vultr block storage
+func (b *BlockStorageServiceHandler) Resize(ctx context.Context, blockID int, sizeGB int) error {
+	uri := fmt.Sprintf("/v2/blocks/%d/resize", blockID)
+	body := &RequestBody{"size_gb": sizeGB}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, body)
+	if err != nil {
+		return err
+	}
+
+	err = b.client.DoWithContext(ctx, req, nil)
 	if err != nil {
 		return err
 	}
