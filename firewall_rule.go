@@ -24,6 +24,7 @@ type FireWallRuleServiceHandler struct {
 type FirewallRule struct {
 	ID         int    `json:"id"`
 	Action     string `json:"action"`
+	Type     string `json:"type"`
 	Protocol   string `json:"protocol"`
 	Port       string `json:"port"`
 	Subnet     string `json:"subnet"`
