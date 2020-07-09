@@ -2,7 +2,6 @@ package govultr
 
 import (
 	"fmt"
-	"net"
 	"net/http"
 	"reflect"
 	"testing"
@@ -12,31 +11,36 @@ func TestFireWallRuleServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/firewall/rule_create", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"rulenumber": 2}`
-
+	mux.HandleFunc("/v2/firewalls/abc123/rules", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"firewall_rule":{"id":1,"type":"v4","action":"accept","protocol":"tcp","port":"80","subnet":"127.0.0.1","subnet_size":32,"source":"","notes":"thisisanote"}}`
 		fmt.Fprint(writer, response)
 	})
 
-	firewallRule, err := client.FirewallRule.Create(ctx, "123456", "tcp", "8080", "10.0.0.0/32", "note")
+	rule := &FirewallRuleReq{
+		IPType:     "v4",
+		Protocol:   "tcp",
+		Subnet:     "127.0.0.1",
+		SubnetSize: 30,
+		Port:       "80",
+		Notes:      "thisisanote",
+	}
 
+	firewallRule, err := client.FirewallRule.Create(ctx, "abc123", rule)
 	if err != nil {
 		t.Errorf("FirewallRule.Create returned error: %v", err)
 	}
 
-	expected := &FirewallRule{RuleNumber: 2}
-
-	if !reflect.DeepEqual(firewallRule, expected) {
-		t.Errorf("FirewallRule.Create returned %+v, expected %+v", firewallRule, expected)
+	expected := &FirewallRule{
+		ID:         1,
+		Action:     "accept",
+		Type:       "v4",
+		Protocol:   "tcp",
+		Port:       "80",
+		Subnet:     "127.0.0.1",
+		SubnetSize: 32,
+		Source:     "",
+		Notes:      "thisisanote",
 	}
-
-	firewallRule, err = client.FirewallRule.Create(ctx, "123456", "tcp", "8080", "::/0", "note")
-
-	if err != nil {
-		t.Errorf("FirewallRule.Create returned error: %v", err)
-	}
-
-	expected = &FirewallRule{RuleNumber: 2}
 
 	if !reflect.DeepEqual(firewallRule, expected) {
 		t.Errorf("FirewallRule.Create returned %+v, expected %+v", firewallRule, expected)
@@ -47,61 +51,14 @@ func TestFireWallRuleServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/firewall/rule_delete", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/firewalls/abc123/rules/1", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.FirewallRule.Delete(ctx, "123456", "123")
+	err := client.FirewallRule.Delete(ctx, "abc123", 1)
 
 	if err != nil {
 		t.Errorf("FirewallRule.Delete returned error: %v", err)
-	}
-
-}
-
-func TestFireWallRuleServiceHandler_GetAll(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v1/firewall/rule_list", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{ "1": {"rulenumber": 1,"action": "accept","protocol": "icmp","port": "","subnet": "","subnet_size": 0,"notes": ""}}`
-		fmt.Fprint(writer, response)
-	})
-
-	firewallRule, err := client.FirewallRule.ListByIPType(ctx, "12345", "v4")
-	if err != nil {
-		t.Errorf("FirewallRule.ListByIPType returned error: %v", err)
-	}
-
-	expected := []FirewallRule{
-		{
-			RuleNumber: 1,
-			Action:     "accept",
-			Protocol:   "icmp",
-			Network:    nil,
-		},
-	}
-
-	if !reflect.DeepEqual(firewallRule, expected) {
-		t.Errorf("FirewallRule.ListByIPType returned %+v, expected %+v", firewallRule, expected)
-	}
-
-	firewallRule, err = client.FirewallRule.ListByIPType(ctx, "12345", "v6")
-	if err != nil {
-		t.Errorf("FirewallRule.ListByIPType returned error: %v", err)
-	}
-
-	expected = []FirewallRule{
-		{
-			RuleNumber: 1,
-			Action:     "accept",
-			Protocol:   "icmp",
-			Network:    nil,
-		},
-	}
-
-	if !reflect.DeepEqual(firewallRule, expected) {
-		t.Errorf("FirewallRule.ListByIPType returned %+v, expected %+v", firewallRule, expected)
 	}
 }
 
@@ -109,28 +66,40 @@ func TestFireWallRuleServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/firewall/rule_list", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{ "1": {"rulenumber": 1,"action": "accept","protocol": "icmp","port": "8080","subnet": "10.0.0.0","subnet_size": 32,"notes": ""}}`
+	mux.HandleFunc("/v2/firewalls/abc123/rules", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"firewall_rules":[{"id":1,"type":"v4","action":"accept","protocol":"tcp","port":"22","subnet":"0.0.0.0","subnet_size":0,"source":"","notes":""}],"meta":{"total":5,"links":{"next":"","prev":""}}}`
 		fmt.Fprint(writer, response)
 	})
 
-	firewallRule, err := client.FirewallRule.List(ctx, "12345")
+	firewallRule, meta, err := client.FirewallRule.List(ctx, "abc123", nil)
 	if err != nil {
 		t.Errorf("FirewallRule.List returned error: %v", err)
 	}
 
-	_, ip, _ := net.ParseCIDR("10.0.0.0/32")
-	expected := []FirewallRule{
+	expectedRule := []FirewallRule{
 		{
-			RuleNumber: 1,
+			ID:         1,
 			Action:     "accept",
-			Protocol:   "icmp",
-			Port:       "8080",
-			Network:    ip,
+			Type:       "v4",
+			Protocol:   "tcp",
+			Port:       "22",
+			Subnet:     "0.0.0.0",
+			SubnetSize: 0,
+			Source:     "",
+			Notes:      "",
 		},
 	}
 
-	if !reflect.DeepEqual(firewallRule, expected) {
-		t.Errorf("FirewallRule.List returned %+v, expected %+v", firewallRule, expected)
+	expectedMeta := &Meta{
+		Total: 5,
+		Links: &Links{},
+	}
+
+	if !reflect.DeepEqual(firewallRule, expectedRule) {
+		t.Errorf("FirewallRule.List rules returned %+v, expected %+v", firewallRule, expectedRule)
+	}
+
+	if !reflect.DeepEqual(meta, expectedMeta) {
+		t.Errorf("FirewallRule.List meta returned %+v, expected %+v", meta, expectedMeta)
 	}
 }

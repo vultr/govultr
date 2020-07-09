@@ -11,34 +11,85 @@ func TestFireWallGroupServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/firewall/group_create", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"FIREWALLGROUPID":"1234abcd"}`
+	mux.HandleFunc("/v2/firewalls", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"firewall_group":{"id":"44d0f934","description":"govultr test","date_created":"2020-07-0913:53:34","date_modified":"2020-07-0913:53:34","instance_count":15,"rule_count":6,"max_rule_count":999}}`
 		fmt.Fprint(writer, response)
 	})
 
-	firewallGroup, err := client.FirewallGroup.Create(ctx, "firewall-group-name")
-
+	group := &FirewallGroupReq{Description: "govultr test"}
+	firewallGroup, err := client.FirewallGroup.Create(ctx, group)
 	if err != nil {
 		t.Errorf("FirewallGroup.Create returned error: %v", err)
 	}
 
-	expected := &FirewallGroup{FirewallGroupID: "1234abcd"}
+	expected := &FirewallGroup{
+		ID:            "44d0f934",
+		Description:   "govultr test",
+		DateCreated:   "2020-07-0913:53:34",
+		DateModified:  "2020-07-0913:53:34",
+		InstanceCount: 15,
+		RuleCount:     6,
+		MaxRuleCount:  999,
+	}
 
 	if !reflect.DeepEqual(firewallGroup, expected) {
 		t.Errorf("FirewallGroup.Create returned %+v, expected %+v", firewallGroup, expected)
 	}
+}
 
+func TestFireWallGroupServiceHandler_Get(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/firewalls/44d0f934", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"firewall_group":{"id":"44d0f934","description":"govultr test","date_created":"2020-07-0913:53:34","date_modified":"2020-07-0913:53:34","instance_count":15,"rule_count":6,"max_rule_count":999}}`
+		fmt.Fprint(writer, response)
+	})
+
+	firewallGroup, err := client.FirewallGroup.Get(ctx, "44d0f934")
+	if err != nil {
+		t.Errorf("FirewallGroup.Create returned error: %v", err)
+	}
+
+	expected := &FirewallGroup{
+		ID:            "44d0f934",
+		Description:   "govultr test",
+		DateCreated:   "2020-07-0913:53:34",
+		DateModified:  "2020-07-0913:53:34",
+		InstanceCount: 15,
+		RuleCount:     6,
+		MaxRuleCount:  999,
+	}
+
+	if !reflect.DeepEqual(firewallGroup, expected) {
+		t.Errorf("FirewallGroup.Create returned %+v, expected %+v", firewallGroup, expected)
+	}
+}
+
+func TestFireWallGroupServiceHandler_ChangeDescription(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/firewalls/abc123", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	put := &FirewallGroupReq{Description: "test"}
+	err := client.FirewallGroup.Update(ctx, "abc123", put)
+	if err != nil {
+		t.Errorf("FirewallGroup.ChangeDescription returned error: %v", err)
+	}
 }
 
 func TestFireWallGroupServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/firewall/group_delete", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/firewalls/abc123", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.FirewallGroup.Delete(ctx, "12345abcd")
+	err := client.FirewallGroup.Delete(ctx, "abc123")
 
 	if err != nil {
 		t.Errorf("FirewallGroup.Delete returned error: %v", err)
@@ -49,76 +100,38 @@ func TestFireWallGroupServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/firewall/group_list", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"1234abcd": { "FIREWALLGROUPID": "1234abcd", "description": "my http firewall","date_created": "2017-02-14 17:48:40","date_modified": "2017-02-14 17:48:40","instance_count": 2,"rule_count": 2, "max_rule_count": 50}}`
+	mux.HandleFunc("/v2/firewalls", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"firewall_groups":[{"id":"44d0f934","description":"govultr test","date_created":"2020-07-0913:53:34","date_modified":"2020-07-0913:53:34","instance_count":15,"rule_count":6,"max_rule_count":999}],"meta":{"total":5,"links":{"next":"","prev":""}}}`
 		fmt.Fprint(writer, response)
 	})
 
-	firewallGroup, err := client.FirewallGroup.List(ctx)
-
+	firewallGroup, meta, err := client.FirewallGroup.List(ctx, nil)
 	if err != nil {
 		t.Errorf("FirewallGroup.List returned error: %v", err)
 	}
 
-	expected := []FirewallGroup{
+	expectedGroup := []FirewallGroup{
 		{
-			FirewallGroupID: "1234abcd",
-			Description:     "my http firewall",
-			DateCreated:     "2017-02-14 17:48:40",
-			DateModified:    "2017-02-14 17:48:40",
-			InstanceCount:   2,
-			RuleCount:       2,
-			MaxRuleCount:    50,
+			ID:            "44d0f934",
+			Description:   "govultr test",
+			DateCreated:   "2020-07-0913:53:34",
+			DateModified:  "2020-07-0913:53:34",
+			InstanceCount: 15,
+			RuleCount:     6,
+			MaxRuleCount:  999,
 		},
 	}
 
-	if !reflect.DeepEqual(firewallGroup, expected) {
-		t.Errorf("FirewallGroup.List returned %+v, expected %+v", firewallGroup, expected)
+	expectedMeta := &Meta{
+		Total:5,
+		Links: &Links{},
 	}
 
-}
-
-func TestFireWallGroupServiceHandler_Get(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v1/firewall/group_list", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"1234abcd": { "FIREWALLGROUPID": "1234abcd", "description": "my http firewall","date_created": "2017-02-14 17:48:40","date_modified": "2017-02-14 17:48:40","instance_count": 2,"rule_count": 2, "max_rule_count": 50}}`
-		fmt.Fprint(writer, response)
-	})
-
-	firewallGroup, err := client.FirewallGroup.Get(ctx, "1234abcd")
-
-	if err != nil {
-		t.Errorf("FirewallGroup.Get returned error: %v", err)
+	if !reflect.DeepEqual(firewallGroup, expectedGroup) {
+		t.Errorf("FirewallGroup.List groups returned %+v, expected %+v", firewallGroup, expectedGroup)
 	}
 
-	expected := &FirewallGroup{
-		FirewallGroupID: "1234abcd",
-		Description:     "my http firewall",
-		DateCreated:     "2017-02-14 17:48:40",
-		DateModified:    "2017-02-14 17:48:40",
-		InstanceCount:   2,
-		RuleCount:       2,
-		MaxRuleCount:    50,
-	}
-
-	if !reflect.DeepEqual(firewallGroup, expected) {
-		t.Errorf("FirewallGroup.Get returned %+v, expected %+v", firewallGroup, expected)
-	}
-}
-
-func TestFireWallGroupServiceHandler_ChangeDescription(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v1/firewall/group_set_description", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
-
-	err := client.FirewallGroup.ChangeDescription(ctx, "12345abcd", "new description")
-
-	if err != nil {
-		t.Errorf("FirewallGroup.ChangeDescription returned error: %v", err)
+	if !reflect.DeepEqual(meta, expectedMeta) {
+		t.Errorf("FirewallGroup.List meta returned %+v, expected %+v", meta, expectedMeta)
 	}
 }
