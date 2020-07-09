@@ -7,25 +7,62 @@ import (
 	"testing"
 )
 
-func TestIsoServiceHandler_CreateFromURL(t *testing.T) {
+func TestIsoServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/iso/create_from_url", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"ISOID": 24}`
-
+	mux.HandleFunc("/v2/iso", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"iso":{"id":9931,"date_created":"2020-07-0917:15:27","filename":"CentOS-8.1.1911-x86_64-dvd1.iso","status":"pending"}}`
 		fmt.Fprint(writer, response)
 	})
 
-	iso, err := client.ISO.CreateFromURL(ctx, "domain.com/coolest-iso-ever.iso")
+	isoReq := &ISOReq{Url: "http://centos.com/CentOS-8.1.1911-x86_64-dvd1.iso"}
+	iso, err := client.ISO.Create(ctx, isoReq)
 	if err != nil {
-		t.Errorf("Iso.CreateFromURL returned %+v, expected %+v", err, nil)
+		t.Errorf("Iso.Create returned %+v, expected %+v", err, nil)
 	}
 
-	expected := &ISO{ISOID: 24}
+	expected := &ISO{
+		ID:          9931,
+		DateCreated: "2020-07-0917:15:27",
+		FileName:    "CentOS-8.1.1911-x86_64-dvd1.iso",
+		Size:        0,
+		MD5Sum:      "",
+		SHA512Sum:   "",
+		Status:      "pending",
+	}
 
 	if !reflect.DeepEqual(iso, expected) {
-		t.Errorf("Iso.CreateFromURL returned %+v, expected %+v", iso, expected)
+		t.Errorf("Iso.Create returned %+v, expected %+v", iso, expected)
+	}
+}
+
+func TestIsoServiceHandler_Get(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/iso/9931", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"iso":{"id":9931,"date_created":"2020-07-0917:15:27","filename":"CentOS-8.1.1911-x86_64-dvd1.iso","status":"pending"}}`
+		fmt.Fprint(writer, response)
+	})
+
+	iso, err := client.ISO.Get(ctx, 9931)
+	if err != nil {
+		t.Errorf("Iso.Get returned %+v, expected %+v", err, nil)
+	}
+
+	expected := &ISO{
+		ID:          9931,
+		DateCreated: "2020-07-0917:15:27",
+		FileName:    "CentOS-8.1.1911-x86_64-dvd1.iso",
+		Size:        0,
+		MD5Sum:      "",
+		SHA512Sum:   "",
+		Status:      "pending",
+	}
+
+	if !reflect.DeepEqual(iso, expected) {
+		t.Errorf("Iso.Get returned %+v, expected %+v", iso, expected)
 	}
 }
 
@@ -33,7 +70,7 @@ func TestIsoServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/iso/destroy", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/iso/24", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
@@ -48,46 +85,67 @@ func TestIsoServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/iso/list", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{ "24": { "ISOID": 24,"date_created": "2014-04-01 14:10:09","filename": "CentOS-6.5-x86_64-minimal.iso","size": 9342976,"md5sum": "ec066","sha512sum": "1741f890bce04613f60b0","status": "complete"}}`
+	mux.HandleFunc("/v2/iso", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"isos":[{"id":9931,"date_created":"2020-07-0917:15:27","filename":"CentOS-8.1.1911-x86_64-dvd1.iso","status":"pending"}],"meta":{"total":8,"links":{"next":"","prev":""}}}`
 		fmt.Fprint(writer, response)
 	})
 
-	iso, err := client.ISO.List(ctx)
-
+	iso, meta, err := client.ISO.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Iso.List returned %+v, expected %+v", err, nil)
 	}
 
-	expected := []ISO{
-		{ISOID: 24, DateCreated: "2014-04-01 14:10:09", FileName: "CentOS-6.5-x86_64-minimal.iso", Size: 9342976, MD5Sum: "ec066", SHA512Sum: "1741f890bce04613f60b0", Status: "complete"},
+	expectedIso := []ISO{
+		{
+			ID:          9931,
+			DateCreated: "2020-07-0917:15:27",
+			FileName:    "CentOS-8.1.1911-x86_64-dvd1.iso",
+			Size:        0,
+			MD5Sum:      "",
+			SHA512Sum:   "",
+			Status:      "pending",
+		},
 	}
 
-	if !reflect.DeepEqual(iso, expected) {
-		t.Errorf("Iso.List returned %+v, expected %+v", iso, expected)
+	expectedMeta := &Meta{
+		Total: 8,
+		Links: &Links{},
+	}
+	if !reflect.DeepEqual(iso, expectedIso) {
+		t.Errorf("Iso.List iso returned %+v, expected %+v", iso, expectedIso)
+	}
+
+	if !reflect.DeepEqual(meta, expectedMeta) {
+		t.Errorf("Iso.List returned %+v, expected %+v", meta, expectedMeta)
 	}
 }
 
-func TestIsoServiceHandler_GetPublicList(t *testing.T) {
+func TestIsoServiceHandler_ListPublic(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/iso/list_public", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"204515": {"ISOID": 204515,"name": "CentOS 7","description": "7 x86_64 Minimal"}}`
+	mux.HandleFunc("/v2/iso-public", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"public_isos": [{"id": 204515,"name": "CentOS 7","description": "7 x86_64 Minimal"}],"meta":{"total":8,"links":{"next":"","prev":""}}}`
 		fmt.Fprint(writer, response)
 	})
 
-	iso, err := client.ISO.GetPublicList(ctx)
-
+	iso, meta, err := client.ISO.ListPublic(ctx, nil)
 	if err != nil {
-		t.Errorf("Iso.GetPublicList returned %+v, expected %+v", err, nil)
+		t.Errorf("Iso.ListPublic returned %+v, expected %+v", err, nil)
 	}
 
-	expected := []PublicISO{
-		{ISOID: 204515, Name: "CentOS 7", Description: "7 x86_64 Minimal"},
+	expectedIso := []PublicISO{
+		{ID: 204515, Name: "CentOS 7", Description: "7 x86_64 Minimal"},
 	}
 
-	if !reflect.DeepEqual(iso, expected) {
-		t.Errorf("Iso.GetPublicList returned %+v, expected %+v", iso, expected)
+	expectedMeta := &Meta{
+		Total: 8,
+		Links: &Links{},
+	}
+	if !reflect.DeepEqual(iso, expectedIso) {
+		t.Errorf("Iso.ListPublic  iso returned %+v, expected %+v", iso, expectedIso)
+	}
+	if !reflect.DeepEqual(meta, expectedMeta) {
+		t.Errorf("Iso.ListPublic meta returned %+v, expected %+v", meta, expectedMeta)
 	}
 }
