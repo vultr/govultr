@@ -95,16 +95,16 @@ func TestBackupServiceHandler_ListEmpty(t *testing.T) {
 
 	expected := []Backup{}
 
+	if !reflect.DeepEqual(backups, expected) {
+		t.Errorf("Backup.List returned %+v, expected %+v", backups, expected)
+	}
+
 	expectedMeta := &Meta{
 		Total: 0,
 		Links: &Links{
 			Next: "",
 			Prev: "",
 		},
-	}
-
-	if !reflect.DeepEqual(backups, expected) {
-		t.Errorf("Backup.List returned %T, expected %T", backups, expected)
 	}
 
 	if !reflect.DeepEqual(meta, expectedMeta) {

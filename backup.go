@@ -10,8 +10,8 @@ import (
 
 // BackupService is the interface to interact with the backup endpoint on the Vultr API
 type BackupService interface {
-	List(ctx context.Context, options *ListOptions) ([]Backup, *Meta, error)
 	Get(ctx context.Context, backupID string) (*Backup, error)
+	List(ctx context.Context, options *ListOptions) ([]Backup, *Meta, error)
 }
 
 // BackupServiceHandler handles interaction with the backup methods for the Vultr API
@@ -19,12 +19,12 @@ type BackupServiceHandler struct {
 	client *Client
 }
 
-type BackupsBase struct {
+type backupsBase struct {
 	Backups []Backup `json:"backups"`
 	Meta    *Meta    `json:"meta"`
 }
 
-type BackupBase struct {
+type backupBase struct {
 	Backup *Backup `json:"backup"`
 }
 
@@ -35,6 +35,23 @@ type Backup struct {
 	Description string `json:"description"`
 	Size        int    `json:"size"`
 	Status      string `json:"status"`
+}
+
+// Get retrieves a backup that matches the given backupID
+func (b *BackupServiceHandler) Get(ctx context.Context, backupID string) (*Backup, error) {
+	uri := fmt.Sprintf("/v2/backups/%s", backupID)
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	backup := new(backupBase)
+	if err := b.client.DoWithContext(ctx, req, backup); err != nil {
+		return nil, err
+	}
+
+	return backup.Backup, nil
 }
 
 // List retrieves a list of all backups on the current account
@@ -53,28 +70,11 @@ func (b *BackupServiceHandler) List(ctx context.Context, options *ListOptions) (
 
 	req.URL.RawQuery = newValues.Encode()
 
-	backups := new(BackupsBase)
+	backups := new(backupsBase)
 	err = b.client.DoWithContext(ctx, req, backups)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	return backups.Backups, backups.Meta, nil
-}
-
-// Get retrieves a backup that matches the given backupID
-func (b *BackupServiceHandler) Get(ctx context.Context, backupID string) (*Backup, error) {
-	uri := fmt.Sprintf("/v2/backups/%s", backupID)
-	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	backup := new(BackupBase)
-	if err := b.client.DoWithContext(ctx, req, backup); err != nil {
-		return nil, err
-	}
-
-	return backup.Backup, nil
 }
