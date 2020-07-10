@@ -15,7 +15,7 @@ type AccountServiceHandler struct {
 	client *Client
 }
 
-type AccountBase struct {
+type accountBase struct {
 	Account *Account `json:"account"`
 }
 
@@ -39,7 +39,7 @@ func (a *AccountServiceHandler) Get(ctx context.Context) (*Account, error) {
 		return nil, err
 	}
 
-	account := new(AccountBase)
+	account := new(accountBase)
 	err = a.client.DoWithContext(ctx, req, account)
 
 	if err != nil {
