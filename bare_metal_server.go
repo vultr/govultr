@@ -12,9 +12,9 @@ const path = "/v2/baremetal"
 
 // BareMetalServerService is the interface to interact with the bare metal endpoints on the Vultr API
 type BareMetalServerService interface {
-	Create(ctx context.Context, options *BareMetalServerOptions) (*BareMetalServer, error)
+	Create(ctx context.Context, bmCreate *BareMetalServerOptions) (*BareMetalServer, error)
 	Get(ctx context.Context, serverID int) (*BareMetalServer, error)
-	Update(ctx context.Context, serverID int, bmCreate *BareMetalServerOptions) error
+	Update(ctx context.Context, serverID int, bmReq *BareMetalServerOptions) error
 	Delete(ctx context.Context, serverID int) error
 	List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, error)
 	Bandwidth(ctx context.Context, serverID int) (map[string]map[string]BareMetalServerBandwidth, error)
