@@ -34,15 +34,12 @@ type Account struct {
 func (a *AccountServiceHandler) Get(ctx context.Context) (*Account, error) {
 	uri := "/v2/account"
 	req, err := a.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, err
 	}
 
 	account := new(accountBase)
-	err = a.client.DoWithContext(ctx, req, account)
-
-	if err != nil {
+	if err = a.client.DoWithContext(ctx, req, account); err != nil {
 		return nil, err
 	}
 
