@@ -56,8 +56,7 @@ func (r *RegionServiceHandler) List(ctx context.Context, options *ListOptions) (
 	req.URL.RawQuery = newValues.Encode()
 
 	regions := new(regionBase)
-	err = r.Client.DoWithContext(ctx, req, &regions)
-	if err != nil {
+	if err = r.Client.DoWithContext(ctx, req, &regions); err != nil {
 		return nil, nil, err
 	}
 
@@ -82,9 +81,7 @@ func (r *RegionServiceHandler) Availability(ctx context.Context, regionID string
 	}
 
 	plans := new(planAvailability)
-	err = r.Client.DoWithContext(ctx, req, plans)
-
-	if err != nil {
+	if err = r.Client.DoWithContext(ctx, req, plans); err != nil {
 		return nil, err
 	}
 
