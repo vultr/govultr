@@ -17,7 +17,7 @@ type BareMetalServerService interface {
 	Update(ctx context.Context, serverID int, bmReq *BareMetalReq) error
 	Delete(ctx context.Context, serverID int) error
 	List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, error)
-	Bandwidth(ctx context.Context, serverID int) (map[string]map[string]BareMetalServerBandwidth, error)
+	Bandwidth(ctx context.Context, serverID int) (*BandwidthBase, error)
 	EnableIPV6(ctx context.Context, serverID int) error
 	Halt(ctx context.Context, serverID int) error
 	IPV4Info(ctx context.Context, serverID int, options *ListOptions) ([]BareMetalServerIPV4, *Meta, error)
@@ -113,14 +113,13 @@ type bareMetalIPv6sBase struct {
 	Meta         *Meta                 `json:"meta"`
 }
 
-type bandwidthBase struct {
-	BareMetalBandwidth []BareMetalServerBandwidth `json:"bandwidth"`
+type BandwidthBase struct {
+	BareMetalBandwidth map[string]BareMetalServerBandwidth `json:"bandwidth"`
 }
 
 // Create a new bare metal server.
 func (b *BareMetalServerServiceHandler) Create(ctx context.Context, bmCreate *BareMetalReq) (*BareMetalServer, error) {
 	req, err := b.client.NewRequest(ctx, http.MethodPost, path, bmCreate)
-
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +137,6 @@ func (b *BareMetalServerServiceHandler) Create(ctx context.Context, bmCreate *Ba
 func (b *BareMetalServerServiceHandler) Get(ctx context.Context, serverID int) (*BareMetalServer, error) {
 	uri := fmt.Sprintf("%s/%d", path, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +154,6 @@ func (b *BareMetalServerServiceHandler) Get(ctx context.Context, serverID int) (
 func (b *BareMetalServerServiceHandler) Update(ctx context.Context, serverID int, bmReq *BareMetalReq) error {
 	uri := fmt.Sprintf("%s/%d", path, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPatch, uri, bmReq)
-
 	if err != nil {
 		return err
 	}
@@ -173,14 +170,11 @@ func (b *BareMetalServerServiceHandler) Update(ctx context.Context, serverID int
 func (b *BareMetalServerServiceHandler) Delete(ctx context.Context, serverID int) error {
 	uri := fmt.Sprintf("%s/%d", path, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodDelete, uri, nil)
-
 	if err != nil {
 		return err
 	}
 
-	err = b.client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -190,7 +184,6 @@ func (b *BareMetalServerServiceHandler) Delete(ctx context.Context, serverID int
 // List lists all bare metal servers on the current account. This includes both pending and active servers.
 func (b *BareMetalServerServiceHandler) List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, error) {
 	req, err := b.client.NewRequest(ctx, http.MethodGet, path, nil)
-
 	if err != nil {
 		return nil, nil, err
 	}
@@ -203,8 +196,7 @@ func (b *BareMetalServerServiceHandler) List(ctx context.Context, options *ListO
 	req.URL.RawQuery = newValues.Encode()
 
 	bms := new(bareMetalsBase)
-	err = b.client.DoWithContext(ctx, req, bms)
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, bms); err != nil {
 		return nil, nil, err
 	}
 
@@ -212,22 +204,19 @@ func (b *BareMetalServerServiceHandler) List(ctx context.Context, options *ListO
 }
 
 // Bandwidth will get the bandwidth used by a bare metal server
-func (b *BareMetalServerServiceHandler) Bandwidth(ctx context.Context, serverID int) (map[string]map[string]BareMetalServerBandwidth, error) {
+func (b *BareMetalServerServiceHandler) Bandwidth(ctx context.Context, serverID int) (*BandwidthBase, error) {
 	uri := fmt.Sprintf("%s/%d/bandwidth", path, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, err
 	}
 
-	bms := make(map[string]map[string]BareMetalServerBandwidth)
-
-	err = b.client.DoWithContext(ctx, req, &bms)
-
-	if err != nil {
+	bms := new(BandwidthBase)
+	if err = b.client.DoWithContext(ctx, req, &bms); err != nil {
 		return nil, err
 	}
 
+	// fmt.Print(bms)
 	return bms, nil
 }
 
@@ -236,14 +225,11 @@ func (b *BareMetalServerServiceHandler) Bandwidth(ctx context.Context, serverID 
 func (b *BareMetalServerServiceHandler) EnableIPV6(ctx context.Context, serverID int) error {
 	uri := fmt.Sprintf("%s/%d/enable-ipv6", path, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
-
 	if err != nil {
 		return err
 	}
 
-	err = b.client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -255,16 +241,12 @@ func (b *BareMetalServerServiceHandler) EnableIPV6(ctx context.Context, serverID
 // The data on the machine will not be modified, and you will still be billed for the machine.
 func (b *BareMetalServerServiceHandler) Halt(ctx context.Context, serverID int) error {
 	uri := fmt.Sprintf("%s/%d/halt", path, serverID)
-
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
-
 	if err != nil {
 		return err
 	}
 
-	err = b.client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -275,9 +257,7 @@ func (b *BareMetalServerServiceHandler) Halt(ctx context.Context, serverID int) 
 // IP information is only available for bare metal servers in the "active" state.
 func (b *BareMetalServerServiceHandler) IPV4Info(ctx context.Context, serverID int, options *ListOptions) ([]BareMetalServerIPV4, *Meta, error) {
 	uri := fmt.Sprintf("%s/%d/ipv4", path, serverID)
-
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, nil, err
 	}
@@ -290,8 +270,7 @@ func (b *BareMetalServerServiceHandler) IPV4Info(ctx context.Context, serverID i
 	req.URL.RawQuery = newValues.Encode()
 
 	ipv4 := new(bareMetalIPv4sBase)
-	err = b.client.DoWithContext(ctx, req, ipv4)
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, ipv4); err != nil {
 		return nil, nil, err
 	}
 
@@ -303,9 +282,7 @@ func (b *BareMetalServerServiceHandler) IPV4Info(ctx context.Context, serverID i
 // If the bare metal server does not have IPv6 enabled, then an empty array is returned.
 func (b *BareMetalServerServiceHandler) IPV6Info(ctx context.Context, serverID int, options *ListOptions) ([]BareMetalServerIPV6, *Meta, error) {
 	uri := fmt.Sprintf("%s/%d/ipv6", path, serverID)
-
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, nil, err
 	}
@@ -318,12 +295,9 @@ func (b *BareMetalServerServiceHandler) IPV6Info(ctx context.Context, serverID i
 	req.URL.RawQuery = newValues.Encode()
 
 	ipv6 := new(bareMetalIPv6sBase)
-	err = b.client.DoWithContext(ctx, req, ipv6)
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, ipv6); err != nil {
 		return nil, nil, err
 	}
-
-	// fmt.Print(req)
 
 	return ipv6.BareMetalIPs, ipv6.Meta, nil
 }
@@ -333,14 +307,11 @@ func (b *BareMetalServerServiceHandler) Reboot(ctx context.Context, serverID int
 	uri := fmt.Sprintf("%s/%d/reboot", path, serverID)
 
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
-
 	if err != nil {
 		return err
 	}
 
-	err = b.client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -351,16 +322,12 @@ func (b *BareMetalServerServiceHandler) Reboot(ctx context.Context, serverID int
 // All data will be permanently lost, but the IP address will remain the same. There is no going back from this call.
 func (b *BareMetalServerServiceHandler) Reinstall(ctx context.Context, serverID int) error {
 	uri := fmt.Sprintf("%s/%d/reinstall", path, serverID)
-
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
-
 	if err != nil {
 		return err
 	}
 
-	err = b.client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 

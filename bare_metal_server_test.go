@@ -310,15 +310,16 @@ func TestBareMetalServerServiceHandler_Bandwidth(t *testing.T) {
 		t.Errorf("BareMetalServer.Bandwidth returned %+v", err)
 	}
 
-	expected := map[string]map[string]BareMetalServerBandwidth{}
-	expected["bandwidth"] = map[string]BareMetalServerBandwidth{}
-	expected["bandwidth"]["2017-04-01"] = BareMetalServerBandwidth{
-		IncomingBytes: 91571055,
-		OutgoingBytes: 3084731,
-	}
+	expected := &BandwidthBase{
+		map[string]BareMetalServerBandwidth{
+			"2017-04-01": {
+				IncomingBytes: 91571055,
+				OutgoingBytes: 3084731,
+			},
+		}}
 
-	if !reflect.DeepEqual(bandwidth, expected) {
-		t.Errorf("BareMetalServer.Bandwidth returned %+v, expected %+v", bandwidth, expected)
+	if !reflect.DeepEqual(bandwidth.BareMetalBandwidth, expected.BareMetalBandwidth) {
+		t.Errorf("BareMetalServer.Bandwidth returned %+v, expected %+v", bandwidth, expected.BareMetalBandwidth)
 	}
 }
 
