@@ -38,11 +38,11 @@ type User struct {
 
 // UserReq is the user struct for create and update calls
 type UserReq struct {
-	Email      string   `json:"email"`
-	Name       string   `json:"name"`
-	APIEnabled string   `json:"api_enabled"`
-	ACL        []string `json:"acl"`
-	Password   string   `json:"password"`
+	Email      string   `json:"email,omitempty"`
+	Name       string   `json:"name,omitempty"`
+	APIEnabled string   `json:"api_enabled,omitempty"`
+	ACL        []string `json:"acl,omitempty"`
+	Password   string   `json:"password,omitempty"`
 }
 
 type usersBase struct {
@@ -57,7 +57,6 @@ type userBase struct {
 // Create will add the specified user to your Vultr account
 func (u *UserServiceHandler) Create(ctx context.Context, userCreate *UserReq) (*User, error) {
 	req, err := u.client.NewRequest(ctx, http.MethodPost, path, userCreate)
-
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +74,6 @@ func (u *UserServiceHandler) Get(ctx context.Context, userID string) (*User, err
 	uri := fmt.Sprintf("%s/%s", path, userID)
 
 	req, err := u.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +90,6 @@ func (u *UserServiceHandler) Get(ctx context.Context, userID string) (*User, err
 func (u *UserServiceHandler) Update(ctx context.Context, userID string, userReq *UserReq) error {
 	uri := fmt.Sprintf("%s/%s", path, userID)
 	req, err := u.client.NewRequest(ctx, http.MethodPatch, uri, userReq)
-
 	if err != nil {
 		return err
 	}
@@ -104,19 +101,16 @@ func (u *UserServiceHandler) Update(ctx context.Context, userID string, userReq 
 	return nil
 }
 
-//Delete will remove the specified user from your Vultr account
+// Delete will remove the specified user from your Vultr account
 func (u *UserServiceHandler) Delete(ctx context.Context, userID string) error {
 	uri := fmt.Sprintf("%s/%s", path, userID)
 
 	req, err := u.client.NewRequest(ctx, http.MethodDelete, uri, nil)
-
 	if err != nil {
 		return err
 	}
 
-	err = u.client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
+	if err = u.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -135,8 +129,7 @@ func (u *UserServiceHandler) List(ctx context.Context, options *ListOptions) ([]
 	req.URL.RawQuery = newValues.Encode()
 
 	users := new(usersBase)
-	err = u.client.DoWithContext(ctx, req, &users)
-	if err != nil {
+	if err = u.client.DoWithContext(ctx, req, &users); err != nil {
 		return nil, nil, err
 	}
 
