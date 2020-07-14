@@ -27,9 +27,9 @@ type ISO struct {
 	ID          int    `json:"id"`
 	DateCreated string `json:"date_created"`
 	FileName    string `json:"filename"`
-	Size        int    `json:"size"`
-	MD5Sum      string `json:"md5sum"`
-	SHA512Sum   string `json:"sha512sum"`
+	Size        int    `json:"size,omitempty"`
+	MD5Sum      string `json:"md5sum,omitempty"`
+	SHA512Sum   string `json:"sha512sum,omitempty"`
 	Status      string `json:"status"`
 }
 
@@ -40,6 +40,7 @@ type PublicISO struct {
 	Description string `json:"description"`
 }
 
+// ISOReq
 type ISOReq struct {
 	Url string `json:"url"`
 }
@@ -67,8 +68,7 @@ func (i *ISOServiceHandler) Create(ctx context.Context, isoReq *ISOReq) (*ISO, e
 	}
 
 	iso := new(isoBase)
-	err = i.Client.DoWithContext(ctx, req, iso)
-	if err != nil {
+	if err = i.Client.DoWithContext(ctx, req, iso); err != nil {
 		return nil, err
 	}
 
@@ -100,8 +100,7 @@ func (i *ISOServiceHandler) Delete(ctx context.Context, isoID int) error {
 		return err
 	}
 
-	err = i.Client.DoWithContext(ctx, req, nil)
-	if err != nil {
+	if err = i.Client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -125,8 +124,7 @@ func (i *ISOServiceHandler) List(ctx context.Context, options *ListOptions) ([]I
 	req.URL.RawQuery = newValues.Encode()
 
 	iso := new(isosBase)
-	err = i.Client.DoWithContext(ctx, req, iso)
-	if err != nil {
+	if err = i.Client.DoWithContext(ctx, req, iso); err != nil {
 		return nil, nil, err
 	}
 
@@ -150,8 +148,7 @@ func (i *ISOServiceHandler) ListPublic(ctx context.Context, options *ListOptions
 	req.URL.RawQuery = newValues.Encode()
 
 	iso := new(publicIsosBase)
-	err = i.Client.DoWithContext(ctx, req, iso)
-	if err != nil {
+	if err = i.Client.DoWithContext(ctx, req, iso); err != nil {
 		return nil, nil, err
 	}
 
