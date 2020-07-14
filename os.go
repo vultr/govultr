@@ -36,7 +36,6 @@ var _ OSService = &OSServiceHandler{}
 func (o *OSServiceHandler) List(ctx context.Context, options *ListOptions) ([]OS, *Meta, error) {
 	uri := "/v2/os"
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, nil, err
 	}
@@ -48,8 +47,7 @@ func (o *OSServiceHandler) List(ctx context.Context, options *ListOptions) ([]OS
 	req.URL.RawQuery = newValues.Encode()
 
 	os := new(osBase)
-	err = o.client.DoWithContext(ctx, req, os)
-	if err != nil {
+	if err = o.client.DoWithContext(ctx, req, os); err != nil {
 		return nil, nil, err
 	}
 
