@@ -19,6 +19,15 @@ type BackupServiceHandler struct {
 	client *Client
 }
 
+// Backup represents a Vultr backup
+type Backup struct {
+	ID          string `json:"id"`
+	DateCreated string `json:"date_created"`
+	Description string `json:"description"`
+	Size        int    `json:"size"`
+	Status      string `json:"status"`
+}
+
 type backupsBase struct {
 	Backups []Backup `json:"backups"`
 	Meta    *Meta    `json:"meta"`
@@ -28,14 +37,6 @@ type backupBase struct {
 	Backup *Backup `json:"backup"`
 }
 
-// Backup represents a Vultr backup
-type Backup struct {
-	ID          string `json:"id"`
-	DateCreated string `json:"date_created"`
-	Description string `json:"description"`
-	Size        int    `json:"size"`
-	Status      string `json:"status"`
-}
 
 // Get retrieves a backup that matches the given backupID
 func (b *BackupServiceHandler) Get(ctx context.Context, backupID string) (*Backup, error) {
@@ -71,8 +72,7 @@ func (b *BackupServiceHandler) List(ctx context.Context, options *ListOptions) (
 	req.URL.RawQuery = newValues.Encode()
 
 	backups := new(backupsBase)
-	err = b.client.DoWithContext(ctx, req, backups)
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, backups); err != nil {
 		return nil, nil, err
 	}
 
