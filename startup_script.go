@@ -60,8 +60,7 @@ func (s *StartupScriptServiceHandler) Create(ctx context.Context, scriptReq *Sta
 	}
 
 	script := new(startupScriptBase)
-	err = s.client.DoWithContext(ctx, req, script)
-	if err != nil {
+	if err = s.client.DoWithContext(ctx, req, script); err != nil {
 		return nil, err
 	}
 
@@ -78,8 +77,7 @@ func (s *StartupScriptServiceHandler) Get(ctx context.Context, scriptID int) (*S
 	}
 
 	script := new(startupScriptBase)
-	err = s.client.DoWithContext(ctx, req, script)
-	if err != nil {
+	if err = s.client.DoWithContext(ctx, req, script); err != nil {
 		return nil, err
 	}
 
@@ -95,8 +93,7 @@ func (s *StartupScriptServiceHandler) Update(ctx context.Context, scriptID int, 
 		return err
 	}
 
-	err = s.client.DoWithContext(ctx, req, nil)
-	if err != nil {
+	if err = s.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -112,8 +109,7 @@ func (s *StartupScriptServiceHandler) Delete(ctx context.Context, scriptID int) 
 		return err
 	}
 
-	err = s.client.DoWithContext(ctx, req, nil)
-	if err != nil {
+	if err = s.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -136,8 +132,7 @@ func (s *StartupScriptServiceHandler) List(ctx context.Context, options *ListOpt
 	req.URL.RawQuery = newValues.Encode()
 
 	scripts := new(startupScriptsBase)
-	err = s.client.DoWithContext(ctx, req, scripts)
-	if err != nil {
+	if err = s.client.DoWithContext(ctx, req, scripts); err != nil {
 		return nil, nil, err
 	}
 
