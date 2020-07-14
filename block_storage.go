@@ -66,8 +66,7 @@ func (b *BlockStorageServiceHandler) Create(ctx context.Context, blockReq *Block
 	}
 
 	block := new(blockStorageBase)
-	err = b.client.DoWithContext(ctx, req, block)
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, block); err != nil {
 		return nil, err
 	}
 
@@ -84,8 +83,7 @@ func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID int) (*Blo
 	}
 
 	block := new(blockStorageBase)
-	err = b.client.DoWithContext(ctx, req, block)
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, block); err != nil {
 		return nil, err
 	}
 
@@ -101,8 +99,7 @@ func (b *BlockStorageServiceHandler) Update(ctx context.Context, blockID int, la
 		return err
 	}
 
-	err = b.client.DoWithContext(ctx, req, nil)
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -118,8 +115,7 @@ func (b *BlockStorageServiceHandler) Delete(ctx context.Context, blockID int) er
 		return err
 	}
 
-	err = b.client.DoWithContext(ctx, req, nil)
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, nil); err !=nil {
 		return err
 	}
 
@@ -143,9 +139,7 @@ func (b *BlockStorageServiceHandler) List(ctx context.Context, options *ListOpti
 	req.URL.RawQuery = newValues.Encode()
 
 	blocks := new(blockStoragesBase)
-	err = b.client.DoWithContext(ctx, req, blocks)
-
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, blocks); err != nil {
 		return nil, nil, err
 	}
 
@@ -171,8 +165,7 @@ func (b *BlockStorageServiceHandler) Attach(ctx context.Context, blockID, instan
 		return err
 	}
 
-	err = b.client.DoWithContext(ctx, req, nil)
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -198,8 +191,7 @@ func (b *BlockStorageServiceHandler) Detach(ctx context.Context, blockID int, li
 		return err
 	}
 
-	err = b.client.DoWithContext(ctx, req, nil)
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -216,8 +208,7 @@ func (b *BlockStorageServiceHandler) Resize(ctx context.Context, blockID int, si
 		return err
 	}
 
-	err = b.client.DoWithContext(ctx, req, nil)
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
