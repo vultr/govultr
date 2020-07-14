@@ -57,8 +57,7 @@ func (f *FireWallGroupServiceHandler) Create(ctx context.Context, fwGroupReq *Fi
 	}
 
 	firewall := new(firewallGroupBase)
-	err = f.client.DoWithContext(ctx, req, firewall)
-	if err != nil {
+	if err = f.client.DoWithContext(ctx, req, firewall); err != nil {
 		return nil, err
 	}
 
@@ -75,8 +74,7 @@ func (f *FireWallGroupServiceHandler) Get(ctx context.Context, fwGroupID string)
 	}
 
 	firewall := new(firewallGroupBase)
-	err = f.client.DoWithContext(ctx, req, firewall)
-	if err != nil {
+	if err = f.client.DoWithContext(ctx, req, firewall); err != nil {
 		return nil, err
 	}
 
@@ -92,8 +90,7 @@ func (f *FireWallGroupServiceHandler) Update(ctx context.Context, fwGroupID stri
 		return err
 	}
 
-	err = f.client.DoWithContext(ctx, req, nil)
-	if err != nil {
+	if err = f.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -109,8 +106,7 @@ func (f *FireWallGroupServiceHandler) Delete(ctx context.Context, fwGroupID stri
 		return err
 	}
 
-	err = f.client.DoWithContext(ctx, req, nil)
-	if err != nil {
+	if err = f.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -134,8 +130,7 @@ func (f *FireWallGroupServiceHandler) List(ctx context.Context, options *ListOpt
 	req.URL.RawQuery = newValues.Encode()
 
 	firewalls := new(firewallGroupsBase)
-	err = f.client.DoWithContext(ctx, req, firewalls)
-	if err != nil {
+	if err = f.client.DoWithContext(ctx, req, firewalls); err != nil {
 		return nil, nil, err
 	}
 
