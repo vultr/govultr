@@ -43,7 +43,6 @@ func (r *RegionServiceHandler) List(ctx context.Context, options *ListOptions) (
 	uri := "/v2/regions"
 
 	req, err := r.Client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, nil, err
 	}
