@@ -55,8 +55,7 @@ func (s *SSHKeyServiceHandler) Create(ctx context.Context, sshKeyReq *SSHKeyReq)
 	}
 
 	key := new(sshKeyBase)
-	err = s.client.DoWithContext(ctx, req, key)
-	if err != nil {
+	if err = s.client.DoWithContext(ctx, req, key); err != nil {
 		return nil, err
 	}
 
@@ -73,8 +72,7 @@ func (s *SSHKeyServiceHandler) Get(ctx context.Context, sshKeyID string) (*SSHKe
 	}
 
 	sshKey := new(sshKeyBase)
-	err = s.client.DoWithContext(ctx, req, sshKey)
-	if err != nil {
+	if err = s.client.DoWithContext(ctx, req, sshKey); err != nil {
 		return nil, err
 	}
 
@@ -90,8 +88,7 @@ func (s *SSHKeyServiceHandler) Update(ctx context.Context, sshKeyID string, sshK
 		return err
 	}
 
-	err = s.client.DoWithContext(ctx, req, nil)
-	if err != nil {
+	if err = s.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -107,8 +104,7 @@ func (s *SSHKeyServiceHandler) Delete(ctx context.Context, sshKeyID string) erro
 		return err
 	}
 
-	err = s.client.DoWithContext(ctx, req, nil)
-	if err != nil {
+	if err = s.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -132,8 +128,7 @@ func (s *SSHKeyServiceHandler) List(ctx context.Context, options *ListOptions) (
 	req.URL.RawQuery = newValues.Encode()
 
 	sshKeys := new(sshKeysBase)
-	err = s.client.DoWithContext(ctx, req, sshKeys)
-	if err != nil {
+	if err = s.client.DoWithContext(ctx, req, sshKeys); err != nil {
 		return nil, nil, err
 	}
 
