@@ -24,7 +24,7 @@ type FireWallRuleServiceHandler struct {
 type FirewallRule struct {
 	ID         int    `json:"id"`
 	Action     string `json:"action"`
-	Type     string `json:"type"`
+	Type       string `json:"type"`
 	Protocol   string `json:"protocol"`
 	Port       string `json:"port"`
 	Subnet     string `json:"subnet"`
@@ -63,8 +63,7 @@ func (f *FireWallRuleServiceHandler) Create(ctx context.Context, fwGroupID strin
 	}
 
 	firewallRule := new(firewallRuleBase)
-	err = f.client.DoWithContext(ctx, req, firewallRule)
-	if err != nil {
+	if err = f.client.DoWithContext(ctx, req, firewallRule); err != nil {
 		return nil, err
 	}
 
@@ -80,8 +79,7 @@ func (f *FireWallRuleServiceHandler) Delete(ctx context.Context, fwGroupID strin
 		return err
 	}
 
-	err = f.client.DoWithContext(ctx, req, nil)
-	if err != nil {
+	if err = f.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
