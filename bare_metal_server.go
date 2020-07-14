@@ -12,9 +12,9 @@ const path = "/v2/baremetal"
 
 // BareMetalServerService is the interface to interact with the bare metal endpoints on the Vultr API
 type BareMetalServerService interface {
-	Create(ctx context.Context, bmCreate *BareMetalServerOptions) (*BareMetalServer, error)
+	Create(ctx context.Context, bmCreate *BareMetalReq) (*BareMetalServer, error)
 	Get(ctx context.Context, serverID int) (*BareMetalServer, error)
-	Update(ctx context.Context, serverID int, bmReq *BareMetalServerOptions) error
+	Update(ctx context.Context, serverID int, bmReq *BareMetalReq) error
 	Delete(ctx context.Context, serverID int) error
 	List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, error)
 	Bandwidth(ctx context.Context, serverID int) (map[string]map[string]BareMetalServerBandwidth, error)
@@ -54,8 +54,8 @@ type BareMetalServer struct {
 	UserData        string      `json:"user_data"`
 }
 
-// BareMetalServerOptions represents the optional parameters that can be set when creating or updating a bare metal server
-type BareMetalServerOptions struct {
+// BareMetalReq represents the optional parameters that can be set when creating or updating a bare metal server
+type BareMetalReq struct {
 	Region          string   `json:"region,omitempty"`
 	Plan            string   `json:"plan,omitempty"`
 	OsID            int      `json:"os_id,omitempty"`
@@ -118,7 +118,7 @@ type bandwidthBase struct {
 }
 
 // Create a new bare metal server.
-func (b *BareMetalServerServiceHandler) Create(ctx context.Context, bmCreate *BareMetalServerOptions) (*BareMetalServer, error) {
+func (b *BareMetalServerServiceHandler) Create(ctx context.Context, bmCreate *BareMetalReq) (*BareMetalServer, error) {
 	req, err := b.client.NewRequest(ctx, http.MethodPost, path, bmCreate)
 
 	if err != nil {
@@ -153,7 +153,7 @@ func (b *BareMetalServerServiceHandler) Get(ctx context.Context, serverID int) (
 }
 
 // Update will update the given bare metal. Empty values are ignored
-func (b *BareMetalServerServiceHandler) Update(ctx context.Context, serverID int, bmReq *BareMetalServerOptions) error {
+func (b *BareMetalServerServiceHandler) Update(ctx context.Context, serverID int, bmReq *BareMetalReq) error {
 	uri := fmt.Sprintf("%s/%d", path, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPatch, uri, bmReq)
 
