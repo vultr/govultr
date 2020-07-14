@@ -76,8 +76,7 @@ func (p *PlanServiceHandler) List(ctx context.Context, planType string, options 
 	req.URL.RawQuery = newValues.Encode()
 
 	plans := new(plansBase)
-	err = p.Client.DoWithContext(ctx, req, plans)
-	if err != nil {
+	if err = p.Client.DoWithContext(ctx, req, plans); err != nil {
 		return nil, nil, err
 	}
 
@@ -101,8 +100,7 @@ func (p *PlanServiceHandler) ListBareMetal(ctx context.Context, options *ListOpt
 	req.URL.RawQuery = newValues.Encode()
 
 	bmPlans := new(bareMetalPlansBase)
-	err = p.Client.DoWithContext(ctx, req, bmPlans)
-	if err != nil {
+	if err = p.Client.DoWithContext(ctx, req, bmPlans); err != nil {
 		return nil, nil, err
 	}
 
