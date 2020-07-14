@@ -8,7 +8,7 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
-const path = "/v2/baremetal"
+const bmPath = "/v2/baremetal"
 
 // BareMetalServerService is the interface to interact with the bare metal endpoints on the Vultr API
 type BareMetalServerService interface {
@@ -119,7 +119,7 @@ type BandwidthBase struct {
 
 // Create a new bare metal server.
 func (b *BareMetalServerServiceHandler) Create(ctx context.Context, bmCreate *BareMetalReq) (*BareMetalServer, error) {
-	req, err := b.client.NewRequest(ctx, http.MethodPost, path, bmCreate)
+	req, err := b.client.NewRequest(ctx, http.MethodPost, bmPath, bmCreate)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +135,7 @@ func (b *BareMetalServerServiceHandler) Create(ctx context.Context, bmCreate *Ba
 
 // Get gets the server with the given ID
 func (b *BareMetalServerServiceHandler) Get(ctx context.Context, serverID int) (*BareMetalServer, error) {
-	uri := fmt.Sprintf("%s/%d", path, serverID)
+	uri := fmt.Sprintf("%s/%d", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, err
@@ -152,7 +152,7 @@ func (b *BareMetalServerServiceHandler) Get(ctx context.Context, serverID int) (
 
 // Update will update the given bare metal. Empty values are ignored
 func (b *BareMetalServerServiceHandler) Update(ctx context.Context, serverID int, bmReq *BareMetalReq) error {
-	uri := fmt.Sprintf("%s/%d", path, serverID)
+	uri := fmt.Sprintf("%s/%d", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPatch, uri, bmReq)
 	if err != nil {
 		return err
@@ -168,7 +168,7 @@ func (b *BareMetalServerServiceHandler) Update(ctx context.Context, serverID int
 // Delete a bare metal server.
 // All data will be permanently lost, and the IP address will be released. There is no going back from this call.
 func (b *BareMetalServerServiceHandler) Delete(ctx context.Context, serverID int) error {
-	uri := fmt.Sprintf("%s/%d", path, serverID)
+	uri := fmt.Sprintf("%s/%d", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return err
@@ -183,7 +183,7 @@ func (b *BareMetalServerServiceHandler) Delete(ctx context.Context, serverID int
 
 // List lists all bare metal servers on the current account. This includes both pending and active servers.
 func (b *BareMetalServerServiceHandler) List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, error) {
-	req, err := b.client.NewRequest(ctx, http.MethodGet, path, nil)
+	req, err := b.client.NewRequest(ctx, http.MethodGet, bmPath, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -205,7 +205,7 @@ func (b *BareMetalServerServiceHandler) List(ctx context.Context, options *ListO
 
 // Bandwidth will get the bandwidth used by a bare metal server
 func (b *BareMetalServerServiceHandler) Bandwidth(ctx context.Context, serverID int) (*BandwidthBase, error) {
-	uri := fmt.Sprintf("%s/%d/bandwidth", path, serverID)
+	uri := fmt.Sprintf("%s/%d/bandwidth", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, err
@@ -223,7 +223,7 @@ func (b *BareMetalServerServiceHandler) Bandwidth(ctx context.Context, serverID 
 // EnableIPV6 enables IPv6 networking on a bare metal server by assigning an IPv6 subnet to it.
 // The server will not be rebooted when the subnet is assigned.
 func (b *BareMetalServerServiceHandler) EnableIPV6(ctx context.Context, serverID int) error {
-	uri := fmt.Sprintf("%s/%d/enable-ipv6", path, serverID)
+	uri := fmt.Sprintf("%s/%d/enable-ipv6", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
 	if err != nil {
 		return err
@@ -240,7 +240,7 @@ func (b *BareMetalServerServiceHandler) EnableIPV6(ctx context.Context, serverID
 // This is a hard power off, meaning that the power to the machine is severed.
 // The data on the machine will not be modified, and you will still be billed for the machine.
 func (b *BareMetalServerServiceHandler) Halt(ctx context.Context, serverID int) error {
-	uri := fmt.Sprintf("%s/%d/halt", path, serverID)
+	uri := fmt.Sprintf("%s/%d/halt", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
 	if err != nil {
 		return err
@@ -256,7 +256,7 @@ func (b *BareMetalServerServiceHandler) Halt(ctx context.Context, serverID int) 
 // IPV4Info will List the IPv4 information of a bare metal server.
 // IP information is only available for bare metal servers in the "active" state.
 func (b *BareMetalServerServiceHandler) IPV4Info(ctx context.Context, serverID int, options *ListOptions) ([]BareMetalServerIPV4, *Meta, error) {
-	uri := fmt.Sprintf("%s/%d/ipv4", path, serverID)
+	uri := fmt.Sprintf("%s/%d/ipv4", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, nil, err
@@ -281,7 +281,7 @@ func (b *BareMetalServerServiceHandler) IPV4Info(ctx context.Context, serverID i
 // IP information is only available for bare metal servers in the "active" state.
 // If the bare metal server does not have IPv6 enabled, then an empty array is returned.
 func (b *BareMetalServerServiceHandler) IPV6Info(ctx context.Context, serverID int, options *ListOptions) ([]BareMetalServerIPV6, *Meta, error) {
-	uri := fmt.Sprintf("%s/%d/ipv6", path, serverID)
+	uri := fmt.Sprintf("%s/%d/ipv6", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, nil, err
@@ -304,7 +304,7 @@ func (b *BareMetalServerServiceHandler) IPV6Info(ctx context.Context, serverID i
 
 // Reboot a bare metal server. This is a hard reboot, which means that the server is powered off, then back on.
 func (b *BareMetalServerServiceHandler) Reboot(ctx context.Context, serverID int) error {
-	uri := fmt.Sprintf("%s/%d/reboot", path, serverID)
+	uri := fmt.Sprintf("%s/%d/reboot", bmPath, serverID)
 
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
 	if err != nil {
@@ -321,7 +321,7 @@ func (b *BareMetalServerServiceHandler) Reboot(ctx context.Context, serverID int
 // Reinstall the operating system on a bare metal server.
 // All data will be permanently lost, but the IP address will remain the same. There is no going back from this call.
 func (b *BareMetalServerServiceHandler) Reinstall(ctx context.Context, serverID int) error {
-	uri := fmt.Sprintf("%s/%d/reinstall", path, serverID)
+	uri := fmt.Sprintf("%s/%d/reinstall", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
 	if err != nil {
 		return err
