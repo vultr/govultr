@@ -27,7 +27,7 @@ type Snapshot struct {
 	ID          string `json:"id"`
 	DateCreated string `json:"date_created"`
 	Description string `json:"description"`
-	Size        string `json:"size"`
+	Size        int    `json:"size"`
 	Status      string `json:"status"`
 	OsID        int    `json:"os_id"`
 	AppID       int    `json:"app_id"`
@@ -63,8 +63,7 @@ func (s *SnapshotServiceHandler) Create(ctx context.Context, snapshotReq *Snapsh
 	}
 
 	snapshot := new(snapshotBase)
-	err = s.Client.DoWithContext(ctx, req, snapshot)
-	if err != nil {
+	if err = s.Client.DoWithContext(ctx, req, snapshot); err != nil {
 		return nil, err
 	}
 
@@ -81,8 +80,7 @@ func (s *SnapshotServiceHandler) CreateFromURL(ctx context.Context, snapshotURLR
 	}
 
 	snapshot := new(snapshotBase)
-	err = s.Client.DoWithContext(ctx, req, snapshot)
-	if err != nil {
+	if err = s.Client.DoWithContext(ctx, req, snapshot); err != nil {
 		return nil, err
 	}
 
@@ -99,8 +97,7 @@ func (s *SnapshotServiceHandler) Get(ctx context.Context, snapshotID string) (*S
 	}
 
 	snapshot := new(snapshotBase)
-	err = s.Client.DoWithContext(ctx, req, snapshot)
-	if err != nil {
+	if err = s.Client.DoWithContext(ctx, req, snapshot); err != nil{
 		return nil, err
 	}
 
@@ -116,8 +113,7 @@ func (s *SnapshotServiceHandler) Delete(ctx context.Context, snapshotID string) 
 		return err
 	}
 
-	err = s.Client.DoWithContext(ctx, req, nil)
-	if err != nil {
+	if err = s.Client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -140,8 +136,7 @@ func (s *SnapshotServiceHandler) List(ctx context.Context, options *ListOptions)
 	req.URL.RawQuery = newValues.Encode()
 
 	snapshots := new(snapshotsBase)
-	err = s.Client.DoWithContext(ctx, req, snapshots)
-	if err != nil {
+	if err = s.Client.DoWithContext(ctx, req, snapshots); err != nil {
 		return nil, nil, err
 	}
 
