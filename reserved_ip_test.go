@@ -145,6 +145,50 @@ func TestReservedIPServiceHandler_Detach(t *testing.T) {
 	}
 }
 
+func TestReservedIPServiceHandler_Get(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/reserved-ips", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+		{
+			"reserved_ip": {
+				"id": 1313044,
+				"region": "ewr",
+				"ip_type": "v4",
+				"subnet": "10.234.22.53",
+				"subnet_size": 32,
+				"label": "my first reserved ip",
+				"instance_id": 123456
+			}
+		}
+		`
+		fmt.Fprintf(writer, response)
+	})
+
+	ip, err := client.ReservedIP.Get(ctx, 1313044)
+
+	if err != nil {
+		t.Errorf("ReservedIP.Get returned error: %v", err)
+	}
+
+	expected := []ReservedIP{
+		{
+			ID:         1313044,
+			Region:     "ewr",
+			IPType:     "v4",
+			Subnet:     "10.234.22.53",
+			SubnetSize: 32,
+			Label:      "my first reserved ip",
+			InstanceID: 123456,
+		},
+	}
+
+	if !reflect.DeepEqual(ip, expected) {
+		t.Errorf("ReservedIP.Get returned %+v, expected %+v", ip, expected)
+	}
+}
+
 func TestReservedIPServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
