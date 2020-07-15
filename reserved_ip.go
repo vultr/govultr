@@ -2,22 +2,23 @@ package govultr
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
-	"strconv"
+
+	"github.com/google/go-querystring/query"
 )
 
+const ripPath = "/v2/reserved-ips"
+
 // ReservedIPService is the interface to interact with the reserved IP endpoints on the Vultr API
-// Link: https://www.vultr.com/api/#reservedip
 type ReservedIPService interface {
-	Attach(ctx context.Context, ip, InstanceID string) error
-	Convert(ctx context.Context, ip, InstanceID, label string) (*ReservedIP, error)
-	Create(ctx context.Context, regionID int, ipType, label string) (*ReservedIP, error)
-	Delete(ctx context.Context, ip string) error
-	Detach(ctx context.Context, ip, InstanceID string) error
-	List(ctx context.Context) ([]ReservedIP, error)
+	Create(ctx context.Context, ripCreate *ReservedIPReq) (*ReservedIP, error)
+	Get(ctx context.Context, ip int) (*ReservedIP, error)
+	Delete(ctx context.Context, ip int) error
+	List(ctx context.Context, options *ListOptions) ([]ReservedIP, *Meta, error)
+	Convert(ctx context.Context, ripConvert *ReservedIPReq) (*ReservedIP, error)
+	Attach(ctx context.Context, ip int, ripAttach *ReservedIPReq) error
+	Detach(ctx context.Context, ip int) error
 }
 
 // ReservedIPServiceHandler handles interaction with the reserved IP methods for the Vultr API
@@ -27,220 +28,73 @@ type ReservedIPServiceHandler struct {
 
 // ReservedIP represents an reserved IP on Vultr
 type ReservedIP struct {
-	ReservedIPID string `json:"SUBID"`
-	RegionID     int    `json:"DCID"`
-	IPType       string `json:"ip_type"`
-	Subnet       string `json:"subnet"`
-	SubnetSize   int    `json:"subnet_size"`
-	Label        string `json:"label"`
-	AttachedID   string `json:"attached_SUBID"`
+	ID         int    `json:"id"`
+	Region     string `json:"region"`
+	IPType     string `json:"ip_type"`
+	Subnet     string `json:"subnet"`
+	SubnetSize int    `json:"subnet_size"`
+	Label      string `json:"label"`
+	InstanceID int    `json:"instance_id"`
 }
 
-// UnmarshalJSON implements json.Unmarshaller on ReservedIP to handle the inconsistent types returned from the Vultr API.
-func (r *ReservedIP) UnmarshalJSON(data []byte) (err error) {
-	if r == nil {
-		*r = ReservedIP{}
-	}
-
-	var v map[string]interface{}
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
-	}
-
-	r.ReservedIPID, err = r.unmarshalStr(fmt.Sprintf("%v", v["SUBID"]))
-	if err != nil {
-		return err
-	}
-
-	r.AttachedID, err = r.unmarshalStr(fmt.Sprintf("%v", v["attached_SUBID"]))
-	if err != nil {
-		return err
-	}
-
-	r.RegionID, err = r.unmarshalInt(fmt.Sprintf("%v", v["DCID"]))
-	if err != nil {
-		return err
-	}
-
-	r.SubnetSize, err = r.unmarshalInt(fmt.Sprintf("%v", v["subnet_size"]))
-	if err != nil {
-		return err
-	}
-
-	if r.Subnet = fmt.Sprintf("%v", v["subnet"]); r.Subnet == "<nil>" {
-		r.Subnet = ""
-	}
-
-	if r.IPType = fmt.Sprintf("%v", v["ip_type"]); r.IPType == "<nil>" {
-		r.IPType = ""
-	}
-
-	if r.Label = fmt.Sprintf("%v", v["label"]); r.Label == "<nil>" {
-		r.Label = ""
-	}
-
-	return nil
+// ReservedIPReq represents the parameters for creating a new Reserved IP on Vultr
+type ReservedIPReq struct {
+	Region     string `json:"region,omitempty"`
+	IPType     string `json:"ip_type,omitempty"`
+	IPAddress  string `json:"ip_address,omitempty"`
+	Label      string `json:"label,omitempty"`
+	InstanceID int    `json:"instance_id,omitempty"`
 }
 
-func (r *ReservedIP) unmarshalInt(value string) (int, error) {
-	if len(value) == 0 || value == "<nil>" {
-		value = "0"
-	}
-
-	i, err := strconv.ParseInt(value, 10, 64)
-	if err != nil {
-		return 0, err
-	}
-
-	return int(i), nil
+type reservedIPsBase struct {
+	ReservedIPs []ReservedIP `json:"reserved_ips"`
+	Meta        *Meta        `json:"meta"`
 }
 
-func (r *ReservedIP) unmarshalStr(value string) (string, error) {
-	if len(value) == 0 || value == "<nil>" || value == "0" || value == "false" {
-		return "", nil
-	}
-
-	f, err := strconv.ParseFloat(value, 64)
-	if err != nil {
-		return "", err
-	}
-
-	return strconv.FormatFloat(f, 'f', -1, 64), nil
-}
-
-// Attach a reserved IP to an existing subscription
-func (r *ReservedIPServiceHandler) Attach(ctx context.Context, ip, InstanceID string) error {
-	uri := "/v1/reservedip/attach"
-
-	values := url.Values{
-		"ip_address":   {ip},
-		"attach_SUBID": {InstanceID},
-	}
-
-	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, values)
-
-	if err != nil {
-		return err
-	}
-
-	err = r.client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Convert an existing IP on a subscription to a reserved IP.
-func (r *ReservedIPServiceHandler) Convert(ctx context.Context, ip, InstanceID, label string) (*ReservedIP, error) {
-	uri := "/v1/reservedip/convert"
-
-	values := url.Values{
-		"SUBID":      {InstanceID},
-		"ip_address": {ip},
-	}
-
-	if label != "" {
-		values.Add("label", label)
-	}
-
-	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, values)
-
-	if err != nil {
-		return nil, err
-	}
-
-	rip := new(ReservedIP)
-
-	err = r.client.DoWithContext(ctx, req, rip)
-
-	if err != nil {
-		return nil, err
-	}
-
-	rip.Label = label
-
-	return rip, nil
+type reservedIPBase struct {
+	ReservedIP *ReservedIP `json:"reserved_ip"`
 }
 
 // Create adds the specified reserved IP to your Vultr account
-func (r *ReservedIPServiceHandler) Create(ctx context.Context, regionID int, ipType, label string) (*ReservedIP, error) {
-
-	uri := "/v1/reservedip/create"
-
-	values := url.Values{
-		"DCID":    {strconv.Itoa(regionID)},
-		"ip_type": {ipType},
-	}
-
-	if label != "" {
-		values.Add("label", label)
-	}
-
-	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, values)
-
+func (r *ReservedIPServiceHandler) Create(ctx context.Context, ripCreate *ReservedIPReq) (*ReservedIP, error) {
+	req, err := r.client.NewRequest(ctx, http.MethodPost, ripPath, ripCreate)
 	if err != nil {
 		return nil, err
 	}
 
-	rip := new(ReservedIP)
+	rip := new(reservedIPBase)
+	if err = r.client.DoWithContext(ctx, req, rip); err != nil {
+		return nil, err
+	}
 
-	err = r.client.DoWithContext(ctx, req, rip)
+	return rip.ReservedIP, nil
+}
 
+// Get gets the reserved IP associated with provided ID
+func (r *ReservedIPServiceHandler) Get(ctx context.Context, ip int) (*ReservedIP, error) {
+	uri := fmt.Sprintf("%s/%d", ripPath, ip)
+	req, err := r.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	rip.RegionID = regionID
-	rip.IPType = ipType
-	rip.Label = label
+	rip := new(reservedIPBase)
+	if err = r.client.DoWithContext(ctx, req, rip); err != nil {
+		return nil, err
+	}
 
-	return rip, nil
+	return rip.ReservedIP, nil
 }
 
 // Delete removes the specified reserved IP from your Vultr account
-func (r *ReservedIPServiceHandler) Delete(ctx context.Context, ip string) error {
-
-	uri := "/v1/reservedip/destroy"
-
-	values := url.Values{
-		"ip_address": {ip},
-	}
-
-	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, values)
-
+func (r *ReservedIPServiceHandler) Delete(ctx context.Context, ip int) error {
+	uri := fmt.Sprintf("%s/%d", ripPath, ip)
+	req, err := r.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return err
 	}
 
-	err = r.client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Detach a reserved IP from an existing subscription.
-func (r *ReservedIPServiceHandler) Detach(ctx context.Context, ip, InstanceID string) error {
-	uri := "/v1/reservedip/detach"
-
-	values := url.Values{
-		"ip_address":   {ip},
-		"detach_SUBID": {InstanceID},
-	}
-
-	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, values)
-
-	if err != nil {
-		return err
-	}
-
-	err = r.client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
+	if err = r.client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
@@ -248,26 +102,70 @@ func (r *ReservedIPServiceHandler) Detach(ctx context.Context, ip, InstanceID st
 }
 
 // List lists all the reserved IPs associated with your Vultr account
-func (r *ReservedIPServiceHandler) List(ctx context.Context) ([]ReservedIP, error) {
+func (r *ReservedIPServiceHandler) List(ctx context.Context, options *ListOptions) ([]ReservedIP, *Meta, error) {
+	req, err := r.client.NewRequest(ctx, http.MethodGet, ripPath, nil)
+	if err != nil {
+		return nil, nil, err
+	}
 
-	uri := "/v1/reservedip/list"
+	newValues, err := query.Values(options)
+	if err != nil {
+		return nil, nil, err
+	}
 
-	req, err := r.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req.URL.RawQuery = newValues.Encode()
+
+	ips := new(reservedIPsBase)
+	if err = r.client.DoWithContext(ctx, req, ips); err != nil {
+		return nil, nil, err
+	}
+
+	return ips.ReservedIPs, ips.Meta, nil
+}
+
+// Attach a reserved IP to an existing subscription
+func (r *ReservedIPServiceHandler) Attach(ctx context.Context, ip int, ripAttach *ReservedIPReq) error {
+	uri := fmt.Sprintf("%s/%d/attach", ripPath, ip)
+	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, ripAttach)
+	if err != nil {
+		return err
+	}
+
+	if err = r.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Convert an existing IP on a subscription to a reserved IP.
+func (r *ReservedIPServiceHandler) Convert(ctx context.Context, ripConvert *ReservedIPReq) (*ReservedIP, error) {
+	uri := fmt.Sprintf("%s/convert", ripPath)
+	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, ripConvert)
 
 	if err != nil {
 		return nil, err
 	}
 
-	ipMap := make(map[string]ReservedIP)
-	err = r.client.DoWithContext(ctx, req, &ipMap)
-	if err != nil {
+	rip := new(reservedIPBase)
+	if err = r.client.DoWithContext(ctx, req, rip); err != nil {
 		return nil, err
 	}
 
-	var ips []ReservedIP
-	for _, ip := range ipMap {
-		ips = append(ips, ip)
+	return rip.ReservedIP, nil
+}
+
+// Detach a reserved IP from an existing subscription.
+func (r *ReservedIPServiceHandler) Detach(ctx context.Context, ip int) error {
+	uri := fmt.Sprintf("%s/%d/detach", ripPath, ip)
+	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return err
 	}
 
-	return ips, nil
+	if err = r.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
 }
