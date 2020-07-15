@@ -18,7 +18,6 @@ type BareMetalServerService interface {
 	Delete(ctx context.Context, serverID int) error
 	List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, error)
 	Bandwidth(ctx context.Context, serverID int) (*BandwidthBase, error)
-	EnableIPV6(ctx context.Context, serverID int) error
 	Halt(ctx context.Context, serverID int) error
 	IPV4Info(ctx context.Context, serverID int, options *ListOptions) ([]BareMetalServerIPV4, *Meta, error)
 	IPV6Info(ctx context.Context, serverID int, options *ListOptions) ([]BareMetalServerIPV6, *Meta, error)
@@ -218,22 +217,6 @@ func (b *BareMetalServerServiceHandler) Bandwidth(ctx context.Context, serverID 
 
 	// fmt.Print(bms)
 	return bms, nil
-}
-
-// EnableIPV6 enables IPv6 networking on a bare metal server by assigning an IPv6 subnet to it.
-// The server will not be rebooted when the subnet is assigned.
-func (b *BareMetalServerServiceHandler) EnableIPV6(ctx context.Context, serverID int) error {
-	uri := fmt.Sprintf("%s/%d/enable-ipv6", bmPath, serverID)
-	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
-	if err != nil {
-		return err
-	}
-
-	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // Halt a bare metal server.
