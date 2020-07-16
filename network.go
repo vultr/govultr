@@ -97,7 +97,7 @@ func (n *NetworkServiceHandler) Update(ctx context.Context, networkID string, up
 	return nil
 }
 
-// Delete a private network. Before deleting, a network must be disabled from all instances. See https://www.vultr.com/api/#server_private_network_disable
+// Delete a private network. Before deleting, a network must be disabled from all instances
 func (n *NetworkServiceHandler) Delete(ctx context.Context, networkID string) error {
 	uri := fmt.Sprintf("%s/%s", netPath, networkID)
 	req, err := n.client.NewRequest(ctx, http.MethodDelete, uri, nil)
