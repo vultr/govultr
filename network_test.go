@@ -11,24 +11,41 @@ func TestNetworkServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/network/create", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/networks", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
-			"NETWORKID": "net59a0526477dd3"
+			"network": {
+				"id": "net539626f0798d7",
+				"date_created": "2017-08-25 12:23:45",
+				"region": "ewr",
+				"description": "test1",
+				"v4_subnet": "10.99.0.0",
+				"v4_subnet_mask": 24
+			}
 		}
 		`
 
 		fmt.Fprint(writer, response)
 	})
 
-	net, err := client.Network.Create(ctx, "1", "go-test", "111.111.111.111/24")
+	options := &NetworkReq{
+		Region:      "ewr",
+		Description: "test1",
+	}
+
+	net, err := client.Network.Create(ctx, options)
 
 	if err != nil {
 		t.Errorf("Network.Create returned %+v, expected %+v", err, nil)
 	}
 
 	expected := &Network{
-		NetworkID: "net59a0526477dd3",
+		NetworkID:    "net539626f0798d7",
+		Region:       "ewr",
+		Description:  "test1",
+		V4Subnet:     "10.99.0.0",
+		V4SubnetMask: 24,
+		DateCreated:  "2017-08-25 12:23:45",
 	}
 
 	if !reflect.DeepEqual(net, expected) {
@@ -40,11 +57,11 @@ func TestNetworkServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/network/destroy", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/networks/net539626f0798d7", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.Network.Delete(ctx, "foo")
+	err := client.Network.Delete(ctx, "net539626f0798d7")
 
 	if err != nil {
 		t.Errorf("Network.Delete returned %+v, expected %+v", err, nil)
@@ -55,23 +72,23 @@ func TestNetworkServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/network/list", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/networks", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
-			"net539626f0798d7": {
-				"DCID": "1",
-				"NETWORKID": "net539626f0798d7",
+			"networks": [{
+				"id": "net539626f0798d7",
 				"date_created": "2017-08-25 12:23:45",
+				"region": "ewr",
 				"description": "test1",
 				"v4_subnet": "10.99.0.0",
 				"v4_subnet_mask": 24
-			}
+			}]
 		}
 		`
 		fmt.Fprintf(writer, response)
 	})
 
-	networks, err := client.Network.List(ctx)
+	networks, _, err := client.Network.List(ctx, nil)
 
 	if err != nil {
 		t.Errorf("Network.List returned error: %v", err)
@@ -80,7 +97,7 @@ func TestNetworkServiceHandler_List(t *testing.T) {
 	expected := []Network{
 		{
 			NetworkID:    "net539626f0798d7",
-			RegionID:     "1",
+			Region:       "ewr",
 			Description:  "test1",
 			V4Subnet:     "10.99.0.0",
 			V4SubnetMask: 24,
