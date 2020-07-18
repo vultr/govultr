@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// get test
 func TestReservedIPServiceHandler_Attach(t *testing.T) {
 	setup()
 	defer teardown()
