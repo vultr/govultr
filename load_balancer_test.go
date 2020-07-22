@@ -54,13 +54,20 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 						12345
 					]
 				}
-			]
+			],
+			"meta": {
+				"total":8,
+				"links": {
+					"next":"",
+					"prev":""
+				}
+			}	
 		}
 		`
 		fmt.Fprintf(writer, response)
 	})
 
-	list, _, err := client.LoadBalancer.List(ctx, nil)
+	list, meta, err := client.LoadBalancer.List(ctx, nil)
 
 	if err != nil {
 		t.Errorf("LoadBalancer.List returned %+v", err)
@@ -107,9 +114,19 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 		},
 	}
 
+	expectedMeta := &Meta{
+		Total: 8,
+		Links: &Links{},
+	}
+
 	if !reflect.DeepEqual(list, expected) {
 		t.Errorf("LoadBalancer.List returned %+v, expected %+v", list, expected)
 	}
+
+	if !reflect.DeepEqual(meta, expectedMeta) {
+		t.Errorf("LoadBalancer.List returned %+v, expected %+v", meta, expectedMeta)
+	}
+
 }
 
 func TestLoadBalancerHandler_Delete(t *testing.T) {
