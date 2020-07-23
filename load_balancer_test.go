@@ -73,8 +73,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 		t.Errorf("LoadBalancer.List returned %+v", err)
 	}
 
-	redirect := false
-	expected := []LoadBalancers{
+	expected := []LoadBalancer{
 		{
 			ID:          1317575,
 			DateCreated: "2020-01-07 17:24:23",
@@ -95,7 +94,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 			},
 			GenericInfo: &GenericInfo{
 				BalancingAlgorithm: "roundrobin",
-				SSLRedirect:        &redirect,
+				SSLRedirect:        false,
 				ProxyProtocol:      "off",
 				StickySessions: &StickySessions{
 					CookieName: "my-cookie",
@@ -201,8 +200,7 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 		t.Errorf("LoadBalancer.Get returned %+v", err)
 	}
 
-	redirect := false
-	expected := &LoadBalancers{
+	expected := &LoadBalancer{
 		ID:          1317575,
 		DateCreated: "2020-01-07 17:24:23",
 		Label:       "my label",
@@ -222,7 +220,7 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 		},
 		GenericInfo: &GenericInfo{
 			BalancingAlgorithm: "roundrobin",
-			SSLRedirect:        &redirect,
+			SSLRedirect:        false,
 			ProxyProtocol:      "off",
 			StickySessions: &StickySessions{
 				CookieName: "my-cookie",
@@ -366,10 +364,10 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc(lbPath, func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/load-balancers", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
-			"load_balancers" : [
+			"load_balancer" : 
 				{
 					"id": 1317575,
 					"date_created": "2020-01-07 17:24:23",
@@ -406,16 +404,14 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 						}
 					],
 					"instances": [
-						12345
+						1234
 					]
 				}
-			]
 		}
 		`
 		fmt.Fprintf(writer, response)
 	})
 
-	redirect := false
 	lbCreate := &LoadBalancerReq{
 		Label:  "my label",
 		Region: "ewr",
@@ -429,7 +425,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 			},
 		},
 		BalancingAlgorithm: "roundrobin",
-		SSLRedirect:        &redirect,
+		SSLRedirect:        false,
 		ProxyProtocol:      "off",
 		HealthCheck: &HealthCheck{
 			Protocol:           "http",
@@ -447,7 +443,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		t.Errorf("LoadBalancer.Create returned %+v", err)
 	}
 
-	expected := &LoadBalancers{
+	expected := &LoadBalancer{
 		ID:          1317575,
 		DateCreated: "2020-01-07 17:24:23",
 		Label:       "my label",
@@ -467,7 +463,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		},
 		GenericInfo: &GenericInfo{
 			BalancingAlgorithm: "roundrobin",
-			SSLRedirect:        &redirect,
+			SSLRedirect:        false,
 			ProxyProtocol:      "off",
 			StickySessions: &StickySessions{
 				CookieName: "my-cookie",

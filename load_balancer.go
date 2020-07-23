@@ -12,11 +12,11 @@ const lbPath = "/v2/load-balancers"
 
 // LoadBalancerService is the interface to interact with the server endpoints on the Vultr API
 type LoadBalancerService interface {
-	Create(ctx context.Context, createReq *LoadBalancerReq) (*LoadBalancers, error)
-	Get(ctx context.Context, ID int) (*LoadBalancers, error)
+	Create(ctx context.Context, createReq *LoadBalancerReq) (*LoadBalancer, error)
+	Get(ctx context.Context, ID int) (*LoadBalancer, error)
 	Update(ctx context.Context, ID int, updateReq *LoadBalancerReq) error
 	Delete(ctx context.Context, ID int) error
-	List(ctx context.Context, options *ListOptions) ([]LoadBalancers, *Meta, error)
+	List(ctx context.Context, options *ListOptions) ([]LoadBalancer, *Meta, error)
 	CreateForwardingRule(ctx context.Context, ID int, rule *ForwardingRule) (*ForwardingRule, error)
 	GetForwardingRule(ctx context.Context, ID int, ruleID string) (*ForwardingRule, error)
 	DeleteForwardingRule(ctx context.Context, ID int, RuleID string) error
@@ -28,8 +28,8 @@ type LoadBalancerHandler struct {
 	client *Client
 }
 
-// LoadBalancers represent the structure of a load balancer
-type LoadBalancers struct {
+// LoadBalancer represent the structure of a load balancer
+type LoadBalancer struct {
 	ID              int              `json:"id,omitempty"`
 	DateCreated     string           `json:"date_created,omitempty"`
 	Region          string           `json:"region,omitempty"`
@@ -53,7 +53,7 @@ type LoadBalancerReq struct {
 	StickySessions     *StickySessions  `json:"sticky_session,omitempty"`
 	ForwardingRules    []ForwardingRule `json:"forwarding_rules,omitempty"`
 	SSL                *SSL             `json:"ssl,omitempty"`
-	SSLRedirect        *bool            `json:"ssl_redirect,omitempty"`
+	SSLRedirect        bool            `json:"ssl_redirect,omitempty"`
 	ProxyProtocol      string           `json:"proxy_protocol,omitempty"`
 	BalancingAlgorithm string           `json:"balancing_algorithm,omitempty"`
 }
@@ -77,7 +77,7 @@ type HealthCheck struct {
 // GenericInfo represents generic configuration of your load balancer
 type GenericInfo struct {
 	BalancingAlgorithm string          `json:"balancing_algorithm,omitempty"`
-	SSLRedirect        *bool           `json:"ssl_redirect,omitempty"`
+	SSLRedirect        bool            `json:"ssl_redirect,omitempty"`
 	StickySessions     *StickySessions `json:"sticky_sessions,omitempty"`
 	ProxyProtocol      string          `json:"proxy_protocol,omitempty"`
 }
@@ -110,12 +110,12 @@ type SSL struct {
 }
 
 type lbsBase struct {
-	LoadBalancers []LoadBalancers `json:"load_balancers"`
+	LoadBalancers []LoadBalancer `json:"load_balancers"`
 	Meta          *Meta           `json:"meta"`
 }
 
 type lbBase struct {
-	LoadBalancer *LoadBalancers `json:"load_balancer"`
+	LoadBalancer *LoadBalancer `json:"load_balancer"`
 }
 
 type lbRulesBase struct {
@@ -128,7 +128,7 @@ type lbRuleBase struct {
 }
 
 // Create a load balancer
-func (l *LoadBalancerHandler) Create(ctx context.Context, createReq *LoadBalancerReq) (*LoadBalancers, error) {
+func (l *LoadBalancerHandler) Create(ctx context.Context, createReq *LoadBalancerReq) (*LoadBalancer, error) {
 	req, err := l.client.NewRequest(ctx, http.MethodPost, lbPath, createReq)
 	if err != nil {
 		return nil, err
@@ -143,7 +143,7 @@ func (l *LoadBalancerHandler) Create(ctx context.Context, createReq *LoadBalance
 }
 
 // Get a load balancer
-func (l *LoadBalancerHandler) Get(ctx context.Context, ID int) (*LoadBalancers, error) {
+func (l *LoadBalancerHandler) Get(ctx context.Context, ID int) (*LoadBalancer, error) {
 	uri := fmt.Sprintf("%s/%d", lbPath, ID)
 	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -189,7 +189,7 @@ func (l *LoadBalancerHandler) Delete(ctx context.Context, ID int) error {
 }
 
 // List all load balancer subscriptions on the current account.
-func (l *LoadBalancerHandler) List(ctx context.Context, options *ListOptions) ([]LoadBalancers, *Meta, error) {
+func (l *LoadBalancerHandler) List(ctx context.Context, options *ListOptions) ([]LoadBalancer, *Meta, error) {
 	req, err := l.client.NewRequest(ctx, http.MethodGet, lbPath, nil)
 	if err != nil {
 		return nil, nil, err
