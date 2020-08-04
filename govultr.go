@@ -68,7 +68,7 @@ type Client struct {
 	BareMetalServer BareMetalServerService
 	BlockStorage    BlockStorageService
 	Domain          DomainService
-	DomainRecord       DomainRecordService
+	DomainRecord    DomainRecordService
 	FirewallGroup   FirewallGroupService
 	FirewallRule    FireWallRuleService
 	ISO             ISOService
