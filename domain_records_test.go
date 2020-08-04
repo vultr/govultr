@@ -7,81 +7,144 @@ import (
 	"testing"
 )
 
-func TestDNSRecordsServiceHandler_Create(t *testing.T) {
+func TestDomainRecordsServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/dns/create_record", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
-
-	err := client.DNSRecord.Create(ctx, "domain.com", "A", "api", "127.0.0.1", 300, 0)
-
-	if err != nil {
-		t.Errorf("DNSRecord.Create returned %+v, expected %+v", err, nil)
-	}
-}
-
-func TestDNSRecordsServiceHandler_Delete(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v1/dns/delete_record", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
-
-	err := client.DNSRecord.Delete(ctx, "domain.com", "12345678")
-
-	if err != nil {
-		t.Errorf("DNSRecord.Delete returned %+v, expected %+v", err, nil)
-	}
-}
-
-func TestDNSRecordsServiceHandler_List(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v1/dns/records", func(writer http.ResponseWriter, request *http.Request) {
-		response := `[{"type": "A","name": "", "data": "127.0.0.1","priority": 0,"RECORDID": 1265276,"ttl": 300},{"type": "A","name": "", "data": "127.0.0.1","priority": 0,"RECORDID": 1265276,"ttl": 300}]`
-
+	mux.HandleFunc("/v2/domains/vultr.com/records", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"record":{"id":"dev-preview-abc123","type":"A","name":"www","data":"127.0.0.1","priority":0,"ttl":300}}`
 		fmt.Fprint(writer, response)
 	})
 
-	records, err := client.DNSRecord.List(ctx, "domain.com")
-	if err != nil {
-		t.Errorf("DNSRecord.List returned %+v, expected %+v", err, nil)
+	r := &DomainRecordReq{
+		Name:     "www",
+		Type:     "A",
+		Data:     "127.0.0.1",
+		Priority: 300,
 	}
-	p := 0
-	expected := []DNSRecord{
-		{Type: "A", Name: "", Data: "127.0.0.1", Priority: &p, RecordID: 1265276, TTL: 300},
-		{Type: "A", Name: "", Data: "127.0.0.1", Priority: &p, RecordID: 1265276, TTL: 300},
+	record, err := client.DomainRecord.Create(ctx, "vultr.com", r)
+	if err != nil {
+		t.Errorf("DomainRecord.Create returned %+v, expected %+v", err, nil)
 	}
 
-	if !reflect.DeepEqual(records, expected) {
-		t.Errorf("DNSRecord.List returned %+v, expected %+v", records, expected)
+	expected := &DomainRecord{
+		ID:       "dev-preview-abc123",
+		Type:     "A",
+		Name:     "www",
+		Data:     "127.0.0.1",
+		Priority: 0,
+		TTL:      300,
+	}
+
+	if !reflect.DeepEqual(record, expected) {
+		t.Errorf("DomainRecord.Create returned %+v, expected %+v", record, expected)
 	}
 }
 
-func TestDNSRecordsServiceHandler_Update(t *testing.T) {
+func TestDomainRecordsServiceHandler_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/dns/update_record", func(writer http.ResponseWriter, request *http.Request) {
-
-		fmt.Fprint(writer)
+	mux.HandleFunc("/v2/domains/vultr.com/records/dev-preview-abc123", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"record":{"id":"dev-preview-abc123","type":"A","name":"www","data":"127.0.0.1","priority":0,"ttl":300}}`
+		fmt.Fprint(writer, response)
 	})
-	p := 10
-	params := &DNSRecord{
-		RecordID: 14283638,
-		Name:     "api",
-		Data:     "turnip.data",
-		TTL:      120,
-		Priority: &p,
+
+	record, err := client.DomainRecord.Get(ctx, "vultr.com", "dev-preview-abc123")
+	if err != nil {
+		t.Errorf("DomainRecord.Get returned %+v, expected %+v", err, nil)
 	}
 
-	err := client.DNSRecord.Update(ctx, "turnip.services", params)
+	expected := &DomainRecord{
+		ID:       "dev-preview-abc123",
+		Type:     "A",
+		Name:     "www",
+		Data:     "127.0.0.1",
+		Priority: 0,
+		TTL:      300,
+	}
 
+	if !reflect.DeepEqual(record, expected) {
+		t.Errorf("DomainRecord.Get returned %+v, expected %+v", record, expected)
+	}
+}
+
+func TestDomainRecordsServiceHandler_Update(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/domains/vultr.com/records/abc123", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+	r := &DomainRecordReq{
+		Name:     "*",
+		Type:     "A",
+		Data:     "127.0.0.1",
+		TTL:      1200,
+		Priority: 10,
+	}
+	err := client.DomainRecord.Update(ctx, "vultr.com", "abc123", r)
 	if err != nil {
 		t.Errorf("DNSRecord.Update returned %+v, expected %+v", err, nil)
 	}
 }
+
+func TestDomainRecordsServiceHandler_Delete(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/domains/vultr.com/records/abc123", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.DomainRecord.Delete(ctx, "vultr.com", "abc123")
+	if err != nil {
+		t.Errorf("DomainRecord.Delete returned %+v, expected %+v", err, nil)
+	}
+}
+
+func TestDomainRecordsServiceHandler_List(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/domains/vultr.com/records", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"records":[{"id":"abc123","type":"A","name":"test","data":"127.0.0.1","priority":0,"ttl":300}],"meta":{"total":1,"links":{"next":"thisismycursor","prev":""}}}`
+		fmt.Fprint(writer, response)
+	})
+
+	options := &ListOptions{
+		PerPage: 1,
+	}
+	records, meta, err := client.DomainRecord.List(ctx, "vultr.com", options)
+	if err != nil {
+		t.Errorf("DomainRecord.List returned %+v, expected %+v", err, nil)
+	}
+
+	expectedRecords := []DomainRecord{
+		{
+			ID:       "abc123",
+			Type:     "A",
+			Name:     "test",
+			Data:     "127.0.0.1",
+			Priority: 0,
+			TTL:      300,
+		},
+	}
+
+	expectedMeta := &Meta{
+		Total: 1,
+		Links: &Links{
+			Next: "thisismycursor",
+			Prev: "",
+		},
+	}
+
+	if !reflect.DeepEqual(records, expectedRecords) {
+		t.Errorf("DomainRecord.List returned %+v, expected %+v", records, expectedRecords)
+	}
+
+	if !reflect.DeepEqual(meta, expectedMeta) {
+		t.Errorf("DomainRecord.List meta returned %+v, expected %+v", meta, expectedMeta)
+	}
+}
+

@@ -122,7 +122,7 @@ func TestDNSDomainServiceHandler_List(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(meta, expectedMeta) {
-		t.Errorf("Domain.List meta returned %+v, expected %+v", *meta.Links, *expectedMeta.Links)
+		t.Errorf("Domain.List meta returned %+v, expected %+v", meta, expectedMeta)
 	}
 }
 
