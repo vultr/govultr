@@ -67,8 +67,8 @@ type Client struct {
 	Backup          BackupService
 	BareMetalServer BareMetalServerService
 	BlockStorage    BlockStorageService
-	DNSDomain       DNSDomainService
-	DNSRecord       DNSRecordService
+	Domain          DomainService
+	DomainRecord       DomainRecordService
 	FirewallGroup   FirewallGroupService
 	FirewallRule    FireWallRuleService
 	ISO             ISOService
@@ -118,8 +118,8 @@ func NewClient(httpClient *http.Client) *Client {
 	client.Backup = &BackupServiceHandler{client}
 	client.BareMetalServer = &BareMetalServerServiceHandler{client}
 	client.BlockStorage = &BlockStorageServiceHandler{client}
-	client.DNSDomain = &DNSDomainServiceHandler{client}
-	client.DNSRecord = &DNSRecordsServiceHandler{client}
+	client.Domain = &DomainServiceHandler{client}
+	client.DomainRecord = &DomainRecordsServiceHandler{client}
 	client.FirewallGroup = &FireWallGroupServiceHandler{client}
 	client.FirewallRule = &FireWallRuleServiceHandler{client}
 	client.ISO = &ISOServiceHandler{client}
@@ -205,11 +205,11 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 	}
 
 	//todo we may want to revisit this
-	if res.StatusCode >= http.StatusOK && res.StatusCode <= http.StatusNoContent{
+	if res.StatusCode >= http.StatusOK && res.StatusCode <= http.StatusNoContent {
 		if data != nil {
-				if err := json.Unmarshal(body, data); err != nil {
-					return err
-				}
+			if err := json.Unmarshal(body, data); err != nil {
+				return err
+			}
 		}
 		return nil
 	}
