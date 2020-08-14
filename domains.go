@@ -41,6 +41,7 @@ type Domain struct {
 type DomainReq struct {
 	Domain string `json:"domain,omitempty"`
 	IP     string `json:"ip,omitempty"`
+	DNSSec string `json:"dns_sec,omitempty"`
 }
 
 type domainsBase struct {
