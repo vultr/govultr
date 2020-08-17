@@ -11,30 +11,25 @@ func TestBareMetalServerServiceHandler_GetServer(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/baremetal/900000", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals/abc123", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
-			"baremetal": {
-				"id": 900000,
+			"bare_metal": {
+				"id": "abc123",
 				"os": "CentOS 6 x64",
 				"ram": "65536 MB",
 				"disk": "2x 240 GB SSD",
 				"main_ip": "203.0.113.10",
 				"cpu_count": 1,
 				"region": "ewr",
-				"default_password": "ab81u!ryranq",
 				"date_created": "2017-04-12 18:45:41",
 				"status": "active",
 				"netmask_v4": "255.255.255.0",
 				"gateway_v4": "203.0.113.1",
 				"plan": "vbm-4c-32gb",
-				"v6_networks": [
-					{
-						"v6_network": "2001:DB8:9000::",
-						"v6_main_ip": "2001:DB8:9000::100",
-						"v6_network_size": 64
-					}
-				],
+				"v6_network": "2001:DB8:9000::",
+				"v6_main_ip": "2001:DB8:9000::100",
+				"v6_subnet": 64,
 				"label": "my label",
 				"tag": "my tag",
 				"os_id": 127,
@@ -45,37 +40,32 @@ func TestBareMetalServerServiceHandler_GetServer(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bm, err := client.BareMetalServer.Get(ctx, 900000)
+	bm, err := client.BareMetalServer.Get(ctx, "abc123")
 
 	if err != nil {
 		t.Errorf("BareMetalServer.GetServer returned error: %v", err)
 	}
 
 	expected := &BareMetalServer{
-		ID:              900000,
-		Os:              "CentOS 6 x64",
-		RAM:             "65536 MB",
-		Disk:            "2x 240 GB SSD",
-		MainIP:          "203.0.113.10",
-		CPUs:            1,
-		RegionID:        "ewr",
-		DefaultPassword: "ab81u!ryranq",
-		DateCreated:     "2017-04-12 18:45:41",
-		Status:          "active",
-		NetmaskV4:       "255.255.255.0",
-		GatewayV4:       "203.0.113.1",
-		Plan:            "vbm-4c-32gb",
-		V6Networks: []V6Network{
-			{
-				Network:     "2001:DB8:9000::",
-				MainIP:      "2001:DB8:9000::100",
-				NetworkSize: 64,
-			},
-		},
-		Label: "my label",
-		Tag:   "my tag",
-		OsID:  127,
-		AppID: 0,
+		ID:          "abc123",
+		Os:          "CentOS 6 x64",
+		RAM:         "65536 MB",
+		Disk:        "2x 240 GB SSD",
+		MainIP:      "203.0.113.10",
+		CPUCount:    1,
+		Region:      "ewr",
+		DateCreated: "2017-04-12 18:45:41",
+		Status:      "active",
+		NetmaskV4:   "255.255.255.0",
+		GatewayV4:   "203.0.113.1",
+		Plan:        "vbm-4c-32gb",
+		V6Network:   "2001:DB8:9000::",
+		V6MainIP:    "2001:DB8:9000::100",
+		V6Subnet:    64,
+		Label:       "my label",
+		Tag:         "my tag",
+		OsID:        127,
+		AppID:       0,
 	}
 
 	if !reflect.DeepEqual(bm, expected) {
@@ -87,11 +77,11 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/baremetal", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 			{
-				"baremetal": {
-					"id": 900000,
+				"bare_metal": {
+					"id": "900000",
 					"os": "CentOS 6 x64",
 					"ram": "65536 MB",
 					"disk": "2x 240 GB SSD",
@@ -104,13 +94,9 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 					"netmask_v4": "255.255.255.0",
 					"gateway_v4": "203.0.113.1",
 					"plan": "vbm-4c-32gb",
-					"v6_networks": [
-						{
-							"v6_network": "2001:DB8:9000::",
-							"v6_main_ip": "2001:DB8:9000::100",
-							"v6_network_size": 64
-						}
-					],
+					"v6_network": "2001:DB8:9000::",
+					"v6_main_ip": "2001:DB8:9000::100",
+					"v6_subnet": 64,
 					"label": "go-bm-test",
 					"tag": "my tag",
 					"os_id": 127,
@@ -144,31 +130,26 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 	}
 
 	expected := &BareMetalServer{
-		ID:              900000,
+		ID:              "900000",
 		Os:              "CentOS 6 x64",
 		RAM:             "65536 MB",
 		Disk:            "2x 240 GB SSD",
 		MainIP:          "203.0.113.10",
-		CPUs:            1,
+		CPUCount:        1,
 		DefaultPassword: "ab81u!ryranq",
 		DateCreated:     "2017-04-12 18:45:41",
 		Status:          "active",
 		NetmaskV4:       "255.255.255.0",
 		GatewayV4:       "203.0.113.1",
 		Plan:            "vbm-4c-32gb",
-		V6Networks: []V6Network{
-			{
-				Network:     "2001:DB8:9000::",
-				MainIP:      "2001:DB8:9000::100",
-				NetworkSize: 64,
-			},
-		},
-		Label:    "go-bm-test",
-		Tag:      "my tag",
-		OsID:     127,
-		RegionID: "ewr",
-		AppID:    0,
-		UserData: "",
+		V6Network:       "2001:DB8:9000::",
+		V6MainIP:        "2001:DB8:9000::100",
+		V6Subnet:        64,
+		Label:           "go-bm-test",
+		Tag:             "my tag",
+		OsID:            127,
+		Region:          "ewr",
+		AppID:           0,
 	}
 
 	if !reflect.DeepEqual(bm, expected) {
@@ -180,7 +161,7 @@ func TestBareMetalServerServiceHandler_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/baremetal/123456", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals/123456", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
@@ -188,7 +169,7 @@ func TestBareMetalServerServiceHandler_Update(t *testing.T) {
 		Label: "my new label",
 	}
 
-	err := client.BareMetalServer.Update(ctx, 123456, options)
+	err := client.BareMetalServer.Update(ctx, "123456", options)
 	if err != nil {
 		t.Errorf("BareMetal.Update returned %+v, expected %+v", err, nil)
 	}
@@ -197,11 +178,11 @@ func TestBareMetalServerServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/baremetal/900000", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals/900000", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.BareMetalServer.Delete(ctx, 900000)
+	err := client.BareMetalServer.Delete(ctx, "900000")
 
 	if err != nil {
 		t.Errorf("BareMetalServer.Delete returned %+v, expected %+v", err, nil)
@@ -212,30 +193,25 @@ func TestBareMetalServerServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/baremetal", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 			{
-				"baremetals": [{
-					"id": 900000,
+				"bare_metals": [{
+					"id": "90000",
 					"os": "CentOS 6 x64",
 					"ram": "65536 MB",
 					"disk": "2x 240 GB SSD",
 					"main_ip": "203.0.113.10",
 					"cpu_count": 1,
 					"region": "ewr",
-					"default_password": "ab81u!ryranq",
 					"date_created": "2017-04-12 18:45:41",
 					"status": "active",
 					"netmask_v4": "255.255.255.0",
 					"gateway_v4": "203.0.113.1",
 					"plan": "vbm-4c-32gb",
-					"v6_networks": [
-						{
-							"v6_network": "2001:DB8:9000::",
-							"v6_main_ip": "2001:DB8:9000::100",
-							"v6_network_size": 64
-						}
-					],
+					"v6_network": "2001:DB8:9000::",
+					"v6_main_ip": "2001:DB8:9000::100",
+					"v6_subnet": 64,
 					"label": "my label",
 					"tag": "my tag",
 					"os_id": 127,
@@ -254,30 +230,25 @@ func TestBareMetalServerServiceHandler_List(t *testing.T) {
 
 	expected := []BareMetalServer{
 		{
-			ID:              900000,
+			ID:              "90000",
 			Os:              "CentOS 6 x64",
 			RAM:             "65536 MB",
 			Disk:            "2x 240 GB SSD",
 			MainIP:          "203.0.113.10",
-			CPUs:            1,
-			RegionID:        "ewr",
-			DefaultPassword: "ab81u!ryranq",
+			CPUCount:        1,
+			Region:          "ewr",
 			DateCreated:     "2017-04-12 18:45:41",
 			Status:          "active",
 			NetmaskV4:       "255.255.255.0",
 			GatewayV4:       "203.0.113.1",
 			Plan:            "vbm-4c-32gb",
-			V6Networks: []V6Network{
-				{
-					Network:     "2001:DB8:9000::",
-					MainIP:      "2001:DB8:9000::100",
-					NetworkSize: 64,
-				},
-			},
-			Label: "my label",
-			Tag:   "my tag",
-			OsID:  127,
-			AppID: 0,
+			V6Network:       "2001:DB8:9000::",
+			V6MainIP:        "2001:DB8:9000::100",
+			V6Subnet:        64,
+			Label:           "my label",
+			Tag:             "my tag",
+			OsID:            127,
+			AppID:           0,
 		},
 	}
 
@@ -290,7 +261,7 @@ func TestBareMetalServerServiceHandler_Bandwidth(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/baremetal/123456/bandwidth", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals/123456/bandwidth", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
 			"bandwidth": {
@@ -304,7 +275,7 @@ func TestBareMetalServerServiceHandler_Bandwidth(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bandwidth, err := client.BareMetalServer.Bandwidth(ctx, 123456)
+	bandwidth, err := client.BareMetalServer.Bandwidth(ctx, "123456")
 
 	if err != nil {
 		t.Errorf("BareMetalServer.Bandwidth returned %+v", err)
@@ -327,11 +298,11 @@ func TestBareMetalServerServiceHandler_Halt(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/baremetal/900000/halt", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals/900000/halt", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.BareMetalServer.Halt(ctx, 900000)
+	err := client.BareMetalServer.Halt(ctx, "900000")
 
 	if err != nil {
 		t.Errorf("BareMetalServer.Halt returned %+v, expected %+v", err, nil)
@@ -342,7 +313,7 @@ func TestBareMetalServerServiceHandler_IPV4Info(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/baremetal/900000/ipv4", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals/900000/ipv4", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
 			"baremetal_ipv4s": [
@@ -350,15 +321,23 @@ func TestBareMetalServerServiceHandler_IPV4Info(t *testing.T) {
 					"ip": "203.0.113.10",
 					"netmask": "255.255.255.0",
 					"gateway": "203.0.113.1",
-					"type": "main_ip"
+					"type": "main_ip",
+					"reverse": "203.0.113.10.vultr.com"
 				}
-			]
+			],
+  "meta": {
+    "total": 1,
+    "links": {
+      "next": "",
+      "prev": ""
+    }
+  }
 		}
 		`
 		fmt.Fprint(writer, response)
 	})
 
-	ipv4, _, err := client.BareMetalServer.IPV4Info(ctx, 900000, nil)
+	ipv4, _, err := client.BareMetalServer.IPV4Info(ctx, "900000", nil)
 
 	fmt.Print(ipv4)
 	if err != nil {
@@ -371,6 +350,7 @@ func TestBareMetalServerServiceHandler_IPV4Info(t *testing.T) {
 			Netmask: "255.255.255.0",
 			Gateway: "203.0.113.1",
 			Type:    "main_ip",
+			Reverse: "203.0.113.10.vultr.com",
 		},
 	}
 
@@ -383,7 +363,7 @@ func TestBareMetalServerServiceHandler_IPV6Info(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/baremetal/900000/ipv6", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals/900000/ipv6", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
 			"baremetal_ipv6s": [
@@ -399,7 +379,7 @@ func TestBareMetalServerServiceHandler_IPV6Info(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	ipv4, _, err := client.BareMetalServer.IPV6Info(ctx, 900000, nil)
+	ipv4, _, err := client.BareMetalServer.IPV6Info(ctx, "900000", nil)
 
 	if err != nil {
 		t.Errorf("BareMetalServer.IPV6Info returned %+v", err)
@@ -423,11 +403,11 @@ func TestBareMetalServerServiceHandler_Reboot(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/baremetal/900000/reboot", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals/900000/reboot", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.BareMetalServer.Reboot(ctx, 900000)
+	err := client.BareMetalServer.Reboot(ctx, "900000")
 
 	if err != nil {
 		t.Errorf("BareMetalServer.Reboot returned %+v, expected %+v", err, nil)
@@ -438,11 +418,11 @@ func TestBareMetalServerServiceHandler_Reinstall(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/baremetal/900000/reinstall", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals/900000/reinstall", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.BareMetalServer.Reinstall(ctx, 900000)
+	err := client.BareMetalServer.Reinstall(ctx, "900000")
 
 	if err != nil {
 		t.Errorf("BareMetalServer.Reinstall returned %+v, expected %+v", err, nil)
