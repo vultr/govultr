@@ -7,6 +7,7 @@ import (
 	"testing"
 )
 
+// get test
 func TestReservedIPServiceHandler_Attach(t *testing.T) {
 	setup()
 	defer teardown()
@@ -101,8 +102,6 @@ func TestReservedIPServiceHandler_Create(t *testing.T) {
 	}
 
 	ip, err := client.ReservedIP.Create(ctx, options)
-
-	fmt.Print(ip)
 	if err != nil {
 		t.Errorf("ReservedIP.Create returned %+v, expected %+v", err, nil)
 	}

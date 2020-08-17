@@ -26,7 +26,7 @@ func setup() {
 	mux = http.NewServeMux()
 	server = httptest.NewServer(mux)
 
-	client = NewClient(nil, "dummy-key")
+	client = NewClient(nil)
 	url, _ := url.Parse(server.URL)
 	client.BaseURL = url
 }
@@ -130,7 +130,7 @@ func TestClient_DoWithContextError(t *testing.T) {
 
 	client = NewClient(&http.Client{
 		Transport: errRoundTripper{},
-	}, "dummy-key")
+	})
 
 	req, _ := client.NewRequest(ctx, http.MethodGet, "/", nil)
 
@@ -149,7 +149,7 @@ func TestClient_DoWithContextError(t *testing.T) {
 }
 
 func TestClient_NewRequest(t *testing.T) {
-	c := NewClient(nil, "dum-dum")
+	c := NewClient(nil)
 
 	in := "/unit"
 	out := defaultBase + "/unit"

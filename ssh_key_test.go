@@ -11,27 +11,26 @@ func TestSSHKeyServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/sshkey/create", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-		{
-			"SSHKEYID": "541b4960f23bd"
-		}
-		`
-
+	mux.HandleFunc("/v2/ssh-keys", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"ssh_key": {"id": "5f05d5a71fe28","date_created": "2020-07-08 14:18:15","name": "api-test-ssh","ssh_key": "ssh-rsa AF+LbfYYw== test@admin.com"}}`
 		fmt.Fprint(writer, response)
 	})
 
-	key, err := client.SSHKey.Create(ctx, "foo", "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCyVGaw1PuEl98f4/7Kq3O9ZIvDw2OFOSXAFVqilSFNkHlefm1iMtPeqsIBp2t9cbGUf55xNDULz/bD/4BCV43yZ5lh0cUYuXALg9NI29ui7PEGReXjSpNwUD6ceN/78YOK41KAcecq+SS0bJ4b4amKZIJG3JWmDKljtv1dmSBCrTmEAQaOorxqGGBYmZS7NQumRe4lav5r6wOs8OACMANE1ejkeZsGFzJFNqvr5DuHdDL5FAudW23me3BDmrM9ifUzzjl1Jwku3bnRaCcjaxH8oTumt1a00mWci/1qUlaVFft085yvVq7KZbF2OPPbl+erDW91+EZ2FgEi+v1/CSJ5 your_username@hostname")
+	sshKey := &SSHKeyReq{
+		Name:   "api-test-ssh",
+		SSHKey: "ssh-rsa AF+LbfYYw== test@admin.com",
+	}
 
+	key, err := client.SSHKey.Create(ctx, sshKey)
 	if err != nil {
 		t.Errorf("SSHKey.Create returned %+v, expected %+v", err, nil)
 	}
 
 	expected := &SSHKey{
-		SSHKeyID:    "541b4960f23bd",
-		Name:        "foo",
-		Key:         "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCyVGaw1PuEl98f4/7Kq3O9ZIvDw2OFOSXAFVqilSFNkHlefm1iMtPeqsIBp2t9cbGUf55xNDULz/bD/4BCV43yZ5lh0cUYuXALg9NI29ui7PEGReXjSpNwUD6ceN/78YOK41KAcecq+SS0bJ4b4amKZIJG3JWmDKljtv1dmSBCrTmEAQaOorxqGGBYmZS7NQumRe4lav5r6wOs8OACMANE1ejkeZsGFzJFNqvr5DuHdDL5FAudW23me3BDmrM9ifUzzjl1Jwku3bnRaCcjaxH8oTumt1a00mWci/1qUlaVFft085yvVq7KZbF2OPPbl+erDW91+EZ2FgEi+v1/CSJ5 your_username@hostname",
-		DateCreated: "",
+		ID:          "5f05d5a71fe28",
+		Name:        "api-test-ssh",
+		SSHKey:      "ssh-rsa AF+LbfYYw== test@admin.com",
+		DateCreated: "2020-07-08 14:18:15",
 	}
 
 	if !reflect.DeepEqual(key, expected) {
@@ -39,15 +38,61 @@ func TestSSHKeyServiceHandler_Create(t *testing.T) {
 	}
 }
 
+func TestSSHKeyServiceHandler_Get(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/ssh-keys/abc123", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"ssh_key": {"id": "5f05d5a71fe28","date_created": "2020-07-08 14:18:15","name": "api-test-ssh","ssh_key": "ssh-rsa AF+LbfYYw== test@admin.com"}}`
+		fmt.Fprint(writer, response)
+	})
+
+	key, err := client.SSHKey.Get(ctx, "abc123")
+	if err != nil {
+		t.Errorf("SSHKey.Get returned %+v, expected %+v", err, nil)
+	}
+
+	expected := &SSHKey{
+		ID:          "5f05d5a71fe28",
+		Name:        "api-test-ssh",
+		SSHKey:      "ssh-rsa AF+LbfYYw== test@admin.com",
+		DateCreated: "2020-07-08 14:18:15",
+	}
+
+	if !reflect.DeepEqual(key, expected) {
+		t.Errorf("SSHKey.Create returned %+v, expected %+v", key, expected)
+	}
+}
+
+func TestSSHKeyServiceHandler_Update(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/ssh-keys/abc123", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	sshKey := &SSHKeyReq{
+		Name:   "foo",
+		SSHKey: "ssh-rsa CCCCB3NzaC1yc your_username@hostname",
+	}
+
+	err := client.SSHKey.Update(ctx, "abc123", sshKey)
+
+	if err != nil {
+		t.Errorf("SSHKey.Update returned error: %+v", err)
+	}
+}
+
 func TestSSHKeyServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/sshkey/destroy", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/ssh-keys/abc123", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.SSHKey.Delete(ctx, "foo")
+	err := client.SSHKey.Delete(ctx, "abc123")
 
 	if err != nil {
 		t.Errorf("SSHKey.Delete returned %+v, expected %+v", err, nil)
@@ -58,59 +103,35 @@ func TestSSHKeyServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/sshkey/list", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-		{
-			"541b4960f23bd": {
-				"SSHKEYID": "541b4960f23bd",
-				"date_created": null,
-				"name": "test",
-				"ssh_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCyVGaw1PuEl98f4/7Kq3O9ZIvDw2OFOSXAFVqilSFNkHlefm1iMtPeqsIBp2t9cbGUf55xNDULz/bD/4BCV43yZ5lh0cUYuXALg9NI29ui7PEGReXjSpNwUD6ceN/78YOK41KAcecq+SS0bJ4b4amKZIJG3JWmDKljtv1dmSBCrTmEAQaOorxqGGBYmZS7NQumRe4lav5r6wOs8OACMANE1ejkeZsGFzJFNqvr5DuHdDL5FAudW23me3BDmrM9ifUzzjl1Jwku3bnRaCcjaxH8oTumt1a00mWci/1qUlaVFft085yvVq7KZbF2OPPbl+erDW91+EZ2FgEi+v1/CSJ5 your_username@hostname"
-			}
-		}
-		`
+	mux.HandleFunc("/v2/ssh-keys", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"ssh_keys": [{"id": "5ed139d1890db","date_created": "2020-05-29 16:35:29","name": "api-test-ssh","ssh_key": "ssh-rsa AAAAB3NzaC1ycYYw== test@admin.com"}],"meta": {"total": 8,"links": {"next": "","prev": ""}}}`
 		fmt.Fprintf(writer, response)
 	})
 
-	sshKeys, err := client.SSHKey.List(ctx)
-
+	sshKeys, meta, err := client.SSHKey.List(ctx, nil)
 	if err != nil {
 		t.Errorf("SSHKey.List returned error: %v", err)
 	}
 
-	expected := []SSHKey{
+	expectedSSH := []SSHKey{
 		{
-			SSHKeyID:    "541b4960f23bd",
-			Name:        "test",
-			Key:         "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCyVGaw1PuEl98f4/7Kq3O9ZIvDw2OFOSXAFVqilSFNkHlefm1iMtPeqsIBp2t9cbGUf55xNDULz/bD/4BCV43yZ5lh0cUYuXALg9NI29ui7PEGReXjSpNwUD6ceN/78YOK41KAcecq+SS0bJ4b4amKZIJG3JWmDKljtv1dmSBCrTmEAQaOorxqGGBYmZS7NQumRe4lav5r6wOs8OACMANE1ejkeZsGFzJFNqvr5DuHdDL5FAudW23me3BDmrM9ifUzzjl1Jwku3bnRaCcjaxH8oTumt1a00mWci/1qUlaVFft085yvVq7KZbF2OPPbl+erDW91+EZ2FgEi+v1/CSJ5 your_username@hostname",
-			DateCreated: "",
+			ID:          "5ed139d1890db",
+			Name:        "api-test-ssh",
+			SSHKey:      "ssh-rsa AAAAB3NzaC1ycYYw== test@admin.com",
+			DateCreated: "2020-05-29 16:35:29",
 		},
 	}
 
-	if !reflect.DeepEqual(sshKeys, expected) {
-		t.Errorf("SSHKey.List returned %+v, expected %+v", sshKeys, expected)
-	}
-}
-
-func TestSSHKeyServiceHandler_Update(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v1/sshkey/update", func(writer http.ResponseWriter, request *http.Request) {
-
-		fmt.Fprint(writer)
-	})
-
-	sshKey := &SSHKey{
-		SSHKeyID:    "561b4960f23cc",
-		Name:        "foo",
-		Key:         "ssh-rsa CCCCB3NzaC1yc2EAAAADAQABAAABAQCyVGaw1PuEl98f4/7Kq3O9ZIvDw2OFOSXAFVqilSFNkHlefm1iMtPeqsIBp2t9cbGUf55xNDULz/bD/4BCV43yZ5lh0cUYuXALg9NI29ui7PEGReXjSpNwUD6ceN/78YOK41KAcecq+SS0bJ4b4amKZIJG3JWmDKljtv1dmSBCrTmEAQaOorxqGGBYmZS7NQumRe4lav5r6wOs8OACMANE1ejkeZsGFzJFNqvr5DuHdDL5FAudW23me3BDmrM9ifUzzjl1Jwku3bnRaCcjaxH8oTumt1a00mWci/1qUlaVFft085yvVq7KZbF2OPPbl+erDW91+EZ2FgEi+v1/CSJ5 your_username@hostname",
-		DateCreated: "",
+	expectedMeta := &Meta{
+		Total: 8,
+		Links: &Links{},
 	}
 
-	err := client.SSHKey.Update(ctx, sshKey)
+	if !reflect.DeepEqual(sshKeys, expectedSSH) {
+		t.Errorf("SSHKey.List ssh-keys returned %+v, expected %+v", sshKeys, expectedSSH)
+	}
 
-	if err != nil {
-		t.Errorf("SSHKey.Update returned error: %+v", err)
+	if !reflect.DeepEqual(meta, expectedMeta) {
+		t.Errorf("SSHKey.List meta returned %+v, expected %+v", meta, expectedMeta)
 	}
 }

@@ -2,18 +2,19 @@ package govultr
 
 import (
 	"context"
+	"fmt"
 	"net/http"
-	"net/url"
+
+	"github.com/google/go-querystring/query"
 )
 
 // SnapshotService is the interface to interact with Snapshot endpoints on the Vultr API
-// Link: https://www.vultr.com/api/#snapshot
 type SnapshotService interface {
-	Create(ctx context.Context, InstanceID, description string) (*Snapshot, error)
-	CreateFromURL(ctx context.Context, snapshotURL string) (*Snapshot, error)
-	Delete(ctx context.Context, snapshotID string) error
-	List(ctx context.Context) ([]Snapshot, error)
+	Create(ctx context.Context, snapshotReq *SnapshotReq) (*Snapshot, error)
+	CreateFromURL(ctx context.Context, snapshotURLReq SnapshotURLReq) (*Snapshot, error)
 	Get(ctx context.Context, snapshotID string) (*Snapshot, error)
+	Delete(ctx context.Context, snapshotID string) error
+	List(ctx context.Context, options *ListOptions) ([]Snapshot, *Meta, error)
 }
 
 // SnapshotServiceHandler handles interaction with the snapshot methods for the Vultr API
@@ -23,146 +24,121 @@ type SnapshotServiceHandler struct {
 
 // Snapshot represents a Vultr snapshot
 type Snapshot struct {
-	SnapshotID  string `json:"SNAPSHOTID"`
+	ID          string `json:"id"`
 	DateCreated string `json:"date_created"`
 	Description string `json:"description"`
-	Size        string `json:"size"`
+	Size        int    `json:"size"`
 	Status      string `json:"status"`
-	OsID        string `json:"OSID"`
-	AppID       string `json:"APPID"`
+	OsID        int    `json:"os_id"`
+	AppID       int    `json:"app_id"`
 }
 
-// Snapshots represent a collection of snapshots
-type Snapshots []Snapshot
+// SnapshotReq
+type SnapshotReq struct {
+	InstanceID  int    `json:"instance_id,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
+// SnapshotURLReq
+type SnapshotURLReq struct {
+	URL string `json:"url"`
+}
+
+type snapshotsBase struct {
+	Snapshots []Snapshot `json:"snapshots"`
+	Meta      *Meta      `json:"meta"`
+}
+
+type snapshotBase struct {
+	Snapshot *Snapshot `json:"snapshot"`
+}
 
 // Create makes a snapshot of a provided server
-func (s *SnapshotServiceHandler) Create(ctx context.Context, InstanceID, description string) (*Snapshot, error) {
+func (s *SnapshotServiceHandler) Create(ctx context.Context, snapshotReq *SnapshotReq) (*Snapshot, error) {
+	uri := "/v2/snapshots"
 
-	uri := "/v1/snapshot/create"
-
-	values := url.Values{
-		"SUBID":       {InstanceID},
-		"description": {description},
-	}
-
-	req, err := s.Client.NewRequest(ctx, http.MethodPost, uri, values)
-
+	req, err := s.Client.NewRequest(ctx, http.MethodPost, uri, snapshotReq)
 	if err != nil {
 		return nil, err
 	}
 
-	snapshot := new(Snapshot)
-	err = s.Client.DoWithContext(ctx, req, snapshot)
-
-	if err != nil {
+	snapshot := new(snapshotBase)
+	if err = s.Client.DoWithContext(ctx, req, snapshot); err != nil {
 		return nil, err
 	}
 
-	snapshot.Description = description
-	return snapshot, nil
+	return snapshot.Snapshot, nil
 }
 
 // CreateFromURL will create a snapshot based on an image iso from a URL you provide
-func (s *SnapshotServiceHandler) CreateFromURL(ctx context.Context, snapshotURL string) (*Snapshot, error) {
-	uri := "/v1/snapshot/create_from_url"
+func (s *SnapshotServiceHandler) CreateFromURL(ctx context.Context, snapshotURLReq SnapshotURLReq) (*Snapshot, error) {
+	uri := "/v2/snapshots/create-from-url"
 
-	values := url.Values{
-		"url": {snapshotURL},
-	}
-
-	req, err := s.Client.NewRequest(ctx, http.MethodPost, uri, values)
-
+	req, err := s.Client.NewRequest(ctx, http.MethodPost, uri, snapshotURLReq)
 	if err != nil {
 		return nil, err
 	}
 
-	snapshot := new(Snapshot)
-	err = s.Client.DoWithContext(ctx, req, snapshot)
-
-	if err != nil {
+	snapshot := new(snapshotBase)
+	if err = s.Client.DoWithContext(ctx, req, snapshot); err != nil {
 		return nil, err
 	}
 
-	return snapshot, nil
+	return snapshot.Snapshot, nil
 }
 
-// Delete a snapshot based on snapshotID
-func (s *SnapshotServiceHandler) Delete(ctx context.Context, snapshotID string) error {
-	uri := "/v1/snapshot/destroy"
+// Get a specific snapshot
+func (s *SnapshotServiceHandler) Get(ctx context.Context, snapshotID string) (*Snapshot, error) {
+	uri := fmt.Sprintf("/v2/snapshots/%s", snapshotID)
 
-	values := url.Values{
-		"SNAPSHOTID": {snapshotID},
+	req, err := s.Client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
 	}
 
-	req, err := s.Client.NewRequest(ctx, http.MethodPost, uri, values)
+	snapshot := new(snapshotBase)
+	if err = s.Client.DoWithContext(ctx, req, snapshot); err != nil{
+		return nil, err
+	}
 
+	return snapshot.Snapshot, nil
+}
+
+// Delete a snapshot.
+func (s *SnapshotServiceHandler) Delete(ctx context.Context, snapshotID string) error {
+	uri := fmt.Sprintf("/v2/snapshots/%s", snapshotID)
+
+	req, err := s.Client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return err
 	}
 
-	err = s.Client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
+	if err = s.Client.DoWithContext(ctx, req, nil); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// List of snapshots details
-func (s *SnapshotServiceHandler) List(ctx context.Context) ([]Snapshot, error) {
-	uri := "/v1/snapshot/list"
+// List all available snapshots.
+func (s *SnapshotServiceHandler) List(ctx context.Context, options *ListOptions) ([]Snapshot, *Meta, error) {
+	uri := "/v2/snapshots"
 
 	req, err := s.Client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-
-	snapshotMap := make(map[string]Snapshot)
-	err = s.Client.DoWithContext(ctx, req, &snapshotMap)
-
+	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	var snapshots []Snapshot
+	req.URL.RawQuery = newValues.Encode()
 
-	for _, s := range snapshotMap {
-		snapshots = append(snapshots, s)
+	snapshots := new(snapshotsBase)
+	if err = s.Client.DoWithContext(ctx, req, snapshots); err != nil {
+		return nil, nil, err
 	}
 
-	return snapshots, nil
-}
-
-// Get individual details of a snapshot based on snapshotID
-func (s *SnapshotServiceHandler) Get(ctx context.Context, snapshotID string) (*Snapshot, error) {
-	uri := "/v1/snapshot/list"
-
-	req, err := s.Client.NewRequest(ctx, http.MethodGet, uri, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if snapshotID != "" {
-		q := req.URL.Query()
-		q.Add("SNAPSHOTID", snapshotID)
-		req.URL.RawQuery = q.Encode()
-	}
-
-	snapshotMap := make(map[string]Snapshot)
-	err = s.Client.DoWithContext(ctx, req, &snapshotMap)
-
-	if err != nil {
-		return nil, err
-	}
-
-	snapshot := new(Snapshot)
-
-	for _, s := range snapshotMap {
-		snapshot = &s
-	}
-
-	return snapshot, nil
+	return snapshots.Snapshots, snapshots.Meta, nil
 }
