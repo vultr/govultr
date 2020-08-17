@@ -33,7 +33,15 @@ func TestReservedIPServiceHandler_Convert(t *testing.T) {
 	mux.HandleFunc("/v2/reserved-ips/convert", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
-			"SUBID": 1312965
+			"reserved_ip": {
+				"id": 1312965,
+				"region": "ewr",
+				"ip_type": "v4",
+				"subnet": "111.111.111.111",
+				"subnet_size": 32,
+				"label": "my first reserved ip",
+				"instance_id": 1234
+			}
 		}
 		`
 
@@ -54,11 +62,11 @@ func TestReservedIPServiceHandler_Convert(t *testing.T) {
 	expected := &ReservedIP{
 		ID:         1312965,
 		Region:     "ewr",
-		IPType:     "",
-		Subnet:     "",
-		SubnetSize: 0,
-		Label:      "go-test",
-		InstanceID: 0,
+		IPType:     "v4",
+		Subnet:     "111.111.111.111",
+		SubnetSize: 32,
+		Label:      "my first reserved ip",
+		InstanceID: 1234,
 	}
 
 	if !reflect.DeepEqual(ip, expected) {
@@ -94,8 +102,6 @@ func TestReservedIPServiceHandler_Create(t *testing.T) {
 	}
 
 	ip, err := client.ReservedIP.Create(ctx, options)
-
-	fmt.Print(ip)
 	if err != nil {
 		t.Errorf("ReservedIP.Create returned %+v, expected %+v", err, nil)
 	}
