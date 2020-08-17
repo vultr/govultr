@@ -19,8 +19,8 @@ type BareMetalServerService interface {
 	List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, error)
 	Bandwidth(ctx context.Context, serverID string) (*BandwidthBase, error)
 	Halt(ctx context.Context, serverID string) error
-	IPV4Info(ctx context.Context, serverID string, options *ListOptions) ([]BareMetalServerIPV4, *Meta, error)
-	IPV6Info(ctx context.Context, serverID string, options *ListOptions) ([]BareMetalServerIPV6, *Meta, error)
+	ListIPv4s(ctx context.Context, serverID string, options *ListOptions) ([]IPv4, *Meta, error)
+	ListIPv6s(ctx context.Context, serverID string, options *ListOptions) ([]IPv6, *Meta, error)
 	Reboot(ctx context.Context, serverID string) error
 	Reinstall(ctx context.Context, serverID string) error
 }
@@ -73,23 +73,6 @@ type BareMetalReq struct {
 	ReservedIPV4    string   `json:"reserved_ip_v4,omitempty"`
 }
 
-// BareMetalServerIPV4 represents IPV4 information for a bare metal server
-type BareMetalServerIPV4 struct {
-	IP      string `json:"ip"`
-	Netmask string `json:"netmask"`
-	Gateway string `json:"gateway"`
-	Type    string `json:"type"`
-	Reverse string `json:"reverse"`
-}
-
-// BareMetalServerIPV6 represents IPV6 information for a bare metal server
-type BareMetalServerIPV6 struct {
-	IP          string `json:"ip"`
-	Network     string `json:"network"`
-	NetworkSize int    `json:"network_size"`
-	Type        string `json:"type"`
-}
-
 // BareMetalServerBandwidth represents bandwidth information for a bare metal server
 type BareMetalServerBandwidth struct {
 	IncomingBytes int `json:"incoming_bytes"`
@@ -106,13 +89,13 @@ type bareMetalBase struct {
 }
 
 type bareMetalIPv4sBase struct {
-	BareMetalIpv4s []BareMetalServerIPV4 `json:"baremetal_ipv4s"`
-	Meta         *Meta                 `json:"meta"`
+	BareMetalIpv4s []IPv4 `json:"baremetal_ipv4s"`
+	Meta           *Meta  `json:"meta"`
 }
 
 type bareMetalIPv6sBase struct {
-	BareMetalIPs []BareMetalServerIPV6 `json:"baremetal_ipv6s"`
-	Meta         *Meta                 `json:"meta"`
+	BareMetalIPs []IPv6 `json:"baremetal_ipv6s"`
+	Meta         *Meta  `json:"meta"`
 }
 
 type BandwidthBase struct {
@@ -239,9 +222,9 @@ func (b *BareMetalServerServiceHandler) Halt(ctx context.Context, serverID strin
 	return nil
 }
 
-// IPV4Info will List the IPv4 information of a bare metal server.
+// ListIPv4s will List the IPv4 information of a bare metal server.
 // IP information is only available for bare metal servers in the "active" state.
-func (b *BareMetalServerServiceHandler) IPV4Info(ctx context.Context, serverID string, options *ListOptions) ([]BareMetalServerIPV4, *Meta, error) {
+func (b *BareMetalServerServiceHandler) ListIPv4s(ctx context.Context, serverID string, options *ListOptions) ([]IPv4, *Meta, error) {
 	uri := fmt.Sprintf("%s/%s/ipv4", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -255,18 +238,18 @@ func (b *BareMetalServerServiceHandler) IPV4Info(ctx context.Context, serverID s
 
 	req.URL.RawQuery = newValues.Encode()
 
-	ipv4 := new(bareMetalIPv4sBase)
+	ipv4 := new(ipv4sBase)
 	if err = b.client.DoWithContext(ctx, req, ipv4); err != nil {
 		return nil, nil, err
 	}
 
-	return ipv4.BareMetalIpv4s, ipv4.Meta, nil
+	return ipv4.IPv4S, ipv4.Meta, nil
 }
 
-// IPV6Info ists the IPv6 information of a bare metal server.
+// ListIPv6s lists the IPv6 information of a bare metal server.
 // IP information is only available for bare metal servers in the "active" state.
 // If the bare metal server does not have IPv6 enabled, then an empty array is returned.
-func (b *BareMetalServerServiceHandler) IPV6Info(ctx context.Context, serverID string, options *ListOptions) ([]BareMetalServerIPV6, *Meta, error) {
+func (b *BareMetalServerServiceHandler) ListIPv6s(ctx context.Context, serverID string, options *ListOptions) ([]IPv6, *Meta, error) {
 	uri := fmt.Sprintf("%s/%s/ipv6", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -280,12 +263,12 @@ func (b *BareMetalServerServiceHandler) IPV6Info(ctx context.Context, serverID s
 
 	req.URL.RawQuery = newValues.Encode()
 
-	ipv6 := new(bareMetalIPv6sBase)
+	ipv6 := new(ipv6sBase)
 	if err = b.client.DoWithContext(ctx, req, ipv6); err != nil {
 		return nil, nil, err
 	}
 
-	return ipv6.BareMetalIPs, ipv6.Meta, nil
+	return ipv6.IPv6S, ipv6.Meta, nil
 }
 
 // Reboot a bare metal server. This is a hard reboot, which means that the server is powered off, then back on.

@@ -71,6 +71,7 @@ type Client struct {
 	DomainRecord    DomainRecordService
 	FirewallGroup   FirewallGroupService
 	FirewallRule    FireWallRuleService
+	Instance        InstanceService
 	ISO             ISOService
 	LoadBalancer    LoadBalancerService
 	Network         NetworkService
@@ -79,7 +80,6 @@ type Client struct {
 	Plan            PlanService
 	Region          RegionService
 	ReservedIP      ReservedIPService
-	Server          ServerService
 	Snapshot        SnapshotService
 	SSHKey          SSHKeyService
 	StartupScript   StartupScriptService
@@ -122,6 +122,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.DomainRecord = &DomainRecordsServiceHandler{client}
 	client.FirewallGroup = &FireWallGroupServiceHandler{client}
 	client.FirewallRule = &FireWallRuleServiceHandler{client}
+	client.Instance = &InstanceServiceHandler{client}
 	client.ISO = &ISOServiceHandler{client}
 	client.LoadBalancer = &LoadBalancerHandler{client}
 	client.Network = &NetworkServiceHandler{client}
@@ -129,7 +130,6 @@ func NewClient(httpClient *http.Client) *Client {
 	client.OS = &OSServiceHandler{client}
 	client.Plan = &PlanServiceHandler{client}
 	client.Region = &RegionServiceHandler{client}
-	client.Server = &ServerServiceHandler{client}
 	client.ReservedIP = &ReservedIPServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
 	client.SSHKey = &SSHKeyServiceHandler{client}
@@ -199,7 +199,6 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
-
 	if err != nil {
 		return err
 	}
