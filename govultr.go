@@ -136,11 +136,9 @@ func NewClient(httpClient *http.Client) *Client {
 	client.StartupScript = &StartupScriptServiceHandler{client}
 	client.User = &UserServiceHandler{client}
 
-	//apiKey := APIKey{key: key}
-	//client.APIKey = apiKey
-
 	return client
 }
+
 
 // NewRequest creates an API Request
 func (c *Client) NewRequest(ctx context.Context, method, uri string, body interface{}) (*http.Request, error) {

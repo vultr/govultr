@@ -15,12 +15,8 @@ type IPv6 struct {
 	Type        string `json:"type,omitempty"`
 }
 
-type ipv4sBase struct {
-	IPv4S []IPv4 `json:"ipv4s"`
-	Meta  *Meta  `json:"meta"`
-}
-
-type ipv6sBase struct {
-	IPv6S []IPv6 `json:"ipv6s"`
+type ipBase struct {
+	IPv4S []IPv4 `json:"ipv4s,omitempty"`
+	IPv6S []IPv6 `json:"ipv6s,omitempty"`
 	Meta  *Meta  `json:"meta"`
 }

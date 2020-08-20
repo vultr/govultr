@@ -17,7 +17,7 @@ type BareMetalServerService interface {
 	Update(ctx context.Context, serverID string, bmReq *BareMetalReq) error
 	Delete(ctx context.Context, serverID string) error
 	List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, error)
-	Bandwidth(ctx context.Context, serverID string) (*BandwidthBase, error)
+	GetBandwidth(ctx context.Context, serverID string) ([]BareMetalServerBandwidth, error)
 	Halt(ctx context.Context, serverID string) error
 	ListIPv4s(ctx context.Context, serverID string, options *ListOptions) ([]IPv4, *Meta, error)
 	ListIPv6s(ctx context.Context, serverID string, options *ListOptions) ([]IPv6, *Meta, error)
@@ -88,17 +88,7 @@ type bareMetalBase struct {
 	BareMetal *BareMetalServer `json:"bare_metal"`
 }
 
-type bareMetalIPv4sBase struct {
-	BareMetalIpv4s []IPv4 `json:"baremetal_ipv4s"`
-	Meta           *Meta  `json:"meta"`
-}
-
-type bareMetalIPv6sBase struct {
-	BareMetalIPs []IPv6 `json:"baremetal_ipv6s"`
-	Meta         *Meta  `json:"meta"`
-}
-
-type BandwidthBase struct {
+type bandwidthBase struct {
 	BareMetalBandwidth map[string]BareMetalServerBandwidth `json:"bandwidth"`
 }
 
@@ -189,20 +179,20 @@ func (b *BareMetalServerServiceHandler) List(ctx context.Context, options *ListO
 }
 
 // Bandwidth will get the bandwidth used by a bare metal server
-func (b *BareMetalServerServiceHandler) Bandwidth(ctx context.Context, serverID string) (*BandwidthBase, error) {
+func (b *BareMetalServerServiceHandler) GetBandwidth(ctx context.Context, serverID string) ([]BareMetalServerBandwidth, error) {
 	uri := fmt.Sprintf("%s/%s/bandwidth", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	bms := new(BandwidthBase)
+	bms := new(bandwidthBase)
 	if err = b.client.DoWithContext(ctx, req, &bms); err != nil {
 		return nil, err
 	}
 
 	// fmt.Print(bms)
-	return bms, nil
+	return bms.BareMetalBandwidth, nil
 }
 
 // Halt a bare metal server.
@@ -238,7 +228,7 @@ func (b *BareMetalServerServiceHandler) ListIPv4s(ctx context.Context, serverID 
 
 	req.URL.RawQuery = newValues.Encode()
 
-	ipv4 := new(ipv4sBase)
+	ipv4 := new(ipBase)
 	if err = b.client.DoWithContext(ctx, req, ipv4); err != nil {
 		return nil, nil, err
 	}
@@ -263,7 +253,7 @@ func (b *BareMetalServerServiceHandler) ListIPv6s(ctx context.Context, serverID 
 
 	req.URL.RawQuery = newValues.Encode()
 
-	ipv6 := new(ipv6sBase)
+	ipv6 := new(ipBase)
 	if err = b.client.DoWithContext(ctx, req, ipv6); err != nil {
 		return nil, nil, err
 	}

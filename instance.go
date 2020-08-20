@@ -3,8 +3,9 @@ package govultr
 import (
 	"context"
 	"fmt"
-	"github.com/google/go-querystring/query"
 	"net/http"
+
+	"github.com/google/go-querystring/query"
 )
 
 const instancePath = "/v2/instances"
@@ -43,9 +44,11 @@ type InstanceService interface {
 	CreateReverseIPv6(ctx context.Context, instanceID string, reverseReq *ReverseIP) error
 	ListReverseIPv6(ctx context.Context, instanceID string) ([]ReverseIP, error)
 	// Delete
+	// default ipv6
 
-	// todo reverse ipv4
-	// Create
+	CreateReverseIPv4(ctx context.Context, instanceID string, reverseReq *ReverseIP) error
+
+	GetUserData(ctx context.Context, instanceID string) (*UserData, error)
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -147,6 +150,14 @@ type reverseIPv6sBase struct {
 type ReverseIP struct {
 	IP      string `json:"ip"`
 	Reverse string `json:"reverse"`
+}
+
+type userDataBase struct {
+	UserData *UserData `json:"user_data"`
+}
+
+type UserData struct {
+	Data string `json:"data"`
 }
 
 // GetServer will get the server with the given instanceID
@@ -427,7 +438,7 @@ func (i *InstanceServiceHandler) ListIPV4(ctx context.Context, instanceID string
 	}
 
 	req.URL.RawQuery = newValues.Encode()
-	ips := new(ipv4sBase)
+	ips := new(ipBase)
 	if err = i.client.DoWithContext(ctx, req, ips); err != nil {
 		return nil, nil, err
 	}
@@ -448,7 +459,7 @@ func (i *InstanceServiceHandler) ListIPV6(ctx context.Context, instanceID string
 	}
 
 	req.URL.RawQuery = newValues.Encode()
-	ips := new(ipv6sBase)
+	ips := new(ipBase)
 	if err = i.client.DoWithContext(ctx, req, ips); err != nil {
 		return nil, nil, err
 	}
@@ -483,4 +494,33 @@ func (i *InstanceServiceHandler) ListReverseIPv6(ctx context.Context, instanceID
 	}
 
 	return reverse.ReverseIPv6s, nil
+}
+
+func (i *InstanceServiceHandler) CreateReverseIPv4(ctx context.Context, instanceID string, reverseReq *ReverseIP) error {
+	uri := fmt.Sprintf("%s/%s/ipv4/reverse", instancePath, instanceID)
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, reverseReq)
+	if err != nil {
+		return err
+	}
+
+	if err = i.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (i *InstanceServiceHandler) GetUserData(ctx context.Context, instanceID string) (*UserData, error) {
+	uri := fmt.Sprintf("%s/%s/user-data", instancePath, instanceID)
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	userData := new(userDataBase)
+	if err = i.client.DoWithContext(ctx, req, userData); err != nil {
+		return nil, err
+	}
+
+	return userData.UserData, nil
 }
