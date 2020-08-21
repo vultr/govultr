@@ -452,7 +452,7 @@ func TestServerServiceHandler_SetUserData(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.Server.SetUserData(ctx, "1234", "user-test-data")
+	err := client.Server.SetUserData(ctx, "1234", "ZWNobyBIZWxsbyBXb3JsZA==")
 
 	if err != nil {
 		t.Errorf("Server.SetUserData return %+v ", err)

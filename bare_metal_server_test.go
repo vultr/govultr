@@ -854,7 +854,7 @@ func TestBareMetalServerServiceHandler_SetUserData(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.BareMetalServer.SetUserData(ctx, "900000", "user-test-data")
+	err := client.BareMetalServer.SetUserData(ctx, "900000", "ZWNobyBIZWxsbyBXb3JsZA==")
 
 	if err != nil {
 		t.Errorf("Server.SetUserData return %+v ", err)
