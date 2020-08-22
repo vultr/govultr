@@ -790,11 +790,9 @@ func (s *ServerServiceHandler) SetUserData(ctx context.Context, instanceID, user
 
 	uri := "/v1/server/set_user_data"
 
-	encodedUserData := base64.StdEncoding.EncodeToString([]byte(userData))
-
 	values := url.Values{
 		"SUBID":    {instanceID},
-		"userdata": {encodedUserData},
+		"userdata": {userData},
 	}
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
