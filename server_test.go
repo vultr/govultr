@@ -1091,3 +1091,33 @@ func TestServerServiceHandler_GetServer(t *testing.T) {
 		t.Errorf("Server.GetServer returned %+v, expected %+v", server, expected)
 	}
 }
+
+func TestServerServiceHandler_EnableDDOS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/ddos_protection_enable", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.EnableDDOS(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.ddos_protection_enable returned %+v, ", err)
+	}
+}
+
+func TestServerServiceHandler_DisableDDOS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v1/server/ddos_protection_disable", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Server.DisableDDOS(ctx, "1234")
+
+	if err != nil {
+		t.Errorf("Server.ddos_protection_disable returned %+v, ", err)
+	}
+}
