@@ -59,6 +59,8 @@ type ServerService interface {
 	ListByMainIP(ctx context.Context, mainIP string) ([]Server, error)
 	ListByTag(ctx context.Context, tag string) ([]Server, error)
 	GetServer(ctx context.Context, instanceID string) (*Server, error)
+	EnableDDOS(ctx context.Context, instanceID string) error
+	DisableDDOS(ctx context.Context, instanceID string) error
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -1463,5 +1465,41 @@ func (s *ServerServiceHandler) GetServer(ctx context.Context, instanceID string)
 	}
 
 	return server, nil
+}
+// EnableDDOS for a specific server.
+func (s *ServerServiceHandler) EnableDDOS(ctx context.Context, instanceID string) error {
+	uri := "/v1/server/ddos_protection_enable"
+	values := url.Values{
+		"SUBID": {instanceID},
+	}
 
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+	if err != nil {
+		return err
+	}
+
+	if err = s.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DisableDDOS protection for a specific server.
+func (s *ServerServiceHandler) DisableDDOS(ctx context.Context, instanceID string) error {
+	uri := "/v1/server/ddos_protection_disable"
+	values := url.Values{
+		"SUBID": {instanceID},
+	}
+
+	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
+	if err != nil {
+		return err
+	}
+
+	if err = s.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
 }
