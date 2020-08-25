@@ -549,7 +549,7 @@ func TestServerServiceHandler_AddIPV4(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	ip, err := client.Server.AddIPV4(ctx, "1234", "on")
+	ip, err := client.Server.AddIPV4(ctx, "1234", "no")
 
 	if err != nil {
 		t.Errorf("Server.AddIPV4 returned %+v", err)
