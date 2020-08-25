@@ -545,13 +545,19 @@ func TestServerServiceHandler_AddIPV4(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v1/server/create_ipv4", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
+		response := `{"ipv4": "123.123.123.124"}`
+		fmt.Fprint(writer, response)
 	})
 
-	err := client.Server.AddIPV4(ctx, "1234")
+	ip, err := client.Server.AddIPV4(ctx, "1234", "no")
 
 	if err != nil {
 		t.Errorf("Server.AddIPV4 returned %+v", err)
+	}
+
+	expectedIP := &IP{IPv4: "123.123.123.124"}
+	if !reflect.DeepEqual(ip, expectedIP) {
+		t.Errorf("Server.AddIPV4 returned %+v, expected %+v", ip, expectedIP)
 	}
 }
 
