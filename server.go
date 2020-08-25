@@ -39,7 +39,7 @@ type ServerService interface {
 	SetUserData(ctx context.Context, instanceID, userData string) error
 	IPV4Info(ctx context.Context, instanceID string, public bool) ([]IPV4, error)
 	IPV6Info(ctx context.Context, instanceID string) ([]IPV6, error)
-	AddIPV4(ctx context.Context, instanceID string) error
+	AddIPV4(ctx context.Context, instanceID, reboot string) (*IP, error)
 	DestroyIPV4(ctx context.Context, instanceID, ip string) error
 	EnableIPV6(ctx context.Context, instanceID string) error
 	Bandwidth(ctx context.Context, instanceID string) ([]map[string]string, error)
@@ -184,6 +184,10 @@ type ServerOptions struct {
 	Hostname             string
 	Tag                  string
 	FirewallGroupID      string
+}
+
+type IP struct {
+	IPv4 string `json:"ipv4"`
 }
 
 // ChangeApp changes the VPS to a different application.
@@ -904,27 +908,28 @@ func (s *ServerServiceHandler) IPV6Info(ctx context.Context, instanceID string) 
 }
 
 // AddIPV4 will add a new IPv4 address to a server.
-func (s *ServerServiceHandler) AddIPV4(ctx context.Context, instanceID string) error {
-
+// The server will be rebooted unless you specify otherwise. You must reboot the server before the IPv4 address can be configured.
+func (s *ServerServiceHandler) AddIPV4(ctx context.Context, instanceID, reboot string) (*IP, error) {
 	uri := "/v1/server/create_ipv4"
-
 	values := url.Values{
 		"SUBID": {instanceID},
 	}
 
+	if reboot == "no" {
+		values.Add("reboot", "no")
+	}
+
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, values)
-
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	err = s.client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
-		return err
+	ip := new(IP)
+	if err = s.client.DoWithContext(ctx, req, ip); err != nil {
+		return nil, err
 	}
 
-	return nil
+	return ip, nil
 }
 
 // DestroyIPV4 removes a secondary IPv4 address from a server.
@@ -1466,6 +1471,7 @@ func (s *ServerServiceHandler) GetServer(ctx context.Context, instanceID string)
 
 	return server, nil
 }
+
 // EnableDDOS for a specific server.
 func (s *ServerServiceHandler) EnableDDOS(ctx context.Context, instanceID string) error {
 	uri := "/v1/server/ddos_protection_enable"
