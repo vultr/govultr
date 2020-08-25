@@ -1,6 +1,6 @@
 # Change Log
 
-## [v0.5.0](https://github.com/vultr/govultr/compare/v0.4.2..v0.5.0) (2020-08-24)
+## [v0.5.0](https://github.com/vultr/govultr/compare/v0.4.2..v0.5.0) (2020-08-25)
 ### Enhancement
 *  Servers: Enable/Disable DDOS Protection [#75](https://github.com/vultr/govultr/pull/75)
 
