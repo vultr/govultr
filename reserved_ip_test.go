@@ -17,9 +17,9 @@ func TestReservedIPServiceHandler_Attach(t *testing.T) {
 	})
 
 	options := &ReservedIPReq{
-		InstanceID: 1234,
+		InstanceID: "1234",
 	}
-	err := client.ReservedIP.Attach(ctx, 12345, options)
+	err := client.ReservedIP.Attach(ctx, "12345", options)
 
 	if err != nil {
 		t.Errorf("ReservedIP.Attach returned %+v, expected %+v", err, nil)
@@ -34,13 +34,13 @@ func TestReservedIPServiceHandler_Convert(t *testing.T) {
 		response := `
 		{
 			"reserved_ip": {
-				"id": 1312965,
+				"id": "1312965",
 				"region": "ewr",
 				"ip_type": "v4",
 				"subnet": "111.111.111.111",
 				"subnet_size": 32,
 				"label": "my first reserved ip",
-				"instance_id": 1234
+				"instance_id": "1234"
 			}
 		}
 		`
@@ -50,7 +50,7 @@ func TestReservedIPServiceHandler_Convert(t *testing.T) {
 
 	options := &ReservedIPReq{
 		IPAddress:  "111.111.111.111",
-		InstanceID: 1234,
+		InstanceID: "1234",
 	}
 
 	ip, err := client.ReservedIP.Convert(ctx, options)
@@ -60,13 +60,13 @@ func TestReservedIPServiceHandler_Convert(t *testing.T) {
 	}
 
 	expected := &ReservedIP{
-		ID:         1312965,
+		ID:         "1312965",
 		Region:     "ewr",
 		IPType:     "v4",
 		Subnet:     "111.111.111.111",
 		SubnetSize: 32,
 		Label:      "my first reserved ip",
-		InstanceID: 1234,
+		InstanceID: "1234",
 	}
 
 	if !reflect.DeepEqual(ip, expected) {
@@ -82,13 +82,13 @@ func TestReservedIPServiceHandler_Create(t *testing.T) {
 		response := `
 		{
 			"reserved_ip": {
-				"id": 1313044,
+				"id": "1313044",
 				"region": "ewr",
 				"ip_type": "v4",
 				"subnet": "10.234.22.53",
 				"subnet_size": 32,
 				"label": "my first reserved ip",
-				"instance_id": 0
+				"instance_id": ""
 			}
 		}
 		`
@@ -107,13 +107,13 @@ func TestReservedIPServiceHandler_Create(t *testing.T) {
 	}
 
 	expected := &ReservedIP{
-		ID:         1313044,
+		ID:         "1313044",
 		Region:     "ewr",
 		IPType:     "v4",
 		Subnet:     "10.234.22.53",
 		SubnetSize: 32,
 		Label:      "my first reserved ip",
-		InstanceID: 0,
+		InstanceID: "",
 	}
 
 	if !reflect.DeepEqual(ip, expected) {
@@ -129,7 +129,7 @@ func TestReservedIPServiceHandler_Delete(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.ReservedIP.Delete(ctx, 12345)
+	err := client.ReservedIP.Delete(ctx, "12345")
 
 	if err != nil {
 		t.Errorf("ReservedIP.Delete returned %+v, expected %+v", err, nil)
@@ -144,7 +144,7 @@ func TestReservedIPServiceHandler_Detach(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.ReservedIP.Detach(ctx, 12345)
+	err := client.ReservedIP.Detach(ctx, "12345")
 
 	if err != nil {
 		t.Errorf("ReservedIP.Detach returned %+v, expected %+v", err, nil)
@@ -155,39 +155,37 @@ func TestReservedIPServiceHandler_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/reserved-ips", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/reserved-ips/1313044", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
 			"reserved_ip": {
-				"id": 1313044,
+				"id": "1313044",
 				"region": "ewr",
 				"ip_type": "v4",
 				"subnet": "10.234.22.53",
 				"subnet_size": 32,
 				"label": "my first reserved ip",
-				"instance_id": 123456
+				"instance_id": "123456"
 			}
 		}
 		`
 		fmt.Fprintf(writer, response)
 	})
 
-	ip, err := client.ReservedIP.Get(ctx, 1313044)
+	ip, err := client.ReservedIP.Get(ctx, "1313044")
 
 	if err != nil {
 		t.Errorf("ReservedIP.Get returned error: %v", err)
 	}
 
-	expected := []ReservedIP{
-		{
-			ID:         1313044,
-			Region:     "ewr",
-			IPType:     "v4",
-			Subnet:     "10.234.22.53",
-			SubnetSize: 32,
-			Label:      "my first reserved ip",
-			InstanceID: 123456,
-		},
+	expected := &ReservedIP{
+		ID:         "1313044",
+		Region:     "ewr",
+		IPType:     "v4",
+		Subnet:     "10.234.22.53",
+		SubnetSize: 32,
+		Label:      "my first reserved ip",
+		InstanceID: "123456",
 	}
 
 	if !reflect.DeepEqual(ip, expected) {
@@ -203,13 +201,13 @@ func TestReservedIPServiceHandler_List(t *testing.T) {
 		response := `
 		{
 			"reserved_ips": [{
-				"id": 1313044,
+				"id": "1313044",
 				"region": "ewr",
 				"ip_type": "v4",
 				"subnet": "10.234.22.53",
 				"subnet_size": 32,
 				"label": "my first reserved ip",
-				"instance_id": 123456
+				"instance_id": "123456"
 			}]
 		}
 		`
@@ -224,13 +222,13 @@ func TestReservedIPServiceHandler_List(t *testing.T) {
 
 	expected := []ReservedIP{
 		{
-			ID:         1313044,
+			ID:         "1313044",
 			Region:     "ewr",
 			IPType:     "v4",
 			Subnet:     "10.234.22.53",
 			SubnetSize: 32,
 			Label:      "my first reserved ip",
-			InstanceID: 123456,
+			InstanceID: "123456",
 		},
 	}
 
