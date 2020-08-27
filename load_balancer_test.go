@@ -16,7 +16,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 		{
 			"load_balancers" : [
 				{
-					"id": 1317575,
+					"id": "1317575",
 					"date_created": "2020-01-07 17:24:23",
 					"region": "ewr",
 					"label": "my label",
@@ -61,7 +61,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 					"next":"",
 					"prev":""
 				}
-			}	
+			}
 		}
 		`
 		fmt.Fprintf(writer, response)
@@ -75,7 +75,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 
 	expected := []LoadBalancer{
 		{
-			ID:          1317575,
+			ID:          "1317575",
 			DateCreated: "2020-01-07 17:24:23",
 			Label:       "my label",
 			Status:      "active",
@@ -137,7 +137,7 @@ func TestLoadBalancerHandler_Delete(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	if err := client.LoadBalancer.Delete(ctx, 1317575); err != nil {
+	if err := client.LoadBalancer.Delete(ctx, "1317575"); err != nil {
 		t.Errorf("LoadBalancer.Delete returned %+v", err)
 	}
 }
@@ -151,7 +151,7 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 		response := `
 		{
 			"load_balancer" : {
-				"id": 1317575,
+				"id": "1317575",
 				"date_created": "2020-01-07 17:24:23",
 				"region": "ewr",
 				"label": "my label",
@@ -194,14 +194,14 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 		fmt.Fprintf(writer, response)
 	})
 
-	info, err := client.LoadBalancer.Get(ctx, 1317575)
+	info, err := client.LoadBalancer.Get(ctx, "1317575")
 
 	if err != nil {
 		t.Errorf("LoadBalancer.Get returned %+v", err)
 	}
 
 	expected := &LoadBalancer{
-		ID:          1317575,
+		ID:          "1317575",
 		DateCreated: "2020-01-07 17:24:23",
 		Label:       "my label",
 		Status:      "active",
@@ -264,13 +264,13 @@ func TestLoadBalancerHandler_ListForwardingRules(t *testing.T) {
 					"next":"",
 					"prev":""
 				}
-			}			 
+			}
 		}
 		`
 		fmt.Fprintf(writer, response)
 	})
 
-	list, meta, err := client.LoadBalancer.ListForwardingRules(ctx, 12345, nil)
+	list, meta, err := client.LoadBalancer.ListForwardingRules(ctx, "12345", nil)
 
 	if err != nil {
 		t.Errorf("LoadBalancer.ListForwardingRules returned %+v", err)
@@ -309,7 +309,7 @@ func TestLoadBalancerHandler_DeleteForwardingRule(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	if err := client.LoadBalancer.DeleteForwardingRule(ctx, 12345, "abcde1234"); err != nil {
+	if err := client.LoadBalancer.DeleteForwardingRule(ctx, "12345", "abcde1234"); err != nil {
 		t.Errorf("LoadBalancer.DeleteForwardingRule returned %+v", err)
 	}
 }
@@ -320,7 +320,7 @@ func TestLoadBalancerHandler_CreateForwardingRule(t *testing.T) {
 
 	uri := fmt.Sprintf("%s/%d/forwarding-rules", lbPath, 1317575)
 	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
-		response := `			
+		response := `
 		{
 			"forwarding_rule" : {
 				"id":"0690a322c25890bc",
@@ -342,7 +342,7 @@ func TestLoadBalancerHandler_CreateForwardingRule(t *testing.T) {
 		BackendPort:      80,
 	}
 
-	ruleID, err := client.LoadBalancer.CreateForwardingRule(ctx, 1317575, rule)
+	ruleID, err := client.LoadBalancer.CreateForwardingRule(ctx, "1317575", rule)
 	if err != nil {
 		t.Errorf("LoadBalancer.CreateForwardingRule returned %+v", err)
 	}
@@ -367,9 +367,9 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 	mux.HandleFunc("/v2/load-balancers", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
-			"load_balancer" : 
+			"load_balancer" :
 				{
-					"id": 1317575,
+					"id": "1317575",
 					"date_created": "2020-01-07 17:24:23",
 					"region": "ewr",
 					"label": "my label",
@@ -444,7 +444,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 	}
 
 	expected := &LoadBalancer{
-		ID:          1317575,
+		ID:          "1317575",
 		DateCreated: "2020-01-07 17:24:23",
 		Label:       "my label",
 		Status:      "active",
