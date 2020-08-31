@@ -65,7 +65,7 @@ type Client struct {
 	Account         AccountService
 	Application     ApplicationService
 	Backup          BackupService
-	BareMetalServer BareMetalServerService
+	//BareMetalServer BareMetalServerService
 	BlockStorage    BlockStorageService
 	Domain          DomainService
 	DomainRecord    DomainRecordService
@@ -116,7 +116,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.Account = &AccountServiceHandler{client}
 	client.Application = &ApplicationServiceHandler{client}
 	client.Backup = &BackupServiceHandler{client}
-	client.BareMetalServer = &BareMetalServerServiceHandler{client}
+	//client.BareMetalServer = &BareMetalServerServiceHandler{client}
 	client.BlockStorage = &BlockStorageServiceHandler{client}
 	client.Domain = &DomainServiceHandler{client}
 	client.DomainRecord = &DomainRecordsServiceHandler{client}

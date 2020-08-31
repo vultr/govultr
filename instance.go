@@ -37,16 +37,16 @@ type InstanceService interface {
 	GetBackupSchedule(ctx context.Context, instanceID string) (*BackupSchedule, error)
 	SetBackupSchedule(ctx context.Context, instanceID string, backup *BackupScheduleReq) (*BackupSchedule, error)
 
-	ListIPV4(ctx context.Context, instanceID string, option *ListOptions) ([]IPv4, *Meta, error)
-	ListIPV6(ctx context.Context, instanceID string, option *ListOptions) ([]IPv6, *Meta, error)
+	ListIPv4(ctx context.Context, instanceID string, option *ListOptions) ([]IPv4, *Meta, error)
+	DeleteIPv4(ctx context.Context, instanceID, ip string) error
+	ListIPv6(ctx context.Context, instanceID string, option *ListOptions) ([]IPv6, *Meta, error)
 
-	// todo reverse ipv6
 	CreateReverseIPv6(ctx context.Context, instanceID string, reverseReq *ReverseIP) error
 	ListReverseIPv6(ctx context.Context, instanceID string) ([]ReverseIP, error)
-	// Delete
-	// default ipv6
+	DeleteReverseIPv6(ctx context.Context, instanceID, ip string) error
 
 	CreateReverseIPv4(ctx context.Context, instanceID string, reverseReq *ReverseIP) error
+	DefaultReverseIPv4(ctx context.Context, instanceID, ip string) error
 
 	GetUserData(ctx context.Context, instanceID string) (*UserData, error)
 }
@@ -75,7 +75,7 @@ type Instance struct {
 	ServerStatus     string   `json:"server_status"`
 	V6Network        string   `json:"v6_network"`
 	V6MainIP         string   `json:"v6_main_ip"`
-	V6NetworkSize    string   `json:"v6_network_size"`
+	V6NetworkSize    int      `json:"v6_network_size"`
 	Label            string   `json:"label"`
 	InternalIP       string   `json:"internal_ip"`
 	KVM              string   `json:"kvm"`
@@ -377,7 +377,7 @@ func (i *InstanceServiceHandler) AttachISO(ctx context.Context, instanceID, isoI
 	return nil
 }
 
-//// DetachISO will detach the currently mounted ISO and reboot the instance.
+// DetachISO will detach the currently mounted ISO and reboot the instance.
 func (i *InstanceServiceHandler) DetachISO(ctx context.Context, instanceID string) error {
 	uri := fmt.Sprintf("%s/%s/iso/detach", instancePath, instanceID)
 
@@ -425,7 +425,7 @@ func (i *InstanceServiceHandler) SetBackupSchedule(ctx context.Context, instance
 	return b.BackupSchedule, nil
 }
 
-func (i *InstanceServiceHandler) ListIPV4(ctx context.Context, instanceID string, options *ListOptions) ([]IPv4, *Meta, error) {
+func (i *InstanceServiceHandler) ListIPv4(ctx context.Context, instanceID string, options *ListOptions) ([]IPv4, *Meta, error) {
 	uri := fmt.Sprintf("%s/%s/ipv4", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -446,7 +446,21 @@ func (i *InstanceServiceHandler) ListIPV4(ctx context.Context, instanceID string
 	return ips.IPv4S, ips.Meta, nil
 }
 
-func (i *InstanceServiceHandler) ListIPV6(ctx context.Context, instanceID string, options *ListOptions) ([]IPv6, *Meta, error) {
+func (i *InstanceServiceHandler) DeleteIPv4(ctx context.Context, instanceID, ip string) error {
+	uri := fmt.Sprintf("%s/%s/ipv4/%s", instancePath, instanceID, ip)
+	req, err := i.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	if err = i.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (i *InstanceServiceHandler) ListIPv6(ctx context.Context, instanceID string, options *ListOptions) ([]IPv6, *Meta, error) {
 	uri := fmt.Sprintf("%s/%s/ipv6", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -496,6 +510,22 @@ func (i *InstanceServiceHandler) ListReverseIPv6(ctx context.Context, instanceID
 	return reverse.ReverseIPv6s, nil
 }
 
+// DeleteReverseIPv6 a given reverse IPv6.
+func (i *InstanceServiceHandler) DeleteReverseIPv6(ctx context.Context, instanceID, ip string) error {
+	uri := fmt.Sprintf("%s/%s/ipv6/reverse/%s", instancePath, instanceID, ip)
+	req, err := i.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	if err = i.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// CreateReverseIPv4 for a given IP on a given instance.
 func (i *InstanceServiceHandler) CreateReverseIPv4(ctx context.Context, instanceID string, reverseReq *ReverseIP) error {
 	uri := fmt.Sprintf("%s/%s/ipv4/reverse", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, reverseReq)
@@ -510,6 +540,24 @@ func (i *InstanceServiceHandler) CreateReverseIPv4(ctx context.Context, instance
 	return nil
 }
 
+// DefaultReverseIPv4 will set the IPs reverse setting back to the original one supplied by Vultr.
+func (i *InstanceServiceHandler) DefaultReverseIPv4(ctx context.Context, instanceID, ip string) error {
+	uri := fmt.Sprintf("%s/%s/ipv4/reverse/default", instancePath, instanceID)
+	reqBody := RequestBody{"ip": ip}
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, reqBody)
+	if err != nil {
+		return err
+	}
+
+	if err = i.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetUserData from given instance. The userdata returned will be in base64 encoding.
 func (i *InstanceServiceHandler) GetUserData(ctx context.Context, instanceID string) (*UserData, error) {
 	uri := fmt.Sprintf("%s/%s/user-data", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
