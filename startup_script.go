@@ -8,12 +8,14 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
+const scriptPath = "/v2/startup-scripts"
+
 // StartupScriptService is the interface to interact with the startup script endpoints on the Vultr API
 type StartupScriptService interface {
 	Create(ctx context.Context, req *StartupScriptReq) (*StartupScript, error)
-	Get(ctx context.Context, scriptID int) (*StartupScript, error)
-	Update(ctx context.Context, scriptID int, scriptReq *StartupScriptReq) error
-	Delete(ctx context.Context, scriptID int) error
+	Get(ctx context.Context, scriptID string) (*StartupScript, error)
+	Update(ctx context.Context, scriptID string, scriptReq *StartupScriptReq) error
+	Delete(ctx context.Context, scriptID string) error
 	List(ctx context.Context, options *ListOptions) ([]StartupScript, *Meta, error)
 }
 
@@ -24,7 +26,7 @@ type StartupScriptServiceHandler struct {
 
 // StartupScript represents an startup script on Vultr
 type StartupScript struct {
-	ID           int    `json:"id"`
+	ID           string `json:"id"`
 	DateCreated  string `json:"date_created"`
 	DateModified string `json:"date_modified"`
 	Name         string `json:"name"`
@@ -52,9 +54,7 @@ var _ StartupScriptService = &StartupScriptServiceHandler{}
 
 // Create a startup script
 func (s *StartupScriptServiceHandler) Create(ctx context.Context, scriptReq *StartupScriptReq) (*StartupScript, error) {
-	uri := "/v2/startup-scripts"
-
-	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, scriptReq)
+	req, err := s.client.NewRequest(ctx, http.MethodPost, scriptPath, scriptReq)
 	if err != nil {
 		return nil, err
 	}
@@ -68,8 +68,8 @@ func (s *StartupScriptServiceHandler) Create(ctx context.Context, scriptReq *Sta
 }
 
 // Get a single startup script
-func (s *StartupScriptServiceHandler) Get(ctx context.Context, scriptID int) (*StartupScript, error) {
-	uri := fmt.Sprintf("/v2/startup-scripts/%d", scriptID)
+func (s *StartupScriptServiceHandler) Get(ctx context.Context, scriptID string) (*StartupScript, error) {
+	uri := fmt.Sprintf("%s/%s",scriptPath, scriptID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -85,8 +85,8 @@ func (s *StartupScriptServiceHandler) Get(ctx context.Context, scriptID int) (*S
 }
 
 // Update will update the given startup script. Empty strings will be ignored.
-func (s *StartupScriptServiceHandler) Update(ctx context.Context, scriptID int, scriptReq *StartupScriptReq) error {
-	uri := fmt.Sprintf("/v2/startup-scripts/%d", scriptID)
+func (s *StartupScriptServiceHandler) Update(ctx context.Context, scriptID string, scriptReq *StartupScriptReq) error {
+	uri := fmt.Sprintf("%s/%s",scriptPath, scriptID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPatch, uri, scriptReq)
 	if err != nil {
@@ -101,8 +101,8 @@ func (s *StartupScriptServiceHandler) Update(ctx context.Context, scriptID int, 
 }
 
 // Delete the specified startup script from your account.
-func (s *StartupScriptServiceHandler) Delete(ctx context.Context, scriptID int) error {
-	uri := fmt.Sprintf("/v2/startup-scripts/%d", scriptID)
+func (s *StartupScriptServiceHandler) Delete(ctx context.Context, scriptID string) error {
+	uri := fmt.Sprintf("%s/%s", scriptPath, scriptID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
@@ -118,9 +118,7 @@ func (s *StartupScriptServiceHandler) Delete(ctx context.Context, scriptID int) 
 
 // List will list all the startup scripts associated with your Vultr account
 func (s *StartupScriptServiceHandler) List(ctx context.Context, options *ListOptions) ([]StartupScript, *Meta, error) {
-	uri := "/v2/startup-scripts"
-
-	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := s.client.NewRequest(ctx, http.MethodGet, scriptPath, nil)
 	if err != nil {
 		return nil, nil, err
 	}

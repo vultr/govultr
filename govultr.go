@@ -65,12 +65,13 @@ type Client struct {
 	Account         AccountService
 	Application     ApplicationService
 	Backup          BackupService
-	BareMetalServer BareMetalServerService
+	//BareMetalServer BareMetalServerService
 	BlockStorage    BlockStorageService
 	Domain          DomainService
 	DomainRecord    DomainRecordService
 	FirewallGroup   FirewallGroupService
 	FirewallRule    FireWallRuleService
+	Instance        InstanceService
 	ISO             ISOService
 	LoadBalancer    LoadBalancerService
 	Network         NetworkService
@@ -79,7 +80,6 @@ type Client struct {
 	Plan            PlanService
 	Region          RegionService
 	ReservedIP      ReservedIPService
-	Server          ServerService
 	Snapshot        SnapshotService
 	SSHKey          SSHKeyService
 	StartupScript   StartupScriptService
@@ -116,12 +116,13 @@ func NewClient(httpClient *http.Client) *Client {
 	client.Account = &AccountServiceHandler{client}
 	client.Application = &ApplicationServiceHandler{client}
 	client.Backup = &BackupServiceHandler{client}
-	client.BareMetalServer = &BareMetalServerServiceHandler{client}
+	//client.BareMetalServer = &BareMetalServerServiceHandler{client}
 	client.BlockStorage = &BlockStorageServiceHandler{client}
 	client.Domain = &DomainServiceHandler{client}
 	client.DomainRecord = &DomainRecordsServiceHandler{client}
 	client.FirewallGroup = &FireWallGroupServiceHandler{client}
 	client.FirewallRule = &FireWallRuleServiceHandler{client}
+	client.Instance = &InstanceServiceHandler{client}
 	client.ISO = &ISOServiceHandler{client}
 	client.LoadBalancer = &LoadBalancerHandler{client}
 	client.Network = &NetworkServiceHandler{client}
@@ -129,18 +130,15 @@ func NewClient(httpClient *http.Client) *Client {
 	client.OS = &OSServiceHandler{client}
 	client.Plan = &PlanServiceHandler{client}
 	client.Region = &RegionServiceHandler{client}
-	client.Server = &ServerServiceHandler{client}
 	client.ReservedIP = &ReservedIPServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
 	client.SSHKey = &SSHKeyServiceHandler{client}
 	client.StartupScript = &StartupScriptServiceHandler{client}
 	client.User = &UserServiceHandler{client}
 
-	//apiKey := APIKey{key: key}
-	//client.APIKey = apiKey
-
 	return client
 }
+
 
 // NewRequest creates an API Request
 func (c *Client) NewRequest(ctx context.Context, method, uri string, body interface{}) (*http.Request, error) {
@@ -199,7 +197,6 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
-
 	if err != nil {
 		return err
 	}
