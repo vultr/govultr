@@ -191,8 +191,10 @@ func (b *BareMetalServerServiceHandler) GetBandwidth(ctx context.Context, server
 		return nil, err
 	}
 
-	// fmt.Print(bms)
-	return bms.BareMetalBandwidth, nil
+	fmt.Print(bms)
+	return nil, nil
+	// return bms.BareMetalBandwidth, nil
+
 }
 
 // Halt a bare metal server.
