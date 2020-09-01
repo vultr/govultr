@@ -12,7 +12,7 @@ func TestRegionServiceHandler_List(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/regions", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"regions":[{"id":"ams","country":"NL","continent":"Europe","options":["ddos_protection"]}],"meta":{"total":1,"links":{"next":"","prev":""}}}`
+		response := `{"regions":[{"id":"ams","city": "test", "country":"NL","continent":"Europe","options":["ddos_protection"]}],"meta":{"total":1,"links":{"next":"","prev":""}}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -25,6 +25,7 @@ func TestRegionServiceHandler_List(t *testing.T) {
 	expectedRegion := []Region{
 		{
 			ID:        "ams",
+			City:      "test",
 			Country:   "NL",
 			Continent: "Europe",
 			Options:   []string{"ddos_protection"},
