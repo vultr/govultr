@@ -119,16 +119,6 @@ type Bandwidth struct {
 	} `json:"bandwidth"`
 }
 
-// // Bandwidth2 represents bandwidth information for an instance
-// type Bandwidth2 struct {
-// 	IncomingBytes int `json:"incoming_bytes"`
-// 	OutgoingBytes int `json:"outgoing_bytes"`
-// }
-
-// type BandwidthBase struct {
-// 	Bandwidth map[string]Bandwidth2 `json:"bandwidth"`
-// }
-
 type privateNetworksBase struct {
 	PrivateNetworks []PrivateNetwork `json:"private_networks"`
 	Meta            *Meta            `json:"meta"`
