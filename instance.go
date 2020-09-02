@@ -197,7 +197,7 @@ type InstanceReq struct {
 	IPXEChainURL         string   `json:"ipxe_chain_url,omitempty"`
 	ScriptID             string   `json:"script_id,omitempty"`
 	SnapshotID           string   `json:"snapshot_id,omitempty"`
-	EnableIPV6           bool     `json:"enable_ipv6,omitempty"`
+	EnableIPv6           bool     `json:"enable_ipv6,omitempty"`
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
 	DetachPrivateNetwork []string `json:"detach_private_network,omitempty"`
 	SSHKey               []string `json:"sshkey_id,omitempty"`

@@ -522,7 +522,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 		IPXEChainURL:    "test.org",
 		ISOID:           "dev-preview-abc123",
 		ScriptID:        "213",
-		EnableIPV6:      true,
+		EnableIPv6:      true,
 		Backups:         true,
 		UserData:        "dW5vLWRvcy10cmVz",
 		ActivationEmail: true,

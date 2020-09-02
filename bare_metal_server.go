@@ -69,7 +69,7 @@ type BareMetalReq struct {
 	OsID            int      `json:"os_id,omitempty"`
 	StartupScriptID string   `json:"script_id,omitempty"`
 	SnapshotID      string   `json:"snapshot_id,omitempty"`
-	EnableIPV6      string   `json:"enable_ipv6,omitempty"`
+	EnableIPv6      string   `json:"enable_ipv6,omitempty"`
 	Label           string   `json:"label,omitempty"`
 	SSHKeyIDs       []string `json:"sshkey_id,omitempty"`
 	AppID           int      `json:"app_id,omitempty"`

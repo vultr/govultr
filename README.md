@@ -59,16 +59,17 @@ func main() {
 Create a VPS
 
 ```go
-vpsOptions := &govultr.ServerOptions{
+vpsOptions := &govultr.InstanceReq{
 	Label:                "awesome-go-app",
 	Hostname:             "awesome-go.com",
-	EnablePrivateNetwork: true,
-	AutoBackups:          true,
-	EnableIPV6:           true,
+	Backups:              true,
+	EnableIPv6:           true,
+	OsID:                 362,
+	Plan:                 "vc2-1c-2gb",	
+	Region:               "ewr",
 }
 
-// RegionId, VpsPlanID, OsID can be grabbed from their respective API calls
-res, err := vultrClient.Server.Create(context.Background(), 1, 201, 1, vpsOptions)
+res, err := vultrClient.Instance.Create(context.Background(), vpsOptions)
 
 if err != nil {
 	fmt.Println(err)

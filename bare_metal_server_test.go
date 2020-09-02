@@ -111,7 +111,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 		Region:          "ewr",
 		Plan:            "vbm-4c-32gb",
 		SnapshotID:      "1",
-		EnableIPV6:      "yes",
+		EnableIPv6:      "yes",
 		Label:           "go-bm-test",
 		SSHKeyIDs:       []string{"6b80207b1821f"},
 		AppID:           1,
