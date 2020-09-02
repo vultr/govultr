@@ -11,12 +11,12 @@ func TestServerServiceHandler_GetBackupSchedule(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/backup-schedule", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/backup-schedule", func(writer http.ResponseWriter, request *http.Request) {
 		response := `{"backup_schedule":{"enabled": true,"type": "weekly","next_run_utc": "2016-05-07 08:00:00","hour": 8,"dow": 6,"dom": 0}}`
 		fmt.Fprint(writer, response)
 	})
 
-	backup, err := client.Instance.GetBackupSchedule(ctx, "123456")
+	backup, err := client.Instance.GetBackupSchedule(ctx, "dev-preview-abc123")
 	if err != nil {
 		t.Errorf("Instance.GetBackupSchedule returned %+v, ", err)
 	}
@@ -39,7 +39,7 @@ func TestServerServiceHandler_SetBackupSchedule(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/backup-schedule", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/backup-schedule", func(writer http.ResponseWriter, request *http.Request) {
 		response := `{"backup_schedule":{"enabled": true,"type": "weekly","next_run_utc": "2016-05-07 08:00:00","hour": 22,"dow": 2,"dom": 3}}`
 		fmt.Fprint(writer, response)
 	})
@@ -51,7 +51,7 @@ func TestServerServiceHandler_SetBackupSchedule(t *testing.T) {
 		Dom:  3,
 	}
 
-	if err := client.Instance.SetBackupSchedule(ctx, "123456", bs); err != nil {
+	if err := client.Instance.SetBackupSchedule(ctx, "dev-preview-abc123", bs); err != nil {
 		t.Errorf("Instance.SetBackupSchedule returned %+v, ", err)
 	}
 }
@@ -60,15 +60,15 @@ func TestServerServiceHandler_RestoreBackup(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/restore", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/restore", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
 	restoreReq := &RestoreReq{
-		BackupId: "123456",
+		BackupId: "dev-preview-abc123",
 	}
 
-	if err := client.Instance.Restore(ctx, "123456", restoreReq); err != nil {
+	if err := client.Instance.Restore(ctx, "dev-preview-abc123", restoreReq); err != nil {
 		t.Errorf("Instance.Restore returned %+v, ", err)
 	}
 }
@@ -77,18 +77,18 @@ func TestServerServiceHandler_Neighbors(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/neighbors", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"neighbors":["123456","123456"]}`
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/neighbors", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"neighbors":["dev-preview-abc123","dev-preview-abc123"]}`
 		fmt.Fprint(writer, response)
 	})
 
-	neighbors, err := client.Instance.GetNeighbors(ctx, "123456")
+	neighbors, err := client.Instance.GetNeighbors(ctx, "dev-preview-abc123")
 	if err != nil {
 		t.Errorf("Instance.Neighbors returned %+v, ", err)
 	}
 
 	expected := &Neighbors{
-		Neighbors: []string{"123456", "123456"},
+		Neighbors: []string{"dev-preview-abc123", "dev-preview-abc123"},
 	}
 
 	if !reflect.DeepEqual(neighbors, expected) {
@@ -100,12 +100,12 @@ func TestServerServiceHandler_ListPrivateNetworks(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/private-networks", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/private-networks", func(writer http.ResponseWriter, request *http.Request) {
 		response := `{"private_networks": [{"network_id": "v1-net539626f0798d7","mac_address": "5a:02:00:00:24:e9","ip_address": "10.99.0.3"}],"meta":{"total":1,"links":{"next":"thisismycusror","prev":""}}}`
 		fmt.Fprint(writer, response)
 	})
 
-	privateNetwork, meta, err := client.Instance.ListPrivateNetworks(ctx, "123456")
+	privateNetwork, meta, err := client.Instance.ListPrivateNetworks(ctx, "dev-preview-abc123")
 	if err != nil {
 		t.Errorf("Instance.ListPrivateNetworks return %+v, ", err)
 	}
@@ -139,12 +139,12 @@ func TestServerServiceHandler_GetUserData(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/user-data", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/user-data", func(writer http.ResponseWriter, request *http.Request) {
 		response := `{"user_data": {"data" : "ZWNobyBIZWxsbyBXb3JsZA=="}}`
 		fmt.Fprint(writer, response)
 	})
 
-	userData, err := client.Instance.GetUserData(ctx, "123456")
+	userData, err := client.Instance.GetUserData(ctx, "dev-preview-abc123")
 	if err != nil {
 		t.Errorf("Instance.GetUserData return %+v ", err)
 	}
@@ -160,12 +160,12 @@ func TestServerServiceHandler_ListIPv4(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/ipv4", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/ipv4", func(writer http.ResponseWriter, request *http.Request) {
 		response := `{ "ipv4s": [{"ip": "123.123.123.123","netmask": "255.255.255.248","gateway": "123.123.123.1","type": "main_ip","reverse": "host1.example.com"}],"meta":{"total":1,"links":{"next":"thisismycusror","prev":""}}}`
 		fmt.Fprint(writer, response)
 	})
 
-	ipv4, meta, err := client.Instance.ListIPv4(ctx, "123456", nil)
+	ipv4, meta, err := client.Instance.ListIPv4(ctx, "dev-preview-abc123", nil)
 
 	if err != nil {
 		t.Errorf("Instance.ListIPv4 returned %+v", err)
@@ -202,12 +202,12 @@ func TestServerServiceHandler_ListIPv6(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/ipv6", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/ipv6", func(writer http.ResponseWriter, request *http.Request) {
 		response := `{"ipv6s": [{"ip": "2001:DB8:1000::100","network": "2001:DB8:1000::","network_size": 64,"type": "main_ip"}],"meta":{"total":1,"links":{"next":"thisismycusror","prev":""}}}`
 		fmt.Fprint(writer, response)
 	})
 
-	ipv6, meta, err := client.Instance.ListIPv6(ctx, "123456", nil)
+	ipv6, meta, err := client.Instance.ListIPv6(ctx, "dev-preview-abc123", nil)
 	if err != nil {
 		t.Errorf("Instance.ListIPv6 returned %+v", err)
 	}
@@ -242,12 +242,12 @@ func TestServerServiceHandler_CreateIPv4(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/ipv4", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/ipv4", func(writer http.ResponseWriter, request *http.Request) {
 		response := `{ "ipv4": {"ip": "123.123.123.123","netmask": "255.255.255.248","gateway": "123.123.123.1","type": "main_ip","reverse": "host1.example.com"}}`
 		fmt.Fprint(writer, response)
 	})
 
-	ipv4, err := client.Instance.CreateIPv4(ctx, "123456", false)
+	ipv4, err := client.Instance.CreateIPv4(ctx, "dev-preview-abc123", false)
 	if err != nil {
 		t.Errorf("Instance.CreateIPv4 returned %+v", err)
 	}
@@ -269,11 +269,11 @@ func TestServerServiceHandler_DestroyIPV4(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/ipv4/192.168.0.1", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/ipv4/192.168.0.1", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.Instance.DeleteIPv4(ctx, "123456", "192.168.0.1")
+	err := client.Instance.DeleteIPv4(ctx, "dev-preview-abc123", "192.168.0.1")
 
 	if err != nil {
 		t.Errorf("Instance.DestroyIPV4 returned %+v", err)
@@ -284,7 +284,7 @@ func TestServerServiceHandler_GetBandwidth(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/bandwidth", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/bandwidth", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
 			"bandwidth": {
@@ -298,7 +298,7 @@ func TestServerServiceHandler_GetBandwidth(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bandwidth, err := client.Instance.GetBandwidth(ctx, "123456")
+	bandwidth, err := client.Instance.GetBandwidth(ctx, "dev-preview-abc123")
 	if err != nil {
 		t.Errorf("Instance.GetBandwidth returned %+v", err)
 	}
@@ -324,12 +324,12 @@ func TestServerServiceHandler_ListReverseIPv6(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/ipv6/reverse", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/ipv6/reverse", func(writer http.ResponseWriter, request *http.Request) {
 		response := `{"reverse_ipv6s": [{"ip": "2001:DB8:1000::101","reverse": "host1.example.com"}]}`
 		fmt.Fprint(writer, response)
 	})
 
-	reverseIPV6, err := client.Instance.ListReverseIPv6(ctx, "123456")
+	reverseIPV6, err := client.Instance.ListReverseIPv6(ctx, "dev-preview-abc123")
 
 	if err != nil {
 		t.Errorf("Instance.ListReverseIPv6 returned error: %v", err)
@@ -348,11 +348,11 @@ func TestServerServiceHandler_DefaultReverseIPv4(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/ipv4/reverse/default", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/ipv4/reverse/default", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	if err := client.Instance.DefaultReverseIPv4(ctx, "123456", "129.123.123.1"); err != nil {
+	if err := client.Instance.DefaultReverseIPv4(ctx, "dev-preview-abc123", "129.123.123.1"); err != nil {
 		t.Errorf("Instance.DefaultReverseIPv4 returned %+v", err)
 	}
 }
@@ -361,11 +361,11 @@ func TestServerServiceHandler_DeleteReverseIPv6(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/ipv6/reverse/2001:19f0:8001:1480:5400:2ff:fe00:8228", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/ipv6/reverse/2001:19f0:8001:1480:5400:2ff:fe00:8228", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	if err := client.Instance.DeleteReverseIPv6(ctx, "123456", "2001:19f0:8001:1480:5400:2ff:fe00:8228"); err != nil {
+	if err := client.Instance.DeleteReverseIPv6(ctx, "dev-preview-abc123", "2001:19f0:8001:1480:5400:2ff:fe00:8228"); err != nil {
 		t.Errorf("Instance.DeleteReverseIPv6 returned %+v", err)
 	}
 }
@@ -374,7 +374,7 @@ func TestServerServiceHandler_CreateReverseIPv4(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/ipv4/reverse", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/ipv4/reverse", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
@@ -383,7 +383,7 @@ func TestServerServiceHandler_CreateReverseIPv4(t *testing.T) {
 		Reverse: "test.com",
 	}
 
-	if err := client.Instance.CreateReverseIPv4(ctx, "123456", reverseReq); err != nil {
+	if err := client.Instance.CreateReverseIPv4(ctx, "dev-preview-abc123", reverseReq); err != nil {
 		t.Errorf("Instance.CreateReverseIPv4 returned %+v", err)
 	}
 }
@@ -392,7 +392,7 @@ func TestServerServiceHandler_CreateReverseIPv6(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/ipv6/reverse", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/ipv6/reverse", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
@@ -401,7 +401,7 @@ func TestServerServiceHandler_CreateReverseIPv6(t *testing.T) {
 		Reverse: "test.com",
 	}
 
-	if err := client.Instance.CreateReverseIPv6(ctx, "123456", reverseReq); err != nil {
+	if err := client.Instance.CreateReverseIPv6(ctx, "dev-preview-abc123", reverseReq); err != nil {
 		t.Errorf("Instance.CreateReverseIPv6 returned %+v", err)
 	}
 }
@@ -410,11 +410,11 @@ func TestServerServiceHandler_Halt(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/halt", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/halt", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	if err := client.Instance.Halt(ctx, "123456"); err != nil {
+	if err := client.Instance.Halt(ctx, "dev-preview-abc123"); err != nil {
 		t.Errorf("Instance.Halt returned %+v", err)
 	}
 }
@@ -423,11 +423,11 @@ func TestServerServiceHandler_Start(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/start", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/start", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	if err := client.Instance.Start(ctx, "123456"); err != nil {
+	if err := client.Instance.Start(ctx, "dev-preview-abc123"); err != nil {
 		t.Errorf("Instance.Start returned %+v", err)
 	}
 }
@@ -436,11 +436,11 @@ func TestServerServiceHandler_Reboot(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/reboot", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/reboot", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.Instance.Reboot(ctx, "123456")
+	err := client.Instance.Reboot(ctx, "dev-preview-abc123")
 
 	if err != nil {
 		t.Errorf("Instance.Reboot returned %+v", err)
@@ -451,11 +451,11 @@ func TestServerServiceHandler_Reinstall(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456/reinstall", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/reinstall", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.Instance.Reinstall(ctx, "123456")
+	err := client.Instance.Reinstall(ctx, "dev-preview-abc123")
 
 	if err != nil {
 		t.Errorf("Instance.Reinstall returned %+v", err)
@@ -466,11 +466,11 @@ func TestServerServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.Instance.Delete(ctx, "123456")
+	err := client.Instance.Delete(ctx, "dev-preview-abc123")
 
 	if err != nil {
 		t.Errorf("Instance.Delete returned %+v", err)
@@ -484,7 +484,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 	mux.HandleFunc("/v2/instances", func(writer http.ResponseWriter, request *http.Request) {
 		response := `{
 			"instance": {
-				"id": "123456",
+				"id": "dev-preview-abc123",
 				"os": "CentOS SELinux 8 x64",
 				"ram": 2048,
 				"disk": 60,
@@ -532,7 +532,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 		Tag:             "tagger",
 		Label:           "label-extreme",
 		SSHKey:          []string{"dev-preview-abc123", "dev-preview-abc124"},
-		ReservedIP:      "63.209.35.79",
+		ReservedIPv4:    "63.209.35.79",
 		FirewallGroupID: "1234",
 		AppID:           1,
 	}
@@ -545,7 +545,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 	features := []string{"auto_backups", "ipv6"}
 
 	expected := &Instance{
-		ID:               "123456",
+		ID:               "dev-preview-abc123",
 		Os:               "CentOS SELinux 8 x64",
 		OsID:             362,
 		Ram:              2048,
@@ -586,7 +586,7 @@ func TestServerServiceHandler_List(t *testing.T) {
 	mux.HandleFunc("/v2/instances", func(writer http.ResponseWriter, request *http.Request) {
 		response := `{
 			"instances": [{
-				"id": "123456",
+				"id": "dev-preview-abc123",
 				"os": "CentOS SELinux 8 x64",
 				"ram": 2048,
 				"disk": 60,
@@ -636,7 +636,7 @@ func TestServerServiceHandler_List(t *testing.T) {
 
 	expected := []Instance{
 		{
-			ID:               "123456",
+			ID:               "dev-preview-abc123",
 			Os:               "CentOS SELinux 8 x64",
 			OsID:             362,
 			Ram:              2048,
@@ -687,10 +687,10 @@ func TestServerServiceHandler_GetServer(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/instances/123456", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/instances/dev-preview-abc123", func(writer http.ResponseWriter, request *http.Request) {
 		response := `{
 			"instance": {
-				"id": "123456",
+				"id": "dev-preview-abc123",
 				"os": "CentOS SELinux 8 x64",
 				"ram": 2048,
 				"disk": 60,
@@ -724,7 +724,7 @@ func TestServerServiceHandler_GetServer(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	server, err := client.Instance.Get(ctx, "123456")
+	server, err := client.Instance.Get(ctx, "dev-preview-abc123")
 	if err != nil {
 		t.Errorf("Instance.GetServer returned %+v", err)
 	}
@@ -732,7 +732,7 @@ func TestServerServiceHandler_GetServer(t *testing.T) {
 	features := []string{"auto_backups"}
 
 	expected := &Instance{
-		ID:               "123456",
+		ID:               "dev-preview-abc123",
 		Os:               "CentOS SELinux 8 x64",
 		OsID:             362,
 		Ram:              2048,

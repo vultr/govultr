@@ -77,7 +77,7 @@ type BareMetalReq struct {
 	NotifyActivate  string   `json:"notify_activate,omitempty"`
 	Hostname        string   `json:"hostname,omitempty"`
 	Tag             string   `json:"tag,omitempty"`
-	ReservedIPV4    string   `json:"reserved_ip_v4,omitempty"`
+	ReservedIPv4    string   `json:"reserved_ipv4,omitempty"`
 }
 
 // BareMetalServerBandwidth represents bandwidth information for a bare metal server

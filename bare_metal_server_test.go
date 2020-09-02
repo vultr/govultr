@@ -119,7 +119,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 		NotifyActivate:  "yes",
 		Hostname:        "test",
 		Tag:             "go-test",
-		ReservedIPV4:    "111.111.111.111",
+		ReservedIPv4:    "111.111.111.111",
 	}
 
 	bm, err := client.BareMetalServer.Create(ctx, options)
@@ -160,7 +160,7 @@ func TestBareMetalServerServiceHandler_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/123456", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
@@ -168,7 +168,7 @@ func TestBareMetalServerServiceHandler_Update(t *testing.T) {
 		Label: "my new label",
 	}
 
-	err := client.BareMetalServer.Update(ctx, "123456", options)
+	err := client.BareMetalServer.Update(ctx, "dev-preview-abc123", options)
 	if err != nil {
 		t.Errorf("BareMetal.Update returned %+v, expected %+v", err, nil)
 	}
@@ -261,7 +261,7 @@ func TestBareMetalServerServiceHandler_GetBandwidth(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/123456/bandwidth", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123/bandwidth", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
 			"bandwidth": {
@@ -275,7 +275,7 @@ func TestBareMetalServerServiceHandler_GetBandwidth(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bandwidth, err := client.BareMetalServer.GetBandwidth(ctx, "123456")
+	bandwidth, err := client.BareMetalServer.GetBandwidth(ctx, "dev-preview-abc123")
 	if err != nil {
 		t.Errorf("BareMetalServer.GetBandwidth returned %+v", err)
 	}

@@ -203,7 +203,7 @@ type InstanceReq struct {
 	Backups              bool     `json:"backups,omitempty"`
 	DDOSProtection       bool     `json:"ddos_protection,omitempty"`
 	UserData             string   `json:"user_data,omitempty"`
-	ReservedIP           string   `json:"reserved_ip_v4,omitempty"`
+	ReservedIPv4         string   `json:"reserved_ipv4,omitempty"`
 	ActivationEmail      bool     `json:"activation_email,omitempty"`
 }
 
