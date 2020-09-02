@@ -185,7 +185,8 @@ type UserData struct {
 // InstanceReq
 type InstanceReq struct {
 	Region               string   `json:"region,omitempty"`
-	Plan                 string   `json:"plan,omitempty"` // needs to be plan??
+	Plan                 string   `json:"plan,omitempty"`
+	UpgradePlan          string   `json:"upgrade_plan,omitempty"`
 	Label                string   `json:"label,omitempty"`
 	Tag                  string   `json:"tag,omitempty"`
 	OsID                 int      `json:"os_id,omitempty"`
