@@ -147,4 +147,3 @@ func TestDomainRecordsServiceHandler_List(t *testing.T) {
 		t.Errorf("DomainRecord.List meta returned %+v, expected %+v", meta, expectedMeta)
 	}
 }
-

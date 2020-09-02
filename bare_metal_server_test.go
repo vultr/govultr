@@ -41,7 +41,6 @@ func TestBareMetalServerServiceHandler_GetServer(t *testing.T) {
 	})
 
 	bm, err := client.BareMetalServer.Get(ctx, "abc123")
-
 	if err != nil {
 		t.Errorf("BareMetalServer.GetServer returned error: %v", err)
 	}
@@ -112,7 +111,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 		Region:          "ewr",
 		Plan:            "vbm-4c-32gb",
 		SnapshotID:      "1",
-		EnableIPV6:      "yes",
+		EnableIPv6:      "yes",
 		Label:           "go-bm-test",
 		SSHKeyIDs:       []string{"6b80207b1821f"},
 		AppID:           1,
@@ -120,7 +119,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 		NotifyActivate:  "yes",
 		Hostname:        "test",
 		Tag:             "go-test",
-		ReservedIPV4:    "111.111.111.111",
+		ReservedIPv4:    "111.111.111.111",
 	}
 
 	bm, err := client.BareMetalServer.Create(ctx, options)
@@ -161,7 +160,7 @@ func TestBareMetalServerServiceHandler_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/123456", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
@@ -169,11 +168,12 @@ func TestBareMetalServerServiceHandler_Update(t *testing.T) {
 		Label: "my new label",
 	}
 
-	err := client.BareMetalServer.Update(ctx, "123456", options)
+	err := client.BareMetalServer.Update(ctx, "dev-preview-abc123", options)
 	if err != nil {
 		t.Errorf("BareMetal.Update returned %+v, expected %+v", err, nil)
 	}
 }
+
 func TestBareMetalServerServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
@@ -230,25 +230,25 @@ func TestBareMetalServerServiceHandler_List(t *testing.T) {
 
 	expected := []BareMetalServer{
 		{
-			ID:              "90000",
-			Os:              "CentOS 6 x64",
-			RAM:             "65536 MB",
-			Disk:            "2x 240 GB SSD",
-			MainIP:          "203.0.113.10",
-			CPUCount:        1,
-			Region:          "ewr",
-			DateCreated:     "2017-04-12 18:45:41",
-			Status:          "active",
-			NetmaskV4:       "255.255.255.0",
-			GatewayV4:       "203.0.113.1",
-			Plan:            "vbm-4c-32gb",
-			V6Network:       "2001:DB8:9000::",
-			V6MainIP:        "2001:DB8:9000::100",
-			V6Subnet:        64,
-			Label:           "my label",
-			Tag:             "my tag",
-			OsID:            127,
-			AppID:           0,
+			ID:          "90000",
+			Os:          "CentOS 6 x64",
+			RAM:         "65536 MB",
+			Disk:        "2x 240 GB SSD",
+			MainIP:      "203.0.113.10",
+			CPUCount:    1,
+			Region:      "ewr",
+			DateCreated: "2017-04-12 18:45:41",
+			Status:      "active",
+			NetmaskV4:   "255.255.255.0",
+			GatewayV4:   "203.0.113.1",
+			Plan:        "vbm-4c-32gb",
+			V6Network:   "2001:DB8:9000::",
+			V6MainIP:    "2001:DB8:9000::100",
+			V6Subnet:    64,
+			Label:       "my label",
+			Tag:         "my tag",
+			OsID:        127,
+			AppID:       0,
 		},
 	}
 
@@ -257,11 +257,11 @@ func TestBareMetalServerServiceHandler_List(t *testing.T) {
 	}
 }
 
-func TestBareMetalServerServiceHandler_Bandwidth(t *testing.T) {
+func TestBareMetalServerServiceHandler_GetBandwidth(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/123456/bandwidth", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123/bandwidth", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
 			"bandwidth": {
@@ -275,22 +275,25 @@ func TestBareMetalServerServiceHandler_Bandwidth(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bandwidth, err := client.BareMetalServer.Bandwidth(ctx, "123456")
-
+	bandwidth, err := client.BareMetalServer.GetBandwidth(ctx, "dev-preview-abc123")
 	if err != nil {
-		t.Errorf("BareMetalServer.Bandwidth returned %+v", err)
+		t.Errorf("BareMetalServer.GetBandwidth returned %+v", err)
 	}
 
-	expected := &BandwidthBase{
-		map[string]BareMetalServerBandwidth{
+	expected := &Bandwidth{
+		Bandwidth: map[string]struct {
+			IncomingBytes int `json:"incoming_bytes"`
+			OutgoingBytes int `json:"outgoing_bytes"`
+		}{
 			"2017-04-01": {
 				IncomingBytes: 91571055,
 				OutgoingBytes: 3084731,
 			},
-		}}
+		},
+	}
 
-	if !reflect.DeepEqual(bandwidth.BareMetalBandwidth, expected.BareMetalBandwidth) {
-		t.Errorf("BareMetalServer.Bandwidth returned %+v, expected %+v", bandwidth, expected.BareMetalBandwidth)
+	if !reflect.DeepEqual(bandwidth, expected) {
+		t.Errorf("BareMetalServer.GetBandwidth returned %+v, expected %+v", bandwidth, expected)
 	}
 }
 
@@ -309,14 +312,14 @@ func TestBareMetalServerServiceHandler_Halt(t *testing.T) {
 	}
 }
 
-func TestBareMetalServerServiceHandler_IPV4Info(t *testing.T) {
+func TestBareMetalServerServiceHandler_ListIPv4s(t *testing.T) {
 	setup()
 	defer teardown()
 
 	mux.HandleFunc("/v2/bare-metals/900000/ipv4", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
-			"baremetal_ipv4s": [
+			"ipv4s": [
 				{
 					"ip": "203.0.113.10",
 					"netmask": "255.255.255.0",
@@ -325,26 +328,24 @@ func TestBareMetalServerServiceHandler_IPV4Info(t *testing.T) {
 					"reverse": "203.0.113.10.vultr.com"
 				}
 			],
-  "meta": {
-    "total": 1,
-    "links": {
-      "next": "",
-      "prev": ""
-    }
-  }
+			"meta": {
+				"total": 1,
+				"links": {
+				"next": "",
+				"prev": ""
+				}
+			}
 		}
 		`
 		fmt.Fprint(writer, response)
 	})
 
-	ipv4, _, err := client.BareMetalServer.IPV4Info(ctx, "900000", nil)
-
-	fmt.Print(ipv4)
+	ipv4, _, err := client.BareMetalServer.ListIPv4s(ctx, "900000", nil)
 	if err != nil {
-		t.Errorf("BareMetalServer.IPV4Info returned %+v", err)
+		t.Errorf("BareMetalServer.ListIPv4s returned %+v", err)
 	}
 
-	expected := []BareMetalServerIPV4{
+	expected := []IPv4{
 		{
 			IP:      "203.0.113.10",
 			Netmask: "255.255.255.0",
@@ -355,18 +356,18 @@ func TestBareMetalServerServiceHandler_IPV4Info(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(ipv4, expected) {
-		t.Errorf("BareMetalServer.IPV4Info returned %+v, expected %+v", ipv4, expected)
+		t.Errorf("BareMetalServer.ListIPv4s returned %+v, expected %+v", ipv4, expected)
 	}
 }
 
-func TestBareMetalServerServiceHandler_IPV6Info(t *testing.T) {
+func TestBareMetalServerServiceHandler_ListIPv6s(t *testing.T) {
 	setup()
 	defer teardown()
 
 	mux.HandleFunc("/v2/bare-metals/900000/ipv6", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
-			"baremetal_ipv6s": [
+			"ipv6s": [
 				{
 					"ip": "2001:DB8:9000::100",
 					"network": "2001:DB8:9000::",
@@ -379,13 +380,13 @@ func TestBareMetalServerServiceHandler_IPV6Info(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	ipv4, _, err := client.BareMetalServer.IPV6Info(ctx, "900000", nil)
+	ipv6, _, err := client.BareMetalServer.ListIPv6s(ctx, "900000", nil)
 
 	if err != nil {
 		t.Errorf("BareMetalServer.IPV6Info returned %+v", err)
 	}
 
-	expected := []BareMetalServerIPV6{
+	expected := []IPv6{
 		{
 			IP:          "2001:DB8:9000::100",
 			Network:     "2001:DB8:9000::",
@@ -394,8 +395,8 @@ func TestBareMetalServerServiceHandler_IPV6Info(t *testing.T) {
 		},
 	}
 
-	if !reflect.DeepEqual(ipv4, expected) {
-		t.Errorf("BareMetalServer.IPV6Info returned %+v, expected %+v", ipv4, expected)
+	if !reflect.DeepEqual(ipv6, expected) {
+		t.Errorf("BareMetalServer.ListIPv6s returned %+v, expected %+v", ipv6, expected)
 	}
 }
 

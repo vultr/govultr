@@ -17,12 +17,19 @@ type BareMetalServerService interface {
 	Update(ctx context.Context, serverID string, bmReq *BareMetalReq) error
 	Delete(ctx context.Context, serverID string) error
 	List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, error)
-	GetBandwidth(ctx context.Context, serverID string) ([]BareMetalServerBandwidth, error)
-	Halt(ctx context.Context, serverID string) error
+
+	GetBandwidth(ctx context.Context, serverID string) (*Bandwidth, error)
+
 	ListIPv4s(ctx context.Context, serverID string, options *ListOptions) ([]IPv4, *Meta, error)
 	ListIPv6s(ctx context.Context, serverID string, options *ListOptions) ([]IPv6, *Meta, error)
+
+	Halt(ctx context.Context, serverID string) error
 	Reboot(ctx context.Context, serverID string) error
 	Reinstall(ctx context.Context, serverID string) error
+
+	MassStart(ctx context.Context, serverList []string) error
+	MassHalt(ctx context.Context, serverList []string) error
+	MassReboot(ctx context.Context, serverList []string) error
 }
 
 // BareMetalServerServiceHandler handles interaction with the bare metal methods for the Vultr API
@@ -62,7 +69,7 @@ type BareMetalReq struct {
 	OsID            int      `json:"os_id,omitempty"`
 	StartupScriptID string   `json:"script_id,omitempty"`
 	SnapshotID      string   `json:"snapshot_id,omitempty"`
-	EnableIPV6      string   `json:"enable_ipv6,omitempty"`
+	EnableIPv6      string   `json:"enable_ipv6,omitempty"`
 	Label           string   `json:"label,omitempty"`
 	SSHKeyIDs       []string `json:"sshkey_id,omitempty"`
 	AppID           int      `json:"app_id,omitempty"`
@@ -70,7 +77,7 @@ type BareMetalReq struct {
 	NotifyActivate  string   `json:"notify_activate,omitempty"`
 	Hostname        string   `json:"hostname,omitempty"`
 	Tag             string   `json:"tag,omitempty"`
-	ReservedIPV4    string   `json:"reserved_ip_v4,omitempty"`
+	ReservedIPv4    string   `json:"reserved_ipv4,omitempty"`
 }
 
 // BareMetalServerBandwidth represents bandwidth information for a bare metal server
@@ -88,7 +95,7 @@ type bareMetalBase struct {
 	BareMetal *BareMetalServer `json:"bare_metal"`
 }
 
-type bandwidthBase struct {
+type BMBareMetalBase struct {
 	BareMetalBandwidth map[string]BareMetalServerBandwidth `json:"bandwidth"`
 }
 
@@ -100,7 +107,6 @@ func (b *BareMetalServerServiceHandler) Create(ctx context.Context, bmCreate *Ba
 	}
 
 	bm := new(bareMetalBase)
-
 	if err = b.client.DoWithContext(ctx, req, bm); err != nil {
 		return nil, err
 	}
@@ -117,8 +123,7 @@ func (b *BareMetalServerServiceHandler) Get(ctx context.Context, serverID string
 	}
 
 	bms := new(bareMetalBase)
-	err = b.client.DoWithContext(ctx, req, bms)
-	if err != nil {
+	if err = b.client.DoWithContext(ctx, req, bms); err != nil {
 		return nil, err
 	}
 
@@ -179,37 +184,19 @@ func (b *BareMetalServerServiceHandler) List(ctx context.Context, options *ListO
 }
 
 // Bandwidth will get the bandwidth used by a bare metal server
-func (b *BareMetalServerServiceHandler) GetBandwidth(ctx context.Context, serverID string) ([]BareMetalServerBandwidth, error) {
+func (b *BareMetalServerServiceHandler) GetBandwidth(ctx context.Context, serverID string) (*Bandwidth, error) {
 	uri := fmt.Sprintf("%s/%s/bandwidth", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	bms := new(bandwidthBase)
+	bms := new(Bandwidth)
 	if err = b.client.DoWithContext(ctx, req, &bms); err != nil {
 		return nil, err
 	}
 
-	// fmt.Print(bms)
-	return bms.BareMetalBandwidth, nil
-}
-
-// Halt a bare metal server.
-// This is a hard power off, meaning that the power to the machine is severed.
-// The data on the machine will not be modified, and you will still be billed for the machine.
-func (b *BareMetalServerServiceHandler) Halt(ctx context.Context, serverID string) error {
-	uri := fmt.Sprintf("%s/%s/halt", bmPath, serverID)
-	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
-	if err != nil {
-		return err
-	}
-
-	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return bms, nil
 }
 
 // ListIPv4s will List the IPv4 information of a bare metal server.
@@ -261,6 +248,23 @@ func (b *BareMetalServerServiceHandler) ListIPv6s(ctx context.Context, serverID 
 	return ipv6.IPv6S, ipv6.Meta, nil
 }
 
+// Halt a bare metal server.
+// This is a hard power off, meaning that the power to the machine is severed.
+// The data on the machine will not be modified, and you will still be billed for the machine.
+func (b *BareMetalServerServiceHandler) Halt(ctx context.Context, serverID string) error {
+	uri := fmt.Sprintf("%s/%s/halt", bmPath, serverID)
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Reboot a bare metal server. This is a hard reboot, which means that the server is powered off, then back on.
 func (b *BareMetalServerServiceHandler) Reboot(ctx context.Context, serverID string) error {
 	uri := fmt.Sprintf("%s/%s/reboot", bmPath, serverID)
@@ -282,6 +286,57 @@ func (b *BareMetalServerServiceHandler) Reboot(ctx context.Context, serverID str
 func (b *BareMetalServerServiceHandler) Reinstall(ctx context.Context, serverID string) error {
 	uri := fmt.Sprintf("%s/%s/reinstall", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Start will start a list of bare metal servers the machine is already running, it will be restarted.
+func (b *BareMetalServerServiceHandler) MassStart(ctx context.Context, serverList []string) error {
+	uri := fmt.Sprintf("%s/start", instancePath)
+
+	reqBody := RequestBody{"baremetal_ids": serverList}
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, reqBody)
+	if err != nil {
+		return err
+	}
+
+	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Halt will pause a list of bare metals.
+func (b *BareMetalServerServiceHandler) MassHalt(ctx context.Context, serverList []string) error {
+	uri := fmt.Sprintf("%s/halt", instancePath)
+
+	reqBody := RequestBody{"baremetal_ids": serverList}
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, reqBody)
+	if err != nil {
+		return err
+	}
+
+	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// MassReboot reboots a list of instances.
+func (b *BareMetalServerServiceHandler) MassReboot(ctx context.Context, serverList []string) error {
+	uri := fmt.Sprintf("%s/reboot", instancePath)
+
+	reqBody := RequestBody{"baremetal_ids": serverList}
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, reqBody)
 	if err != nil {
 		return err
 	}

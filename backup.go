@@ -37,7 +37,6 @@ type backupBase struct {
 	Backup *Backup `json:"backup"`
 }
 
-
 // Get retrieves a backup that matches the given backupID
 func (b *BackupServiceHandler) Get(ctx context.Context, backupID string) (*Backup, error) {
 	uri := fmt.Sprintf("/v2/backups/%s", backupID)

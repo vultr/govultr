@@ -123,7 +123,7 @@ func TestFireWallGroupServiceHandler_List(t *testing.T) {
 	}
 
 	expectedMeta := &Meta{
-		Total:5,
+		Total: 5,
 		Links: &Links{},
 	}
 

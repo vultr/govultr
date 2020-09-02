@@ -97,7 +97,7 @@ func (s *SnapshotServiceHandler) Get(ctx context.Context, snapshotID string) (*S
 	}
 
 	snapshot := new(snapshotBase)
-	if err = s.Client.DoWithContext(ctx, req, snapshot); err != nil{
+	if err = s.Client.DoWithContext(ctx, req, snapshot); err != nil {
 		return nil, err
 	}
 

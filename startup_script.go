@@ -69,7 +69,7 @@ func (s *StartupScriptServiceHandler) Create(ctx context.Context, scriptReq *Sta
 
 // Get a single startup script
 func (s *StartupScriptServiceHandler) Get(ctx context.Context, scriptID string) (*StartupScript, error) {
-	uri := fmt.Sprintf("%s/%s",scriptPath, scriptID)
+	uri := fmt.Sprintf("%s/%s", scriptPath, scriptID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -86,7 +86,7 @@ func (s *StartupScriptServiceHandler) Get(ctx context.Context, scriptID string) 
 
 // Update will update the given startup script. Empty strings will be ignored.
 func (s *StartupScriptServiceHandler) Update(ctx context.Context, scriptID string, scriptReq *StartupScriptReq) error {
-	uri := fmt.Sprintf("%s/%s",scriptPath, scriptID)
+	uri := fmt.Sprintf("%s/%s", scriptPath, scriptID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodPatch, uri, scriptReq)
 	if err != nil {
