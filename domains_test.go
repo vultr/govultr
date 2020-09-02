@@ -187,11 +187,9 @@ func TestDNSDomainServiceHandler_DNSSecInfo(t *testing.T) {
 		"example.com IN DNSKEY 257 3 13 kRrxANp7YTGqVbaWtMy8hhsK0jcG4ajjICZKMb4fKv79Vx/RSn76vNjzIT7/Uo0BXil01Fk8RRQc4nWZctGJBA==",
 		"example.com IN DS 27933 13 1 2d9ac457e5c11a104e25d971d0a6254562bddde7",
 		"example.com IN DS 27933 13 2 8858e7b0dfb881280ce2ca1e0eafcd93d5b53687c21da284d4f8799ba82208a9",
-
 	}
 
 	if !reflect.DeepEqual(dnsSec, expected) {
 		t.Errorf("Domain.GetDnsSec returned %+v, expected %+v", dnsSec, expected)
 	}
 }
-

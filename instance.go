@@ -13,9 +13,9 @@ const instancePath = "/v2/instances"
 // InstanceService is the interface to interact with the instance endpoints on the Vultr API
 // Link: https://www.vultr.com/api/v2/#tag/instances
 type InstanceService interface {
-	//Create(ctx context.Context, regionID, vpsPlanID, osID int, options *ServerOptions) (*Server, error)
+	Create(ctx context.Context, instanceReq *InstanceReq) (*Instance, error)
 	Get(ctx context.Context, instanceID string) (*Instance, error)
-	//Update
+	Update(ctx context.Context, instanceID string, instanceReq *InstanceReq) error
 	Delete(ctx context.Context, instanceID string) error
 	List(ctx context.Context, options *ListOptions) ([]Instance, *Meta, error)
 
@@ -24,7 +24,14 @@ type InstanceService interface {
 	Reboot(ctx context.Context, instanceID string) error
 	Reinstall(ctx context.Context, instanceID string) error
 
-	Bandwidth(ctx context.Context, instanceID string) (*Bandwidth, error)
+	MassStart(ctx context.Context, instanceList []string) error
+	MassHalt(ctx context.Context, instanceList []string) error
+	MassReboot(ctx context.Context, instanceList []string) error
+
+	Restore(ctx context.Context, instanceID string, restoreReq *RestoreReq) error
+
+	GetBandwidth(ctx context.Context, instanceID string) (*Bandwidth, error)
+	GetNeighbors(ctx context.Context, instanceID string) (*Neighbors, error)
 
 	ListPrivateNetworks(ctx context.Context, instanceID string) ([]PrivateNetwork, *Meta, error)
 	AttachPrivateNetwork(ctx context.Context, instanceID, networkID string) error
@@ -35,8 +42,9 @@ type InstanceService interface {
 	DetachISO(ctx context.Context, instanceID string) error
 
 	GetBackupSchedule(ctx context.Context, instanceID string) (*BackupSchedule, error)
-	SetBackupSchedule(ctx context.Context, instanceID string, backup *BackupScheduleReq) (*BackupSchedule, error)
+	SetBackupSchedule(ctx context.Context, instanceID string, backup *BackupScheduleReq) error
 
+	CreateIPv4(ctx context.Context, instanceID string, reboot bool) (*IPv4, error)
 	ListIPv4(ctx context.Context, instanceID string, option *ListOptions) ([]IPv4, *Meta, error)
 	DeleteIPv4(ctx context.Context, instanceID, ip string) error
 	ListIPv6(ctx context.Context, instanceID string, option *ListOptions) ([]IPv6, *Meta, error)
@@ -62,6 +70,7 @@ type Instance struct {
 	Os               string   `json:"os"`
 	Ram              int      `json:"ram"`
 	Disk             int      `json:"disk"`
+	Plan             string   `json:"plan"`
 	MainIP           string   `json:"main_ip"`
 	VCPUCount        int      `json:"vcpu_count"`
 	Region           string   `json:"region"`
@@ -90,9 +99,17 @@ type instanceBase struct {
 	Instance *Instance `json:"instance"`
 }
 
+type ipv4Base struct {
+	IPv4 *IPv4 `json:"ipv4"`
+}
+
 type instancesBase struct {
 	Instances []Instance `json:"instances"`
 	Meta      *Meta      `json:"meta"`
+}
+
+type Neighbors struct {
+	Neighbors []string `json:"neighbors"`
 }
 
 type Bandwidth struct {
@@ -101,6 +118,16 @@ type Bandwidth struct {
 		OutgoingBytes int `json:"outgoing_bytes"`
 	} `json:"bandwidth"`
 }
+
+// // Bandwidth2 represents bandwidth information for an instance
+// type Bandwidth2 struct {
+// 	IncomingBytes int `json:"incoming_bytes"`
+// 	OutgoingBytes int `json:"outgoing_bytes"`
+// }
+
+// type BandwidthBase struct {
+// 	Bandwidth map[string]Bandwidth2 `json:"bandwidth"`
+// }
 
 type privateNetworksBase struct {
 	PrivateNetworks []PrivateNetwork `json:"private_networks"`
@@ -128,7 +155,7 @@ type backupScheduleBase struct {
 type BackupSchedule struct {
 	Enabled             bool   `json:"enabled,omitempty"`
 	Type                string `json:"type,omitempty"`
-	NextScheduleTimeUTC string `json:"next_schedule_time_utc,omitempty"`
+	NextScheduleTimeUTC string `json:"next_run_utc,omitempty"`
 	Hour                int    `json:"hour,omitempty"`
 	Dow                 int    `json:"dow,omitempty"`
 	Dom                 int    `json:"dom,omitempty"`
@@ -139,6 +166,11 @@ type BackupScheduleReq struct {
 	Hour int    `json:"hour,omitempty"`
 	Dow  int    `json:"dow,omitempty"`
 	Dom  int    `json:"dom,omitempty"`
+}
+
+type RestoreReq struct {
+	BackupId   string `json:"backup_id,omitempty"`
+	SnapshotID string `json:"snapshot_id,omitempty"`
 }
 
 // todo can we remove this list and return this data back in the list?
@@ -160,7 +192,49 @@ type UserData struct {
 	Data string `json:"data"`
 }
 
-// GetServer will get the server with the given instanceID
+// InstanceReq
+type InstanceReq struct {
+	Region               string   `json:"region,omitempty"`
+	Plan                 string   `json:"plan,omitempty"` // needs to be plan??
+	Label                string   `json:"label,omitempty"`
+	Tag                  string   `json:"tag,omitempty"`
+	OsID                 int      `json:"os_id,omitempty"`
+	ISOID                string   `json:"iso_id,omitempty"`
+	AppID                int      `json:"app_id,omitempty"`
+	FirewallGroupID      string   `json:"firewall_group_id,omitempty"`
+	Hostname             string   `json:"hostname,omitempty"`
+	IPXEChainURL         string   `json:"ipxe_chain_url,omitempty"`
+	ScriptID             string   `json:"script_id,omitempty"`
+	SnapshotID           string   `json:"snapshot_id,omitempty"`
+	EnableIPV6           bool     `json:"enable_ipv6,omitempty"`
+	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
+	DetachPrivateNetwork []string `json:"detach_private_network,omitempty"`
+	SSHKey               []string `json:"sshkey_id,omitempty"`
+	Backups              bool     `json:"backups,omitempty"`
+	DDOSProtection       bool     `json:"ddos_protection,omitempty"`
+	UserData             string   `json:"user_data,omitempty"`
+	ReservedIP           string   `json:"reserved_ip_v4,omitempty"`
+	ActivationEmail      bool     `json:"activation_email,omitempty"`
+}
+
+// Create will create the server with the given parameters
+func (i *InstanceServiceHandler) Create(ctx context.Context, instanceReq *InstanceReq) (*Instance, error) {
+	uri := fmt.Sprintf("%s", instancePath)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, instanceReq)
+	if err != nil {
+		return nil, err
+	}
+
+	instance := new(instanceBase)
+	if err = i.client.DoWithContext(ctx, req, instance); err != nil {
+		return nil, err
+	}
+
+	return instance.Instance, nil
+}
+
+// Get will get the server with the given instanceID
 func (i *InstanceServiceHandler) Get(ctx context.Context, instanceID string) (*Instance, error) {
 	uri := fmt.Sprintf("%s/%s", instancePath, instanceID)
 
@@ -172,10 +246,25 @@ func (i *InstanceServiceHandler) Get(ctx context.Context, instanceID string) (*I
 	instance := new(instanceBase)
 	if err = i.client.DoWithContext(ctx, req, instance); err != nil {
 		return nil, err
-
 	}
 
 	return instance.Instance, nil
+}
+
+// Update will update the server with the given parameters
+func (i *InstanceServiceHandler) Update(ctx context.Context, instanceID string, instanceReq *InstanceReq) error {
+	uri := fmt.Sprintf("%s/%s", instancePath, instanceID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPatch, uri, instanceReq)
+	if err != nil {
+		return err
+	}
+
+	if err = i.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Delete an instance. All data will be permanently lost, and the IP address will be released
@@ -264,7 +353,7 @@ func (i *InstanceServiceHandler) Reboot(ctx context.Context, instanceID string) 
 	return nil
 }
 
-// Reinstall will reinstall the operating system on a instance.
+// Reinstall an instance.
 func (i *InstanceServiceHandler) Reinstall(ctx context.Context, instanceID string) error {
 	uri := fmt.Sprintf("%s/%s/reinstall", instancePath, instanceID)
 
@@ -280,7 +369,74 @@ func (i *InstanceServiceHandler) Reinstall(ctx context.Context, instanceID strin
 	return nil
 }
 
-func (i *InstanceServiceHandler) Bandwidth(ctx context.Context, instanceID string) (*Bandwidth, error) {
+// Start will start a list of vps instances the machine is already running, it will be restarted.
+func (i *InstanceServiceHandler) MassStart(ctx context.Context, instanceList []string) error {
+	uri := fmt.Sprintf("%s/start", instancePath)
+
+	reqBody := RequestBody{"instance_ids": instanceList}
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, reqBody)
+	if err != nil {
+		return err
+	}
+
+	if err = i.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Halt will pause a list of instances.
+func (i *InstanceServiceHandler) MassHalt(ctx context.Context, instanceList []string) error {
+	uri := fmt.Sprintf("%s/halt", instancePath)
+
+	reqBody := RequestBody{"instance_ids": instanceList}
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, reqBody)
+	if err != nil {
+		return err
+	}
+
+	if err = i.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// MassReboot reboots a list of instances.
+func (i *InstanceServiceHandler) MassReboot(ctx context.Context, instanceList []string) error {
+	uri := fmt.Sprintf("%s/reboot", instancePath)
+
+	reqBody := RequestBody{"instance_ids": instanceList}
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, reqBody)
+	if err != nil {
+		return err
+	}
+
+	if err = i.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Restore an instance.
+func (i *InstanceServiceHandler) Restore(ctx context.Context, instanceID string, restoreReq *RestoreReq) error {
+	uri := fmt.Sprintf("%s/%s/restore", instancePath, instanceID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	if err = i.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (i *InstanceServiceHandler) GetBandwidth(ctx context.Context, instanceID string) (*Bandwidth, error) {
 	uri := fmt.Sprintf("%s/%s/bandwidth", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -293,6 +449,22 @@ func (i *InstanceServiceHandler) Bandwidth(ctx context.Context, instanceID strin
 	}
 
 	return bandwidth, nil
+}
+
+// GetNeighbors gets a list of other instances in the same location as this Instance.
+func (i *InstanceServiceHandler) GetNeighbors(ctx context.Context, instanceID string) (*Neighbors, error) {
+	uri := fmt.Sprintf("%s/%s/neighbors", instancePath, instanceID)
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	neighbors := new(Neighbors)
+	if err = i.client.DoWithContext(ctx, req, neighbors); err != nil {
+		return nil, err
+	}
+
+	return neighbors, nil
 }
 
 func (i *InstanceServiceHandler) ListPrivateNetworks(ctx context.Context, instanceID string) ([]PrivateNetwork, *Meta, error) {
@@ -410,19 +582,36 @@ func (i *InstanceServiceHandler) GetBackupSchedule(ctx context.Context, instance
 }
 
 // SetBackupSchedule sets the backup schedule for a given instance - all time values are in UTC.
-func (i *InstanceServiceHandler) SetBackupSchedule(ctx context.Context, instanceID string, backup *BackupScheduleReq) (*BackupSchedule, error) {
+func (i *InstanceServiceHandler) SetBackupSchedule(ctx context.Context, instanceID string, backup *BackupScheduleReq) error {
 	uri := fmt.Sprintf("%s/%s/backup-schedule", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, backup)
+	if err != nil {
+		return err
+	}
+
+	if err = i.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (i *InstanceServiceHandler) CreateIPv4(ctx context.Context, instanceID string, reboot bool) (*IPv4, error) {
+	uri := fmt.Sprintf("%s/%s/ipv4", instancePath, instanceID)
+
+	body := RequestBody{"reboot": reboot}
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, body)
 	if err != nil {
 		return nil, err
 	}
 
-	b := new(backupScheduleBase)
-	if err = i.client.DoWithContext(ctx, req, backup); err != nil {
+	ip := new(ipv4Base)
+	if err = i.client.DoWithContext(ctx, req, ip); err != nil {
 		return nil, err
 	}
 
-	return b.BackupSchedule, nil
+	return ip.IPv4, nil
 }
 
 func (i *InstanceServiceHandler) ListIPv4(ctx context.Context, instanceID string, options *ListOptions) ([]IPv4, *Meta, error) {
