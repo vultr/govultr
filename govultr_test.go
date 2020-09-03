@@ -43,9 +43,9 @@ func TestNewClient(t *testing.T) {
 		t.Errorf("NewClient BaseURL = %v, expected %v", client.BaseURL, server.URL)
 	}
 
-	if client.APIKey.key != "dummy-key" {
-		t.Errorf("NewClient ApiKey = %v, expected %v", client.APIKey.key, "dummy-key")
-	}
+	//if client != "dummy-key" {
+	//	t.Errorf("NewClient ApiKey = %v, expected %v", client.APIKey.key, "dummy-key")
+	//}
 
 	if client.UserAgent != userAgent {
 		t.Errorf("NewClient UserAgent = %v, expected %v", client.UserAgent, userAgent)
@@ -154,13 +154,11 @@ func TestClient_NewRequest(t *testing.T) {
 	in := "/unit"
 	out := defaultBase + "/unit"
 
-	inRequest := url.Values{
-		"balance": {"500"},
-	}
-	outRequest := `balance=500`
+
+	inRequest := RequestBody{"balance": 500}
+	outRequest := `{"balance":500}` + "\n"
 
 	req, _ := c.NewRequest(ctx, http.MethodPost, in, inRequest)
-
 	if req.URL.String() != out {
 		t.Errorf("NewRequest(%v) URL = %v, expected %v", in, req.URL, out)
 	}
@@ -176,12 +174,8 @@ func TestClient_NewRequest(t *testing.T) {
 		t.Errorf("NewRequest() User-Agent = %v, expected %v", userAgent, c.UserAgent)
 	}
 
-	if c.APIKey.key != "dum-dum" {
-		t.Errorf("NewRequest() API-Key = %v, expected %v", c.APIKey.key, "dum-dum")
-	}
-
 	contentType := req.Header.Get("Content-Type")
-	if contentType != "application/x-www-form-urlencoded" {
+	if contentType != "application/json" {
 		t.Errorf("NewRequest() Header Content Type = %v, expected %v", contentType, "application/x-www-form-urlencoded")
 	}
 

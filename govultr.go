@@ -16,30 +16,12 @@ import (
 )
 
 const (
-	version     = "0.4.2"
+	version     = "2.0.0-beta.1"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
-	rateLimit   = 600 * time.Millisecond
+	rateLimit   = 500 * time.Millisecond
 	retryLimit  = 3
 )
-
-// whiteListURI is an array of endpoints that should not have the API Key passed to them
-// todo update white list routes
-var whiteListURI = [13]string{
-	"/v1/regions/availability",
-	"/v2/applications",
-	"/v1/objectstorage/list_cluster",
-	"/v1/os/list",
-	"/v1/plans/list",
-	"/v1/plans/list_baremetal",
-	"/v1/plans/list_vc2",
-	"/v1/plans/list_vc2z",
-	"/v1/plans/list_vdc2",
-	"/v1/regions/list",
-	"/v1/regions/availability_vc2",
-	"/v1/regions/availability_vdc2",
-	"/v1/regions/availability_baremetal",
-}
 
 // APIKey contains a users API Key for interacting with the API
 type APIKey struct {
@@ -58,14 +40,11 @@ type Client struct {
 	// User Agent for the client
 	UserAgent string
 
-	// API Key
-	APIKey APIKey
-
 	// Services used to interact with the API
 	Account         AccountService
 	Application     ApplicationService
 	Backup          BackupService
-	//BareMetalServer BareMetalServerService
+	BareMetalServer BareMetalServerService
 	BlockStorage    BlockStorageService
 	Domain          DomainService
 	DomainRecord    DomainRecordService
@@ -116,7 +95,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.Account = &AccountServiceHandler{client}
 	client.Application = &ApplicationServiceHandler{client}
 	client.Backup = &BackupServiceHandler{client}
-	//client.BareMetalServer = &BareMetalServerServiceHandler{client}
+	client.BareMetalServer = &BareMetalServerServiceHandler{client}
 	client.BlockStorage = &BlockStorageServiceHandler{client}
 	client.Domain = &DomainServiceHandler{client}
 	client.DomainRecord = &DomainRecordsServiceHandler{client}
@@ -139,13 +118,9 @@ func NewClient(httpClient *http.Client) *Client {
 	return client
 }
 
-
 // NewRequest creates an API Request
 func (c *Client) NewRequest(ctx context.Context, method, uri string, body interface{}) (*http.Request, error) {
-
-	path, err := url.Parse(uri)
-	resolvedURL := c.BaseURL.ResolveReference(path)
-
+	resolvedURL, err := c.BaseURL.Parse(uri)
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +134,6 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 	}
 
 	req, err := http.NewRequest(method, resolvedURL.String(), buf)
-
 	if err != nil {
 		return nil, err
 	}
@@ -175,9 +149,7 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 // a successful call. A successful call is then checked to see if we need to unmarshal since some resources
 // have their own implements of unmarshal.
 func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) error {
-
 	rreq, err := retryablehttp.FromRequest(r)
-
 	if err != nil {
 		return err
 	}
@@ -201,7 +173,6 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 		return err
 	}
 
-	//todo we may want to revisit this
 	if res.StatusCode >= http.StatusOK && res.StatusCode <= http.StatusNoContent {
 		if data != nil {
 			if err := json.Unmarshal(body, data); err != nil {
