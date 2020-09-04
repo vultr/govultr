@@ -27,12 +27,12 @@ type ObjectStorageServiceHandler struct {
 
 // ObjectStorage represents a Vultr Object Storage subscription.
 type ObjectStorage struct {
-	ID                   int    `json:"id"`
+	ID                   string `json:"id"`
 	DateCreated          string `json:"date_created"`
 	ObjectStoreClusterID int    `json:"cluster_id"`
 	Region               string `json:"region"`
 	Label                string `json:"label"`
-	Status               string
+	Status               string `json:"status"`
 	S3Keys
 }
 
