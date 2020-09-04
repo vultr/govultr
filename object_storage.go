@@ -116,7 +116,7 @@ func (o *ObjectStorageServiceHandler) Update(ctx context.Context, id, label stri
 	uri := fmt.Sprintf("/v2/object-storage/%s", id)
 
 	value := RequestBody{"label": label}
-	req, err := o.client.NewRequest(ctx, http.MethodPatch, uri, value)
+	req, err := o.client.NewRequest(ctx, http.MethodPut, uri, value)
 	if err != nil {
 		return err
 	}
