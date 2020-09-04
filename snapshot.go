@@ -35,7 +35,7 @@ type Snapshot struct {
 
 // SnapshotReq
 type SnapshotReq struct {
-	InstanceID  int    `json:"instance_id,omitempty"`
+	InstanceID  string    `json:"instance_id,omitempty"`
 	Description string `json:"description,omitempty"`
 }
 
