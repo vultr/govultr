@@ -96,7 +96,7 @@ func (o *ObjectStorageServiceHandler) Create(ctx context.Context, clusterID int,
 
 // Get returns a specified object storage by the provided ID
 func (o *ObjectStorageServiceHandler) Get(ctx context.Context, id string) (*ObjectStorage, error) {
-	uri := fmt.Sprintf("/v2/object-storage/%d", id)
+	uri := fmt.Sprintf("/v2/object-storage/%s", id)
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -113,7 +113,7 @@ func (o *ObjectStorageServiceHandler) Get(ctx context.Context, id string) (*Obje
 
 // SetLabel of an object storage subscription.
 func (o *ObjectStorageServiceHandler) Update(ctx context.Context, id, label string) error {
-	uri := fmt.Sprintf("/v2/object-storage/%d", id)
+	uri := fmt.Sprintf("/v2/object-storage/%s", id)
 
 	value := RequestBody{"label": label}
 	req, err := o.client.NewRequest(ctx, http.MethodPatch, uri, value)
@@ -130,7 +130,7 @@ func (o *ObjectStorageServiceHandler) Update(ctx context.Context, id, label stri
 
 // Delete an object storage subscription.
 func (o *ObjectStorageServiceHandler) Delete(ctx context.Context, id string) error {
-	uri := fmt.Sprintf("/v2/object-storage/%d", id)
+	uri := fmt.Sprintf("/v2/object-storage/%s", id)
 
 	req, err := o.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
@@ -187,7 +187,7 @@ func (o *ObjectStorageServiceHandler) ListCluster(ctx context.Context, options *
 
 // RegenerateKeys of the S3 API Keys for an object storage subscription
 func (o *ObjectStorageServiceHandler) RegenerateKeys(ctx context.Context, id string) (*S3Keys, error) {
-	uri := fmt.Sprintf("/v2/object-storage/%d/regenerate-keys", id)
+	uri := fmt.Sprintf("/v2/object-storage/%s/regenerate-keys", id)
 
 	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, nil)
 	if err != nil {
