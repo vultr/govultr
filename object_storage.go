@@ -11,13 +11,13 @@ import (
 // ObjectStorageService is the interface to interact with the object storage endpoints on the Vultr API.
 type ObjectStorageService interface {
 	Create(ctx context.Context, clusterID int, label string) (*ObjectStorage, error)
-	Get(ctx context.Context, id int) (*ObjectStorage, error)
-	Update(ctx context.Context, id int, label string) error
-	Delete(ctx context.Context, id int) error
+	Get(ctx context.Context, id string) (*ObjectStorage, error)
+	Update(ctx context.Context, id, label string) error
+	Delete(ctx context.Context, id string) error
 	List(ctx context.Context, options *ListOptions) ([]ObjectStorage, *Meta, error)
 
 	ListCluster(ctx context.Context, options *ListOptions) ([]ObjectStorageCluster, *Meta, error)
-	RegenerateKeys(ctx context.Context, id int) (*S3Keys, error)
+	RegenerateKeys(ctx context.Context, id string) (*S3Keys, error)
 }
 
 // ObjectStorageServiceHandler handles interaction with the firewall rule methods for the Vultr API.
@@ -95,7 +95,7 @@ func (o *ObjectStorageServiceHandler) Create(ctx context.Context, clusterID int,
 }
 
 // Get returns a specified object storage by the provided ID
-func (o *ObjectStorageServiceHandler) Get(ctx context.Context, id int) (*ObjectStorage, error) {
+func (o *ObjectStorageServiceHandler) Get(ctx context.Context, id string) (*ObjectStorage, error) {
 	uri := fmt.Sprintf("/v2/object-storage/%d", id)
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -112,7 +112,7 @@ func (o *ObjectStorageServiceHandler) Get(ctx context.Context, id int) (*ObjectS
 }
 
 // SetLabel of an object storage subscription.
-func (o *ObjectStorageServiceHandler) Update(ctx context.Context, id int, label string) error {
+func (o *ObjectStorageServiceHandler) Update(ctx context.Context, id, label string) error {
 	uri := fmt.Sprintf("/v2/object-storage/%d", id)
 
 	value := RequestBody{"label": label}
@@ -129,7 +129,7 @@ func (o *ObjectStorageServiceHandler) Update(ctx context.Context, id int, label 
 }
 
 // Delete an object storage subscription.
-func (o *ObjectStorageServiceHandler) Delete(ctx context.Context, id int) error {
+func (o *ObjectStorageServiceHandler) Delete(ctx context.Context, id string) error {
 	uri := fmt.Sprintf("/v2/object-storage/%d", id)
 
 	req, err := o.client.NewRequest(ctx, http.MethodDelete, uri, nil)
@@ -186,7 +186,7 @@ func (o *ObjectStorageServiceHandler) ListCluster(ctx context.Context, options *
 }
 
 // RegenerateKeys of the S3 API Keys for an object storage subscription
-func (o *ObjectStorageServiceHandler) RegenerateKeys(ctx context.Context, id int) (*S3Keys, error) {
+func (o *ObjectStorageServiceHandler) RegenerateKeys(ctx context.Context, id string) (*S3Keys, error) {
 	uri := fmt.Sprintf("/v2/object-storage/%d/regenerate-keys", id)
 
 	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, nil)
