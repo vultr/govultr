@@ -12,9 +12,9 @@ type RequestBody map[string]interface{}
 
 // BlockStorageService is the interface to interact with Block-Storage endpoint on the Vultr API
 type BlockStorageService interface {
-	Create(ctx context.Context, blockReq *BlockStorageReq) (*BlockStorage, error)
+	Create(ctx context.Context, blockReq *BlockStorageCreate) (*BlockStorage, error)
 	Get(ctx context.Context, blockID string) (*BlockStorage, error)
-	Update(ctx context.Context, blockID string, label string) error
+	Update(ctx context.Context, blockID string, blockReq *BlockStorageUpdate) error
 	Delete(ctx context.Context, blockID string) error
 	List(ctx context.Context, options *ListOptions) ([]BlockStorage, *Meta, error)
 
@@ -41,11 +41,18 @@ type BlockStorage struct {
 }
 
 // BlockStorageReq
-type BlockStorageReq struct {
+type BlockStorageCreate struct {
 	Region string `json:"region"`
 	SizeGB int    `json:"size_gb"`
 	Label  string `json:"label,omitempty"`
 }
+
+// BlockStorageUpdate
+type BlockStorageUpdate struct {
+	SizeGB int    `json:"size_gb,omitempty"`
+	Label  string `json:"label,omitempty"`
+}
+
 // BlockStorageAttach
 type BlockStorageAttach struct {
 	InstanceID string `json:"instance_id"`
@@ -54,7 +61,7 @@ type BlockStorageAttach struct {
 
 // BlockStorageDetach
 type BlockStorageDetach struct {
-	Live       bool   `json:"live,omitempty"`
+	Live bool `json:"live,omitempty"`
 }
 
 type blockStoragesBase struct {
@@ -67,7 +74,7 @@ type blockStorageBase struct {
 }
 
 // Create builds out a block storage
-func (b *BlockStorageServiceHandler) Create(ctx context.Context, blockReq *BlockStorageReq) (*BlockStorage, error) {
+func (b *BlockStorageServiceHandler) Create(ctx context.Context, blockReq *BlockStorageCreate) (*BlockStorage, error) {
 	uri := "/v2/blocks"
 
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, blockReq)
@@ -101,10 +108,10 @@ func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID string) (*
 }
 
 // SetLabel allows you to set/update the label on your Vultr Block storage
-func (b *BlockStorageServiceHandler) Update(ctx context.Context, blockID string, label string) error {
+func (b *BlockStorageServiceHandler) Update(ctx context.Context, blockID string, blockReq *BlockStorageUpdate) error {
 	uri := fmt.Sprintf("/v2/blocks/%s", blockID)
-	put := &RequestBody{"label": label}
-	req, err := b.client.NewRequest(ctx, http.MethodPatch, uri, put)
+
+	req, err := b.client.NewRequest(ctx, http.MethodPatch, uri, blockReq)
 	if err != nil {
 		return err
 	}
