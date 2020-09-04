@@ -11,7 +11,7 @@ import (
 // SnapshotService is the interface to interact with Snapshot endpoints on the Vultr API
 type SnapshotService interface {
 	Create(ctx context.Context, snapshotReq *SnapshotReq) (*Snapshot, error)
-	CreateFromURL(ctx context.Context, snapshotURLReq SnapshotURLReq) (*Snapshot, error)
+	CreateFromURL(ctx context.Context, snapshotURLReq *SnapshotURLReq) (*Snapshot, error)
 	Get(ctx context.Context, snapshotID string) (*Snapshot, error)
 	Delete(ctx context.Context, snapshotID string) error
 	List(ctx context.Context, options *ListOptions) ([]Snapshot, *Meta, error)
