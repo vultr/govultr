@@ -71,7 +71,7 @@ func (s *SnapshotServiceHandler) Create(ctx context.Context, snapshotReq *Snapsh
 }
 
 // CreateFromURL will create a snapshot based on an image iso from a URL you provide
-func (s *SnapshotServiceHandler) CreateFromURL(ctx context.Context, snapshotURLReq SnapshotURLReq) (*Snapshot, error) {
+func (s *SnapshotServiceHandler) CreateFromURL(ctx context.Context, snapshotURLReq *SnapshotURLReq) (*Snapshot, error) {
 	uri := "/v2/snapshots/create-from-url"
 
 	req, err := s.Client.NewRequest(ctx, http.MethodPost, uri, snapshotURLReq)
