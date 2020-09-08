@@ -8,7 +8,7 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
-const netPath = "/v2/networks"
+const netPath = "/v2/private-networks"
 
 // NetworkService is the interface to interact with the network endpoints on the Vultr API
 type NetworkService interface {
