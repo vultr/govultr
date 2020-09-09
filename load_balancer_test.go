@@ -426,7 +426,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		},
 		BalancingAlgorithm: "roundrobin",
 		SSLRedirect:        false,
-		ProxyProtocol:      "off",
+		ProxyProtocol:      false,
 		HealthCheck: &HealthCheck{
 			Protocol:           "http",
 			Port:               80,

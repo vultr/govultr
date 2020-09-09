@@ -54,7 +54,7 @@ type LoadBalancerReq struct {
 	ForwardingRules    []ForwardingRule `json:"forwarding_rules,omitempty"`
 	SSL                *SSL             `json:"ssl,omitempty"`
 	SSLRedirect        bool             `json:"ssl_redirect,omitempty"`
-	ProxyProtocol      string           `json:"proxy_protocol,omitempty"`
+	ProxyProtocol      bool             `json:"proxy_protocol,omitempty"`
 	BalancingAlgorithm string           `json:"balancing_algorithm,omitempty"`
 }
 
