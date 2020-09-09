@@ -37,7 +37,7 @@ type LoadBalancer struct {
 	Status          string           `json:"status,omitempty"`
 	IPV4            string           `json:"ipv4,omitempty"`
 	IPV6            string           `json:"ipv6,omitempty"`
-	Instances       []int            `json:"instances,omitempty"`
+	Instances       []string         `json:"instances,omitempty"`
 	HealthCheck     *HealthCheck     `json:"health_check,omitempty"`
 	GenericInfo     *GenericInfo     `json:"generic_info,omitempty"`
 	SSLInfo         bool             `json:"has_ssl,omitempty"`

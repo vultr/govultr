@@ -51,7 +51,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 						}
 					],
 					"instances": [
-						12345
+						"12345"
 					]
 				}
 			],
@@ -109,7 +109,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 				UnhealthyThreshold: 5,
 				HealthyThreshold:   5,
 			},
-			Instances: []int{12345},
+			Instances: []string{"12345"},
 		},
 	}
 
@@ -186,7 +186,7 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 					}
 				],
 				"instances": [
-					12345
+					"12345"
 				]
 			}
 		}
@@ -235,7 +235,7 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 			UnhealthyThreshold: 5,
 			HealthyThreshold:   5,
 		},
-		Instances: []int{12345},
+		Instances: []string{"12345"},
 	}
 
 	if !reflect.DeepEqual(info, expected) {
@@ -404,7 +404,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 						}
 					],
 					"instances": [
-						1234
+						"1234"
 					]
 				}
 		}
@@ -478,7 +478,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 			UnhealthyThreshold: 5,
 			HealthyThreshold:   5,
 		},
-		Instances: []int{1234},
+		Instances: []string{"1234"},
 	}
 
 	if !reflect.DeepEqual(lb, expected) {
