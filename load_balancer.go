@@ -48,7 +48,7 @@ type LoadBalancer struct {
 type LoadBalancerReq struct {
 	Region             string           `json:"region,omitempty"`
 	Label              string           `json:"label,omitempty"`
-	Instances          []int            `json:"instances,omitempty"`
+	Instances          []string            `json:"instances,omitempty"`
 	HealthCheck        *HealthCheck     `json:"health_check,omitempty"`
 	StickySessions     *StickySessions  `json:"sticky_session,omitempty"`
 	ForwardingRules    []ForwardingRule `json:"forwarding_rules,omitempty"`
