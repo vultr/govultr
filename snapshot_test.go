@@ -17,7 +17,7 @@ func TestSnapshotServiceHandler_Create(t *testing.T) {
 	})
 
 	snap := &SnapshotReq{
-		InstanceID:  12345,
+		InstanceID:  "12345",
 		Description: "Test snapshot",
 	}
 
@@ -50,7 +50,7 @@ func TestSnapshotServiceHandler_CreateFromURL(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 	snap := SnapshotURLReq{URL: "http://vultr.com"}
-	snapshot, err := client.Snapshot.CreateFromURL(ctx, snap)
+	snapshot, err := client.Snapshot.CreateFromURL(ctx, &snap)
 	if err != nil {
 		t.Errorf("Snapshot.CreateFromURL returned error: %v", err)
 	}

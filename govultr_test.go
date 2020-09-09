@@ -154,7 +154,6 @@ func TestClient_NewRequest(t *testing.T) {
 	in := "/unit"
 	out := defaultBase + "/unit"
 
-
 	inRequest := RequestBody{"balance": 500}
 	outRequest := `{"balance":500}` + "\n"
 
