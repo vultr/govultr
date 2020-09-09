@@ -41,7 +41,7 @@ type UserReq struct {
 	Email      string   `json:"email,omitempty"`
 	Name       string   `json:"name,omitempty"`
 	APIEnabled string   `json:"api_enabled,omitempty"`
-	ACL        []string `json:"acl,omitempty"`
+	ACL        []string `json:"acls,omitempty"`
 	Password   string   `json:"password,omitempty"`
 }
 
