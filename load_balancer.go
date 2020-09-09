@@ -60,7 +60,7 @@ type LoadBalancerReq struct {
 
 // InstanceList represents instances that are attached to your load balancer
 type InstanceList struct {
-	InstanceList []int
+	InstanceList []string
 }
 
 // HealthCheck represents your health check configuration for your load balancer.
