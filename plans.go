@@ -29,7 +29,7 @@ type BareMetalPlan struct {
 	Bandwidth   int      `json:"bandwidth"`
 	MonthlyCost int      `json:"monthly_cost"`
 	Type        string   `json:"type"`
-	Locations   []Region `json:"locations"`
+	Locations   []string `json:"locations"`
 }
 
 // Plans represents vc2, vdc, or vhf
@@ -41,7 +41,7 @@ type Plan struct {
 	Bandwidth   int      `json:"bandwidth"`
 	MonthlyCost int      `json:"monthly_cost"`
 	Type        string   `json:"type"`
-	Locations   []Region `json:"locations"`
+	Locations   []string `json:"locations"`
 }
 
 type plansBase struct {
