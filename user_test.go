@@ -12,7 +12,7 @@ func TestUserServiceHandler_Create(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/users", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"user": {"id": "564a1a88947b4","name": "Example User","email": "example@vultr.com","api_key": "aaavvvvvvbbbbbb","api_enabled": "yes","acls": []}}`
+		response := `{"user": {"id": "564a1a88947b4","name": "Example User","email": "example@vultr.com","api_key": "aaavvvvvvbbbbbb","api_enabled": true,"acls": []}}`
 
 		fmt.Fprint(writer, response)
 	})
@@ -20,7 +20,7 @@ func TestUserServiceHandler_Create(t *testing.T) {
 	userReq := &UserReq{
 		Email:      "example@vultr.com",
 		Name:       "Example User",
-		APIEnabled: "yes",
+		APIEnabled: true,
 		Password:   "password",
 	}
 
@@ -34,7 +34,7 @@ func TestUserServiceHandler_Create(t *testing.T) {
 		ID:         "564a1a88947b4",
 		Name:       "Example User",
 		Email:      "example@vultr.com",
-		APIEnabled: "yes",
+		APIEnabled: true,
 		APIKey:     "aaavvvvvvbbbbbb",
 		ACL:        []string{},
 	}
@@ -71,7 +71,7 @@ func TestUserServiceHandler_List(t *testing.T) {
             "id": "f255efc9700d9",
             "name": "test api",
             "email": "newmanapi@vultr.com",
-            "api_enabled": "yes",
+            "api_enabled": true,
             "acls": []
         }
     ],
@@ -101,7 +101,7 @@ func TestUserServiceHandler_List(t *testing.T) {
 			ID:         "f255efc9700d9",
 			Name:       "test api",
 			Email:      "newmanapi@vultr.com",
-			APIEnabled: "yes",
+			APIEnabled: true,
 			ACL:        []string{},
 		},
 	}
@@ -135,7 +135,7 @@ func TestUserServiceHandler_Update(t *testing.T) {
 		Name:       "Example User",
 		Password:   "w1a4dcnst0n!",
 		Email:      "example@vultr.com",
-		APIEnabled: "yes",
+		APIEnabled: true,
 		ACL:        []string{"support"},
 	}
 
@@ -151,7 +151,7 @@ func TestUserServiceHandler_Get(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/users/abc123", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"user": {"id": "f255efc9c69ac","name": "Unit Test","email": "test@vultr.com","api_enabled": "yes","acls": []}}`
+		response := `{"user": {"id": "f255efc9c69ac","name": "Unit Test","email": "test@vultr.com","api_enabled": true,"acls": []}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -163,7 +163,7 @@ func TestUserServiceHandler_Get(t *testing.T) {
 		ID:         "f255efc9c69ac",
 		Name:       "Unit Test",
 		Email:      "test@vultr.com",
-		APIEnabled: "yes",
+		APIEnabled: true,
 		ACL:        []string{},
 	}
 
