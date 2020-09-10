@@ -39,7 +39,7 @@ type Plan struct {
 	Ram         int      `json:"ram"`
 	Disk        int      `json:"disk"`
 	Bandwidth   int      `json:"bandwidth"`
-	MonthlyCost string   `json:"monthly_cost"`
+	MonthlyCost int      `json:"monthly_cost"`
 	Type        string   `json:"type"`
 	Locations   []Region `json:"locations"`
 }
