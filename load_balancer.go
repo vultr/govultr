@@ -79,7 +79,7 @@ type GenericInfo struct {
 	BalancingAlgorithm string          `json:"balancing_algorithm,omitempty"`
 	SSLRedirect        bool            `json:"ssl_redirect,omitempty"`
 	StickySessions     *StickySessions `json:"sticky_sessions,omitempty"`
-	ProxyProtocol      string          `json:"proxy_protocol,omitempty"`
+	ProxyProtocol      bool            `json:"proxy_protocol,omitempty"`
 }
 
 // StickySessions represents cookie for your load balancer

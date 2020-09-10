@@ -26,7 +26,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 					"generic_info": {
 						"balancing_algorithm": "roundrobin",
 						"ssl_redirect": false,
-						"proxy_protocol": "off",
+						"proxy_protocol": false,
 						"sticky_sessions": {
 							"cookie_name": "my-cookie"
 						}
@@ -95,7 +95,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 			GenericInfo: &GenericInfo{
 				BalancingAlgorithm: "roundrobin",
 				SSLRedirect:        false,
-				ProxyProtocol:      "off",
+				ProxyProtocol:      false,
 				StickySessions: &StickySessions{
 					CookieName: "my-cookie",
 				},
@@ -161,7 +161,7 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 				"generic_info": {
 					"balancing_algorithm": "roundrobin",
 					"ssl_redirect": false,
-					"proxy_protocol": "off",
+					"proxy_protocol": false,
 					"sticky_sessions": {
 						"cookie_name": "my-cookie"
 					}
@@ -221,7 +221,7 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 		GenericInfo: &GenericInfo{
 			BalancingAlgorithm: "roundrobin",
 			SSLRedirect:        false,
-			ProxyProtocol:      "off",
+			ProxyProtocol:      false,
 			StickySessions: &StickySessions{
 				CookieName: "my-cookie",
 			},
@@ -379,7 +379,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 					"generic_info": {
 						"balancing_algorithm": "roundrobin",
 						"ssl_redirect": false,
-						"proxy_protocol": "off",
+						"proxy_protocol": false,
 						"sticky_sessions": {
 							"cookie_name": "my-cookie"
 						}
@@ -464,7 +464,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		GenericInfo: &GenericInfo{
 			BalancingAlgorithm: "roundrobin",
 			SSLRedirect:        false,
-			ProxyProtocol:      "off",
+			ProxyProtocol:      false,
 			StickySessions: &StickySessions{
 				CookieName: "my-cookie",
 			},
