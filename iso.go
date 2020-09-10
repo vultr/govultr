@@ -38,6 +38,7 @@ type PublicISO struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	MD5Sum      string `json:"md5sum,omitempty"`
 }
 
 // ISOReq
