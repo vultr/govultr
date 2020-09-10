@@ -103,3 +103,34 @@ func TestFireWallRuleServiceHandler_List(t *testing.T) {
 		t.Errorf("FirewallRule.List meta returned %+v, expected %+v", meta, expectedMeta)
 	}
 }
+
+func TestFireWallRuleServiceHandler_Get(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/firewalls/abc123/rules/1", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"firewall_rule":{"id":1,"type":"v4","action":"accept","protocol":"tcp","port":"22","subnet":"0.0.0.0","subnet_size":0,"source":"","notes":""}}`
+		fmt.Fprint(writer, response)
+	})
+
+	firewallRule, err := client.FirewallRule.Get(ctx, "abc123", 1)
+	if err != nil {
+		t.Errorf("FirewallRule.Get returned error: %v", err)
+	}
+
+	expectedRule := &FirewallRule{
+		ID:         1,
+		Action:     "accept",
+		Type:       "v4",
+		Protocol:   "tcp",
+		Port:       "22",
+		Subnet:     "0.0.0.0",
+		SubnetSize: 0,
+		Source:     "",
+		Notes:      "",
+	}
+
+	if !reflect.DeepEqual(firewallRule, expectedRule) {
+		t.Errorf("FirewallRule.Get returned %+v, expected %+v", firewallRule, expectedRule)
+	}
+}
