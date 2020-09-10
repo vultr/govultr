@@ -12,7 +12,7 @@ func TestPlanServiceHandler_List(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/plans", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{ "plans":[{ "id": "vc2-16c-64gb", "vcpu_count": 16, "ram": 65536, "disk": 1280, "bandwidth": 10240, "monthly_cost": 320, "type": "vc2", "locations": [ { "id": "dfw", "country": "US", "options": [ "ddos_protection" ] }]}], "meta": { "total": 19, "links": { "next": "", "prev": "" } }}`
+		response := `{ "plans":[{ "id": "vc2-16c-64gb", "vcpu_count": 16, "ram": 65536, "disk": 1280, "bandwidth": 10240, "monthly_cost": 320, "type": "vc2", "locations": [  "dfw"]}], "meta": { "total": 19, "links": { "next": "", "prev": "" } }}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -30,12 +30,8 @@ func TestPlanServiceHandler_List(t *testing.T) {
 			Bandwidth:   10240,
 			MonthlyCost: 320.00,
 			Type:        "vc2",
-			Locations: []Region{
-				{
-					ID:      "dfw",
-					Country: "US",
-					Options: []string{"ddos_protection"},
-				},
+			Locations: []string{
+				"dfw",
 			},
 		},
 	}
@@ -58,7 +54,7 @@ func TestPlanServiceHandler_GetBareMetalList(t *testing.T) {
 	setup()
 	defer teardown()
 	mux.HandleFunc("/v2/plans-metal", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{ "plans":[{"id": "vbm-4c-32gb","cpu_count": 4,"cpu_threads": 8,"cpu_model": "E3-1270v6","ram": 32768,"disk": 240,"bandwidth": 5120,"monthly_cost": 300,"type": "SSD", "locations": [ { "id": "dfw", "country": "US", "options": [ "ddos_protection" ] }]}], "meta": { "total": 19, "links": { "next": "", "prev": "" } }}`
+		response := `{ "plans_metal":[{"id": "vbm-4c-32gb","cpu_count": 4,"cpu_threads": 8,"cpu_model": "E3-1270v6","ram": 32768,"disk": 240,"bandwidth": 5120,"monthly_cost": 300,"type": "SSD", "locations": [ "dwf"]}], "meta": { "total": 19, "links": { "next": "", "prev": "" } }}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -78,12 +74,8 @@ func TestPlanServiceHandler_GetBareMetalList(t *testing.T) {
 			Bandwidth:   5120,
 			MonthlyCost: 300,
 			Type:        "SSD",
-			Locations: []Region{
-				{
-					ID:      "dfw",
-					Country: "US",
-					Options: []string{"ddos_protection"},
-				},
+			Locations: []string{
+				"dwf",
 			},
 		},
 	}

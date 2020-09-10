@@ -50,7 +50,7 @@ type plansBase struct {
 }
 
 type bareMetalPlansBase struct {
-	Plans []BareMetalPlan `json:"plans"`
+	Plans []BareMetalPlan `json:"plans_metal"`
 	Meta  *Meta           `json:"meta"`
 }
 
