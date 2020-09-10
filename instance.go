@@ -198,6 +198,7 @@ type InstanceReq struct {
 	ScriptID             string   `json:"script_id,omitempty"`
 	SnapshotID           string   `json:"snapshot_id,omitempty"`
 	EnableIPv6           bool     `json:"enable_ipv6,omitempty"`
+	EnablePrivateNetwork bool     `json:"enable_private_network,omitempty"`
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
 	DetachPrivateNetwork []string `json:"detach_private_network,omitempty"`
 	SSHKey               []string `json:"sshkey_id,omitempty"`
