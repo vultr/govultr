@@ -116,7 +116,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 		SSHKeyIDs:       []string{"6b80207b1821f"},
 		AppID:           1,
 		UserData:        "echo Hello World",
-		NotifyActivate:  true,
+		ActivationEmail: true,
 		Hostname:        "test",
 		Tag:             "go-test",
 		ReservedIPv4:    "111.111.111.111",

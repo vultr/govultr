@@ -74,7 +74,7 @@ type BareMetalReq struct {
 	SSHKeyIDs       []string `json:"sshkey_id,omitempty"`
 	AppID           int      `json:"app_id,omitempty"`
 	UserData        string   `json:"user_data,omitempty"`
-	NotifyActivate  bool     `json:"notify_activate,omitempty"`
+	ActivationEmail bool     `json:"activation_email,omitempty"`
 	Hostname        string   `json:"hostname,omitempty"`
 	Tag             string   `json:"tag,omitempty"`
 	ReservedIPv4    string   `json:"reserved_ipv4,omitempty"`
