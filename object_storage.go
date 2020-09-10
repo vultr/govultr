@@ -31,6 +31,7 @@ type ObjectStorage struct {
 	DateCreated          string `json:"date_created"`
 	ObjectStoreClusterID int    `json:"cluster_id"`
 	Region               string `json:"region"`
+	Location             string `json:"location"`
 	Label                string `json:"label"`
 	Status               string `json:"status"`
 	S3Keys

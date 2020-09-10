@@ -12,7 +12,7 @@ func TestObjectStorageServiceHandler_Create(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/object-storage", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"object_storage":{"id":"39239784","date_created":"2020-07-1414:07:28","cluster_id":2,"region":"ewr","location":"NewJersey","label":"api-obj-storage2","status":"pending","s3_hostname":"","s3_access_key":"","s3_secret_key":""}}`
+		response := `{"object_storage":{"id":"39239784","date_created":"2020-07-1414:07:28","cluster_id":2,"region":"ewr","location":"New Jersey","label":"api-obj-storage2","status":"pending","s3_hostname":"","s3_access_key":"","s3_secret_key":""}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -26,6 +26,7 @@ func TestObjectStorageServiceHandler_Create(t *testing.T) {
 		DateCreated:          "2020-07-1414:07:28",
 		ObjectStoreClusterID: 2,
 		Region:               "ewr",
+		Location:             "New Jersey",
 		Label:                "api-obj-storage2",
 		Status:               "pending",
 		S3Keys:               S3Keys{},
