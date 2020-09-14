@@ -518,7 +518,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	options := &InstanceReq{
+	options := &InstanceCreateReq{
 		IPXEChainURL:    "test.org",
 		ISOID:           "dev-preview-abc123",
 		ScriptID:        "213",

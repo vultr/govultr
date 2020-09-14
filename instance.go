@@ -13,9 +13,9 @@ const instancePath = "/v2/instances"
 // InstanceService is the interface to interact with the instance endpoints on the Vultr API
 // Link: https://www.vultr.com/api/v2/#tag/instances
 type InstanceService interface {
-	Create(ctx context.Context, instanceReq *InstanceReq) (*Instance, error)
+	Create(ctx context.Context, instanceReq *InstanceCreateReq) (*Instance, error)
 	Get(ctx context.Context, instanceID string) (*Instance, error)
-	Update(ctx context.Context, instanceID string, instanceReq *InstanceReq) error
+	Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) error
 	Delete(ctx context.Context, instanceID string) error
 	List(ctx context.Context, options *ListOptions) ([]Instance, *Meta, error)
 
@@ -182,8 +182,8 @@ type UserData struct {
 	Data string `json:"data"`
 }
 
-// InstanceReq
-type InstanceReq struct {
+// InstanceCreateReq
+type InstanceCreateReq struct {
 	Region               string   `json:"region,omitempty"`
 	Plan                 string   `json:"plan,omitempty"`
 	UpgradePlan          string   `json:"upgrade_plan,omitempty"`
@@ -200,7 +200,6 @@ type InstanceReq struct {
 	EnableIPv6           bool     `json:"enable_ipv6,omitempty"`
 	EnablePrivateNetwork bool     `json:"enable_private_network,omitempty"`
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
-	DetachPrivateNetwork []string `json:"detach_private_network,omitempty"`
 	SSHKey               []string `json:"sshkey_id,omitempty"`
 	Backups              bool     `json:"backups,omitempty"`
 	DDOSProtection       bool     `json:"ddos_protection,omitempty"`
@@ -209,8 +208,26 @@ type InstanceReq struct {
 	ActivationEmail      bool     `json:"activation_email,omitempty"`
 }
 
+// InstanceReq
+type InstanceUpdateReq struct {
+	//UpgradePlan          string   `json:"upgrade_plan,omitempty"`
+	Label                string   `json:"label,omitempty"`
+	Tag                  string   `json:"tag,omitempty"`
+	OsID                 int      `json:"os_id,omitempty"`
+	ISOID                string   `json:"iso_id,omitempty"`
+	AppID                int      `json:"app_id,omitempty"`
+	EnableIPv6           bool     `json:"enable_ipv6,omitempty"`
+	EnablePrivateNetwork bool     `json:"enable_private_network,omitempty"`
+	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
+	DetachPrivateNetwork []string `json:"detach_private_network,omitempty"`
+	Backups              *bool    `json:"backups,omitempty"`
+	DDOSProtection       *bool    `json:"ddos_protection"`
+	UserData             string   `json:"user_data,omitempty"`
+	FirewallGroupID      string   `json:"firewall_group_id,omitempty"`
+}
+
 // Create will create the server with the given parameters
-func (i *InstanceServiceHandler) Create(ctx context.Context, instanceReq *InstanceReq) (*Instance, error) {
+func (i *InstanceServiceHandler) Create(ctx context.Context, instanceReq *InstanceCreateReq) (*Instance, error) {
 	uri := fmt.Sprintf("%s", instancePath)
 
 	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, instanceReq)
@@ -244,7 +261,7 @@ func (i *InstanceServiceHandler) Get(ctx context.Context, instanceID string) (*I
 }
 
 // Update will update the server with the given parameters
-func (i *InstanceServiceHandler) Update(ctx context.Context, instanceID string, instanceReq *InstanceReq) error {
+func (i *InstanceServiceHandler) Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) error {
 	uri := fmt.Sprintf("%s/%s", instancePath, instanceID)
 
 	req, err := i.client.NewRequest(ctx, http.MethodPatch, uri, instanceReq)
@@ -752,4 +769,10 @@ func (i *InstanceServiceHandler) GetUserData(ctx context.Context, instanceID str
 	}
 
 	return userData.UserData, nil
+}
+
+func Bool(v bool) *bool {
+	p := new(bool)
+	*p = v
+	return p
 }
