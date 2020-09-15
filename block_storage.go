@@ -30,14 +30,14 @@ type BlockStorageServiceHandler struct {
 
 // BlockStorage represents Vultr Block-Storage
 type BlockStorage struct {
-	ID                 string `json:"id"`
-	Cost               int    `json:"cost"`
-	Status             string `json:"status"`
-	SizeGB             int    `json:"size_gb"`
-	Region             string `json:"region"`
-	DateCreated        string `json:"date_created"`
-	AttachedToInstance string `json:"attached_to_instance"`
-	Label              string `json:"label"`
+	ID                 string  `json:"id"`
+	Cost               float32 `json:"cost"`
+	Status             string  `json:"status"`
+	SizeGB             int     `json:"size_gb"`
+	Region             string  `json:"region"`
+	DateCreated        string  `json:"date_created"`
+	AttachedToInstance string  `json:"attached_to_instance"`
+	Label              string  `json:"label"`
 }
 
 // BlockStorageReq
