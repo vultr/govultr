@@ -210,7 +210,7 @@ type InstanceCreateReq struct {
 
 // InstanceReq
 type InstanceUpdateReq struct {
-	//UpgradePlan          string   `json:"upgrade_plan,omitempty"`
+	Plan                 string   `json:"plan,omitempty"`
 	Label                string   `json:"label,omitempty"`
 	Tag                  string   `json:"tag,omitempty"`
 	OsID                 int      `json:"os_id,omitempty"`
