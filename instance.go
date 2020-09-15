@@ -200,7 +200,7 @@ type InstanceCreateReq struct {
 	EnableIPv6           bool     `json:"enable_ipv6,omitempty"`
 	EnablePrivateNetwork bool     `json:"enable_private_network,omitempty"`
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
-	SSHKey               []string `json:"sshkey_id,omitempty"`
+	SSHKeys              []string `json:"sshkey_id,omitempty"`
 	Backups              bool     `json:"backups,omitempty"`
 	DDOSProtection       bool     `json:"ddos_protection,omitempty"`
 	UserData             string   `json:"user_data,omitempty"`
@@ -214,7 +214,6 @@ type InstanceUpdateReq struct {
 	Label                string   `json:"label,omitempty"`
 	Tag                  string   `json:"tag,omitempty"`
 	OsID                 int      `json:"os_id,omitempty"`
-	ISOID                string   `json:"iso_id,omitempty"`
 	AppID                int      `json:"app_id,omitempty"`
 	EnableIPv6           bool     `json:"enable_ipv6,omitempty"`
 	EnablePrivateNetwork bool     `json:"enable_private_network,omitempty"`
