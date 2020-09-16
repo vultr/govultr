@@ -15,12 +15,12 @@ func TestDomainRecordsServiceHandler_Create(t *testing.T) {
 		response := `{"record":{"id":"dev-preview-abc123","type":"A","name":"www","data":"127.0.0.1","priority":0,"ttl":300}}`
 		fmt.Fprint(writer, response)
 	})
-
+	p := 300
 	r := &DomainRecordReq{
 		Name:     "www",
 		Type:     "A",
 		Data:     "127.0.0.1",
-		Priority: 300,
+		Priority: &p,
 	}
 	record, err := client.DomainRecord.Create(ctx, "vultr.com", r)
 	if err != nil {
@@ -76,12 +76,13 @@ func TestDomainRecordsServiceHandler_Update(t *testing.T) {
 	mux.HandleFunc("/v2/domains/vultr.com/records/abc123", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
+	p := 10
 	r := &DomainRecordReq{
 		Name:     "*",
 		Type:     "A",
 		Data:     "127.0.0.1",
 		TTL:      1200,
-		Priority: 10,
+		Priority: &p,
 	}
 	err := client.DomainRecord.Update(ctx, "vultr.com", "abc123", r)
 	if err != nil {

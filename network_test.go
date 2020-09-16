@@ -11,7 +11,7 @@ func TestNetworkServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/networks", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/private-networks", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
 			"network": {
@@ -57,7 +57,7 @@ func TestNetworkServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/networks/net539626f0798d7", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/private-networks/net539626f0798d7", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
@@ -72,7 +72,7 @@ func TestNetworkServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/networks", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/private-networks", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
 			"networks": [{

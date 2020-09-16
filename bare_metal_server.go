@@ -54,7 +54,7 @@ type BareMetalServer struct {
 	Plan            string   `json:"plan"`
 	V6Network       string   `json:"v6_network"`
 	V6MainIP        string   `json:"v6_main_ip"`
-	V6Subnet        int      `json:"v6_subnet"`
+	V6NetworkSize   int      `json:"v6_network_size"`
 	Label           string   `json:"label"`
 	Tag             string   `json:"tag"`
 	OsID            int      `json:"os_id"`
@@ -69,12 +69,12 @@ type BareMetalReq struct {
 	OsID            int      `json:"os_id,omitempty"`
 	StartupScriptID string   `json:"script_id,omitempty"`
 	SnapshotID      string   `json:"snapshot_id,omitempty"`
-	EnableIPv6      string   `json:"enable_ipv6,omitempty"`
+	EnableIPv6      bool     `json:"enable_ipv6,omitempty"`
 	Label           string   `json:"label,omitempty"`
 	SSHKeyIDs       []string `json:"sshkey_id,omitempty"`
 	AppID           int      `json:"app_id,omitempty"`
 	UserData        string   `json:"user_data,omitempty"`
-	NotifyActivate  string   `json:"notify_activate,omitempty"`
+	ActivationEmail bool     `json:"activation_email,omitempty"`
 	Hostname        string   `json:"hostname,omitempty"`
 	Tag             string   `json:"tag,omitempty"`
 	ReservedIPv4    string   `json:"reserved_ipv4,omitempty"`

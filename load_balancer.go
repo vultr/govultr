@@ -37,7 +37,7 @@ type LoadBalancer struct {
 	Status          string           `json:"status,omitempty"`
 	IPV4            string           `json:"ipv4,omitempty"`
 	IPV6            string           `json:"ipv6,omitempty"`
-	Instances       []int            `json:"instances,omitempty"`
+	Instances       []string         `json:"instances,omitempty"`
 	HealthCheck     *HealthCheck     `json:"health_check,omitempty"`
 	GenericInfo     *GenericInfo     `json:"generic_info,omitempty"`
 	SSLInfo         bool             `json:"has_ssl,omitempty"`
@@ -48,19 +48,19 @@ type LoadBalancer struct {
 type LoadBalancerReq struct {
 	Region             string           `json:"region,omitempty"`
 	Label              string           `json:"label,omitempty"`
-	Instances          []int            `json:"instances,omitempty"`
+	Instances          []string         `json:"instances"`
 	HealthCheck        *HealthCheck     `json:"health_check,omitempty"`
 	StickySessions     *StickySessions  `json:"sticky_session,omitempty"`
 	ForwardingRules    []ForwardingRule `json:"forwarding_rules,omitempty"`
 	SSL                *SSL             `json:"ssl,omitempty"`
 	SSLRedirect        bool             `json:"ssl_redirect,omitempty"`
-	ProxyProtocol      string           `json:"proxy_protocol,omitempty"`
+	ProxyProtocol      bool             `json:"proxy_protocol,omitempty"`
 	BalancingAlgorithm string           `json:"balancing_algorithm,omitempty"`
 }
 
 // InstanceList represents instances that are attached to your load balancer
 type InstanceList struct {
-	InstanceList []int
+	InstanceList []string
 }
 
 // HealthCheck represents your health check configuration for your load balancer.
@@ -79,7 +79,7 @@ type GenericInfo struct {
 	BalancingAlgorithm string          `json:"balancing_algorithm,omitempty"`
 	SSLRedirect        bool            `json:"ssl_redirect,omitempty"`
 	StickySessions     *StickySessions `json:"sticky_sessions,omitempty"`
-	ProxyProtocol      string          `json:"proxy_protocol,omitempty"`
+	ProxyProtocol      bool            `json:"proxy_protocol,omitempty"`
 }
 
 // StickySessions represents cookie for your load balancer

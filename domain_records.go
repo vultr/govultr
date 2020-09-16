@@ -39,7 +39,7 @@ type DomainRecordReq struct {
 	Type     string `json:"type,omitempty"`
 	Data     string `json:"data,omitempty"`
 	TTL      int    `json:"ttl,omitempty"`
-	Priority int    `json:"priority,omitempty"`
+	Priority *int   `json:"priority,omitempty"`
 }
 
 type domainRecordsBase struct {

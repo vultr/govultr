@@ -11,7 +11,7 @@ import (
 // SnapshotService is the interface to interact with Snapshot endpoints on the Vultr API
 type SnapshotService interface {
 	Create(ctx context.Context, snapshotReq *SnapshotReq) (*Snapshot, error)
-	CreateFromURL(ctx context.Context, snapshotURLReq SnapshotURLReq) (*Snapshot, error)
+	CreateFromURL(ctx context.Context, snapshotURLReq *SnapshotURLReq) (*Snapshot, error)
 	Get(ctx context.Context, snapshotID string) (*Snapshot, error)
 	Delete(ctx context.Context, snapshotID string) error
 	List(ctx context.Context, options *ListOptions) ([]Snapshot, *Meta, error)
@@ -35,7 +35,7 @@ type Snapshot struct {
 
 // SnapshotReq
 type SnapshotReq struct {
-	InstanceID  int    `json:"instance_id,omitempty"`
+	InstanceID  string `json:"instance_id,omitempty"`
 	Description string `json:"description,omitempty"`
 }
 
@@ -71,7 +71,7 @@ func (s *SnapshotServiceHandler) Create(ctx context.Context, snapshotReq *Snapsh
 }
 
 // CreateFromURL will create a snapshot based on an image iso from a URL you provide
-func (s *SnapshotServiceHandler) CreateFromURL(ctx context.Context, snapshotURLReq SnapshotURLReq) (*Snapshot, error) {
+func (s *SnapshotServiceHandler) CreateFromURL(ctx context.Context, snapshotURLReq *SnapshotURLReq) (*Snapshot, error) {
 	uri := "/v2/snapshots/create-from-url"
 
 	req, err := s.Client.NewRequest(ctx, http.MethodPost, uri, snapshotURLReq)
