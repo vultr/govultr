@@ -531,7 +531,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 		Hostname:        "hostname-3000",
 		Tag:             "tagger",
 		Label:           "label-extreme",
-		SSHKeys:          []string{"dev-preview-abc123", "dev-preview-abc124"},
+		SSHKeys:         []string{"dev-preview-abc123", "dev-preview-abc124"},
 		ReservedIPv4:    "63.209.35.79",
 		FirewallGroupID: "1234",
 		AppID:           1,
