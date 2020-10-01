@@ -106,7 +106,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	options := &BareMetalReq{
+	options := &BareMetalCreate{
 		StartupScriptID: "1",
 		Region:          "ewr",
 		Plan:            "vbm-4c-32gb",
@@ -164,7 +164,7 @@ func TestBareMetalServerServiceHandler_Update(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	options := &BareMetalReq{
+	options := &BareMetalUpdate{
 		Label: "my new label",
 	}
 
