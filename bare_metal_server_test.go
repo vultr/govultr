@@ -429,3 +429,24 @@ func TestBareMetalServerServiceHandler_Reinstall(t *testing.T) {
 		t.Errorf("BareMetalServer.Reinstall returned %+v, expected %+v", err, nil)
 	}
 }
+
+func TestBareMetalServerServiceHandler_GetUserData(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123/user-data", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"user_data": {"data" : "ZWNobyBIZWxsbyBXb3JsZA=="}}`
+		fmt.Fprint(writer, response)
+	})
+
+	userData, err := client.BareMetalServer.GetUserData(ctx, "dev-preview-abc123")
+	if err != nil {
+		t.Errorf("BareMetalServer.GetUserData return %+v ", err)
+	}
+
+	expected := &UserData{Data: "ZWNobyBIZWxsbyBXb3JsZA=="}
+
+	if !reflect.DeepEqual(userData, expected) {
+		t.Errorf("BareMetalServer.GetUserData returned %+v, expected %+v", userData, expected)
+	}
+}
