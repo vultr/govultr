@@ -177,17 +177,3 @@ func TestBlockStorageServiceHandler_Detach(t *testing.T) {
 		t.Errorf("BlockStorage.Detach returned %+v, expected %+v", err, nil)
 	}
 }
-
-func TestBlockStorageServiceHandler_Resize(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v2/blocks/123456/resize", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
-
-	err := client.BlockStorage.Resize(ctx, "123456", 50)
-	if err != nil {
-		t.Errorf("BlockStorage.Resize returned %+v, expected %+v", err, nil)
-	}
-}
