@@ -17,8 +17,8 @@ type ReservedIPService interface {
 	Delete(ctx context.Context, id string) error
 	List(ctx context.Context, options *ListOptions) ([]ReservedIP, *Meta, error)
 
-	Convert(ctx context.Context, ripConvert *ReservedIPReq) (*ReservedIP, error)
-	Attach(ctx context.Context, id string, ripAttach *ReservedIPReq) error
+	Convert(ctx context.Context, ip string) (*ReservedIP, error)
+	Attach(ctx context.Context, id, instance string) error
 	Detach(ctx context.Context, id string) error
 }
 
@@ -125,9 +125,9 @@ func (r *ReservedIPServiceHandler) List(ctx context.Context, options *ListOption
 }
 
 // Convert an existing IP on a subscription to a reserved IP.
-func (r *ReservedIPServiceHandler) Convert(ctx context.Context, ripConvert *ReservedIPReq) (*ReservedIP, error) {
+func (r *ReservedIPServiceHandler) Convert(ctx context.Context, ip string) (*ReservedIP, error) {
 	uri := fmt.Sprintf("%s/convert", ripPath)
-	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, ripConvert)
+	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, ip)
 
 	if err != nil {
 		return nil, err
@@ -142,9 +142,9 @@ func (r *ReservedIPServiceHandler) Convert(ctx context.Context, ripConvert *Rese
 }
 
 // Attach a reserved IP to an existing subscription
-func (r *ReservedIPServiceHandler) Attach(ctx context.Context, id string, ripAttach *ReservedIPReq) error {
+func (r *ReservedIPServiceHandler) Attach(ctx context.Context, id, instance string) error {
 	uri := fmt.Sprintf("%s/%s/attach", ripPath, id)
-	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, ripAttach)
+	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, instance)
 	if err != nil {
 		return err
 	}
