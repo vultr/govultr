@@ -43,7 +43,11 @@ func TestReservedIPServiceHandler_Convert(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	ip, err := client.ReservedIP.Convert(ctx, "111.111.111.111")
+	options := &ReservedIPConvertReq{
+		IPAddress: "111.111.111.111",
+		Label:     "my reserved ip",
+	}
+	ip, err := client.ReservedIP.Convert(ctx, options)
 
 	if err != nil {
 		t.Errorf("ReservedIP.Convert returned %+v, expected %+v", err, nil)
