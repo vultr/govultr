@@ -45,7 +45,7 @@ func TestReservedIPServiceHandler_Convert(t *testing.T) {
 
 	options := &ReservedIPConvertReq{
 		IPAddress: "111.111.111.111",
-		Label:     "my reserved ip",
+		Label:     "my first reserved ip",
 	}
 	ip, err := client.ReservedIP.Convert(ctx, options)
 
