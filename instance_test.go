@@ -12,7 +12,7 @@ func TestServerServiceHandler_GetBackupSchedule(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/instances/dev-preview-abc123/backup-schedule", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"backup_schedule":{"enabled": true,"type": "weekly","next_run_utc": "2016-05-07 08:00:00","hour": 8,"dow": 6,"dom": 0}}`
+		response := `{"backup_schedule":{"enabled": true,"type": "weekly","next_scheduled_time_utc": "2016-05-07 08:00:00","hour": 8,"dow": 6,"dom": 0}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -40,7 +40,7 @@ func TestServerServiceHandler_SetBackupSchedule(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/instances/dev-preview-abc123/backup-schedule", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"backup_schedule":{"enabled": true,"type": "weekly","next_run_utc": "2016-05-07 08:00:00","hour": 22,"dow": 2,"dom": 3}}`
+		response := `{"backup_schedule":{"enabled": true,"type": "weekly","next_scheduled_time_utc": "2016-05-07 08:00:00","hour": 22,"dow": 2,"dom": 3}}`
 		fmt.Fprint(writer, response)
 	})
 
