@@ -16,12 +16,7 @@ func TestReservedIPServiceHandler_Attach(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	options := &ReservedIPReq{
-		InstanceID: "1234",
-	}
-	err := client.ReservedIP.Attach(ctx, "12345", options)
-
-	if err != nil {
+	if err := client.ReservedIP.Attach(ctx, "12345", "1234"); err != nil {
 		t.Errorf("ReservedIP.Attach returned %+v, expected %+v", err, nil)
 	}
 }
@@ -48,11 +43,10 @@ func TestReservedIPServiceHandler_Convert(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	options := &ReservedIPReq{
-		IPAddress:  "111.111.111.111",
-		InstanceID: "1234",
+	options := &ReservedIPConvertReq{
+		IPAddress: "111.111.111.111",
+		Label:     "my first reserved ip",
 	}
-
 	ip, err := client.ReservedIP.Convert(ctx, options)
 
 	if err != nil {
