@@ -61,7 +61,7 @@ func TestRegionServiceHandler_Availability(t *testing.T) {
 		t.Errorf("Region.Availability returned error: %v", err)
 	}
 
-	expected := &planAvailability{AvailablePlans: []string{"vc2-1c-1gb", "vc2-1c-2gb", "vc2-2c-4gb"}}
+	expected := &PlanAvailability{AvailablePlans: []string{"vc2-1c-1gb", "vc2-1c-2gb", "vc2-2c-4gb"}}
 	if !reflect.DeepEqual(region, expected) {
 		t.Errorf("Region.Availability returned %+v, expected %+v", region, expected)
 	}
