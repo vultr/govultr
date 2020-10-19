@@ -31,6 +31,8 @@ type BareMetalServerService interface {
 	MassStart(ctx context.Context, serverList []string) error
 	MassHalt(ctx context.Context, serverList []string) error
 	MassReboot(ctx context.Context, serverList []string) error
+
+	GetUpgrades(ctx context.Context, serverID string) (*Upgrades, error)
 }
 
 // BareMetalServerServiceHandler handles interaction with the bare metal methods for the Vultr API
@@ -373,4 +375,20 @@ func (b *BareMetalServerServiceHandler) MassReboot(ctx context.Context, serverLi
 	}
 
 	return nil
+}
+
+// GetUpgrades
+func (i *BareMetalServerServiceHandler) GetUpgrades(ctx context.Context, serverID string) (*Upgrades, error) {
+	uri := fmt.Sprintf("%s/%s/upgrades", bmPath, serverID)
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	upgrades := new(upgradeBase)
+	if err = i.client.DoWithContext(ctx, req, upgrades); err != nil {
+		return nil, err
+	}
+
+	return upgrades.Upgrades, nil
 }

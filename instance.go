@@ -57,6 +57,8 @@ type InstanceService interface {
 	DefaultReverseIPv4(ctx context.Context, instanceID, ip string) error
 
 	GetUserData(ctx context.Context, instanceID string) (*UserData, error)
+
+	GetUpgrades(ctx context.Context, instanceID string) (*Upgrades, error)
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -180,6 +182,15 @@ type userDataBase struct {
 
 type UserData struct {
 	Data string `json:"data"`
+}
+
+type upgradeBase struct {
+	Upgrades *Upgrades `json:"upgrades"`
+}
+type Upgrades struct {
+	Applications []Application `json:"applications,omitempty"`
+	OS           []OS          `json:"os,omitempty"`
+	Plans        []string      `json:"plans,omitempty"`
 }
 
 // InstanceCreateReq
@@ -768,6 +779,22 @@ func (i *InstanceServiceHandler) GetUserData(ctx context.Context, instanceID str
 	}
 
 	return userData.UserData, nil
+}
+
+// GetUpgrades
+func (i *InstanceServiceHandler) GetUpgrades(ctx context.Context, instanceID string) (*Upgrades, error) {
+	uri := fmt.Sprintf("%s/%s/upgrades", instancePath, instanceID)
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	upgrades := new(upgradeBase)
+	if err = i.client.DoWithContext(ctx, req, upgrades); err != nil {
+		return nil, err
+	}
+
+	return upgrades.Upgrades, nil
 }
 
 func Bool(v bool) *bool {
