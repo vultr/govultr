@@ -765,3 +765,66 @@ func TestServerServiceHandler_GetServer(t *testing.T) {
 		t.Errorf("Instance.GetServer returned %+v, expected %+v", server, expected)
 	}
 }
+
+func TestInstanceServiceHandler_GetUpgrades(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/instances/dev-preview-abc123/upgrades", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{
+   "upgrades":{
+      "os":[
+         {
+            "id":127,
+            "name":"CentOS 6 x64",
+            "arch":"x64",
+            "family":"centos"
+         }
+      ],
+      "applications":[
+         {
+            "id":1,
+            "name":"LEMP",
+            "short_name":"lemp",
+            "deploy_name":"LEMP on CentOS 6"
+         }
+      ],
+      "plans":[
+         "vc2-2c-4gb"
+      ]
+   }
+}`
+		fmt.Fprint(writer, response)
+	})
+
+	server, err := client.Instance.GetUpgrades(ctx, "dev-preview-abc123")
+	if err != nil {
+		t.Errorf("Instance.GetUpgrades returned %+v", err)
+	}
+
+	expected := &Upgrades{
+		Applications: []Application{
+			{
+				ID:         1,
+				Name:       "LEMP",
+				ShortName:  "lemp",
+				DeployName: "LEMP on CentOS 6",
+			},
+		},
+		OS: []OS{
+			{
+				ID:     127,
+				Name:   "CentOS 6 x64",
+				Arch:   "x64",
+				Family: "centos",
+			},
+		},
+		Plans: []string{
+			"vc2-2c-4gb",
+		},
+	}
+
+	if !reflect.DeepEqual(server, expected) {
+		t.Errorf("Instance.GetUpgrades returned %+v, expected %+v", server, expected)
+	}
+}
