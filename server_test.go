@@ -790,7 +790,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 		EnableIPV6:           true,
 		EnablePrivateNetwork: true,
 		AutoBackups:          true,
-		UserData:             "uno-dos-tres",
+		UserData:             "dW5vLWRvcy10cmVzCg==",
 		NotifyActivate:       true,
 		DDOSProtection:       true,
 		SnapshotID:           "12ab",
