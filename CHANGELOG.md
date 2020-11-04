@@ -1,6 +1,10 @@
 # Change Log
 
-## [v1.1.0](https://github.com/vultr/govultr/compare/v1.0.0..v1.1.0) (2020-10-03)
+## [v1.1.1](https://github.com/vultr/govultr/compare/v1.1.0..v1.1.1) (2020-11-04)
+### Fix
+* v1.1.0 release was tagged on the wrong branch. This patch release resolves the broken v1.1.0 release.
+
+## [v1.1.0](https://github.com/vultr/govultr/compare/v1.0.0..v1.1.0) (2020-11-03)
 ### Breaking Changes
 * Servers: Create userData param should already be base64 encoded. This call will no longer encode supplied string. [#100](https://github.com/vultr/govultr/pull/100)
 * BareMetalServer: Create userData param should already be base64 encoded. This call will no longer encode supplied string. [#100](https://github.com/vultr/govultr/pull/100)
