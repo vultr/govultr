@@ -161,16 +161,69 @@ func TestBareMetalServerServiceHandler_Update(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
+		response := `
+			{
+				"bare_metal": {
+					"id": "900000",
+					"os": "CentOS 6 x64",
+					"ram": "65536 MB",
+					"disk": "2x 240 GB SSD",
+					"main_ip": "203.0.113.10",
+					"cpu_count": 1,
+					"region": "ewr",
+					"default_password": "ab81u!ryranq",
+					"date_created": "2017-04-12 18:45:41",
+					"status": "active",
+					"netmask_v4": "255.255.255.0",
+					"gateway_v4": "203.0.113.1",
+					"plan": "vbm-4c-32gb",
+					"v6_network": "2001:DB8:9000::",
+					"v6_main_ip": "2001:DB8:9000::100",
+					"v6_network_size": 64,
+					"label": "my new label",
+					"tag": "my tag",
+					"os_id": 127,
+					"app_id": 0
+				}
+			}
+		`
+		fmt.Fprint(writer, response)
 	})
 
 	options := &BareMetalUpdate{
 		Label: "my new label",
 	}
 
-	err := client.BareMetalServer.Update(ctx, "dev-preview-abc123", options)
+	bm, err := client.BareMetalServer.Update(ctx, "dev-preview-abc123", options)
 	if err != nil {
 		t.Errorf("BareMetal.Update returned %+v, expected %+v", err, nil)
+	}
+
+	expected := &BareMetalServer{
+		ID:              "900000",
+		Os:              "CentOS 6 x64",
+		RAM:             "65536 MB",
+		Disk:            "2x 240 GB SSD",
+		MainIP:          "203.0.113.10",
+		CPUCount:        1,
+		DefaultPassword: "ab81u!ryranq",
+		DateCreated:     "2017-04-12 18:45:41",
+		Status:          "active",
+		NetmaskV4:       "255.255.255.0",
+		GatewayV4:       "203.0.113.1",
+		Plan:            "vbm-4c-32gb",
+		V6Network:       "2001:DB8:9000::",
+		V6MainIP:        "2001:DB8:9000::100",
+		V6NetworkSize:   64,
+		Label:           "my new label",
+		Tag:             "my tag",
+		OsID:            127,
+		Region:          "ewr",
+		AppID:           0,
+	}
+
+	if !reflect.DeepEqual(bm, expected) {
+		t.Errorf("BareMetalServer.Update returned %+v, expected %+v", bm, expected)
 	}
 }
 
@@ -420,13 +473,65 @@ func TestBareMetalServerServiceHandler_Reinstall(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/bare-metals/900000/reinstall", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
+		response := `
+			{
+				"bare_metal": {
+					"id": "900000",
+					"os": "CentOS 6 x64",
+					"ram": "65536 MB",
+					"disk": "2x 240 GB SSD",
+					"main_ip": "203.0.113.10",
+					"cpu_count": 1,
+					"region": "ewr",
+					"default_password": "ab81u!ryranq",
+					"date_created": "2017-04-12 18:45:41",
+					"status": "active",
+					"netmask_v4": "255.255.255.0",
+					"gateway_v4": "203.0.113.1",
+					"plan": "vbm-4c-32gb",
+					"v6_network": "2001:DB8:9000::",
+					"v6_main_ip": "2001:DB8:9000::100",
+					"v6_network_size": 64,
+					"label": "go-bm-test",
+					"tag": "my tag",
+					"os_id": 127,
+					"app_id": 0
+				}
+			}
+		`
+		fmt.Fprint(writer, response)
 	})
 
-	err := client.BareMetalServer.Reinstall(ctx, "900000")
-
+	bm, err := client.BareMetalServer.Reinstall(ctx, "900000")
 	if err != nil {
 		t.Errorf("BareMetalServer.Reinstall returned %+v, expected %+v", err, nil)
+	}
+
+	expected := &BareMetalServer{
+		ID:              "900000",
+		Os:              "CentOS 6 x64",
+		RAM:             "65536 MB",
+		Disk:            "2x 240 GB SSD",
+		MainIP:          "203.0.113.10",
+		CPUCount:        1,
+		DefaultPassword: "ab81u!ryranq",
+		DateCreated:     "2017-04-12 18:45:41",
+		Status:          "active",
+		NetmaskV4:       "255.255.255.0",
+		GatewayV4:       "203.0.113.1",
+		Plan:            "vbm-4c-32gb",
+		V6Network:       "2001:DB8:9000::",
+		V6MainIP:        "2001:DB8:9000::100",
+		V6NetworkSize:   64,
+		Label:           "go-bm-test",
+		Tag:             "my tag",
+		OsID:            127,
+		Region:          "ewr",
+		AppID:           0,
+	}
+
+	if !reflect.DeepEqual(bm, expected) {
+		t.Errorf("BareMetalServer.Reinstall returned %+v, expected %+v", bm, expected)
 	}
 }
 

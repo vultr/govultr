@@ -14,7 +14,7 @@ const bmPath = "/v2/bare-metals"
 type BareMetalServerService interface {
 	Create(ctx context.Context, bmCreate *BareMetalCreate) (*BareMetalServer, error)
 	Get(ctx context.Context, serverID string) (*BareMetalServer, error)
-	Update(ctx context.Context, serverID string, bmReq *BareMetalUpdate) error
+	Update(ctx context.Context, serverID string, bmReq *BareMetalUpdate) (*BareMetalServer, error)
 	Delete(ctx context.Context, serverID string) error
 	List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, error)
 
@@ -26,7 +26,7 @@ type BareMetalServerService interface {
 
 	Halt(ctx context.Context, serverID string) error
 	Reboot(ctx context.Context, serverID string) error
-	Reinstall(ctx context.Context, serverID string) error
+	Reinstall(ctx context.Context, serverID string) (*BareMetalServer, error)
 
 	MassStart(ctx context.Context, serverList []string) error
 	MassHalt(ctx context.Context, serverList []string) error
@@ -142,18 +142,19 @@ func (b *BareMetalServerServiceHandler) Get(ctx context.Context, serverID string
 }
 
 // Update will update the given bare metal. Empty values are ignored
-func (b *BareMetalServerServiceHandler) Update(ctx context.Context, serverID string, bmReq *BareMetalUpdate) error {
+func (b *BareMetalServerServiceHandler) Update(ctx context.Context, serverID string, bmReq *BareMetalUpdate) (*BareMetalServer, error) {
 	uri := fmt.Sprintf("%s/%s", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPatch, uri, bmReq)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
+	bms := new(bareMetalBase)
+	if err = b.client.DoWithContext(ctx, req, bms); err != nil {
+		return nil, err
 	}
 
-	return nil
+	return bms.BareMetal, nil
 }
 
 // Delete a bare metal server.
@@ -310,18 +311,19 @@ func (b *BareMetalServerServiceHandler) Reboot(ctx context.Context, serverID str
 
 // Reinstall the operating system on a bare metal server.
 // All data will be permanently lost, but the IP address will remain the same. There is no going back from this call.
-func (b *BareMetalServerServiceHandler) Reinstall(ctx context.Context, serverID string) error {
+func (b *BareMetalServerServiceHandler) Reinstall(ctx context.Context, serverID string) (*BareMetalServer, error) {
 	uri := fmt.Sprintf("%s/%s/reinstall", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
+	bms := new(bareMetalBase)
+	if err = b.client.DoWithContext(ctx, req, bms); err != nil {
+		return nil, err
 	}
 
-	return nil
+	return bms.BareMetal, nil
 }
 
 // Start will start a list of bare metal servers the machine is already running, it will be restarted.
