@@ -56,6 +56,7 @@ type BareMetalServer struct {
 	V6Network       string   `json:"v6_network"`
 	V6MainIP        string   `json:"v6_main_ip"`
 	V6NetworkSize   int      `json:"v6_network_size"`
+	MacAddress      int      `json:"mac_address"`
 	Label           string   `json:"label"`
 	Tag             string   `json:"tag"`
 	OsID            int      `json:"os_id"`
