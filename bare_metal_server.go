@@ -20,7 +20,7 @@ type BareMetalServerService interface {
 
 	GetBandwidth(ctx context.Context, serverID string) (*Bandwidth, error)
 	GetUserData(ctx context.Context, serverID string) (*UserData, error)
-	GetVNC(ctx context.Context, serverID string) (*VNCUrl, error)
+	GetVNCUrl(ctx context.Context, serverID string) (*VNCUrl, error)
 
 	ListIPv4s(ctx context.Context, serverID string, options *ListOptions) ([]IPv4, *Meta, error)
 	ListIPv6s(ctx context.Context, serverID string, options *ListOptions) ([]IPv6, *Meta, error)
@@ -235,8 +235,8 @@ func (i *BareMetalServerServiceHandler) GetUserData(ctx context.Context, serverI
 	return userData.UserData, nil
 }
 
-// GetVNC gets the vnc url for a given Bare Metal server
-func (b *BareMetalServerServiceHandler) GetVNC(ctx context.Context, serverID string) (*VNCUrl, error) {
+// GetVNCUrl gets the vnc url for a given Bare Metal server
+func (b *BareMetalServerServiceHandler) GetVNCUrl(ctx context.Context, serverID string) (*VNCUrl, error) {
 	uri := fmt.Sprintf("%s/%s/vnc", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {

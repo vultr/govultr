@@ -460,7 +460,7 @@ func TestBareMetalServerServiceHandler_GetVNCUrl(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	vnc, err := client.BareMetalServer.GetVNC(ctx, "dev-preview-abc123")
+	vnc, err := client.BareMetalServer.GetVNCUrl(ctx, "dev-preview-abc123")
 	if err != nil {
 		t.Errorf("BareMetalServer.GetVNCUrl return %+v ", err)
 	}
