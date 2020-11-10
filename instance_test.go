@@ -523,7 +523,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 		ISOID:           "dev-preview-abc123",
 		ScriptID:        "213",
 		EnableIPv6:      true,
-		Backups:         true,
+		Backups:         "enabled",
 		UserData:        "dW5vLWRvcy10cmVz",
 		ActivationEmail: true,
 		DDOSProtection:  true,

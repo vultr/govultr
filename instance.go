@@ -197,7 +197,6 @@ type Upgrades struct {
 type InstanceCreateReq struct {
 	Region               string   `json:"region,omitempty"`
 	Plan                 string   `json:"plan,omitempty"`
-	UpgradePlan          string   `json:"upgrade_plan,omitempty"`
 	Label                string   `json:"label,omitempty"`
 	Tag                  string   `json:"tag,omitempty"`
 	OsID                 int      `json:"os_id,omitempty"`
@@ -212,7 +211,7 @@ type InstanceCreateReq struct {
 	EnablePrivateNetwork bool     `json:"enable_private_network,omitempty"`
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
 	SSHKeys              []string `json:"sshkey_id,omitempty"`
-	Backups              bool     `json:"backups,omitempty"`
+	Backups              string   `json:"backups,omitempty"`
 	DDOSProtection       bool     `json:"ddos_protection,omitempty"`
 	UserData             string   `json:"user_data,omitempty"`
 	ReservedIPv4         string   `json:"reserved_ipv4,omitempty"`
@@ -230,7 +229,7 @@ type InstanceUpdateReq struct {
 	EnablePrivateNetwork bool     `json:"enable_private_network,omitempty"`
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
 	DetachPrivateNetwork []string `json:"detach_private_network,omitempty"`
-	Backups              *bool    `json:"backups,omitempty"`
+	Backups              string   `json:"backups,omitempty"`
 	DDOSProtection       *bool    `json:"ddos_protection"`
 	UserData             string   `json:"user_data,omitempty"`
 	FirewallGroupID      string   `json:"firewall_group_id,omitempty"`
