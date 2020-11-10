@@ -561,3 +561,24 @@ func TestBareMetalServerServiceHandler_GetUserData(t *testing.T) {
 		t.Errorf("BareMetalServer.GetUserData returned %+v, expected %+v", userData, expected)
 	}
 }
+
+func TestBareMetalServerServiceHandler_GetVNCUrl(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123/vnc", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"vnc": {"url" : "https://my.vultr.com/subs/baremetal/novnc/api.php?data=djJ8U3ZUTjBYaE3HaCMy1yZ0paVUh8wOldmbw"}}`
+		fmt.Fprint(writer, response)
+	})
+
+	vnc, err := client.BareMetalServer.GetVNCUrl(ctx, "dev-preview-abc123")
+	if err != nil {
+		t.Errorf("BareMetalServer.GetVNCUrl return %+v ", err)
+	}
+
+	expected := &VNCUrl{Url: "https://my.vultr.com/subs/baremetal/novnc/api.php?data=djJ8U3ZUTjBYaE3HaCMy1yZ0paVUh8wOldmbw"}
+
+	if !reflect.DeepEqual(vnc, expected) {
+		t.Errorf("BareMetalServer.GetVNCUrl returned %+v, expected %+v", vnc, expected)
+	}
+}
