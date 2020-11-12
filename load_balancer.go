@@ -33,6 +33,7 @@ type LoadBalancer struct {
 	ID              string           `json:"id,omitempty"`
 	DateCreated     string           `json:"date_created,omitempty"`
 	Region          string           `json:"region,omitempty"`
+	Location        string           `json:"location,omitempty"`
 	Label           string           `json:"label,omitempty"`
 	Status          string           `json:"status,omitempty"`
 	IPV4            string           `json:"ipv4,omitempty"`
