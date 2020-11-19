@@ -22,7 +22,7 @@ type DomainService interface {
 	GetSoa(ctx context.Context, domain string) (*Soa, error)
 	UpdateSoa(ctx context.Context, domain string, soaReq *Soa) error
 
-	GetDnsSec(ctx context.Context, domain string) ([]string, error)
+	GetDNSSec(ctx context.Context, domain string) ([]string, error)
 }
 
 // DomainServiceHandler handles interaction with the DNS methods for the Vultr API
