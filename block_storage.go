@@ -113,7 +113,7 @@ func (b *BlockStorageServiceHandler) Update(ctx context.Context, blockID string,
 		return err
 	}
 
-	return  b.client.DoWithContext(ctx, req, nil)
+	return b.client.DoWithContext(ctx, req, nil)
 }
 
 // Delete a block storage subscription from your Vultr account

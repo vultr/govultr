@@ -103,7 +103,7 @@ func (n *NetworkServiceHandler) Delete(ctx context.Context, networkID string) er
 		return err
 	}
 
-	return  n.client.DoWithContext(ctx, req, nil)
+	return n.client.DoWithContext(ctx, req, nil)
 }
 
 // List lists all private networks on the current account

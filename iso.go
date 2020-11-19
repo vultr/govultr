@@ -102,7 +102,6 @@ func (i *ISOServiceHandler) Delete(ctx context.Context, isoID string) error {
 		return err
 	}
 
-
 	return i.Client.DoWithContext(ctx, req, nil)
 }
 

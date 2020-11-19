@@ -98,7 +98,7 @@ func (d *DomainRecordsServiceHandler) Delete(ctx context.Context, domain, record
 		return err
 	}
 
-	return  d.client.DoWithContext(ctx, req, nil)
+	return d.client.DoWithContext(ctx, req, nil)
 }
 
 // List will list all the records associated with a particular domain on Vultr.
