@@ -606,7 +606,7 @@ func (i *InstanceServiceHandler) ListIPv4(ctx context.Context, instanceID string
 		return nil, nil, err
 	}
 
-	return ips.IPv4S, ips.Meta, nil
+	return ips.IPv4s, ips.Meta, nil
 }
 
 // DeleteIPv4 address from a given instance.
@@ -639,7 +639,7 @@ func (i *InstanceServiceHandler) ListIPv6(ctx context.Context, instanceID string
 		return nil, nil, err
 	}
 
-	return ips.IPv6S, ips.Meta, nil
+	return ips.IPv6s, ips.Meta, nil
 }
 
 // CreateReverseIPv6 for a given instance.

@@ -273,7 +273,7 @@ func (b *BareMetalServerServiceHandler) ListIPv4s(ctx context.Context, serverID 
 		return nil, nil, err
 	}
 
-	return ipv4.IPv4S, ipv4.Meta, nil
+	return ipv4.IPv4s, ipv4.Meta, nil
 }
 
 // ListIPv6s information of a Bare Metal server.
@@ -298,7 +298,7 @@ func (b *BareMetalServerServiceHandler) ListIPv6s(ctx context.Context, serverID 
 		return nil, nil, err
 	}
 
-	return ipv6.IPv6S, ipv6.Meta, nil
+	return ipv6.IPv6s, ipv6.Meta, nil
 }
 
 // Halt a Bare Metal server.
