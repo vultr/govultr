@@ -639,7 +639,7 @@ func TestBareMetalServerServiceHandler_GetVNCUrl(t *testing.T) {
 		t.Errorf("BareMetalServer.GetVNCUrl return %+v ", err)
 	}
 
-	expected := &VNCUrl{Url: "https://my.vultr.com/subs/baremetal/novnc/api.php?data=djJ8U3ZUTjBYaE3HaCMy1yZ0paVUh8wOldmbw"}
+	expected := &VNCUrl{URL: "https://my.vultr.com/subs/baremetal/novnc/api.php?data=djJ8U3ZUTjBYaE3HaCMy1yZ0paVUh8wOldmbw"}
 
 	if !reflect.DeepEqual(vnc, expected) {
 		t.Errorf("BareMetalServer.GetVNCUrl returned %+v, expected %+v", vnc, expected)

@@ -178,7 +178,7 @@ func TestDNSDomainServiceHandler_DNSSecInfo(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	dnsSec, err := client.Domain.GetDnsSec(ctx, "vultr.com")
+	dnsSec, err := client.Domain.GetDNSSec(ctx, "vultr.com")
 	if err != nil {
 		t.Errorf("Domain.GetDnsSec returned %+v, expected %+v", err, nil)
 	}

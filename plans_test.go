@@ -25,7 +25,7 @@ func TestPlanServiceHandler_List(t *testing.T) {
 		{
 			ID:          "vc2-16c-64gb",
 			VCPUCount:   16,
-			Ram:         65536,
+			RAM:         65536,
 			Disk:        1280,
 			Bandwidth:   10240,
 			MonthlyCost: 320.00,
@@ -69,7 +69,7 @@ func TestPlanServiceHandler_GetBareMetalList(t *testing.T) {
 			CPUCount:    4,
 			CPUModel:    "E3-1270v6",
 			CPUThreads:  8,
-			Ram:         32768,
+			RAM:         32768,
 			Disk:        240,
 			Bandwidth:   5120,
 			MonthlyCost: 300,
