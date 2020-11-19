@@ -1,5 +1,6 @@
 package govultr
 
+// IPv4 struct
 type IPv4 struct {
 	IP      string `json:"ip,omitempty"`
 	Netmask string `json:"netmask,omitempty"`
@@ -8,6 +9,7 @@ type IPv4 struct {
 	Reverse string `json:"reverse,omitempty"`
 }
 
+// IPv6 struct
 type IPv6 struct {
 	IP          string `json:"ip,omitempty"`
 	Network     string `json:"network,omitempty"`
