@@ -16,7 +16,7 @@ func TestIsoServiceHandler_Create(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	isoReq := &ISOReq{Url: "http://centos.com/CentOS-8.1.1911-x86_64-dvd1.iso"}
+	isoReq := &ISOReq{URL: "http://centos.com/CentOS-8.1.1911-x86_64-dvd1.iso"}
 	iso, err := client.ISO.Create(ctx, isoReq)
 	if err != nil {
 		t.Errorf("Iso.Create returned %+v, expected %+v", err, nil)

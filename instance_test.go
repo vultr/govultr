@@ -65,7 +65,7 @@ func TestServerServiceHandler_RestoreBackup(t *testing.T) {
 	})
 
 	restoreReq := &RestoreReq{
-		BackupId: "dev-preview-abc123",
+		BackupID: "dev-preview-abc123",
 	}
 
 	if err := client.Instance.Restore(ctx, "dev-preview-abc123", restoreReq); err != nil {
@@ -548,7 +548,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 		ID:               "dev-preview-abc123",
 		Os:               "CentOS SELinux 8 x64",
 		OsID:             362,
-		Ram:              2048,
+		RAM:              2048,
 		Disk:             60,
 		MainIP:           "123.123.123.123",
 		VCPUCount:        2,
@@ -639,7 +639,7 @@ func TestServerServiceHandler_List(t *testing.T) {
 			ID:               "dev-preview-abc123",
 			Os:               "CentOS SELinux 8 x64",
 			OsID:             362,
-			Ram:              2048,
+			RAM:              2048,
 			Disk:             60,
 			MainIP:           "123.123.123.123",
 			VCPUCount:        2,
@@ -735,7 +735,7 @@ func TestServerServiceHandler_GetServer(t *testing.T) {
 		ID:               "dev-preview-abc123",
 		Os:               "CentOS SELinux 8 x64",
 		OsID:             362,
-		Ram:              2048,
+		RAM:              2048,
 		Disk:             60,
 		MainIP:           "123.123.123.123",
 		VCPUCount:        2,
