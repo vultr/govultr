@@ -16,11 +16,11 @@ func TestUserServiceHandler_Create(t *testing.T) {
 
 		fmt.Fprint(writer, response)
 	})
-
+	api := true
 	userReq := &UserReq{
 		Email:      "example@vultr.com",
 		Name:       "Example User",
-		APIEnabled: true,
+		APIEnabled: &api,
 		Password:   "password",
 	}
 
@@ -131,11 +131,12 @@ func TestUserServiceHandler_Update(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
+	api := true
 	user := &UserReq{
 		Name:       "Example User",
 		Password:   "w1a4dcnst0n!",
 		Email:      "example@vultr.com",
-		APIEnabled: true,
+		APIEnabled: &api,
 		ACL:        []string{"support"},
 	}
 
