@@ -40,7 +40,7 @@ type User struct {
 type UserReq struct {
 	Email      string   `json:"email,omitempty"`
 	Name       string   `json:"name,omitempty"`
-	APIEnabled bool     `json:"api_enabled,omitempty"`
+	APIEnabled *bool     `json:"api_enabled,omitempty"`
 	ACL        []string `json:"acls,omitempty"`
 	Password   string   `json:"password,omitempty"`
 }
