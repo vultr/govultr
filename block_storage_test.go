@@ -156,7 +156,7 @@ func TestBlockStorageServiceHandler_Attach(t *testing.T) {
 
 	attach := &BlockStorageAttach{
 		InstanceID: "1234",
-		Live:       true,
+		Live:       BoolToBoolPtr(true),
 	}
 	err := client.BlockStorage.Attach(ctx, "12345", attach)
 	if err != nil {
@@ -171,7 +171,7 @@ func TestBlockStorageServiceHandler_Detach(t *testing.T) {
 	mux.HandleFunc("/v2/blocks/123456/detach", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
-	detach := &BlockStorageDetach{Live: true}
+	detach := &BlockStorageDetach{Live: BoolToBoolPtr(true)}
 	err := client.BlockStorage.Detach(ctx, "123456", detach)
 	if err != nil {
 		t.Errorf("BlockStorage.Detach returned %+v, expected %+v", err, nil)
