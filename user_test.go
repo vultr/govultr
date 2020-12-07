@@ -34,7 +34,7 @@ func TestUserServiceHandler_Create(t *testing.T) {
 		ID:         "564a1a88947b4",
 		Name:       "Example User",
 		Email:      "example@vultr.com",
-		APIEnabled: true,
+		APIEnabled: BoolToBoolPtr(true),
 		APIKey:     "aaavvvvvvbbbbbb",
 		ACL:        []string{},
 	}
@@ -101,7 +101,7 @@ func TestUserServiceHandler_List(t *testing.T) {
 			ID:         "f255efc9700d9",
 			Name:       "test api",
 			Email:      "newmanapi@vultr.com",
-			APIEnabled: true,
+			APIEnabled: BoolToBoolPtr(true),
 			ACL:        []string{},
 		},
 	}
@@ -164,7 +164,7 @@ func TestUserServiceHandler_Get(t *testing.T) {
 		ID:         "f255efc9c69ac",
 		Name:       "Unit Test",
 		Email:      "test@vultr.com",
-		APIEnabled: true,
+		APIEnabled: BoolToBoolPtr(true),
 		ACL:        []string{},
 	}
 

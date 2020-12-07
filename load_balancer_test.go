@@ -82,7 +82,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 			Region:      "ewr",
 			IPV6:        "2001:DB8:1000::100",
 			IPV4:        "123.123.123.123",
-			SSLInfo:     false,
+			SSLInfo:     BoolToBoolPtr(false),
 			ForwardingRules: []ForwardingRule{
 				{
 					RuleID:           "abcd12345",
@@ -94,8 +94,8 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 			},
 			GenericInfo: &GenericInfo{
 				BalancingAlgorithm: "roundrobin",
-				SSLRedirect:        false,
-				ProxyProtocol:      false,
+				SSLRedirect:        BoolToBoolPtr(false),
+				ProxyProtocol:      BoolToBoolPtr(false),
 				StickySessions: &StickySessions{
 					CookieName: "my-cookie",
 				},
@@ -208,7 +208,7 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 		Region:      "ewr",
 		IPV6:        "2001:DB8:1000::100",
 		IPV4:        "123.123.123.123",
-		SSLInfo:     false,
+		SSLInfo:     BoolToBoolPtr(false),
 		ForwardingRules: []ForwardingRule{
 			{
 				RuleID:           "abcd12345",
@@ -220,8 +220,8 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 		},
 		GenericInfo: &GenericInfo{
 			BalancingAlgorithm: "roundrobin",
-			SSLRedirect:        false,
-			ProxyProtocol:      false,
+			SSLRedirect:        BoolToBoolPtr(false),
+			ProxyProtocol:      BoolToBoolPtr(false),
 			StickySessions: &StickySessions{
 				CookieName: "my-cookie",
 			},
@@ -425,8 +425,8 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 			},
 		},
 		BalancingAlgorithm: "roundrobin",
-		SSLRedirect:        false,
-		ProxyProtocol:      false,
+		SSLRedirect:        BoolToBoolPtr(false),
+		ProxyProtocol:      BoolToBoolPtr(false),
 		HealthCheck: &HealthCheck{
 			Protocol:           "http",
 			Port:               80,
@@ -451,7 +451,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		Region:      "ewr",
 		IPV6:        "2001:DB8:1000::100",
 		IPV4:        "123.123.123.123",
-		SSLInfo:     false,
+		SSLInfo:     BoolToBoolPtr(false),
 		ForwardingRules: []ForwardingRule{
 			{
 				RuleID:           "abcd12345",
@@ -463,8 +463,8 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		},
 		GenericInfo: &GenericInfo{
 			BalancingAlgorithm: "roundrobin",
-			SSLRedirect:        false,
-			ProxyProtocol:      false,
+			SSLRedirect:        BoolToBoolPtr(false),
+			ProxyProtocol:      BoolToBoolPtr(false),
 			StickySessions: &StickySessions{
 				CookieName: "my-cookie",
 			},

@@ -22,7 +22,7 @@ func TestServerServiceHandler_GetBackupSchedule(t *testing.T) {
 	}
 
 	expected := &BackupSchedule{
-		Enabled:             true,
+		Enabled:             BoolToBoolPtr(true),
 		Type:                "weekly",
 		NextScheduleTimeUTC: "2016-05-07 08:00:00",
 		Hour:                8,
@@ -247,7 +247,7 @@ func TestServerServiceHandler_CreateIPv4(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	ipv4, err := client.Instance.CreateIPv4(ctx, "dev-preview-abc123", false)
+	ipv4, err := client.Instance.CreateIPv4(ctx, "dev-preview-abc123", BoolToBoolPtr(false))
 	if err != nil {
 		t.Errorf("Instance.CreateIPv4 returned %+v", err)
 	}
@@ -522,11 +522,11 @@ func TestServerServiceHandler_Create(t *testing.T) {
 		IPXEChainURL:    "test.org",
 		ISOID:           "dev-preview-abc123",
 		ScriptID:        "213",
-		EnableIPv6:      true,
+		EnableIPv6:      BoolToBoolPtr(true),
 		Backups:         "enabled",
 		UserData:        "dW5vLWRvcy10cmVz",
-		ActivationEmail: true,
-		DDOSProtection:  true,
+		ActivationEmail: BoolToBoolPtr(true),
+		DDOSProtection:  BoolToBoolPtr(true),
 		SnapshotID:      "12ab",
 		Hostname:        "hostname-3000",
 		Tag:             "tagger",
