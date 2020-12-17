@@ -541,6 +541,21 @@ func TestBareMetalServerServiceHandler_Reinstall(t *testing.T) {
 	}
 }
 
+func TestBareMetalServerServiceHandler_Start(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/bare-metals/42018b7b-a4e3-4c7e-be74-663afeb142aa/start", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.BareMetalServer.Start(ctx, "42018b7b-a4e3-4c7e-be74-663afeb142aa")
+
+	if err != nil {
+		t.Errorf("BareMetalServer.Start returned %+v, expected %+v", err, nil)
+	}
+}
+
 func TestBareMetalServerServiceHandler_GetUserData(t *testing.T) {
 	setup()
 	defer teardown()
