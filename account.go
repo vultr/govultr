@@ -6,9 +6,8 @@ import (
 )
 
 // AccountService is the interface to interact with Accounts endpoint on the Vultr API
-// Link: https://www.vultr.com/api/#account
 type AccountService interface {
-	GetInfo(ctx context.Context) (*Account, error)
+	Get(ctx context.Context) (*Account, error)
 }
 
 // AccountServiceHandler handles interaction with the account methods for the Vultr API
@@ -16,30 +15,33 @@ type AccountServiceHandler struct {
 	client *Client
 }
 
-// Account represents a Vultr account
-type Account struct {
-	Balance           string `json:"balance"`
-	PendingCharges    string `json:"pending_charges"`
-	LastPaymentDate   string `json:"last_payment_date"`
-	LastPaymentAmount string `json:"last_payment_amount"`
+type accountBase struct {
+	Account *Account `json:"account"`
 }
 
-// GetInfo Vultr account info
-func (a *AccountServiceHandler) GetInfo(ctx context.Context) (*Account, error) {
+// Account represents a Vultr account
+type Account struct {
+	Balance           float32  `json:"balance"`
+	PendingCharges    float32  `json:"pending_charges"`
+	LastPaymentDate   string   `json:"last_payment_date"`
+	LastPaymentAmount float32  `json:"last_payment_amount"`
+	Name              string   `json:"name"`
+	Email             string   `json:"email"`
+	ACL               []string `json:"acls"`
+}
 
-	uri := "/v1/account/info"
+// Get Vultr account info
+func (a *AccountServiceHandler) Get(ctx context.Context) (*Account, error) {
+	uri := "/v2/account"
 	req, err := a.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, err
 	}
 
-	account := new(Account)
-	err = a.client.DoWithContext(ctx, req, account)
-
-	if err != nil {
+	account := new(accountBase)
+	if err = a.client.DoWithContext(ctx, req, account); err != nil {
 		return nil, err
 	}
 
-	return account, nil
+	return account.Account, nil
 }

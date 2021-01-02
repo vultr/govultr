@@ -26,7 +26,7 @@ func setup() {
 	mux = http.NewServeMux()
 	server = httptest.NewServer(mux)
 
-	client = NewClient(nil, "dummy-key")
+	client = NewClient(nil)
 	url, _ := url.Parse(server.URL)
 	client.BaseURL = url
 }
@@ -43,9 +43,9 @@ func TestNewClient(t *testing.T) {
 		t.Errorf("NewClient BaseURL = %v, expected %v", client.BaseURL, server.URL)
 	}
 
-	if client.APIKey.key != "dummy-key" {
-		t.Errorf("NewClient ApiKey = %v, expected %v", client.APIKey.key, "dummy-key")
-	}
+	//if client != "dummy-key" {
+	//	t.Errorf("NewClient ApiKey = %v, expected %v", client.APIKey.key, "dummy-key")
+	//}
 
 	if client.UserAgent != userAgent {
 		t.Errorf("NewClient UserAgent = %v, expected %v", client.UserAgent, userAgent)
@@ -130,7 +130,7 @@ func TestClient_DoWithContextError(t *testing.T) {
 
 	client = NewClient(&http.Client{
 		Transport: errRoundTripper{},
-	}, "dummy-key")
+	})
 
 	req, _ := client.NewRequest(ctx, http.MethodGet, "/", nil)
 
@@ -149,18 +149,15 @@ func TestClient_DoWithContextError(t *testing.T) {
 }
 
 func TestClient_NewRequest(t *testing.T) {
-	c := NewClient(nil, "dum-dum")
+	c := NewClient(nil)
 
 	in := "/unit"
 	out := defaultBase + "/unit"
 
-	inRequest := url.Values{
-		"balance": {"500"},
-	}
-	outRequest := `balance=500`
+	inRequest := RequestBody{"balance": 500}
+	outRequest := `{"balance":500}` + "\n"
 
 	req, _ := c.NewRequest(ctx, http.MethodPost, in, inRequest)
-
 	if req.URL.String() != out {
 		t.Errorf("NewRequest(%v) URL = %v, expected %v", in, req.URL, out)
 	}
@@ -176,12 +173,8 @@ func TestClient_NewRequest(t *testing.T) {
 		t.Errorf("NewRequest() User-Agent = %v, expected %v", userAgent, c.UserAgent)
 	}
 
-	if c.APIKey.key != "dum-dum" {
-		t.Errorf("NewRequest() API-Key = %v, expected %v", c.APIKey.key, "dum-dum")
-	}
-
 	contentType := req.Header.Get("Content-Type")
-	if contentType != "application/x-www-form-urlencoded" {
+	if contentType != "application/json" {
 		t.Errorf("NewRequest() Header Content Type = %v, expected %v", contentType, "application/x-www-form-urlencoded")
 	}
 

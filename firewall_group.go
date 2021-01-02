@@ -2,18 +2,19 @@ package govultr
 
 import (
 	"context"
+	"fmt"
 	"net/http"
-	"net/url"
+
+	"github.com/google/go-querystring/query"
 )
 
 // FirewallGroupService is the interface to interact with the firewall group endpoints on the Vultr API
-// Link: https://www.vultr.com/api/#firewall
 type FirewallGroupService interface {
-	Create(ctx context.Context, description string) (*FirewallGroup, error)
-	Delete(ctx context.Context, groupID string) error
-	List(ctx context.Context) ([]FirewallGroup, error)
+	Create(ctx context.Context, fwGroupReq *FirewallGroupReq) (*FirewallGroup, error)
 	Get(ctx context.Context, groupID string) (*FirewallGroup, error)
-	ChangeDescription(ctx context.Context, groupID, description string) error
+	Update(ctx context.Context, fwGroupID string, fwGroupReq *FirewallGroupReq) error
+	Delete(ctx context.Context, fwGroupID string) error
+	List(ctx context.Context, options *ListOptions) ([]FirewallGroup, *Meta, error)
 }
 
 // FireWallGroupServiceHandler handles interaction with the firewall group methods for the Vultr API
@@ -23,141 +24,107 @@ type FireWallGroupServiceHandler struct {
 
 // FirewallGroup represents a Vultr firewall group
 type FirewallGroup struct {
-	FirewallGroupID string `json:"FIREWALLGROUPID"`
-	Description     string `json:"description"`
-	DateCreated     string `json:"date_created"`
-	DateModified    string `json:"date_modified"`
-	InstanceCount   int    `json:"instance_count"`
-	RuleCount       int    `json:"rule_count"`
-	MaxRuleCount    int    `json:"max_rule_count"`
+	ID            string `json:"id"`
+	Description   string `json:"description"`
+	DateCreated   string `json:"date_created"`
+	DateModified  string `json:"date_modified"`
+	InstanceCount int    `json:"instance_count"`
+	RuleCount     int    `json:"rule_count"`
+	MaxRuleCount  int    `json:"max_rule_count"`
+}
+
+// FirewallGroupReq struct is used to create and update a Firewall Group.
+type FirewallGroupReq struct {
+	Description string `json:"description"`
+}
+
+type firewallGroupsBase struct {
+	FirewallGroups []FirewallGroup `json:"firewall_groups"`
+	Meta           *Meta           `json:"meta"`
+}
+
+type firewallGroupBase struct {
+	FirewallGroup *FirewallGroup `json:"firewall_group"`
 }
 
 // Create will create a new firewall group on your Vultr account
-func (f *FireWallGroupServiceHandler) Create(ctx context.Context, description string) (*FirewallGroup, error) {
+func (f *FireWallGroupServiceHandler) Create(ctx context.Context, fwGroupReq *FirewallGroupReq) (*FirewallGroup, error) {
+	uri := "/v2/firewalls"
 
-	uri := "/v1/firewall/group_create"
-
-	values := url.Values{
-		"description": {description},
-	}
-
-	req, err := f.client.NewRequest(ctx, http.MethodPost, uri, values)
-
+	req, err := f.client.NewRequest(ctx, http.MethodPost, uri, fwGroupReq)
 	if err != nil {
 		return nil, err
 	}
 
-	firewall := new(FirewallGroup)
-	err = f.client.DoWithContext(ctx, req, firewall)
-
-	if err != nil {
+	firewall := new(firewallGroupBase)
+	if err = f.client.DoWithContext(ctx, req, firewall); err != nil {
 		return nil, err
 	}
 
-	return firewall, nil
-}
-
-// Delete will delete a firewall group from your Vultr account
-func (f *FireWallGroupServiceHandler) Delete(ctx context.Context, groupID string) error {
-
-	uri := "/v1/firewall/group_delete"
-
-	values := url.Values{
-		"FIREWALLGROUPID": {groupID},
-	}
-
-	req, err := f.client.NewRequest(ctx, http.MethodPost, uri, values)
-
-	if err != nil {
-		return err
-	}
-
-	err = f.client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// List will return a list of  all firewall groups on your Vultr account
-func (f *FireWallGroupServiceHandler) List(ctx context.Context) ([]FirewallGroup, error) {
-
-	uri := "/v1/firewall/group_list"
-
-	req, err := f.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var firewallGroupMap map[string]FirewallGroup
-	err = f.client.DoWithContext(ctx, req, &firewallGroupMap)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var firewallGroup []FirewallGroup
-	for _, f := range firewallGroupMap {
-		firewallGroup = append(firewallGroup, f)
-	}
-
-	return firewallGroup, nil
+	return firewall.FirewallGroup, nil
 }
 
 // Get will return a firewall group based on provided groupID from your Vultr account
-func (f *FireWallGroupServiceHandler) Get(ctx context.Context, groupID string) (*FirewallGroup, error) {
-
-	uri := "/v1/firewall/group_list"
+func (f *FireWallGroupServiceHandler) Get(ctx context.Context, fwGroupID string) (*FirewallGroup, error) {
+	uri := fmt.Sprintf("/v2/firewalls/%s", fwGroupID)
 
 	req, err := f.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, err
 	}
 
-	q := req.URL.Query()
-	q.Add("FIREWALLGROUPID", groupID)
-	req.URL.RawQuery = q.Encode()
-
-	var firewallGroupMap map[string]FirewallGroup
-	err = f.client.DoWithContext(ctx, req, &firewallGroupMap)
-
-	if err != nil {
+	firewall := new(firewallGroupBase)
+	if err = f.client.DoWithContext(ctx, req, firewall); err != nil {
 		return nil, err
 	}
 
-	firewallGroup := new(FirewallGroup)
-	for _, f := range firewallGroupMap {
-		firewallGroup = &f
-	}
-
-	return firewallGroup, nil
+	return firewall.FirewallGroup, nil
 }
 
-// ChangeDescription will change the description of a firewall group
-func (f *FireWallGroupServiceHandler) ChangeDescription(ctx context.Context, groupID, description string) error {
+// Update will change the description of a firewall group
+func (f *FireWallGroupServiceHandler) Update(ctx context.Context, fwGroupID string, fwGroupReq *FirewallGroupReq) error {
+	uri := fmt.Sprintf("/v2/firewalls/%s", fwGroupID)
 
-	uri := "/v1/firewall/group_set_description"
-
-	values := url.Values{
-		"FIREWALLGROUPID": {groupID},
-		"description":     {description},
-	}
-
-	req, err := f.client.NewRequest(ctx, http.MethodPost, uri, values)
-
+	req, err := f.client.NewRequest(ctx, http.MethodPut, uri, fwGroupReq)
 	if err != nil {
 		return err
 	}
 
-	err = f.client.DoWithContext(ctx, req, nil)
+	return f.client.DoWithContext(ctx, req, nil)
+}
 
+// Delete will delete a firewall group from your Vultr account
+func (f *FireWallGroupServiceHandler) Delete(ctx context.Context, fwGroupID string) error {
+	uri := fmt.Sprintf("/v2/firewalls/%s", fwGroupID)
+
+	req, err := f.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return f.client.DoWithContext(ctx, req, nil)
+}
+
+// List will return a list of  all firewall groups on your Vultr account
+func (f *FireWallGroupServiceHandler) List(ctx context.Context, options *ListOptions) ([]FirewallGroup, *Meta, error) {
+	uri := "/v2/firewalls"
+
+	req, err := f.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	newValues, err := query.Values(options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req.URL.RawQuery = newValues.Encode()
+
+	firewalls := new(firewallGroupsBase)
+	if err = f.client.DoWithContext(ctx, req, firewalls); err != nil {
+		return nil, nil, err
+	}
+
+	return firewalls.FirewallGroups, firewalls.Meta, nil
 }

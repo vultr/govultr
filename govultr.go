@@ -1,11 +1,11 @@
 package govultr
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -16,35 +16,21 @@ import (
 )
 
 const (
-	version     = "0.3.2"
+	version     = "2.3.0"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
-	rateLimit   = 600 * time.Millisecond
+	rateLimit   = 500 * time.Millisecond
 	retryLimit  = 3
 )
-
-// whiteListURI is an array of endpoints that should not have the API Key passed to them
-var whiteListURI = [13]string{
-	"/v1/regions/availability",
-	"/v1/app/list",
-	"/v1/objectstorage/list_cluster",
-	"/v1/os/list",
-	"/v1/plans/list",
-	"/v1/plans/list_baremetal",
-	"/v1/plans/list_vc2",
-	"/v1/plans/list_vc2z",
-	"/v1/plans/list_vdc2",
-	"/v1/regions/list",
-	"/v1/regions/availability_vc2",
-	"/v1/regions/availability_vdc2",
-	"/v1/regions/availability_baremetal",
-}
 
 // APIKey contains a users API Key for interacting with the API
 type APIKey struct {
 	// API Key
 	key string
 }
+
+// RequestBody is used to create JSON bodies for one off calls
+type RequestBody map[string]interface{}
 
 // Client manages interaction with the Vultr V1 API
 type Client struct {
@@ -57,20 +43,17 @@ type Client struct {
 	// User Agent for the client
 	UserAgent string
 
-	// API Key
-	APIKey APIKey
-
 	// Services used to interact with the API
 	Account         AccountService
-	API             APIService
 	Application     ApplicationService
 	Backup          BackupService
 	BareMetalServer BareMetalServerService
 	BlockStorage    BlockStorageService
-	DNSDomain       DNSDomainService
-	DNSRecord       DNSRecordService
+	Domain          DomainService
+	DomainRecord    DomainRecordService
 	FirewallGroup   FirewallGroupService
 	FirewallRule    FireWallRuleService
+	Instance        InstanceService
 	ISO             ISOService
 	LoadBalancer    LoadBalancerService
 	Network         NetworkService
@@ -79,7 +62,6 @@ type Client struct {
 	Plan            PlanService
 	Region          RegionService
 	ReservedIP      ReservedIPService
-	Server          ServerService
 	Snapshot        SnapshotService
 	SSHKey          SSHKeyService
 	StartupScript   StartupScriptService
@@ -93,7 +75,7 @@ type Client struct {
 type RequestCompletionCallback func(*http.Request, *http.Response)
 
 // NewClient returns a Vultr API Client
-func NewClient(httpClient *http.Client, key string) *Client {
+func NewClient(httpClient *http.Client) *Client {
 
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -114,15 +96,15 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.SetRateLimit(rateLimit)
 
 	client.Account = &AccountServiceHandler{client}
-	client.API = &APIServiceHandler{client}
 	client.Application = &ApplicationServiceHandler{client}
 	client.Backup = &BackupServiceHandler{client}
 	client.BareMetalServer = &BareMetalServerServiceHandler{client}
 	client.BlockStorage = &BlockStorageServiceHandler{client}
-	client.DNSDomain = &DNSDomainServiceHandler{client}
-	client.DNSRecord = &DNSRecordsServiceHandler{client}
+	client.Domain = &DomainServiceHandler{client}
+	client.DomainRecord = &DomainRecordsServiceHandler{client}
 	client.FirewallGroup = &FireWallGroupServiceHandler{client}
 	client.FirewallRule = &FireWallRuleServiceHandler{client}
+	client.Instance = &InstanceServiceHandler{client}
 	client.ISO = &ISOServiceHandler{client}
 	client.LoadBalancer = &LoadBalancerHandler{client}
 	client.Network = &NetworkServiceHandler{client}
@@ -130,57 +112,38 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.OS = &OSServiceHandler{client}
 	client.Plan = &PlanServiceHandler{client}
 	client.Region = &RegionServiceHandler{client}
-	client.Server = &ServerServiceHandler{client}
 	client.ReservedIP = &ReservedIPServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
 	client.SSHKey = &SSHKeyServiceHandler{client}
 	client.StartupScript = &StartupScriptServiceHandler{client}
 	client.User = &UserServiceHandler{client}
 
-	apiKey := APIKey{key: key}
-	client.APIKey = apiKey
-
 	return client
 }
 
 // NewRequest creates an API Request
-func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Values) (*http.Request, error) {
-
-	path, err := url.Parse(uri)
-	resolvedURL := c.BaseURL.ResolveReference(path)
-
+func (c *Client) NewRequest(ctx context.Context, method, uri string, body interface{}) (*http.Request, error) {
+	resolvedURL, err := c.BaseURL.Parse(uri)
 	if err != nil {
 		return nil, err
 	}
 
-	var reqBody io.Reader
-
+	buf := new(bytes.Buffer)
 	if body != nil {
-		reqBody = strings.NewReader(body.Encode())
-	} else {
-		reqBody = nil
+		err = json.NewEncoder(buf).Encode(body)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	req, err := http.NewRequest(method, resolvedURL.String(), reqBody)
-
+	req, err := http.NewRequest(method, resolvedURL.String(), buf)
 	if err != nil {
 		return nil, err
-	}
-
-	req.Header.Add("API-key", c.APIKey.key)
-	for _, v := range whiteListURI {
-		if v == uri {
-			req.Header.Del("API-key")
-			break
-		}
 	}
 
 	req.Header.Add("User-Agent", c.UserAgent)
 	req.Header.Add("Accept", "application/json")
-
-	if req.Method == "POST" {
-		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	}
+	req.Header.Add("Content-Type", "application/json")
 
 	return req, nil
 }
@@ -189,9 +152,7 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Va
 // a successful call. A successful call is then checked to see if we need to unmarshal since some resources
 // have their own implements of unmarshal.
 func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) error {
-
 	rreq, err := retryablehttp.FromRequest(r)
-
 	if err != nil {
 		return err
 	}
@@ -211,19 +172,14 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
-
 	if err != nil {
 		return err
 	}
 
-	if res.StatusCode == http.StatusOK {
+	if res.StatusCode >= http.StatusOK && res.StatusCode <= http.StatusNoContent {
 		if data != nil {
-			if string(body) == "[]" {
-				data = nil
-			} else {
-				if err := json.Unmarshal(body, data); err != nil {
-					return err
-				}
+			if err := json.Unmarshal(body, data); err != nil {
+				return err
 			}
 		}
 		return nil
@@ -276,4 +232,9 @@ func (c *Client) vultrErrorHandler(resp *http.Response, err error, numTries int)
 		return nil, fmt.Errorf("gave up after %d attempts, last error unavailable (error reading response body: %v)", c.client.RetryMax+1, err)
 	}
 	return nil, fmt.Errorf("gave up after %d attempts, last error: %#v", c.client.RetryMax+1, strings.TrimSpace(string(buf)))
+}
+
+func BoolToBoolPtr(value bool) *bool {
+	b := value
+	return &b
 }

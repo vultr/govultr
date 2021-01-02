@@ -2,18 +2,19 @@ package govultr
 
 import (
 	"context"
+	"fmt"
 	"net/http"
-	"net/url"
-	"strconv"
+
+	"github.com/google/go-querystring/query"
 )
 
 // ISOService is the interface to interact with the ISO endpoints on the Vultr API
-// Link: https://www.vultr.com/api/#ISO
 type ISOService interface {
-	CreateFromURL(ctx context.Context, ISOURL string) (*ISO, error)
-	Delete(ctx context.Context, ISOID int) error
-	List(ctx context.Context) ([]ISO, error)
-	GetPublicList(ctx context.Context) ([]PublicISO, error)
+	Create(ctx context.Context, isoReq *ISOReq) (*ISO, error)
+	Get(ctx context.Context, isoID string) (*ISO, error)
+	Delete(ctx context.Context, isoID string) error
+	List(ctx context.Context, options *ListOptions) ([]ISO, *Meta, error)
+	ListPublic(ctx context.Context, options *ListOptions) ([]PublicISO, *Meta, error)
 }
 
 // ISOServiceHandler handles interaction with the ISO methods for the Vultr API
@@ -23,120 +24,131 @@ type ISOServiceHandler struct {
 
 // ISO represents ISOs currently available on this account.
 type ISO struct {
-	ISOID       int    `json:"ISOID"`
+	ID          string `json:"id"`
 	DateCreated string `json:"date_created"`
 	FileName    string `json:"filename"`
-	Size        int    `json:"size"`
-	MD5Sum      string `json:"md5sum"`
-	SHA512Sum   string `json:"sha512sum"`
+	Size        int    `json:"size,omitempty"`
+	MD5Sum      string `json:"md5sum,omitempty"`
+	SHA512Sum   string `json:"sha512sum,omitempty"`
 	Status      string `json:"status"`
 }
 
 // PublicISO represents public ISOs offered in the Vultr ISO library.
 type PublicISO struct {
-	ISOID       int    `json:"ISOID"`
+	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	MD5Sum      string `json:"md5sum,omitempty"`
 }
 
-// CreateFromURL will create a new ISO image on your account
-func (i *ISOServiceHandler) CreateFromURL(ctx context.Context, ISOURL string) (*ISO, error) {
+// ISOReq is used for creating ISOs.
+type ISOReq struct {
+	URL string `json:"url"`
+}
 
-	uri := "/v1/iso/create_from_url"
+type isosBase struct {
+	ISOs []ISO `json:"isos"`
+	Meta *Meta `json:"meta"`
+}
 
-	values := url.Values{
-		"url": {ISOURL},
-	}
+type isoBase struct {
+	ISO *ISO `json:"iso"`
+}
 
-	req, err := i.Client.NewRequest(ctx, http.MethodPost, uri, values)
+type publicIsosBase struct {
+	PublicIsos []PublicISO `json:"public_isos"`
+	Meta       *Meta       `json:"meta"`
+}
 
+// Create will create a new ISO image on your account
+func (i *ISOServiceHandler) Create(ctx context.Context, isoReq *ISOReq) (*ISO, error) {
+	uri := "/v2/iso"
+
+	req, err := i.Client.NewRequest(ctx, http.MethodPost, uri, isoReq)
 	if err != nil {
 		return nil, err
 	}
 
-	iso := new(ISO)
-	err = i.Client.DoWithContext(ctx, req, iso)
+	iso := new(isoBase)
+	if err = i.Client.DoWithContext(ctx, req, iso); err != nil {
+		return nil, err
+	}
 
+	return iso.ISO, nil
+}
+
+// Get an ISO
+func (i *ISOServiceHandler) Get(ctx context.Context, isoID string) (*ISO, error) {
+	uri := fmt.Sprintf("/v2/iso/%s", isoID)
+
+	req, err := i.Client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return iso, nil
+	iso := new(isoBase)
+	if err := i.Client.DoWithContext(ctx, req, iso); err != nil {
+		return nil, err
+	}
+	return iso.ISO, nil
 }
 
 // Delete will delete an ISO image from your account
-func (i *ISOServiceHandler) Delete(ctx context.Context, isoID int) error {
+func (i *ISOServiceHandler) Delete(ctx context.Context, isoID string) error {
+	uri := fmt.Sprintf("/v2/iso/%s", isoID)
 
-	uri := "/v1/iso/destroy"
-
-	values := url.Values{
-		"ISOID": {strconv.Itoa(isoID)},
-	}
-
-	req, err := i.Client.NewRequest(ctx, http.MethodPost, uri, values)
-
+	req, err := i.Client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return err
 	}
 
-	err = i.Client.DoWithContext(ctx, req, nil)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return i.Client.DoWithContext(ctx, req, nil)
 }
 
 // List will list all ISOs currently available on your account
-func (i *ISOServiceHandler) List(ctx context.Context) ([]ISO, error) {
-
-	uri := "/v1/iso/list"
+func (i *ISOServiceHandler) List(ctx context.Context, options *ListOptions) ([]ISO, *Meta, error) {
+	uri := "/v2/iso"
 
 	req, err := i.Client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	var ISOMap map[string]ISO
-	err = i.Client.DoWithContext(ctx, req, &ISOMap)
-
+	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	var iso []ISO
-	for _, i := range ISOMap {
-		iso = append(iso, i)
+	req.URL.RawQuery = newValues.Encode()
+
+	iso := new(isosBase)
+	if err = i.Client.DoWithContext(ctx, req, iso); err != nil {
+		return nil, nil, err
 	}
 
-	return iso, nil
+	return iso.ISOs, iso.Meta, nil
 }
 
-// GetPublicList will list public ISOs offered in the Vultr ISO library.
-func (i *ISOServiceHandler) GetPublicList(ctx context.Context) ([]PublicISO, error) {
-
-	uri := "/v1/iso/list_public"
+// ListPublic will list public ISOs offered in the Vultr ISO library.
+func (i *ISOServiceHandler) ListPublic(ctx context.Context, options *ListOptions) ([]PublicISO, *Meta, error) {
+	uri := "/v2/iso-public"
 
 	req, err := i.Client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	var ISOMap map[string]PublicISO
-	err = i.Client.DoWithContext(ctx, req, &ISOMap)
-
+	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	var publicISO []PublicISO
+	req.URL.RawQuery = newValues.Encode()
 
-	for _, p := range ISOMap {
-		publicISO = append(publicISO, p)
+	iso := new(publicIsosBase)
+	if err = i.Client.DoWithContext(ctx, req, iso); err != nil {
+		return nil, nil, err
 	}
 
-	return publicISO, nil
+	return iso.PublicIsos, iso.Meta, nil
 }

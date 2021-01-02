@@ -11,30 +11,32 @@ func TestUserServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/user/create", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-		{
-			"USERID": "564a1a88947b4",
-			"api_key": "AAAAAAAA"
-		}
-		`
+	mux.HandleFunc("/v2/users", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"user": {"id": "564a1a88947b4","name": "Example User","email": "example@vultr.com","api_key": "aaavvvvvvbbbbbb","api_enabled": true,"acls": []}}`
 
 		fmt.Fprint(writer, response)
 	})
+	api := true
+	userReq := &UserReq{
+		Email:      "example@vultr.com",
+		Name:       "Example User",
+		APIEnabled: &api,
+		Password:   "password",
+	}
 
-	user, err := client.User.Create(ctx, "example@vultr.com", "Example User", "t0rbj0rn!", "no", []string{"support", "abuse", "alerts"})
+	user, err := client.User.Create(ctx, userReq)
 
 	if err != nil {
 		t.Errorf("User.Create returned %+v, expected %+v", err, nil)
 	}
 
 	expected := &User{
-		UserID:     "564a1a88947b4",
+		ID:         "564a1a88947b4",
 		Name:       "Example User",
 		Email:      "example@vultr.com",
-		APIEnabled: "no",
-		ACL:        []string{"support", "abuse", "alerts"},
-		APIKey:     "AAAAAAAA",
+		APIEnabled: BoolToBoolPtr(true),
+		APIKey:     "aaavvvvvvbbbbbb",
+		ACL:        []string{},
 	}
 
 	if !reflect.DeepEqual(user, expected) {
@@ -46,11 +48,11 @@ func TestUserServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/user/delete", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/users/123abc", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.User.Delete(ctx, "foo")
+	err := client.User.Delete(ctx, "123abc")
 
 	if err != nil {
 		t.Errorf("User.Delete returned %+v, expected %+v", err, nil)
@@ -61,37 +63,34 @@ func TestUserServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/user/list", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v2/users", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
-		[
-			{
-				"USERID": "564a1a7794d83",
-				"name": "example user 1",
-				"email": "example@vultr.com",
-				"api_enabled": "yes",
-				"acls": [
-					"manage_users",
-					"subscriptions",
-					"billing",
-					"provisioning"
-				]
-			},
-			{
-				"USERID": "564a1a88947b4",
-				"name": "example user 2",
-				"email": "example@vultr.com",
-				"api_enabled": "no",
-				"acls": [
-					"support",
-					"dns"
-				]
-			}
-		]
+	{
+    "users": [
+        {
+            "id": "f255efc9700d9",
+            "name": "test api",
+            "email": "newmanapi@vultr.com",
+            "api_enabled": true,
+            "acls": []
+        }
+    ],
+    "meta": {
+        "total": 1,
+        "links": {
+            "next": "thisismycusror",
+            "prev": ""
+        }
+    }
+}
 		`
 		fmt.Fprintf(writer, response)
 	})
 
-	Users, err := client.User.List(ctx)
+	options := &ListOptions{
+		PerPage: 1,
+	}
+	users, meta, err := client.User.List(ctx, options)
 
 	if err != nil {
 		t.Errorf("User.List returned error: %v", err)
@@ -99,23 +98,28 @@ func TestUserServiceHandler_List(t *testing.T) {
 
 	expected := []User{
 		{
-			UserID:     "564a1a7794d83",
-			Name:       "example user 1",
-			Email:      "example@vultr.com",
-			APIEnabled: "yes",
-			ACL:        []string{"manage_users", "subscriptions", "billing", "provisioning"},
-		},
-		{
-			UserID:     "564a1a88947b4",
-			Name:       "example user 2",
-			Email:      "example@vultr.com",
-			APIEnabled: "no",
-			ACL:        []string{"support", "dns"},
+			ID:         "f255efc9700d9",
+			Name:       "test api",
+			Email:      "newmanapi@vultr.com",
+			APIEnabled: BoolToBoolPtr(true),
+			ACL:        []string{},
 		},
 	}
 
-	if !reflect.DeepEqual(Users, expected) {
-		t.Errorf("User.List returned %+v, expected %+v", Users, expected)
+	if !reflect.DeepEqual(users, expected) {
+		t.Errorf("User.List users returned %+v, expected %+v", users, expected)
+	}
+
+	expectedMeta := &Meta{
+		Total: 1,
+		Links: &Links{
+			Next: "thisismycusror",
+			Prev: "",
+		},
+	}
+
+	if !reflect.DeepEqual(meta, expectedMeta) {
+		t.Errorf("User.List meta returned %+v, expected %+v", meta, expectedMeta)
 	}
 }
 
@@ -123,23 +127,48 @@ func TestUserServiceHandler_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v1/user/update", func(writer http.ResponseWriter, request *http.Request) {
-
+	mux.HandleFunc("/v2/users/abc123", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
-	user := &User{
-		UserID:     "2e35cc32f9923",
+	api := true
+	user := &UserReq{
 		Name:       "Example User",
 		Password:   "w1a4dcnst0n!",
 		Email:      "example@vultr.com",
-		APIEnabled: "yes",
+		APIEnabled: &api,
 		ACL:        []string{"support"},
 	}
 
-	err := client.User.Update(ctx, user)
+	err := client.User.Update(ctx, "abc123", user)
 
 	if err != nil {
 		t.Errorf("User.Update returned error: %+v", err)
+	}
+}
+
+func TestUserServiceHandler_Get(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/users/abc123", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"user": {"id": "f255efc9c69ac","name": "Unit Test","email": "test@vultr.com","api_enabled": true,"acls": []}}`
+		fmt.Fprint(writer, response)
+	})
+
+	user, err := client.User.Get(ctx, "abc123")
+	if err != nil {
+		t.Errorf("User.Get returned error: %v", err)
+	}
+	expected := &User{
+		ID:         "f255efc9c69ac",
+		Name:       "Unit Test",
+		Email:      "test@vultr.com",
+		APIEnabled: BoolToBoolPtr(true),
+		ACL:        []string{},
+	}
+
+	if !reflect.DeepEqual(user, expected) {
+		t.Errorf("User.List users returned %+v, expected %+v", user, expected)
 	}
 }
