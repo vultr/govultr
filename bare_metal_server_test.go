@@ -661,7 +661,6 @@ func TestBareMetalServerServiceHandler_GetVNCUrl(t *testing.T) {
 	}
 }
 
-
 func TestBareMetalServerServiceHandler_MassStart(t *testing.T) {
 	setup()
 	defer teardown()
@@ -677,8 +676,6 @@ func TestBareMetalServerServiceHandler_MassStart(t *testing.T) {
 	}
 }
 
-
-
 func TestBareMetalServerServiceHandler_MassReboot(t *testing.T) {
 	setup()
 	defer teardown()
@@ -693,7 +690,6 @@ func TestBareMetalServerServiceHandler_MassReboot(t *testing.T) {
 		t.Errorf("BareMetalServer.Reboot returned %+v, expected %+v", err, nil)
 	}
 }
-
 
 func TestBareMetalServerServiceHandler_MassHalt(t *testing.T) {
 	setup()
