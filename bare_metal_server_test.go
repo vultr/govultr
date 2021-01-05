@@ -660,3 +660,52 @@ func TestBareMetalServerServiceHandler_GetVNCUrl(t *testing.T) {
 		t.Errorf("BareMetalServer.GetVNCUrl returned %+v, expected %+v", vnc, expected)
 	}
 }
+
+
+func TestBareMetalServerServiceHandler_MassStart(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/bare-metals/start", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.BareMetalServer.MassStart(ctx, []string{"42018b7b-a4e3-4c7e-be74-663afeb142aa"})
+
+	if err != nil {
+		t.Errorf("BareMetalServer.MassStart returned %+v, expected %+v", err, nil)
+	}
+}
+
+
+
+func TestBareMetalServerServiceHandler_MassReboot(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/bare-metals/reboot", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.BareMetalServer.MassReboot(ctx, []string{"42018b7b-a4e3-4c7e-be74-663afeb142aa"})
+
+	if err != nil {
+		t.Errorf("BareMetalServer.Reboot returned %+v, expected %+v", err, nil)
+	}
+}
+
+
+func TestBareMetalServerServiceHandler_MassHalt(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/bare-metals/halt", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.BareMetalServer.MassHalt(ctx, []string{"42018b7b-a4e3-4c7e-be74-663afeb142aa"})
+
+	if err != nil {
+		t.Errorf("BareMetalServer.MassHalf returned %+v, expected %+v", err, nil)
+	}
+}
