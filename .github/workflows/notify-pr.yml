@@ -15,4 +15,4 @@ jobs:
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_USERNAME: ${{ secrets.MATTERMOST_USERNAME}}
-          MATTERMOST_ICON: ${{ secerts.MATTERMOST_ICON }}
+          MATTERMOST_ICON: ${{ secrets.MATTERMOST_ICON }}
