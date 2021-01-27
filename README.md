@@ -33,17 +33,20 @@ The client has three optional parameters:
 package main
 
 import (
+  "context"
   "os"
 
   "github.com/vultr/govultr/v2"
+  "golang.org/x/oauth2"
 )
 
 func main() {
   apiKey := os.Getenv("VultrAPIKey")
 
   config := &oauth2.Config{}
+  ctx := context.Background()
   ts := config.TokenSource(ctx, &oauth2.Token{AccessToken: apiKey})
-  vultrClient := govultr.NewClient(oauth2.NewClient(ctx,ts))
+  vultrClient := govultr.NewClient(oauth2.NewClient(ctx, ts))
 
   // Optional changes
   _ = vultrClient.SetBaseURL("https://api.vultr.com")
@@ -98,7 +101,6 @@ This example demonstrates how to retrieve all of your instances, with one instan
 
 ```go
 listOptions := &govultr.ListOptions{PerPage: 1}
-var instances []govultr.Instance
 for {
     i, meta, err := client.Instance.List(ctx, listOptions)
     if err != nil {
