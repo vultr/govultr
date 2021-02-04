@@ -9,6 +9,7 @@ import (
 )
 
 // BlockStorageService is the interface to interact with Block-Storage endpoint on the Vultr API
+// Link : https://www.vultr.com/api/#tag/block
 type BlockStorageService interface {
 	Create(ctx context.Context, blockReq *BlockStorageCreate) (*BlockStorage, error)
 	Get(ctx context.Context, blockID string) (*BlockStorage, error)

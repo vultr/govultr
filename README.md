@@ -124,7 +124,7 @@ This project follows [SemVer](http://semver.org/) for versioning. For the versio
 
 ## Documentation
 
-See our documentation for [detailed information about API v2](https://www.vultr.com/api/v2).
+See our documentation for [detailed information about API v2](https://www.vultr.com/api/).
 
 See our [GoDoc](https://pkg.go.dev/github.com/vultr/govultr/v2) documentation for more details about this client's functionality.
 
