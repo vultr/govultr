@@ -27,6 +27,7 @@ type BareMetalPlan struct {
 	CPUThreads  int      `json:"cpu_threads"`
 	RAM         int      `json:"ram"`
 	Disk        int      `json:"disk"`
+	DiskCount   int      `json:"disk_count"`
 	Bandwidth   int      `json:"bandwidth"`
 	MonthlyCost int      `json:"monthly_cost"`
 	Type        string   `json:"type"`
@@ -39,6 +40,7 @@ type Plan struct {
 	VCPUCount   int      `json:"vcpu_count"`
 	RAM         int      `json:"ram"`
 	Disk        int      `json:"disk"`
+	DiskCount   int      `json:"disk_count"`
 	Bandwidth   int      `json:"bandwidth"`
 	MonthlyCost int      `json:"monthly_cost"`
 	Type        string   `json:"type"`
