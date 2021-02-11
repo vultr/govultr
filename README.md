@@ -60,7 +60,7 @@ func main() {
 Create a VPS
 
 ```go
-instanceOptions := &govultr.InstanceReq{
+instanceOptions := &govultr.InstanceCreateReq{
   Label:                "awesome-go-app",
   Hostname:             "awesome-go.com",
   Backups:              true,
