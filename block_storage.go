@@ -36,6 +36,7 @@ type BlockStorage struct {
 	DateCreated        string  `json:"date_created"`
 	AttachedToInstance string  `json:"attached_to_instance"`
 	Label              string  `json:"label"`
+	MountID            string  `json:"mount_id"`
 }
 
 // BlockStorageCreate struct is used for creating Block Storage.
