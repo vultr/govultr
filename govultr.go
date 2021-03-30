@@ -234,7 +234,13 @@ func (c *Client) vultrErrorHandler(resp *http.Response, err error, numTries int)
 	return nil, fmt.Errorf("gave up after %d attempts, last error: %#v", c.client.RetryMax+1, strings.TrimSpace(string(buf)))
 }
 
+// BoolToBoolPtr is a helper function that will take a bool and return a pointer
 func BoolToBoolPtr(value bool) *bool {
 	b := value
 	return &b
+}
+
+// StringToStringPtr is a helper function that will take a string and return a pointer
+func StringToStringPtr(value string) *string {
+	return &value
 }

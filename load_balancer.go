@@ -42,6 +42,7 @@ type LoadBalancer struct {
 	GenericInfo     *GenericInfo     `json:"generic_info,omitempty"`
 	SSLInfo         *bool            `json:"has_ssl,omitempty"`
 	ForwardingRules []ForwardingRule `json:"forwarding_rules,omitempty"`
+	FirewallRules   []LBFirewallRule `json:"firewall_rules,omitempty"`
 }
 
 // LoadBalancerReq gives options for creating or updating a load balancer
@@ -56,6 +57,8 @@ type LoadBalancerReq struct {
 	SSLRedirect        *bool            `json:"ssl_redirect,omitempty"`
 	ProxyProtocol      *bool            `json:"proxy_protocol,omitempty"`
 	BalancingAlgorithm string           `json:"balancing_algorithm,omitempty"`
+	FirewallRules      []LBFirewallRule `json:"firewall_rules"`
+	PrivateNetwork     *string          `json:"private_network,omitempty"`
 }
 
 // InstanceList represents instances that are attached to your load balancer
@@ -80,6 +83,7 @@ type GenericInfo struct {
 	SSLRedirect        *bool           `json:"ssl_redirect,omitempty"`
 	StickySessions     *StickySessions `json:"sticky_sessions,omitempty"`
 	ProxyProtocol      *bool           `json:"proxy_protocol,omitempty"`
+	PrivateNetwork     string          `json:"private_network"`
 }
 
 // StickySessions represents cookie for your load balancer
@@ -106,6 +110,14 @@ type SSL struct {
 	PrivateKey  string `json:"ssl_private_key,omitempty"`
 	Certificate string `json:"ssl_certificate,omitempty"`
 	Chain       string `json:"chain,omitempty"`
+}
+
+// LBFirewallRule represents a firewall on the Load Balancer
+type LBFirewallRule struct {
+	ID     string `json:"id,omitempty"`
+	Port   int    `json:"port,omitempty"`
+	Source string `json:"source,omitempty"`
+	IPType string `json:"ip_type,omitempty"`
 }
 
 type lbsBase struct {
