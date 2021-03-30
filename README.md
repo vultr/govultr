@@ -33,17 +33,20 @@ The client has three optional parameters:
 package main
 
 import (
+  "context"
   "os"
 
   "github.com/vultr/govultr/v2"
+  "golang.org/x/oauth2"
 )
 
 func main() {
   apiKey := os.Getenv("VultrAPIKey")
 
   config := &oauth2.Config{}
+  ctx := context.Background()
   ts := config.TokenSource(ctx, &oauth2.Token{AccessToken: apiKey})
-  vultrClient := govultr.NewClient(oauth2.NewClient(ctx,ts))
+  vultrClient := govultr.NewClient(oauth2.NewClient(ctx, ts))
 
   // Optional changes
   _ = vultrClient.SetBaseURL("https://api.vultr.com")
@@ -57,11 +60,11 @@ func main() {
 Create a VPS
 
 ```go
-instanceOptions := &govultr.InstanceReq{
+instanceOptions := &govultr.InstanceCreateReq{
   Label:                "awesome-go-app",
   Hostname:             "awesome-go.com",
-  Backups:              true,
-  EnableIPv6:           true,
+  Backups:              "enabled",
+  EnableIPv6:           BoolToBoolPtr(false),
   OsID:                 362,
   Plan:                 "vc2-1c-2gb",   
   Region:               "ewr",
@@ -92,13 +95,12 @@ type Links struct {
 }
 
 ```
-Pass a `per_page` value to the `list_options` struct to adjust the number of items returned per call. The default and max are 25 items per page. 
+Pass a `per_page` value to the `list_options` struct to adjust the number of items returned per call. The default is 100 items per page and max is 500 items per page. 
 
 This example demonstrates how to retrieve all of your instances, with one instance per page.
 
 ```go
 listOptions := &govultr.ListOptions{PerPage: 1}
-var instances []govultr.Instance
 for {
     i, meta, err := client.Instance.List(ctx, listOptions)
     if err != nil {
@@ -122,7 +124,7 @@ This project follows [SemVer](http://semver.org/) for versioning. For the versio
 
 ## Documentation
 
-See our documentation for [detailed information about API v2](https://www.vultr.com/api/v2).
+See our documentation for [detailed information about API v2](https://www.vultr.com/api/).
 
 See our [GoDoc](https://pkg.go.dev/github.com/vultr/govultr/v2) documentation for more details about this client's functionality.
 

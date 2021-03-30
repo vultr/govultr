@@ -109,3 +109,46 @@ func TestNetworkServiceHandler_List(t *testing.T) {
 		t.Errorf("Network.List returned %+v, expected %+v", networks, expected)
 	}
 }
+
+func TestNetworkServiceHandler_Update(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/private-networks/net539626f0798d7", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Network.Update(ctx, "net539626f0798d7", "update")
+
+	if err != nil {
+		t.Errorf("Network.Update returned %+v, expected %+v", err, nil)
+	}
+}
+
+func TestNetworkServiceHandler_Get(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/private-networks/net539626f0798d7", func(writer http.ResponseWriter, request *http.Request) {
+		req := `{"network": {"id": "cb676a46-66fd-4dfb-b839-443f2e6c0b60","date_created": "2020-10-10T01:56:20+00:00","region": "ewr","description": "sample desc","v4_subnet": "10.99.0.0","v4_subnet_mask": 24}}`
+		fmt.Fprint(writer, req)
+	})
+
+	network, err := client.Network.Get(ctx, "net539626f0798d7")
+	if err != nil {
+		t.Errorf("Network.Get returned %+v, expected %+v", err, nil)
+	}
+
+	expected := &Network{
+		NetworkID:    "cb676a46-66fd-4dfb-b839-443f2e6c0b60",
+		Region:       "ewr",
+		Description:  "sample desc",
+		V4Subnet:     "10.99.0.0",
+		V4SubnetMask: 24,
+		DateCreated:  "2020-10-10T01:56:20+00:00",
+	}
+
+	if !reflect.DeepEqual(network, expected) {
+		t.Errorf("Instance.Get returned %+v, expected %+v", network, expected)
+	}
+}

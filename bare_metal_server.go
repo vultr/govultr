@@ -11,6 +11,7 @@ import (
 const bmPath = "/v2/bare-metals"
 
 // BareMetalServerService is the interface to interact with the Bare Metal endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/baremetal
 type BareMetalServerService interface {
 	Create(ctx context.Context, bmCreate *BareMetalCreate) (*BareMetalServer, error)
 	Get(ctx context.Context, serverID string) (*BareMetalServer, error)
@@ -27,6 +28,7 @@ type BareMetalServerService interface {
 
 	Halt(ctx context.Context, serverID string) error
 	Reboot(ctx context.Context, serverID string) error
+	Start(ctx context.Context, serverID string) error
 	Reinstall(ctx context.Context, serverID string) (*BareMetalServer, error)
 
 	MassStart(ctx context.Context, serverList []string) error
@@ -318,6 +320,17 @@ func (b *BareMetalServerServiceHandler) Halt(ctx context.Context, serverID strin
 func (b *BareMetalServerServiceHandler) Reboot(ctx context.Context, serverID string) error {
 	uri := fmt.Sprintf("%s/%s/reboot", bmPath, serverID)
 
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	return b.client.DoWithContext(ctx, req, nil)
+}
+
+// Start a Bare Metal server.
+func (b *BareMetalServerServiceHandler) Start(ctx context.Context, serverID string) error {
+	uri := fmt.Sprintf("%s/%s/start", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
 	if err != nil {
 		return err

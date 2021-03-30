@@ -485,3 +485,78 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		t.Errorf("LoadBalancer.Create returned %+v, expected %+v", lb, expected)
 	}
 }
+
+func TestLoadBalancerHandler_Update(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/load-balancers/d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	lbCreate := &LoadBalancerReq{
+		Label:  "my label",
+		Region: "ewr",
+		ForwardingRules: []ForwardingRule{
+			{
+				RuleID:           "abcd12345",
+				FrontendProtocol: "http",
+				FrontendPort:     80,
+				BackendProtocol:  "http",
+				BackendPort:      80,
+			},
+		},
+		BalancingAlgorithm: "roundrobin",
+		SSLRedirect:        BoolToBoolPtr(false),
+		ProxyProtocol:      BoolToBoolPtr(false),
+		HealthCheck: &HealthCheck{
+			Protocol:           "http",
+			Port:               80,
+			Path:               "/",
+			CheckInterval:      15,
+			ResponseTimeout:    5,
+			UnhealthyThreshold: 5,
+			HealthyThreshold:   5,
+		},
+	}
+
+	err := client.LoadBalancer.Update(ctx, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", lbCreate)
+	if err != nil {
+		t.Errorf("LoadBalancer.Update returned %+v", err)
+	}
+}
+
+func TestLoadBalancerHandler_GetFowardingRule(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/load-balancers/d9dbc01c-aaca-4d4b-8c4a-bbb24c946141/forwarding-rules/d42585eb85b1f69d", func(writer http.ResponseWriter, request *http.Request) {
+		req := `{
+  "forwarding_rule": {
+    "id": "d42585eb85b1f69d",
+    "frontend_protocol": "http",
+    "frontend_port": 8080,
+    "backend_protocol": "http",
+    "backend_port": 80
+  }
+}`
+		fmt.Fprint(writer, req)
+	})
+
+	rule, err := client.LoadBalancer.GetForwardingRule(ctx, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", "d42585eb85b1f69d")
+	if err != nil {
+		t.Errorf("LoadBalancer.GetForwardingRule returned %+v", err)
+	}
+
+	expected := &ForwardingRule{
+		RuleID:           "d42585eb85b1f69d",
+		FrontendProtocol: "http",
+		FrontendPort:     8080,
+		BackendProtocol:  "http",
+		BackendPort:      80,
+	}
+
+	if !reflect.DeepEqual(rule, expected) {
+		t.Errorf("Instance.GetForwardingRule returned %+v, expected %+v", rule, expected)
+	}
+}

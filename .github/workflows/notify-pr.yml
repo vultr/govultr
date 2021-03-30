@@ -1,0 +1,16 @@
+name: notify-pr
+
+on: pull_request_target
+
+jobs:
+  pr:
+    runs-on: ubuntu-latest
+    name: Pull Request Notification
+    steps:
+      - run: |
+          echo "{\"text\":\"GoVultr : PR https://github.com/vultr/govultr/pull/${{ github.event.number }} \"}" > mattermost.json
+      - uses: mattermost/action-mattermost-notify@master
+        env:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_USERNAME: ${{ secrets.MATTERMOST_USERNAME}}
+          MATTERMOST_ICON: ${{ secrets.MATTERMOST_ICON }}

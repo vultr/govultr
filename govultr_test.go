@@ -194,6 +194,10 @@ func TestClient_SetBaseUrl(t *testing.T) {
 	if client.BaseURL.String() != base {
 		t.Errorf("NewClient BaseUrl = %v, expected %v", client.BaseURL, base)
 	}
+
+	if err := client.SetBaseURL(":"); err == nil {
+		t.Error("Expected invalid BaseURL to fail")
+	}
 }
 
 func TestClient_SetUserAgent(t *testing.T) {
@@ -271,5 +275,51 @@ func TestClient_SetRetryLimit(t *testing.T) {
 
 	if client.client.RetryMax != 4 {
 		t.Errorf("NewClient RateLimit = %v, expected %v", client.client.RetryMax, 4)
+	}
+}
+
+func TestNewRequest_badURI(t *testing.T) {
+	c := NewClient(nil)
+	_, err := c.NewRequest(ctx, http.MethodGet, ":/1.", nil)
+	if err == nil {
+		t.Error("expected invalid URI to fail")
+	}
+}
+
+func TestNewRequest_badBody(t *testing.T) {
+	c := NewClient(nil)
+	_, err := c.NewRequest(ctx, http.MethodGet, "/", make(chan int))
+	if err == nil {
+		t.Error("expected invalid Body to fail")
+	}
+}
+
+func TestRequest_InvalidCall(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/wrong", func(writer http.ResponseWriter, request *http.Request) {
+		writer.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(writer, nil)
+	})
+
+	req, _ := client.NewRequest(ctx, http.MethodGet, "/wrong", nil)
+	if err := client.DoWithContext(ctx, req, nil); err == nil {
+		t.Error("Expected invalid status code to bad request")
+	}
+}
+
+func TestRequest_InvalidResponseBody(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/wrong", func(writer http.ResponseWriter, request *http.Request) {
+		writer.WriteHeader(http.StatusOK)
+		fmt.Fprint(writer, `{`)
+	})
+
+	req, _ := client.NewRequest(ctx, http.MethodGet, "/wrong", nil)
+	if err := client.DoWithContext(ctx, req, struct{}{}); err == nil {
+		t.Error("Expected response body to be invalid")
 	}
 }
