@@ -617,3 +617,37 @@ func TestLoadBalancerHandler_GetFowardingRule(t *testing.T) {
 		t.Errorf("LoadBalancer.GetForwardingRule returned %+v, expected %+v", rule, expected)
 	}
 }
+
+func TestLoadBalancerHandler_GetFirewallRule(t *testing.T) {
+	setup()
+	defer teardown()
+
+	uri := fmt.Sprintf("%s/%s/firewall-rules/%s", lbPath, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", "d42585eb85b1f69d")
+	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
+		req := `{
+  "firewall_rule": {
+    "id": "d42585eb85b1f69d",
+    "port": 80,
+    "source": "0.0.0.0/0",
+    "ip_type": "v4"
+  }
+}`
+		fmt.Fprint(writer, req)
+	})
+
+	rule, err := client.LoadBalancer.GetFirewallRule(ctx, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", "d42585eb85b1f69d")
+	if err != nil {
+		t.Errorf("LoadBalancer.GetFirewallRule returned %+v", err)
+	}
+
+	expected := &LBFirewallRule{
+		RuleID: "d42585eb85b1f69d",
+		Port:   80,
+		Source: "0.0.0.0/0",
+		IPType: "v4",
+	}
+
+	if !reflect.DeepEqual(rule, expected) {
+		t.Errorf("LoadBalancer.GetFirewallRule returned %+v, expected %+v", rule, expected)
+	}
+}
