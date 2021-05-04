@@ -105,7 +105,7 @@ func TestServerServiceHandler_ListPrivateNetworks(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	privateNetwork, meta, err := client.Instance.ListPrivateNetworks(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
+	privateNetwork, meta, err := client.Instance.ListPrivateNetworks(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", nil)
 	if err != nil {
 		t.Errorf("Instance.ListPrivateNetworks return %+v, ", err)
 	}
