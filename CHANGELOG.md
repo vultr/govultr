@@ -2,6 +2,14 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v2.5.0](https://github.com/vultr/govultr/compare/v2.4.2..v2.5.0) (2021-05-06)
+### Enhancement
+* LoadBalancers : New Features and endpoints [143](https://github.com/vultr/govultr/pull/143)
+  * Ability to attach private networks
+  * Ability to set firewalls
+  * Get Firewall Rules
+  * List Firewall Rules 
+
 ## [v2.4.2](https://github.com/vultr/govultr/compare/v2.4.1..v2.4.2) (2021-05-03)
 ### Bug fix
 * Instances : ListPrivateNetworks missing paging ability [140](https://github.com/vultr/govultr/pull/140)
