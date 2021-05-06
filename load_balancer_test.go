@@ -27,6 +27,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 						"balancing_algorithm": "roundrobin",
 						"ssl_redirect": false,
 						"proxy_protocol": false,
+						"private_network": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
 						"sticky_sessions": {
 							"cookie_name": "my-cookie"
 						}
@@ -50,6 +51,14 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 							"backend_port": 80
 						}
 					],
+					"firewall_rules": [
+						{
+							"id": "abcd12345",
+							"port": 80,
+							"source": "0.0.0.0/0",
+							"ip_type": "v4"
+						}
+					],					
 					"instances": [
 						"12345"
 					]
@@ -96,6 +105,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 				BalancingAlgorithm: "roundrobin",
 				SSLRedirect:        BoolToBoolPtr(false),
 				ProxyProtocol:      BoolToBoolPtr(false),
+				PrivateNetwork:     "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
 				StickySessions: &StickySessions{
 					CookieName: "my-cookie",
 				},
@@ -110,6 +120,14 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 				HealthyThreshold:   5,
 			},
 			Instances: []string{"12345"},
+			FirewallRules: []LBFirewallRule{
+				{
+					RuleID: "abcd12345",
+					Port:   80,
+					Source: "0.0.0.0/0",
+					IPType: "v4",
+				},
+			},
 		},
 	}
 
@@ -162,6 +180,7 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 					"balancing_algorithm": "roundrobin",
 					"ssl_redirect": false,
 					"proxy_protocol": false,
+					"private_network": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
 					"sticky_sessions": {
 						"cookie_name": "my-cookie"
 					}
@@ -185,6 +204,14 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 						"backend_port": 80
 					}
 				],
+				"firewall_rules": [
+					{
+						"id": "abcd12345",
+						"port": 80,
+						"source": "0.0.0.0/0",
+						"ip_type": "v4"
+					}
+				], 				
 				"instances": [
 					"12345"
 				]
@@ -222,6 +249,7 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 			BalancingAlgorithm: "roundrobin",
 			SSLRedirect:        BoolToBoolPtr(false),
 			ProxyProtocol:      BoolToBoolPtr(false),
+			PrivateNetwork:     "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
 			StickySessions: &StickySessions{
 				CookieName: "my-cookie",
 			},
@@ -236,6 +264,14 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 			HealthyThreshold:   5,
 		},
 		Instances: []string{"12345"},
+		FirewallRules: []LBFirewallRule{
+			{
+				RuleID: "abcd12345",
+				Port:   80,
+				Source: "0.0.0.0/0",
+				IPType: "v4",
+			},
+		},
 	}
 
 	if !reflect.DeepEqual(info, expected) {
@@ -364,7 +400,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/load-balancers", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc(lbPath, func(writer http.ResponseWriter, request *http.Request) {
 		response := `
 		{
 			"load_balancer" :
@@ -380,6 +416,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 						"balancing_algorithm": "roundrobin",
 						"ssl_redirect": false,
 						"proxy_protocol": false,
+						"private_network": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
 						"sticky_sessions": {
 							"cookie_name": "my-cookie"
 						}
@@ -403,6 +440,14 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 							"backend_port": 80
 						}
 					],
+					"firewall_rules": [
+						{
+							"id": "abcd12345",
+							"port": 80,
+							"source": "0.0.0.0/0",
+							"ip_type": "v4"
+						}
+					], 						
 					"instances": [
 						"1234"
 					]
@@ -427,6 +472,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		BalancingAlgorithm: "roundrobin",
 		SSLRedirect:        BoolToBoolPtr(false),
 		ProxyProtocol:      BoolToBoolPtr(false),
+		PrivateNetwork:     StringToStringPtr("8d5bdbdb-3324-4d0c-b303-03e1315e1c02"),
 		HealthCheck: &HealthCheck{
 			Protocol:           "http",
 			Port:               80,
@@ -465,6 +511,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 			BalancingAlgorithm: "roundrobin",
 			SSLRedirect:        BoolToBoolPtr(false),
 			ProxyProtocol:      BoolToBoolPtr(false),
+			PrivateNetwork:     "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
 			StickySessions: &StickySessions{
 				CookieName: "my-cookie",
 			},
@@ -479,6 +526,14 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 			HealthyThreshold:   5,
 		},
 		Instances: []string{"1234"},
+		FirewallRules: []LBFirewallRule{
+			{
+				RuleID: "abcd12345",
+				Port:   80,
+				Source: "0.0.0.0/0",
+				IPType: "v4",
+			},
+		},
 	}
 
 	if !reflect.DeepEqual(lb, expected) {
@@ -489,8 +544,8 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 func TestLoadBalancerHandler_Update(t *testing.T) {
 	setup()
 	defer teardown()
-
-	mux.HandleFunc("/v2/load-balancers/d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", func(writer http.ResponseWriter, request *http.Request) {
+	uri := fmt.Sprintf("%s/%s", lbPath, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141")
+	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
@@ -509,6 +564,7 @@ func TestLoadBalancerHandler_Update(t *testing.T) {
 		BalancingAlgorithm: "roundrobin",
 		SSLRedirect:        BoolToBoolPtr(false),
 		ProxyProtocol:      BoolToBoolPtr(false),
+		PrivateNetwork:     StringToStringPtr("8d5bdbdb-3324-4d0c-b303-03e1315e1c02"),
 		HealthCheck: &HealthCheck{
 			Protocol:           "http",
 			Port:               80,
@@ -530,7 +586,8 @@ func TestLoadBalancerHandler_GetFowardingRule(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/load-balancers/d9dbc01c-aaca-4d4b-8c4a-bbb24c946141/forwarding-rules/d42585eb85b1f69d", func(writer http.ResponseWriter, request *http.Request) {
+	uri := fmt.Sprintf("%s/%s/forwarding-rules/%s", lbPath, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", "d42585eb85b1f69d")
+	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
 		req := `{
   "forwarding_rule": {
     "id": "d42585eb85b1f69d",
@@ -557,6 +614,40 @@ func TestLoadBalancerHandler_GetFowardingRule(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(rule, expected) {
-		t.Errorf("Instance.GetForwardingRule returned %+v, expected %+v", rule, expected)
+		t.Errorf("LoadBalancer.GetForwardingRule returned %+v, expected %+v", rule, expected)
+	}
+}
+
+func TestLoadBalancerHandler_GetFirewallRule(t *testing.T) {
+	setup()
+	defer teardown()
+
+	uri := fmt.Sprintf("%s/%s/firewall-rules/%s", lbPath, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", "d42585eb85b1f69d")
+	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
+		req := `{
+  "firewall_rule": {
+    "id": "d42585eb85b1f69d",
+    "port": 80,
+    "source": "0.0.0.0/0",
+    "ip_type": "v4"
+  }
+}`
+		fmt.Fprint(writer, req)
+	})
+
+	rule, err := client.LoadBalancer.GetFirewallRule(ctx, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", "d42585eb85b1f69d")
+	if err != nil {
+		t.Errorf("LoadBalancer.GetFirewallRule returned %+v", err)
+	}
+
+	expected := &LBFirewallRule{
+		RuleID: "d42585eb85b1f69d",
+		Port:   80,
+		Source: "0.0.0.0/0",
+		IPType: "v4",
+	}
+
+	if !reflect.DeepEqual(rule, expected) {
+		t.Errorf("LoadBalancer.GetFirewallRule returned %+v, expected %+v", rule, expected)
 	}
 }
