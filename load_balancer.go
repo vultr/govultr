@@ -108,11 +108,6 @@ type ForwardingRule struct {
 	BackendPort      int    `json:"backend_port,omitempty"`
 }
 
-// LBFirewallRules represents a list of firewall rules
-type LBFirewallRules struct {
-	FirewallRuleList []LBFirewallRule `json:"firewall_rules,omitempty"`
-}
-
 // LBFirewallRule represent a single firewall rule
 type LBFirewallRule struct {
 	RuleID string `json:"id,omitempty"`
