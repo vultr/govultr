@@ -238,3 +238,8 @@ func BoolToBoolPtr(value bool) *bool {
 	b := value
 	return &b
 }
+
+// StringToStringPtr helper function that returns a pointer from your string value
+func StringToStringPtr(value string) *string {
+	return &value
+}
