@@ -162,9 +162,9 @@ type BackupSchedule struct {
 // BackupScheduleReq struct used to create a backup schedule for an instance.
 type BackupScheduleReq struct {
 	Type string `json:"type"`
-	Hour int    `json:"hour,omitempty"`
-	Dow  int    `json:"dow,omitempty"`
-	Dom  int    `json:"dom,omitempty"`
+	Hour *int   `json:"hour,omitempty"`
+	Dow  *int   `json:"dow,omitempty"`
+	Dom  *int   `json:"dom,omitempty"`
 }
 
 // RestoreReq struct used to supply whether a restore should be from a backup or snapshot.

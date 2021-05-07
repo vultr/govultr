@@ -46,9 +46,9 @@ func TestServerServiceHandler_SetBackupSchedule(t *testing.T) {
 
 	bs := &BackupScheduleReq{
 		Type: "weekly",
-		Hour: 22,
-		Dow:  2,
-		Dom:  3,
+		Hour: IntToIntPtr(22),
+		Dow:  IntToIntPtr(2),
+		Dom:  IntToIntPtr(3),
 	}
 
 	if err := client.Instance.SetBackupSchedule(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", bs); err != nil {
