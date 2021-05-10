@@ -46,8 +46,8 @@ func TestServerServiceHandler_SetBackupSchedule(t *testing.T) {
 
 	bs := &BackupScheduleReq{
 		Type: "weekly",
-		Hour: 22,
-		Dow:  2,
+		Hour: IntToIntPtr(22),
+		Dow:  IntToIntPtr(2),
 		Dom:  3,
 	}
 
