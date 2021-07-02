@@ -123,6 +123,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 		Hostname:        "test",
 		Tag:             "go-test",
 		ReservedIPv4:    "111.111.111.111",
+		PersistentPxe:   BoolToBoolPtr(true),
 	}
 
 	bm, err := client.BareMetalServer.Create(ctx, options)
