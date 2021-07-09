@@ -23,8 +23,10 @@ type KubernetesService interface {
 	UpdateNodePool()
 	DeleteNodePool()
 
-	DeleteNodePoolInstance()
+	DeleteNodePoolInstance(ctx context.Context, vkeID, nodePoolID, nodeID string) error
 	RecycleNodePoolInstance()
+
+	GetKubeConfig()
 }
 
 type KubernetesHandler struct {
@@ -169,10 +171,26 @@ func (k *KubernetesHandler) DeleteNodePool() {
 	panic("implement me")
 }
 
-func (k *KubernetesHandler) DeleteNodePoolInstance() {
-	panic("implement me")
+// DeleteNodePoolInstance will remove a specified node from a nodepool
+func (k *KubernetesHandler) DeleteNodePoolInstance(ctx context.Context, vkeID, nodePoolID, nodeID string) error {
+	req, err := k.client.NewRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s/node-pools/%s/nodes/%s", vkePath, vkeID, nodePoolID, nodeID), nil)
+	if err != nil {
+		return err
+	}
+
+	return k.client.DoWithContext(ctx, req, nil)
 }
 
-func (k *KubernetesHandler) RecycleNodePoolInstance() {
+// RecycleNodePoolInstance will recycle (destroy + redeploy) a given node on a nodepool
+func (k *KubernetesHandler) RecycleNodePoolInstance(ctx context.Context, vkeID, nodePoolID, nodeID string) error {
+	req, err := k.client.NewRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/node-pools/%s/nodes/%s/recycle", vkePath, vkeID, nodePoolID, nodeID), nil)
+	if err != nil {
+		return err
+	}
+
+	return k.client.DoWithContext(ctx, req, nil)
+}
+
+func (k *KubernetesHandler) GetKubeConfig() {
 	panic("implement me")
 }
