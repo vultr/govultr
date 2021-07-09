@@ -10,29 +10,35 @@ import (
 
 const vkePath = "/v2/kubernetes/clusters"
 
+//todo change the update label calls from one off strings to actual structs so if we add more functionality in the future we don't have breaking changes
+
+// KubernetesService is the interface to interact with kubernetes endpoint on the Vultr API
+// Link : https://www.vultr.com/api/#tag/kubernetes
 type KubernetesService interface {
 	CreateCluster(ctx context.Context, createReq *ClusterReq) (*Cluster, error)
 	GetCluster(ctx context.Context, id string) (*Cluster, error)
 	ListClusters(ctx context.Context, options *ListOptions) ([]Cluster, *Meta, error)
-	UpdateCluster()
+	UpdateCluster(ctx context.Context, vkeID, label string) error
 	DeleteCluster(ctx context.Context, id string) error
 
-	CreateNodePool()
-	ListNodePools()
-	GetNodePool()
-	UpdateNodePool()
-	DeleteNodePool()
+	CreateNodePool(ctx context.Context, vkeID string, nodePoolReq *NodePoolReq) (*NodePool, error)
+	ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, error)
+	GetNodePool(ctx context.Context, vkeID, nodePoolID string) (*NodePool, error)
+	UpdateNodePool(ctx context.Context, vkeID, nodePoolID string, nodeQuantity int) error
+	DeleteNodePool(ctx context.Context, vkeID, nodePoolID string) error
 
 	DeleteNodePoolInstance(ctx context.Context, vkeID, nodePoolID, nodeID string) error
-	RecycleNodePoolInstance()
+	RecycleNodePoolInstance(ctx context.Context, vkeID, nodePoolID, nodeID string) error
 
-	GetKubeConfig()
+	GetKubeConfig(ctx context.Context, vkeID string) (*KubeConfig, error)
 }
 
+// KubernetesHandler handles interaction with the kubernetes methods for the Vultr API
 type KubernetesHandler struct {
 	client *Client
 }
 
+// Cluster represents a full VKE cluster
 type Cluster struct {
 	ID            string     `json:"id"`
 	Label         string     `json:"label"`
@@ -47,6 +53,7 @@ type Cluster struct {
 	NodePools     []NodePool `json:"node_pools"`
 }
 
+// NodePool represents a pool of nodes that are grouped by their label and plan type
 type NodePool struct {
 	ID          string `json:"id"`
 	DateCreated string `json:"date_created"`
@@ -57,10 +64,16 @@ type NodePool struct {
 	Nodes       []Node `json:"nodes"`
 }
 
+// Node represents a node that will live within a nodepool
 type Node struct {
 	ID          string `json:"id"`
 	DateCreated string `json:"date_created"`
 	Status      string `json:"status"`
+}
+
+// KubeConfig will contain the kubeconfig b64 encoded
+type KubeConfig struct {
+	KubeConfig string `json:"kube_config"`
 }
 
 type ClusterReq struct {
@@ -83,6 +96,15 @@ type vkeClustersBase struct {
 
 type vkeClusterBase struct {
 	VKECluster *Cluster `json:"vke_cluster"`
+}
+
+type vkeNodePoolsBase struct {
+	NodePools []NodePool `json:"node_pools"`
+	Meta      *Meta      `json:"meta"`
+}
+
+type vkeNodePoolBase struct {
+	NodePool *NodePool `json:"node_pool"`
 }
 
 // CreateCluster will create a Kubernetes cluster.
@@ -137,8 +159,16 @@ func (k *KubernetesHandler) ListClusters(ctx context.Context, options *ListOptio
 	return k8s.VKEClusters, k8s.Meta, nil
 }
 
-func (k *KubernetesHandler) UpdateCluster() {
-	panic("implement me")
+// UpdateCluster updates label on VKE cluster
+func (k *KubernetesHandler) UpdateCluster(ctx context.Context, vkeID, label string) error {
+	value := RequestBody{"label": label}
+
+	req, err := k.client.NewRequest(ctx, http.MethodPut, fmt.Sprintf("%s/%s/", vkePath, vkeID), value)
+	if err != nil {
+		return err
+	}
+
+	return k.client.DoWithContext(ctx, req, nil)
 }
 
 // DeleteCluster will delete a Kubernetes cluster.
@@ -151,24 +181,79 @@ func (k *KubernetesHandler) DeleteCluster(ctx context.Context, id string) error 
 	return k.client.DoWithContext(ctx, req, nil)
 }
 
-func (k *KubernetesHandler) CreateNodePool() {
-	panic("implement me")
+// CreateNodePool creates a nodepool on a VKE cluster
+func (k *KubernetesHandler) CreateNodePool(ctx context.Context, vkeID string, nodePoolReq *NodePoolReq) (*NodePool, error) {
+	req, err := k.client.NewRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/node-pools", vkePath, vkeID), nodePoolReq)
+	if err != nil {
+		return nil, err
+	}
+
+	n := new(vkeNodePoolBase)
+	err = k.client.DoWithContext(ctx, req, n)
+	if err != nil {
+		return nil, err
+	}
+
+	return n.NodePool, nil
 }
 
-func (k *KubernetesHandler) ListNodePools() {
-	panic("implement me")
+// ListNodePools will return all nodepools for a given VKE cluster
+func (k *KubernetesHandler) ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, error) {
+	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/node-pools", vkePath, vkeID), nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	newValues, err := query.Values(options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req.URL.RawQuery = newValues.Encode()
+
+	n := new(vkeNodePoolsBase)
+	if err = k.client.DoWithContext(ctx, req, &n); err != nil {
+		return nil, nil, err
+	}
+
+	return n.NodePools, n.Meta, nil
 }
 
-func (k *KubernetesHandler) GetNodePool() {
-	panic("implement me")
+// GetNodePool will return a single nodepool
+func (k *KubernetesHandler) GetNodePool(ctx context.Context, vkeID, nodePoolID string) (*NodePool, error) {
+	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/node-pools/%s", vkePath, vkeID, nodePoolID), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	n := new(vkeNodePoolBase)
+	if err = k.client.DoWithContext(ctx, req, &n); err != nil {
+		return nil, err
+	}
+
+	return n.NodePool, nil
 }
 
-func (k *KubernetesHandler) UpdateNodePool() {
-	panic("implement me")
+// UpdateNodePool will allow you change the quantity of nodes within a nodepool
+func (k *KubernetesHandler) UpdateNodePool(ctx context.Context, vkeID, nodePoolID string, nodeQuantity int) error {
+	value := RequestBody{"node_quantity": nodeQuantity}
+
+	req, err := k.client.NewRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s/node-pools/%s", vkePath, vkeID, nodePoolID), value)
+	if err != nil {
+		return err
+	}
+
+	return k.client.DoWithContext(ctx, req, nil)
 }
 
-func (k *KubernetesHandler) DeleteNodePool() {
-	panic("implement me")
+// DeleteNodePool will remove a nodepool from a VKE cluster
+func (k *KubernetesHandler) DeleteNodePool(ctx context.Context, vkeID, nodePoolID string) error {
+	req, err := k.client.NewRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s/node-pools/%s", vkePath, vkeID, nodePoolID), nil)
+	if err != nil {
+		return err
+	}
+
+	return k.client.DoWithContext(ctx, req, nil)
 }
 
 // DeleteNodePoolInstance will remove a specified node from a nodepool
@@ -191,6 +276,17 @@ func (k *KubernetesHandler) RecycleNodePoolInstance(ctx context.Context, vkeID, 
 	return k.client.DoWithContext(ctx, req, nil)
 }
 
-func (k *KubernetesHandler) GetKubeConfig() {
-	panic("implement me")
+// GetKubeConfig returns the kubeconfig for the specified VKE cluster
+func (k *KubernetesHandler) GetKubeConfig(ctx context.Context, vkeID string) (*KubeConfig, error) {
+	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/config", vkePath, vkeID), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	kc := new(KubeConfig)
+	if err = k.client.DoWithContext(ctx, req, &kc); err != nil {
+		return nil, err
+	}
+
+	return kc, nil
 }
