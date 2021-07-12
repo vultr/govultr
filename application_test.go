@@ -20,7 +20,10 @@ func TestApplicationServiceHandler_List(t *testing.T) {
             	"id": 1,
             	"name": "LEMP",
             	"short_name": "lemp",
-            	"deploy_name": "LEMP on CentOS 6 x64"
+            	"deploy_name": "LEMP on CentOS 6 x64",
+				"type": "one-click",
+				"vendor": "",
+				"image_id": ""
         	}
     	],
     	"meta": {
@@ -51,6 +54,9 @@ func TestApplicationServiceHandler_List(t *testing.T) {
 			Name:       "LEMP",
 			ShortName:  "lemp",
 			DeployName: "LEMP on CentOS 6 x64",
+			Vendor:     "",
+			Type:       "one-click",
+			ImageID:    "",
 		},
 	}
 
