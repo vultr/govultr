@@ -68,6 +68,7 @@ type NodePool struct {
 type Node struct {
 	ID          string `json:"id"`
 	DateCreated string `json:"date_created"`
+	Label       string `json:"label"`
 	Status      string `json:"status"`
 }
 
@@ -163,7 +164,7 @@ func (k *KubernetesHandler) ListClusters(ctx context.Context, options *ListOptio
 func (k *KubernetesHandler) UpdateCluster(ctx context.Context, vkeID, label string) error {
 	value := RequestBody{"label": label}
 
-	req, err := k.client.NewRequest(ctx, http.MethodPut, fmt.Sprintf("%s/%s/", vkePath, vkeID), value)
+	req, err := k.client.NewRequest(ctx, http.MethodPut, fmt.Sprintf("%s/%s", vkePath, vkeID), value)
 	if err != nil {
 		return err
 	}
