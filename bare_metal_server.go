@@ -96,6 +96,7 @@ type BareMetalUpdate struct {
 	EnableIPv6 *bool  `json:"enable_ipv6,omitempty"`
 	Label      string `json:"label,omitempty"`
 	AppID      int    `json:"app_id,omitempty"`
+	ImageID    string `json:"image_id,omitempty"`
 	UserData   string `json:"user_data,omitempty"`
 	Tag        string `json:"tag,omitempty"`
 }
