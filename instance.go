@@ -239,6 +239,7 @@ type InstanceUpdateReq struct {
 	Tag                  string   `json:"tag,omitempty"`
 	OsID                 int      `json:"os_id,omitempty"`
 	AppID                int      `json:"app_id,omitempty"`
+	ImageID              string   `json:"image_id,omitempty"`
 	EnableIPv6           *bool    `json:"enable_ipv6,omitempty"`
 	EnablePrivateNetwork *bool    `json:"enable_private_network,omitempty"`
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
