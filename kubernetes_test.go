@@ -283,8 +283,8 @@ func TestKubernetesHandler_UpdateCluster(t *testing.T) {
 	mux.HandleFunc(fmt.Sprintf("%s/%s", vkePath, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33"), func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
-
-	err := client.Kubernetes.UpdateCluster(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", "new label")
+	update := ClusterReqUpdate{Label: "new label"}
+	err := client.Kubernetes.UpdateCluster(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", &update)
 
 	if err != nil {
 		t.Errorf("Kubernetes.UpdateCluster returned %+v", err)
@@ -497,8 +497,8 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
 	mux.HandleFunc(fmt.Sprintf("%s/%s/node-pools/%s", vkePath, "1", "2"), func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
-
-	err := client.Kubernetes.UpdateNodePool(ctx, "1", "2", 1)
+	update := NodePoolReqUpdate{NodeQuantity: 1}
+	err := client.Kubernetes.UpdateNodePool(ctx, "1", "2", &update)
 	if err != nil {
 		t.Errorf("Kubernetes.UpdateNodePool returned %+v", err)
 	}

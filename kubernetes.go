@@ -10,21 +10,19 @@ import (
 
 const vkePath = "/v2/kubernetes/clusters"
 
-//todo change the update label calls from one off strings to actual structs so if we add more functionality in the future we don't have breaking changes
-
 // KubernetesService is the interface to interact with kubernetes endpoint on the Vultr API
 // Link : https://www.vultr.com/api/#tag/kubernetes
 type KubernetesService interface {
 	CreateCluster(ctx context.Context, createReq *ClusterReq) (*Cluster, error)
 	GetCluster(ctx context.Context, id string) (*Cluster, error)
 	ListClusters(ctx context.Context, options *ListOptions) ([]Cluster, *Meta, error)
-	UpdateCluster(ctx context.Context, vkeID, label string) error
+	UpdateCluster(ctx context.Context, vkeID string, updateReq *ClusterReqUpdate) error
 	DeleteCluster(ctx context.Context, id string) error
 
 	CreateNodePool(ctx context.Context, vkeID string, nodePoolReq *NodePoolReq) (*NodePool, error)
 	ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, error)
 	GetNodePool(ctx context.Context, vkeID, nodePoolID string) (*NodePool, error)
-	UpdateNodePool(ctx context.Context, vkeID, nodePoolID string, nodeQuantity int) error
+	UpdateNodePool(ctx context.Context, vkeID, nodePoolID string, updateReq *NodePoolReqUpdate) error
 	DeleteNodePool(ctx context.Context, vkeID, nodePoolID string) error
 
 	DeleteNodePoolInstance(ctx context.Context, vkeID, nodePoolID, nodeID string) error
@@ -77,6 +75,7 @@ type KubeConfig struct {
 	KubeConfig string `json:"kube_config"`
 }
 
+// ClusterReq struct used to create a cluster
 type ClusterReq struct {
 	Label     string        `json:"label"`
 	Region    string        `json:"region"`
@@ -84,10 +83,21 @@ type ClusterReq struct {
 	NodePools []NodePoolReq `json:"node_pools"`
 }
 
+// ClusterReqUpdate struct used to update update a cluster
+type ClusterReqUpdate struct {
+	Label string `json:"label"`
+}
+
+// NodePoolReq struct used to create a node pool
 type NodePoolReq struct {
 	NodeQuantity int    `json:"node_quantity"`
 	Label        string `json:"label"`
 	Plan         string `json:"plan"`
+}
+
+// NodePoolReqUpdate struct used to update a node pool
+type NodePoolReqUpdate struct {
+	NodeQuantity int `json:"node_quantity"`
 }
 
 type vkeClustersBase struct {
@@ -161,10 +171,8 @@ func (k *KubernetesHandler) ListClusters(ctx context.Context, options *ListOptio
 }
 
 // UpdateCluster updates label on VKE cluster
-func (k *KubernetesHandler) UpdateCluster(ctx context.Context, vkeID, label string) error {
-	value := RequestBody{"label": label}
-
-	req, err := k.client.NewRequest(ctx, http.MethodPut, fmt.Sprintf("%s/%s", vkePath, vkeID), value)
+func (k *KubernetesHandler) UpdateCluster(ctx context.Context, vkeID string, updateReq *ClusterReqUpdate) error {
+	req, err := k.client.NewRequest(ctx, http.MethodPut, fmt.Sprintf("%s/%s", vkePath, vkeID), updateReq)
 	if err != nil {
 		return err
 	}
@@ -236,10 +244,8 @@ func (k *KubernetesHandler) GetNodePool(ctx context.Context, vkeID, nodePoolID s
 }
 
 // UpdateNodePool will allow you change the quantity of nodes within a nodepool
-func (k *KubernetesHandler) UpdateNodePool(ctx context.Context, vkeID, nodePoolID string, nodeQuantity int) error {
-	value := RequestBody{"node_quantity": nodeQuantity}
-
-	req, err := k.client.NewRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s/node-pools/%s", vkePath, vkeID, nodePoolID), value)
+func (k *KubernetesHandler) UpdateNodePool(ctx context.Context, vkeID, nodePoolID string, updateReq *NodePoolReqUpdate) error {
+	req, err := k.client.NewRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s/node-pools/%s", vkePath, vkeID, nodePoolID), updateReq)
 	if err != nil {
 		return err
 	}
