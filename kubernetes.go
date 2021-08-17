@@ -55,6 +55,7 @@ type Cluster struct {
 type NodePool struct {
 	ID          string `json:"id"`
 	DateCreated string `json:"date_created"`
+	DateUpdated string `json:"date_updated"`
 	Label       string `json:"label"`
 	PlanID      string `json:"plan_id"`
 	Status      string `json:"status"`

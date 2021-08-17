@@ -495,12 +495,53 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc(fmt.Sprintf("%s/%s/node-pools/%s", vkePath, "1", "2"), func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
+		response := `{
+  "node_pool": {
+    "id": "e97bdee9-2781-4f31-be03-60fc75f399ae",
+    "date_created": "2021-07-07T23:27:08+00:00",
+    "date_updated": "2021-07-08T12:12:44+00:00",
+    "label": "my-label-48770703",
+    "plan_id": "vc2-1c-2gb",
+    "status": "active",
+    "count": 1,
+    "nodes": [
+      {
+        "id": "f2e11430-76e5-4dc6-a1c9-ef5682c21ddf",
+        "label": "my-label-48770703-44060e6384c45",
+        "date_created": "2021-07-07T23:27:08+00:00",
+        "status": "active"
+      }
+    ]
+  }
+}`
+		fmt.Fprintf(writer, response)
 	})
 	update := NodePoolReqUpdate{NodeQuantity: 1}
-	err := client.Kubernetes.UpdateNodePool(ctx, "1", "2", &update)
+	response, err := client.Kubernetes.UpdateNodePool(ctx, "1", "2", &update)
 	if err != nil {
 		t.Errorf("Kubernetes.UpdateNodePool returned %+v", err)
+	}
+
+	expected := &NodePool{
+		ID:          "e97bdee9-2781-4f31-be03-60fc75f399ae",
+		DateCreated: "2021-07-07T23:27:08+00:00",
+		DateUpdated: "2021-07-08T12:12:44+00:00",
+		Label:       "my-label-48770703",
+		PlanID:      "vc2-1c-2gb",
+		Status:      "active",
+		Count:       1,
+		Nodes: []Node{
+			{
+				ID:          "f2e11430-76e5-4dc6-a1c9-ef5682c21ddf",
+				DateCreated: "2021-07-07T23:27:08+00:00",
+				Label:       "my-label-48770703-44060e6384c45",
+				Status:      "active",
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(response, expected) {
+		t.Errorf("Kubernetes.UpdateNodePool meta returned %+v, expected %+v", response, expected)
 	}
 }
 
