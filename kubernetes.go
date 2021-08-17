@@ -246,7 +246,7 @@ func (k *KubernetesHandler) GetNodePool(ctx context.Context, vkeID, nodePoolID s
 
 // UpdateNodePool will allow you change the quantity of nodes within a nodepool
 func (k *KubernetesHandler) UpdateNodePool(ctx context.Context, vkeID, nodePoolID string, updateReq *NodePoolReqUpdate) (*NodePool, error) {
-	req, err := k.client.NewRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s/node-pools/%s", vkePath, vkeID, nodePoolID), updateReq)
+	req, err := k.client.NewRequest(ctx, http.MethodPatch, fmt.Sprintf("%s/%s/node-pools/%s", vkePath, vkeID, nodePoolID), updateReq)
 	if err != nil {
 		return nil, err
 	}
