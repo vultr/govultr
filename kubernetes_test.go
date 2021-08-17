@@ -1,10 +1,12 @@
 package govultr
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestKubernetesHandler_CreateCluster(t *testing.T) {
@@ -92,6 +94,13 @@ func TestKubernetesHandler_CreateCluster(t *testing.T) {
 	if !reflect.DeepEqual(vke, expected) {
 		t.Errorf("Kubernetes.CreateCluster returned %+v, expected %+v", vke, expected)
 	}
+
+	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
+	defer can()
+	_, err = client.Kubernetes.CreateCluster(c, createReq)
+	if err == nil {
+		t.Error("Kubernetes.CreateCluster returned nil")
+	}
 }
 
 func TestKubernetesHandler_GetCluster(t *testing.T) {
@@ -172,6 +181,13 @@ func TestKubernetesHandler_GetCluster(t *testing.T) {
 
 	if !reflect.DeepEqual(vke, expected) {
 		t.Errorf("Kubernetes.GetCluster returned %+v, expected %+v", vke, expected)
+	}
+
+	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
+	defer can()
+	_, err = client.Kubernetes.GetCluster(c, "014da059-21e3-47eb-acb5-91bf697c31aa")
+	if err == nil {
+		t.Error("Kubernetes.GetCluster returned nil")
 	}
 }
 
@@ -274,6 +290,13 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
 	if !reflect.DeepEqual(meta, expectedMeta) {
 		t.Errorf("Kubernetes.List meta returned %+v, expected %+v", vke, expected)
 	}
+
+	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
+	defer can()
+	_, _, err = client.Kubernetes.ListClusters(c, nil)
+	if err == nil {
+		t.Error("Kubernetes.ListClusters returned nil")
+	}
 }
 
 func TestKubernetesHandler_UpdateCluster(t *testing.T) {
@@ -361,6 +384,13 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 	if !reflect.DeepEqual(np, expected) {
 		t.Errorf("Kubernetes.CreateNodePool returned %+v, expected %+v", np, expected)
 	}
+
+	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
+	defer can()
+	_, err = client.Kubernetes.CreateNodePool(c, "1", createReq)
+	if err == nil {
+		t.Error("Kubernetes.CreateNodePool returned nil")
+	}
 }
 
 func TestKubernetesHandler_GetNodePool(t *testing.T) {
@@ -413,6 +443,13 @@ func TestKubernetesHandler_GetNodePool(t *testing.T) {
 
 	if !reflect.DeepEqual(np, expected) {
 		t.Errorf("Kubernetes.GetNodePool returned %+v, expected %+v", np, expected)
+	}
+
+	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
+	defer can()
+	_, err = client.Kubernetes.GetNodePool(c, "1", "2")
+	if err == nil {
+		t.Error("Kubernetes.GetNodePool returned nil")
 	}
 }
 
@@ -488,6 +525,13 @@ func TestKubernetesHandler_ListNodePools(t *testing.T) {
 	if !reflect.DeepEqual(meta, expectedMeta) {
 		t.Errorf("Kubernetes.ListNodePools meta returned %+v, expected %+v", meta, expected)
 	}
+
+	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
+	defer can()
+	_, _, err = client.Kubernetes.ListNodePools(c, "1", nil)
+	if err == nil {
+		t.Error("Kubernetes.ListNodePools returned nil")
+	}
 }
 
 func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
@@ -542,6 +586,13 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
 
 	if !reflect.DeepEqual(response, expected) {
 		t.Errorf("Kubernetes.UpdateNodePool meta returned %+v, expected %+v", response, expected)
+	}
+
+	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
+	defer can()
+	_, err = client.Kubernetes.UpdateNodePool(c, "1", "2", &update)
+	if err == nil {
+		t.Error("Kubernetes.UpdateNodePool returned nil")
 	}
 }
 
@@ -604,5 +655,12 @@ func TestKubernetesHandler_GetKubeConfig(t *testing.T) {
 	expected := &KubeConfig{KubeConfig: "config="}
 	if !reflect.DeepEqual(config, expected) {
 		t.Errorf("Kubernetes.GetKubeConfig  returned %+v, expected %+v", config, expected)
+	}
+
+	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
+	defer can()
+	_, err = client.Kubernetes.GetKubeConfig(c, "1")
+	if err == nil {
+		t.Error("Kubernetes.GetKubeConfig returned nil")
 	}
 }
