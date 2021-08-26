@@ -693,7 +693,7 @@ func TestKubernetesHandler_GetVersions(t *testing.T) {
 		t.Errorf("Kubernetes.GetVersions returned %+v", err)
 	}
 
-	expected := &Versions{Versions: []string{"v1.20.0+1"}}
+	expected := &K8Versions{K8Versions: []string{"v1.20.0+1"}}
 	if !reflect.DeepEqual(config, expected) {
 		t.Errorf("Kubernetes.GetVersions returned %+v, expected %+v", config, expected)
 	}

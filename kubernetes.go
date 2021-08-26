@@ -30,7 +30,7 @@ type KubernetesService interface {
 	RecycleNodePoolInstance(ctx context.Context, vkeID, nodePoolID, nodeID string) error
 
 	GetKubeConfig(ctx context.Context, vkeID string) (*KubeConfig, error)
-	GetVersions(ctx context.Context) (*Versions, error)
+	GetVersions(ctx context.Context) (*K8Versions, error)
 }
 
 // KubernetesHandler handles interaction with the kubernetes methods for the Vultr API
@@ -121,9 +121,9 @@ type vkeNodePoolBase struct {
 	NodePool *NodePool `json:"node_pool"`
 }
 
-// Versions that are supported for VKE
-type Versions struct {
-	Versions []string `json:"versions"`
+// K8Versions that are supported for VKE
+type K8Versions struct {
+	K8Versions []string `json:"versions"`
 }
 
 // CreateCluster will create a Kubernetes cluster.
@@ -322,7 +322,7 @@ func (k *KubernetesHandler) GetKubeConfig(ctx context.Context, vkeID string) (*K
 }
 
 // GetVersions returns the supported kubernetes versions
-func (k *KubernetesHandler) GetVersions(ctx context.Context) (*Versions, error) {
+func (k *KubernetesHandler) GetVersions(ctx context.Context) (*K8Versions, error) {
 	uri := "/v2/kubernetes/versions"
 	req, err := k.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
