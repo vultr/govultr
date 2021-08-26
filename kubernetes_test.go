@@ -328,6 +328,20 @@ func TestKubernetesHandler_DeleteCluster(t *testing.T) {
 	}
 }
 
+func TestKubernetesHandler_DeleteClusterWithResources(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc(fmt.Sprintf("%s/%s/delete-with-linked-resources", vkePath, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33"), func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.Kubernetes.DeleteClusterWithResources(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
+	if err != nil {
+		t.Errorf("Kubernetes.DeleteClusterWithResources returned %+v", err)
+	}
+}
+
 func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 	setup()
 	defer teardown()
@@ -662,5 +676,32 @@ func TestKubernetesHandler_GetKubeConfig(t *testing.T) {
 	_, err = client.Kubernetes.GetKubeConfig(c, "1")
 	if err == nil {
 		t.Error("Kubernetes.GetKubeConfig returned nil")
+	}
+}
+
+func TestKubernetesHandler_GetVersions(t *testing.T) {
+	setup()
+	defer teardown()
+	path := "kubernetes/versions"
+	mux.HandleFunc(fmt.Sprintf(path), func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"versions": ["v1.20.0+1"]}`
+		fmt.Fprint(writer, response)
+	})
+
+	config, err := client.Kubernetes.GetVersions(ctx)
+	if err != nil {
+		t.Errorf("Kubernetes.GetVersions returned %+v", err)
+	}
+
+	expected := &Versions{Versions: []string{"v1.20.0+1"}}
+	if !reflect.DeepEqual(config, expected) {
+		t.Errorf("Kubernetes.GetVersions returned %+v, expected %+v", config, expected)
+	}
+
+	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
+	defer can()
+	_, err = client.Kubernetes.GetVersions(c)
+	if err == nil {
+		t.Error("Kubernetes.GetVersions returned nil")
 	}
 }
