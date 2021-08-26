@@ -329,7 +329,7 @@ func (k *KubernetesHandler) GetVersions(ctx context.Context) (*K8Versions, error
 		return nil, err
 	}
 
-	versions := new(Versions)
+	versions := new(K8Versions)
 	if err = k.client.DoWithContext(ctx, req, &versions); err != nil {
 		return nil, err
 	}
