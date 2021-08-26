@@ -323,7 +323,7 @@ func (k *KubernetesHandler) GetKubeConfig(ctx context.Context, vkeID string) (*K
 
 // GetVersions returns the supported kubernetes versions
 func (k *KubernetesHandler) GetVersions(ctx context.Context) (*Versions, error) {
-	uri := "kubernetes/versions"
+	uri := "/v2/kubernetes/versions"
 	req, err := k.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, err

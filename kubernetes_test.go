@@ -682,7 +682,7 @@ func TestKubernetesHandler_GetKubeConfig(t *testing.T) {
 func TestKubernetesHandler_GetVersions(t *testing.T) {
 	setup()
 	defer teardown()
-	path := "kubernetes/versions"
+	path := "/v2/kubernetes/versions"
 	mux.HandleFunc(fmt.Sprintf(path), func(writer http.ResponseWriter, request *http.Request) {
 		response := `{"versions": ["v1.20.0+1"]}`
 		fmt.Fprint(writer, response)
