@@ -12,7 +12,7 @@ func TestSnapshotServiceHandler_Create(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/snapshots", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"snapshot":{"id": "5359435d28b9a","date_created": "2014-04-18 12:40:40","description": "Test snapshot","size": 42949672960,"status": "complete","os_id": 127,"app_id": 0}}`
+		response := `{"snapshot":{"id": "5359435d28b9a","date_created": "2014-04-18 12:40:40","description": "Test snapshot","size": 42949672960,"compressed_size": 1078864689,"status": "complete","os_id": 127,"app_id": 0}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -47,7 +47,7 @@ func TestSnapshotServiceHandler_CreateFromURL(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/snapshots/create-from-url", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"snapshot":{"id": "5359435d28b9a","date_created": "2014-04-18 12:40:40","description": "Test snapshot","size": 42949672960,"status": "complete","os_id": 127,"app_id": 0}}`
+		response := `{"snapshot":{"id": "5359435d28b9a","date_created": "2014-04-18 12:40:40","description": "Test snapshot","size": 42949672960,"compressed_size" : 1078864689,"status": "complete","os_id": 127,"app_id": 0}}`
 		fmt.Fprint(writer, response)
 	})
 	snap := SnapshotURLReq{URL: "http://vultr.com"}
@@ -77,7 +77,7 @@ func TestSnapshotServiceHandler_Get(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/snapshots/5359435d28b9a", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"snapshot":{"id": "5359435d28b9a","date_created": "2014-04-18 12:40:40","description": "Test snapshot","size": 42949672960,"status": "complete","os_id": 127,"app_id": 0}}`
+		response := `{"snapshot":{"id": "5359435d28b9a","date_created": "2014-04-18 12:40:40","description": "Test snapshot","size": 42949672960,"compressed_size": 1078864689,"status": "complete","os_id": 127,"app_id": 0}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -122,7 +122,7 @@ func TestSnapshotServiceHandler_List(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/snapshots", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"snapshots": [{"id": "885ee0f4f263c","date_created": "2014-04-18 12:40:40","description": "Test snapshot","size": 42949672960,"status": "complete","os_id": 127,"app_id": 0}],"meta": {"total": 4,"links": {"next": "","prev": ""}}}`
+		response := `{"snapshots": [{"id": "885ee0f4f263c","date_created": "2014-04-18 12:40:40","description": "Test snapshot","size": 42949672960,"compressed_size": 1078864689,"status": "complete","os_id": 127,"app_id": 0}],"meta": {"total": 4,"links": {"next": "","prev": ""}}}`
 		fmt.Fprint(writer, response)
 	})
 
