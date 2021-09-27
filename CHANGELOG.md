@@ -4,7 +4,7 @@
 
 ## [v2.9.0](https://github.com/vultr/govultr/compare/v2.8.1..v2.9.0) (2021-09-27)
 ### Breaking Change
-* Kubernetes : PlanID and Count fields have been updated to follow API pattern [161](https://github.com/vultr/govultr/pull/161)
+* Kubernetes : PlanID is now Plan and Count is now NodeQuantity to follow API pattern [161](https://github.com/vultr/govultr/pull/161)
 
 ### Enhancement
 * Snapshots : Add compressed size field [162](https://github.com/vultr/govultr/pull/162)
