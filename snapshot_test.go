@@ -27,13 +27,14 @@ func TestSnapshotServiceHandler_Create(t *testing.T) {
 	}
 
 	expected := &Snapshot{
-		ID:          "5359435d28b9a",
-		DateCreated: "2014-04-18 12:40:40",
-		Description: "Test snapshot",
-		Size:        42949672960,
-		Status:      "complete",
-		OsID:        127,
-		AppID:       0,
+		ID:             "5359435d28b9a",
+		DateCreated:    "2014-04-18 12:40:40",
+		Description:    "Test snapshot",
+		Size:           42949672960,
+		CompressedSize: 1078864689,
+		Status:         "complete",
+		OsID:           127,
+		AppID:          0,
 	}
 
 	if !reflect.DeepEqual(snapshot, expected) {
@@ -56,13 +57,14 @@ func TestSnapshotServiceHandler_CreateFromURL(t *testing.T) {
 	}
 
 	expected := &Snapshot{
-		ID:          "5359435d28b9a",
-		DateCreated: "2014-04-18 12:40:40",
-		Description: "Test snapshot",
-		Size:        42949672960,
-		Status:      "complete",
-		OsID:        127,
-		AppID:       0,
+		ID:             "5359435d28b9a",
+		DateCreated:    "2014-04-18 12:40:40",
+		Description:    "Test snapshot",
+		Size:           42949672960,
+		CompressedSize: 1078864689,
+		Status:         "complete",
+		OsID:           127,
+		AppID:          0,
 	}
 
 	if !reflect.DeepEqual(snapshot, expected) {
@@ -85,13 +87,14 @@ func TestSnapshotServiceHandler_Get(t *testing.T) {
 	}
 
 	expected := &Snapshot{
-		ID:          "5359435d28b9a",
-		DateCreated: "2014-04-18 12:40:40",
-		Description: "Test snapshot",
-		Size:        42949672960,
-		Status:      "complete",
-		OsID:        127,
-		AppID:       0,
+		ID:             "5359435d28b9a",
+		DateCreated:    "2014-04-18 12:40:40",
+		Description:    "Test snapshot",
+		Size:           42949672960,
+		CompressedSize: 1078864689,
+		Status:         "complete",
+		OsID:           127,
+		AppID:          0,
 	}
 
 	if !reflect.DeepEqual(snapshot, expected) {
@@ -130,13 +133,14 @@ func TestSnapshotServiceHandler_List(t *testing.T) {
 
 	expectedSnap := []Snapshot{
 		{
-			ID:          "885ee0f4f263c",
-			DateCreated: "2014-04-18 12:40:40",
-			Description: "Test snapshot",
-			Size:        42949672960,
-			Status:      "complete",
-			OsID:        127,
-			AppID:       0,
+			ID:             "885ee0f4f263c",
+			DateCreated:    "2014-04-18 12:40:40",
+			Description:    "Test snapshot",
+			Size:           42949672960,
+			CompressedSize: 1078864689,
+			Status:         "complete",
+			OsID:           127,
+			AppID:          0,
 		},
 	}
 
