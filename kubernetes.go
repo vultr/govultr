@@ -102,7 +102,7 @@ type NodePoolReq struct {
 
 // NodePoolReqUpdate struct used to update a node pool
 type NodePoolReqUpdate struct {
-	NodeQuantity int    `json:"node_quantity"`
+	NodeQuantity int    `json:"node_quantity,omitempty"`
 	Tag          string `json:"tag,omitempty"`
 }
 
