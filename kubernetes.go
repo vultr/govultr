@@ -55,15 +55,15 @@ type Cluster struct {
 
 // NodePool represents a pool of nodes that are grouped by their label and plan type
 type NodePool struct {
-	ID          string `json:"id"`
-	DateCreated string `json:"date_created"`
-	DateUpdated string `json:"date_updated"`
-	Label       string `json:"label"`
-	PlanID      string `json:"plan_id"`
-	Status      string `json:"status"`
-	Count       int    `json:"count"`
-	Tag         string `json:"tag"`
-	Nodes       []Node `json:"nodes"`
+	ID           string `json:"id"`
+	DateCreated  string `json:"date_created"`
+	DateUpdated  string `json:"date_updated"`
+	Label        string `json:"label"`
+	Plan         string `json:"plan"`
+	Status       string `json:"status"`
+	NodeQuantity int    `json:"node_quantity"`
+	Tag          string `json:"tag"`
+	Nodes        []Node `json:"nodes"`
 }
 
 // Node represents a node that will live within a nodepool

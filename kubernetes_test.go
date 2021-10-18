@@ -31,9 +31,9 @@ func TestKubernetesHandler_CreateCluster(t *testing.T) {
                 "id": "e1c7a313-e42d-43bb-82ef-4f287639b303",
                 "date_created": "2021-07-13T14:20:16+00:00",
                 "label": "my-label-48957292",
-                "plan_id": "vc2-1c-2gb",
+                "plan": "vc2-1c-2gb",
                 "status": "pending",
-                "count": 1,
+                "node_quantity": 1,
                 "nodes": [
                     {
                         "id": "38364f79-17e3-4f1f-b7df-d9494bce0e4a",
@@ -73,12 +73,12 @@ func TestKubernetesHandler_CreateCluster(t *testing.T) {
 		Status:        "pending",
 		NodePools: []NodePool{
 			{
-				ID:          "e1c7a313-e42d-43bb-82ef-4f287639b303",
-				DateCreated: "2021-07-13T14:20:16+00:00",
-				Label:       "my-label-48957292",
-				PlanID:      "vc2-1c-2gb",
-				Status:      "pending",
-				Count:       1,
+				ID:           "e1c7a313-e42d-43bb-82ef-4f287639b303",
+				DateCreated:  "2021-07-13T14:20:16+00:00",
+				Label:        "my-label-48957292",
+				Plan:         "vc2-1c-2gb",
+				Status:       "pending",
+				NodeQuantity: 1,
 				Nodes: []Node{
 					{
 						ID:          "38364f79-17e3-4f1f-b7df-d9494bce0e4a",
@@ -125,9 +125,9 @@ func TestKubernetesHandler_GetCluster(t *testing.T) {
                 "id": "e1c7a313-e42d-43bb-82ef-4f287639b303",
                 "date_created": "2021-07-13T14:20:16+00:00",
                 "label": "my-label-48957292",
-                "plan_id": "vc2-1c-2gb",
+                "plan": "vc2-1c-2gb",
                 "status": "pending",
-                "count": 1,
+                "node_quantity": 1,
                 "nodes": [
                     {
                         "id": "38364f79-17e3-4f1f-b7df-d9494bce0e4a",
@@ -161,12 +161,12 @@ func TestKubernetesHandler_GetCluster(t *testing.T) {
 		Status:        "pending",
 		NodePools: []NodePool{
 			{
-				ID:          "e1c7a313-e42d-43bb-82ef-4f287639b303",
-				DateCreated: "2021-07-13T14:20:16+00:00",
-				Label:       "my-label-48957292",
-				PlanID:      "vc2-1c-2gb",
-				Status:      "pending",
-				Count:       1,
+				ID:           "e1c7a313-e42d-43bb-82ef-4f287639b303",
+				DateCreated:  "2021-07-13T14:20:16+00:00",
+				Label:        "my-label-48957292",
+				Plan:         "vc2-1c-2gb",
+				Status:       "pending",
+				NodeQuantity: 1,
 				Nodes: []Node{
 					{
 						ID:          "38364f79-17e3-4f1f-b7df-d9494bce0e4a",
@@ -213,10 +213,10 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
                 "id": "e1c7a313-e42d-43bb-82ef-4f287639b303",
                 "date_created": "2021-07-13T14:20:16+00:00",
                 "label": "my-label-48957292",
-                "plan_id": "vc2-1c-2gb",
+                "plan": "vc2-1c-2gb",
                 "status": "pending",
-                "count": 1,
 				"tag": "mytag",
+                "node_quantity": 1,
                 "nodes": [
                     {
                         "id": "38364f79-17e3-4f1f-b7df-d9494bce0e4a",
@@ -259,13 +259,13 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
 			Status:        "pending",
 			NodePools: []NodePool{
 				{
-					ID:          "e1c7a313-e42d-43bb-82ef-4f287639b303",
-					DateCreated: "2021-07-13T14:20:16+00:00",
-					Label:       "my-label-48957292",
-					PlanID:      "vc2-1c-2gb",
-					Status:      "pending",
-					Count:       1,
-					Tag:         "mytag",
+					ID:           "e1c7a313-e42d-43bb-82ef-4f287639b303",
+					DateCreated:  "2021-07-13T14:20:16+00:00",
+					Label:        "my-label-48957292",
+					Plan:         "vc2-1c-2gb",
+					Status:       "pending",
+					Tag:          "mytag",
+					NodeQuantity: 1,
 					Nodes: []Node{
 						{
 							ID:          "38364f79-17e3-4f1f-b7df-d9494bce0e4a",
@@ -354,10 +354,10 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
         "id": "554e7248-705a-5862-516f-4f4a6735346a",
         "date_created": "2021-07-13T15:42:21+00:00",
         "label": "nodepool-48959140",
-        "plan_id": "vc2-1c-2gb",
+        "plan": "vc2-1c-2gb",
         "status": "pending",
+        "node_quantity": 1,
 		"tag": "mytag",
-        "count": 1,
         "nodes": [
             {
                 "id": "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -383,13 +383,13 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 	}
 
 	expected := &NodePool{
-		ID:          "554e7248-705a-5862-516f-4f4a6735346a",
-		DateCreated: "2021-07-13T15:42:21+00:00",
-		Label:       "nodepool-48959140",
-		PlanID:      "vc2-1c-2gb",
-		Status:      "pending",
-		Count:       1,
-		Tag:         "mytag",
+		ID:           "554e7248-705a-5862-516f-4f4a6735346a",
+		DateCreated:  "2021-07-13T15:42:21+00:00",
+		Label:        "nodepool-48959140",
+		Plan:         "vc2-1c-2gb",
+		Status:       "pending",
+		NodeQuantity: 1,
+		Tag:          "mytag",
 		Nodes: []Node{
 			{
 				ID:          "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -422,9 +422,9 @@ func TestKubernetesHandler_GetNodePool(t *testing.T) {
         "id": "554e7248-705a-5862-516f-4f4a6735346a",
         "date_created": "2021-07-13T15:42:21+00:00",
         "label": "nodepool-48959140",
-        "plan_id": "vc2-1c-2gb",
+        "plan": "vc2-1c-2gb",
         "status": "pending",
-        "count": 1,
+        "node_quantity": 1,
 		"tag": "mytag",
         "nodes": [
             {
@@ -445,13 +445,13 @@ func TestKubernetesHandler_GetNodePool(t *testing.T) {
 	}
 
 	expected := &NodePool{
-		ID:          "554e7248-705a-5862-516f-4f4a6735346a",
-		DateCreated: "2021-07-13T15:42:21+00:00",
-		Label:       "nodepool-48959140",
-		PlanID:      "vc2-1c-2gb",
-		Status:      "pending",
-		Count:       1,
-		Tag:         "mytag",
+		ID:           "554e7248-705a-5862-516f-4f4a6735346a",
+		DateCreated:  "2021-07-13T15:42:21+00:00",
+		Label:        "nodepool-48959140",
+		Plan:         "vc2-1c-2gb",
+		Status:       "pending",
+		Tag:          "mytag",
+		NodeQuantity: 1,
 		Nodes: []Node{
 			{
 				ID:          "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -484,9 +484,9 @@ func TestKubernetesHandler_ListNodePools(t *testing.T) {
         "id": "554e7248-705a-5862-516f-4f4a6735346a",
         "date_created": "2021-07-13T15:42:21+00:00",
         "label": "nodepool-48959140",
-        "plan_id": "vc2-1c-2gb",
+        "plan": "vc2-1c-2gb",
         "status": "pending",
-        "count": 1,
+        "node_quantity": 1,
 		"tag": "mytag",
         "nodes": [
             {
@@ -515,13 +515,13 @@ func TestKubernetesHandler_ListNodePools(t *testing.T) {
 
 	expected := []NodePool{
 		{
-			ID:          "554e7248-705a-5862-516f-4f4a6735346a",
-			DateCreated: "2021-07-13T15:42:21+00:00",
-			Label:       "nodepool-48959140",
-			PlanID:      "vc2-1c-2gb",
-			Status:      "pending",
-			Count:       1,
-			Tag:         "mytag",
+			ID:           "554e7248-705a-5862-516f-4f4a6735346a",
+			DateCreated:  "2021-07-13T15:42:21+00:00",
+			Label:        "nodepool-48959140",
+			Plan:         "vc2-1c-2gb",
+			Status:       "pending",
+			Tag:          "mytag",
+			NodeQuantity: 1,
 			Nodes: []Node{
 				{
 					ID:          "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -568,9 +568,9 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
     "date_created": "2021-07-07T23:27:08+00:00",
     "date_updated": "2021-07-08T12:12:44+00:00",
     "label": "my-label-48770703",
-    "plan_id": "vc2-1c-2gb",
+    "plan": "vc2-1c-2gb",
     "status": "active",
-    "count": 1,
+    "node_quantity": 1,
 	"tag": "mytag",
     "nodes": [
       {
@@ -591,14 +591,14 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
 	}
 
 	expected := &NodePool{
-		ID:          "e97bdee9-2781-4f31-be03-60fc75f399ae",
-		DateCreated: "2021-07-07T23:27:08+00:00",
-		DateUpdated: "2021-07-08T12:12:44+00:00",
-		Label:       "my-label-48770703",
-		PlanID:      "vc2-1c-2gb",
-		Status:      "active",
-		Count:       1,
-		Tag:         "mytag",
+		ID:           "e97bdee9-2781-4f31-be03-60fc75f399ae",
+		DateCreated:  "2021-07-07T23:27:08+00:00",
+		DateUpdated:  "2021-07-08T12:12:44+00:00",
+		Label:        "my-label-48770703",
+		Plan:         "vc2-1c-2gb",
+		Status:       "active",
+		NodeQuantity: 1,
+		Tag:          "mytag",
 		Nodes: []Node{
 			{
 				ID:          "f2e11430-76e5-4dc6-a1c9-ef5682c21ddf",
