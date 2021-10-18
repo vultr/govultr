@@ -2,7 +2,7 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
-## [v2.9.0](https://github.com/vultr/govultr/compare/v2.9.0..v2.9.1) (2021-10-18)
+## [v2.9.1](https://github.com/vultr/govultr/compare/v2.9.0..v2.9.1) (2021-10-18)
 ### Breaking Change
 * Kubernetes : Added `Tag` support for nodepools [164](https://github.com/vultr/govultr/pull/164)
 
