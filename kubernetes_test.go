@@ -216,6 +216,7 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
                 "plan_id": "vc2-1c-2gb",
                 "status": "pending",
                 "count": 1,
+				"tag": "mytag",
                 "nodes": [
                     {
                         "id": "38364f79-17e3-4f1f-b7df-d9494bce0e4a",
@@ -264,6 +265,7 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
 					PlanID:      "vc2-1c-2gb",
 					Status:      "pending",
 					Count:       1,
+					Tag:         "mytag",
 					Nodes: []Node{
 						{
 							ID:          "38364f79-17e3-4f1f-b7df-d9494bce0e4a",
@@ -354,6 +356,7 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
         "label": "nodepool-48959140",
         "plan_id": "vc2-1c-2gb",
         "status": "pending",
+		"tag": "mytag",
         "count": 1,
         "nodes": [
             {
@@ -372,6 +375,7 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 		NodeQuantity: 1,
 		Label:        "nodepool-48959140",
 		Plan:         "vc2-1c-2gb",
+		Tag:          "mytag",
 	}
 	np, err := client.Kubernetes.CreateNodePool(ctx, "1", createReq)
 	if err != nil {
@@ -385,6 +389,7 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 		PlanID:      "vc2-1c-2gb",
 		Status:      "pending",
 		Count:       1,
+		Tag:         "mytag",
 		Nodes: []Node{
 			{
 				ID:          "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -420,6 +425,7 @@ func TestKubernetesHandler_GetNodePool(t *testing.T) {
         "plan_id": "vc2-1c-2gb",
         "status": "pending",
         "count": 1,
+		"tag": "mytag",
         "nodes": [
             {
                 "id": "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -445,6 +451,7 @@ func TestKubernetesHandler_GetNodePool(t *testing.T) {
 		PlanID:      "vc2-1c-2gb",
 		Status:      "pending",
 		Count:       1,
+		Tag:         "mytag",
 		Nodes: []Node{
 			{
 				ID:          "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -480,6 +487,7 @@ func TestKubernetesHandler_ListNodePools(t *testing.T) {
         "plan_id": "vc2-1c-2gb",
         "status": "pending",
         "count": 1,
+		"tag": "mytag",
         "nodes": [
             {
                 "id": "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -513,6 +521,7 @@ func TestKubernetesHandler_ListNodePools(t *testing.T) {
 			PlanID:      "vc2-1c-2gb",
 			Status:      "pending",
 			Count:       1,
+			Tag:         "mytag",
 			Nodes: []Node{
 				{
 					ID:          "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -562,6 +571,7 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
     "plan_id": "vc2-1c-2gb",
     "status": "active",
     "count": 1,
+	"tag": "mytag",
     "nodes": [
       {
         "id": "f2e11430-76e5-4dc6-a1c9-ef5682c21ddf",
@@ -588,6 +598,7 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
 		PlanID:      "vc2-1c-2gb",
 		Status:      "active",
 		Count:       1,
+		Tag:         "mytag",
 		Nodes: []Node{
 			{
 				ID:          "f2e11430-76e5-4dc6-a1c9-ef5682c21ddf",
