@@ -1,10 +1,6 @@
 name: "Unit/Coverage Tests"
 
-on:
-  push:
-    branches: [ master ]
-  pull_request_target:
-    branches: [ master ]
+on: pull_request_target
 
 jobs:
   coverage:
@@ -20,12 +16,12 @@ jobs:
 
       - name: Run unit tests and coverage test
         id: test-coverage
-        continue-on-error: true
         run: |
           go test -cover -v > output.txt
 
       - name: Transform output
         id: results
+        if: always()
         run: |
           CONTENT=$(cat output.txt)
           CONTENT="${CONTENT//'%'/'%25'}"
@@ -35,6 +31,7 @@ jobs:
 
       - name: Add Comment
         uses: actions/github-script@v5
+        if: always()
         with:
           script: |
             const output = `### Unit Tests and Coverage
@@ -54,6 +51,3 @@ jobs:
               body: output
             })
 
-      - name: Check on failure
-        if: steps.test-coverage != 'success'
-        run: exit 1
