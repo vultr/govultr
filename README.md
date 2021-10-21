@@ -48,7 +48,7 @@ func main() {
   ts := config.TokenSource(ctx, &oauth2.Token{AccessToken: apiKey})
   vultrClient := govultr.NewClient(oauth2.NewClient(ctx, ts))
 
-  // Optional changes
+  // Optional changes 
   _ = vultrClient.SetBaseURL("https://api.vultr.com")
   vultrClient.SetUserAgent("mycool-app")
   vultrClient.SetRateLimit(500)
