@@ -10,7 +10,7 @@ jobs:
     name: New Issue Notification
     steps:
       - run: |
-          echo "{\"text\":\"GoVultr : New Issue https://github.com/vultr/govultr/issues/${{ github.event.number }} \"}" > mattermost.json
+          echo "{\"text\":\"GoVultr : New Issue https://github.com/vultr/govultr/issues/${{ github.event.issue.number }} \"}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
