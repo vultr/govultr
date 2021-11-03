@@ -76,7 +76,6 @@ type invoiceItemsBase struct {
 func (b *BillingServiceHandler) ListHistory(ctx context.Context, options *ListOptions) ([]History, *Meta, error) {
 	uri := "/v2/billing/history"
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, nil, err
 	}
@@ -100,7 +99,6 @@ func (b *BillingServiceHandler) ListHistory(ctx context.Context, options *ListOp
 func (b *BillingServiceHandler) ListInvoices(ctx context.Context, options *ListOptions) ([]Invoice, *Meta, error) {
 	uri := "/v2/billing/invoices"
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, nil, err
 	}
@@ -141,7 +139,6 @@ func (b *BillingServiceHandler) GetInvoice(ctx context.Context, invoiceID string
 func (b *BillingServiceHandler) ListInvoiceItems(ctx context.Context, invoiceID int, options *ListOptions) ([]InvoiceItem, *Meta, error) {
 	uri := fmt.Sprintf("/v2/billing/invoices/%d/items", invoiceID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
-
 	if err != nil {
 		return nil, nil, err
 	}
