@@ -80,7 +80,6 @@ func TestBillingServiceHandler_ListInvoices(t *testing.T) {
 				{
 					"id": 5317720,
 					"date": "2018-04-01T00:30:05+00:00",
-					"type": "invoice",
 					"description": "Invoice #5317720",
 					"amount": 2.35,
 					"balance": -497.65
