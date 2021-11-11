@@ -459,7 +459,7 @@ func TestServerServiceHandler_Reinstall(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.Instance.Reinstall(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
+	err := client.Instance.Reinstall(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", nil)
 
 	if err != nil {
 		t.Errorf("Instance.Reinstall returned %+v", err)

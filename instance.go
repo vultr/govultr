@@ -22,7 +22,7 @@ type InstanceService interface {
 	Start(ctx context.Context, instanceID string) error
 	Halt(ctx context.Context, instanceID string) error
 	Reboot(ctx context.Context, instanceID string) error
-	Reinstall(ctx context.Context, instanceID string) error
+	Reinstall(ctx context.Context, instanceID string, reinstallReq *ReinstallReq) error
 
 	MassStart(ctx context.Context, instanceList []string) error
 	MassHalt(ctx context.Context, instanceList []string) error
@@ -250,6 +250,11 @@ type InstanceUpdateReq struct {
 	FirewallGroupID      string   `json:"firewall_group_id,omitempty"`
 }
 
+// ReinstallReq struct used to allow changes during a reinstall
+type ReinstallReq struct {
+	Hostname string `json:"hostname"`
+}
+
 // Create will create the server with the given parameters
 func (i *InstanceServiceHandler) Create(ctx context.Context, instanceReq *InstanceCreateReq) (*Instance, error) {
 	uri := fmt.Sprintf("%s", instancePath)
@@ -367,10 +372,10 @@ func (i *InstanceServiceHandler) Reboot(ctx context.Context, instanceID string) 
 }
 
 // Reinstall an instance.
-func (i *InstanceServiceHandler) Reinstall(ctx context.Context, instanceID string) error {
+func (i *InstanceServiceHandler) Reinstall(ctx context.Context, instanceID string, reinstallReq *ReinstallReq) error {
 	uri := fmt.Sprintf("%s/%s/reinstall", instancePath, instanceID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, reinstallReq)
 	if err != nil {
 		return err
 	}
