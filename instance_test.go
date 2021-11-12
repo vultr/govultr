@@ -456,13 +456,79 @@ func TestServerServiceHandler_Reinstall(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/instances/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/reinstall", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
+		response := `{
+			"instance": {
+				"id": "14b3e7d6-ffb5-4994-8502-57fcd9db3b33",
+				"os": "CentOS SELinux 8 x64",
+				"ram": 2048,
+				"disk": 60,
+				"main_ip": "123.123.123.123",
+				"vcpu_count": 2,
+				"region": "ewr",
+				"plan": "vc2-1c-2gb",
+				"date_created": "2013-12-19 14:45:41",
+				"status": "active",
+				"allowed_bandwidth": 2000,
+				"netmask_v4": "255.255.255.248",
+				"gateway_v4": "123.123.123.1",
+				"power_status": "running",
+				"server_status": "ok",
+				"v6_network": "2001:DB8:1000::",
+				"v6_main_ip": "fd11:1111:1112:1c02:0200:00ff:fe00:0000",
+				"v6_network_size": 64,
+				"label": "my new server",
+				"internal_ip": "10.99.0.10",
+				"kvm": "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
+				"default_password" : "nreqnusibni",
+				"tag": "tagger",
+				"os_id": 362,
+				"app_id": 0,
+				"firewall_group_id": "1234",
+				"features": [
+					"auto_backups", "ipv6"
+				]
+			}
+		}`
+		fmt.Fprint(writer, response)
 	})
 
-	err := client.Instance.Reinstall(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
-
+	instanceRes, err := client.Instance.Reinstall(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", nil)
 	if err != nil {
 		t.Errorf("Instance.Reinstall returned %+v", err)
+	}
+
+	expected := &Instance{
+		ID:               "14b3e7d6-ffb5-4994-8502-57fcd9db3b33",
+		Os:               "CentOS SELinux 8 x64",
+		OsID:             362,
+		RAM:              2048,
+		Disk:             60,
+		MainIP:           "123.123.123.123",
+		VCPUCount:        2,
+		Region:           "ewr",
+		DefaultPassword:  "nreqnusibni",
+		DateCreated:      "2013-12-19 14:45:41",
+		Status:           "active",
+		AllowedBandwidth: 2000,
+		NetmaskV4:        "255.255.255.248",
+		GatewayV4:        "123.123.123.1",
+		PowerStatus:      "running",
+		ServerStatus:     "ok",
+		Plan:             "vc2-1c-2gb",
+		V6Network:        "2001:DB8:1000::",
+		V6MainIP:         "fd11:1111:1112:1c02:0200:00ff:fe00:0000",
+		V6NetworkSize:    64,
+		Label:            "my new server",
+		InternalIP:       "10.99.0.10",
+		KVM:              "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
+		Tag:              "tagger",
+		AppID:            0,
+		FirewallGroupID:  "1234",
+		Features:         []string{"auto_backups", "ipv6"},
+	}
+
+	if !reflect.DeepEqual(instanceRes, expected) {
+		t.Errorf("Instance.Create returned %+v, expected %+v", server, expected)
 	}
 }
 
