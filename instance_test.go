@@ -1101,7 +1101,7 @@ func TestServerServiceHandler_Update(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(server, expected) {
-		t.Errorf("Instance.Create returned %+v, expected %+v", server, expected)
+		t.Errorf("Instance.Update returned %+v, expected %+v", server, expected)
 	}
 }
 
