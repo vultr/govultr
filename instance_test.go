@@ -1065,8 +1065,43 @@ func TestServerServiceHandler_Update(t *testing.T) {
 		AppID:           1,
 	}
 
-	if err := client.Instance.Update(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", options); err != nil {
+	server, err := client.Instance.Update(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", options)
+	if err != nil {
 		t.Errorf("Instance.Update returned %+v", err)
+	}
+
+	expected := &Instance{
+		ID:               "14b3e7d6-ffb5-4994-8502-57fcd9db3b33",
+		Os:               "CentOS SELinux 8 x64",
+		OsID:             362,
+		RAM:              2048,
+		Disk:             60,
+		MainIP:           "123.123.123.123",
+		VCPUCount:        2,
+		Region:           "ewr",
+		DefaultPassword:  "nreqnusibni",
+		DateCreated:      "2013-12-19 14:45:41",
+		Status:           "active",
+		AllowedBandwidth: 2000,
+		NetmaskV4:        "255.255.255.248",
+		GatewayV4:        "123.123.123.1",
+		PowerStatus:      "running",
+		ServerStatus:     "ok",
+		Plan:             "vc2-1c-2gb",
+		V6Network:        "2001:DB8:1000::",
+		V6MainIP:         "fd11:1111:1112:1c02:0200:00ff:fe00:0000",
+		V6NetworkSize:    64,
+		Label:            "my new server",
+		InternalIP:       "10.99.0.10",
+		KVM:              "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
+		Tag:              "tagger",
+		AppID:            0,
+		FirewallGroupID:  "1234",
+		Features:         []string{"auto_backups", "ipv6"},
+	}
+
+	if !reflect.DeepEqual(server, expected) {
+		t.Errorf("Instance.Update returned %+v, expected %+v", server, expected)
 	}
 }
 
