@@ -15,7 +15,7 @@ const instancePath = "/v2/instances"
 type InstanceService interface {
 	Create(ctx context.Context, instanceReq *InstanceCreateReq) (*Instance, error)
 	Get(ctx context.Context, instanceID string) (*Instance, error)
-	Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) error
+	Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) (*Instance, error)
 	Delete(ctx context.Context, instanceID string) error
 	List(ctx context.Context, options *ListOptions) ([]Instance, *Meta, error)
 
@@ -290,15 +290,20 @@ func (i *InstanceServiceHandler) Get(ctx context.Context, instanceID string) (*I
 }
 
 // Update will update the server with the given parameters
-func (i *InstanceServiceHandler) Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) error {
+func (i *InstanceServiceHandler) Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) (*Instance, error) {
 	uri := fmt.Sprintf("%s/%s", instancePath, instanceID)
 
 	req, err := i.client.NewRequest(ctx, http.MethodPatch, uri, instanceReq)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return i.client.DoWithContext(ctx, req, nil)
+	instance := new(instanceBase)
+	if err := i.client.DoWithContext(ctx, req, instance); err != nil {
+		return nil, err
+	}
+
+	return instance.Instance, nil
 }
 
 // Delete an instance. All data will be permanently lost, and the IP address will be released
