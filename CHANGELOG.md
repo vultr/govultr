@@ -4,7 +4,7 @@
 
 ## [v2.11.0](https://github.com/vultr/govultr/compare/v2.10.0..v2.11.0) (2021-11-18)
 ### Breaking Changes
-* Instances : Update call will not return `*Instance` in addition to `error` [185](https://github.com/vultr/govultr/pull/185)
+* Instances : Update call will now return `*Instance` in addition to `error` [185](https://github.com/vultr/govultr/pull/185)
 * Instances : Reinstall call now allows changing of hostname and also returns `*Instance` in addition to `error` [181](https://github.com/vultr/govultr/pull/181)
 
 ### Enhancement
