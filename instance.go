@@ -96,6 +96,7 @@ type Instance struct {
 	ImageID          string   `json:"image_id"`
 	FirewallGroupID  string   `json:"firewall_group_id"`
 	Features         []string `json:"features"`
+	Hostname         string   `json:"hostname"`
 }
 
 type instanceBase struct {
