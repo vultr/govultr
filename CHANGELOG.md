@@ -2,7 +2,7 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
-## [v2.13.0](https://github.com/vultr/govultr/compare/v2.12.0..v2.13.0) (2021-01-05)
+## [v2.13.0](https://github.com/vultr/govultr/compare/v2.12.0..v2.13.0) (2022-01-05)
 ### Enhancement
 * ListOptions : [Added query params](https://www.vultr.com/api/#operation/list-instances) that can be used with `Instance.List`  [197](https://github.com/vultr/govultr/pull/197)
 
