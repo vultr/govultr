@@ -12,4 +12,5 @@ type ListOptions struct {
 	MainIP string `url:"main_ip,omitempty"`
 	Label  string `url:"label,omitempty"`
 	Tag    string `url:"tag,omitempty"`
+	Region string `url:"region,omitempty"`
 }
