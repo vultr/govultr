@@ -13,4 +13,8 @@ type ListOptions struct {
 	Label  string `url:"label,omitempty"`
 	Tag    string `url:"tag,omitempty"`
 	Region string `url:"region,omitempty"`
+
+	// Query params that can be used on the list snapshots call
+	// https://www.vultr.com/api/#operation/list-snapshots
+	Description string `url:"description,omitempty"`
 }
