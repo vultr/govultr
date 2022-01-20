@@ -11,7 +11,8 @@ on:
 jobs:
   coverage:
     runs-on: ubuntu-latest
-
+    outputs:
+      msg: ${{ steps.results.outputs.content }}
     steps:
       - uses: actions/checkout@v2
 
@@ -35,6 +36,11 @@ jobs:
           CONTENT="${CONTENT//$'\r'/'%0D'}"
           echo "::set-output name=content::$CONTENT"
 
+  comment:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name }} != 'push'
+    needs: coverage
+    steps:
       - name: Add Comment
         uses: actions/github-script@v5
         if: always()
@@ -44,7 +50,7 @@ jobs:
             <details><summary>Show Output</summary>
 
             \`\`\`
-            ${{ steps.results.outputs.content }}
+            ${{ needs.coverage.outputs.msg }}
             \`\`\`
             </details>
 
