@@ -227,14 +227,17 @@ func (c *Client) SetRetryLimit(n int) {
 
 func (c *Client) vultrErrorHandler(resp *http.Response, err error, numTries int) (*http.Response, error) {
 	if resp == nil {
-		return nil, fmt.Errorf("gave up after %d attempts, last error unavailable (resp == nil)", c.client.RetryMax+1)
+		if err != nil {
+			return nil, fmt.Errorf("gave up after %d attempts, last error : %s", numTries, err.Error())
+		}
+		return nil, fmt.Errorf("gave up after %d attempts, last error unavailable (resp == nil)", numTries)
 	}
 
 	buf, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("gave up after %d attempts, last error unavailable (error reading response body: %v)", c.client.RetryMax+1, err)
+		return nil, fmt.Errorf("gave up after %d attempts, last error unavailable (error reading response body: %v)", numTries, err)
 	}
-	return nil, fmt.Errorf("gave up after %d attempts, last error: %#v", c.client.RetryMax+1, strings.TrimSpace(string(buf)))
+	return nil, fmt.Errorf("gave up after %d attempts, last error: %#v", numTries, strings.TrimSpace(string(buf)))
 }
 
 // BoolToBoolPtr helper function that returns a pointer from your bool value
