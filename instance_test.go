@@ -2,6 +2,7 @@ package govultr
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"reflect"
 	"testing"
@@ -66,6 +67,28 @@ func TestServerServiceHandler_RestoreBackup(t *testing.T) {
 
 	restoreReq := &RestoreReq{
 		BackupID: "14b3e7d6-ffb5-4994-8502-57fcd9db3b33",
+	}
+
+	if err := client.Instance.Restore(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", restoreReq); err != nil {
+		t.Errorf("Instance.Restore returned %+v, ", err)
+	}
+}
+
+func TestServerServiceHandler_RestoreSnapshot(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/instances/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/restore", func(writer http.ResponseWriter, request *http.Request) {
+		body, err := ioutil.ReadAll(request.Body)
+		if err != nil || len(body) == 0 {
+			http.Error(writer, "can't read body", http.StatusBadRequest)
+			return
+		}
+		fmt.Fprint(writer)
+	})
+
+	restoreReq := &RestoreReq{
+		SnapshotID: "14b3e7d6-ffb5-4994-8502-57fcd9db3b33",
 	}
 
 	if err := client.Instance.Restore(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", restoreReq); err != nil {
