@@ -12,13 +12,14 @@ func TestBlockStorageServiceHandler_Create(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/blocks", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"block":{"id":"123456","cost":10,"status":"active","size_gb":100,"region":"ewr","attached_to_instance":"","date_created":"01-01-1960","label":"mylabel", "mount_id": "ewr-123abc"}}`
+		response := `{"block":{"id":"123456","cost":10,"status":"active","size_gb":100,"region":"ewr","attached_to_instance":"","date_created":"01-01-1960","label":"mylabel", "mount_id": "ewr-123abc", "block_type": "test"}}`
 		fmt.Fprint(writer, response)
 	})
 	blockReq := &BlockStorageCreate{
-		Region: "ewr",
-		SizeGB: 100,
-		Label:  "mylabel",
+		Region:    "ewr",
+		SizeGB:    100,
+		Label:     "mylabel",
+		BlockType: "test",
 	}
 	blockStorage, err := client.BlockStorage.Create(ctx, blockReq)
 	if err != nil {
@@ -35,6 +36,7 @@ func TestBlockStorageServiceHandler_Create(t *testing.T) {
 		AttachedToInstance: "",
 		Label:              "mylabel",
 		MountID:            "ewr-123abc",
+		BlockType:          "test",
 	}
 
 	if !reflect.DeepEqual(blockStorage, expected) {
@@ -47,7 +49,7 @@ func TestBlockStorageServiceHandler_Get(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/blocks/123456", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"block":{"id":"123456","cost":10,"status":"active","size_gb":100,"region":"ewr","attached_to_instance":"","date_created":"01-01-1960","label":"mylabel", "mount_id": "123abc"}}`
+		response := `{"block":{"id":"123456","cost":10,"status":"active","size_gb":100,"region":"ewr","attached_to_instance":"","date_created":"01-01-1960","label":"mylabel", "mount_id": "123abc", "block_type": "test"}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -66,6 +68,7 @@ func TestBlockStorageServiceHandler_Get(t *testing.T) {
 		AttachedToInstance: "",
 		Label:              "mylabel",
 		MountID:            "123abc",
+		BlockType:          "test",
 	}
 
 	if !reflect.DeepEqual(blockStorage, expected) {
@@ -109,7 +112,7 @@ func TestBlockStorageServiceHandler_List(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/blocks", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"blocks":[{"id":"123456","cost":10,"status":"active","size_gb":100,"region":"ewr","attached_to_instance":"","date_created":"01-01-1960","label":"mylabel", "mount_id": "123abc"}],"meta":{"total":1,"links":{"next":"thisismycusror","prev":""}}}`
+		response := `{"blocks":[{"id":"123456","cost":10,"status":"active","size_gb":100,"region":"ewr","attached_to_instance":"","date_created":"01-01-1960","label":"mylabel", "mount_id": "123abc", "block_type": "test"}],"meta":{"total":1,"links":{"next":"thisismycusror","prev":""}}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -129,6 +132,7 @@ func TestBlockStorageServiceHandler_List(t *testing.T) {
 			AttachedToInstance: "",
 			Label:              "mylabel",
 			MountID:            "123abc",
+			BlockType:          "test",
 		},
 	}
 
