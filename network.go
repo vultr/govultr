@@ -12,7 +12,7 @@ const netPath = "/v2/private-networks"
 
 // NetworkService is the interface to interact with the network endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/private-Networks
-// Deprecated: NetworkService should no longer be used.  Instead use VPCService.
+// Deprecated: NetworkService should no longer be used. Instead, use VPCService.
 type NetworkService interface {
 	Create(ctx context.Context, createReq *NetworkReq) (*Network, error)
 	Get(ctx context.Context, networkID string) (*Network, error)
@@ -22,13 +22,13 @@ type NetworkService interface {
 }
 
 // NetworkServiceHandler handles interaction with the network methods for the Vultr API
-// Deprecated: NetworkServiceHandler should no longer be used.  Instead use VPCServiceHandler.
+// Deprecated: NetworkServiceHandler should no longer be used. Instead, use VPCServiceHandler.
 type NetworkServiceHandler struct {
 	client *Client
 }
 
 // Network represents a Vultr private network
-// Deprecated: Network should no longer be used.  Instead use VPC.
+// Deprecated: Network should no longer be used. Instead, use VPC.
 type Network struct {
 	NetworkID    string `json:"id"`
 	Region       string `json:"region"`
@@ -39,7 +39,7 @@ type Network struct {
 }
 
 // NetworkReq represents parameters to create or update Network resource
-// Deprecated: NetworkReq should no longer be used.  Instead use VPCReq.
+// Deprecated: NetworkReq should no longer be used. Instead, use VPCReq.
 type NetworkReq struct {
 	Region       string `json:"region"`
 	Description  string `json:"description"`
@@ -57,7 +57,7 @@ type networkBase struct {
 }
 
 // Create a new private network. A private network can only be used at the location for which it was created.
-// Deprecated: NetworkServiceHandler Create should no longer be used.  Instead use VPCServiceHandler Create.
+// Deprecated: NetworkServiceHandler Create should no longer be used. Instead, use VPCServiceHandler Create.
 func (n *NetworkServiceHandler) Create(ctx context.Context, createReq *NetworkReq) (*Network, error) {
 	req, err := n.client.NewRequest(ctx, http.MethodPost, netPath, createReq)
 	if err != nil {
@@ -90,7 +90,7 @@ func (n *NetworkServiceHandler) Get(ctx context.Context, networkID string) (*Net
 }
 
 // Update updates a private network
-// Deprecated: NetworkServiceHandler Update should no longer be used.  Instead use VPCServiceHandler Update.
+// Deprecated: NetworkServiceHandler Update should no longer be used. Instead, use VPCServiceHandler Update.
 func (n *NetworkServiceHandler) Update(ctx context.Context, networkID string, description string) error {
 	uri := fmt.Sprintf("%s/%s", netPath, networkID)
 
@@ -104,7 +104,7 @@ func (n *NetworkServiceHandler) Update(ctx context.Context, networkID string, de
 }
 
 // Delete a private network. Before deleting, a network must be disabled from all instances
-// Deprecated: NetworkServiceHandler Delete should no longer be used.  Instead use VPCServiceHandler Delete.
+// Deprecated: NetworkServiceHandler Delete should no longer be used. Instead, use VPCServiceHandler Delete.
 func (n *NetworkServiceHandler) Delete(ctx context.Context, networkID string) error {
 	uri := fmt.Sprintf("%s/%s", netPath, networkID)
 	req, err := n.client.NewRequest(ctx, http.MethodDelete, uri, nil)
@@ -116,7 +116,7 @@ func (n *NetworkServiceHandler) Delete(ctx context.Context, networkID string) er
 }
 
 // List lists all private networks on the current account
-// Deprecated: NetworkServiceHandler List should no longer be used.  Instead use VPCServiceHandler List.
+// Deprecated: NetworkServiceHandler List should no longer be used. Instead, use VPCServiceHandler List.
 func (n *NetworkServiceHandler) List(ctx context.Context, options *ListOptions) ([]Network, *Meta, error) {
 	req, err := n.client.NewRequest(ctx, http.MethodGet, netPath, nil)
 	if err != nil {

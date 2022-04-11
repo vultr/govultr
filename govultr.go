@@ -58,17 +58,18 @@ type Client struct {
 	ISO             ISOService
 	Kubernetes      KubernetesService
 	LoadBalancer    LoadBalancerService
-	Network         NetworkService
-	ObjectStorage   ObjectStorageService
-	OS              OSService
-	Plan            PlanService
-	Region          RegionService
-	ReservedIP      ReservedIPService
-	Snapshot        SnapshotService
-	SSHKey          SSHKeyService
-	StartupScript   StartupScriptService
-	User            UserService
-	VPC             VPCService
+	// Deprecated: Network should no longer be used. Instead, use VPC.
+	Network       NetworkService
+	ObjectStorage ObjectStorageService
+	OS            OSService
+	Plan          PlanService
+	Region        RegionService
+	ReservedIP    ReservedIPService
+	Snapshot      SnapshotService
+	SSHKey        SSHKeyService
+	StartupScript StartupScriptService
+	User          UserService
+	VPC           VPCService
 
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback

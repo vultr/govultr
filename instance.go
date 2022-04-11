@@ -33,8 +33,11 @@ type InstanceService interface {
 	GetBandwidth(ctx context.Context, instanceID string) (*Bandwidth, error)
 	GetNeighbors(ctx context.Context, instanceID string) (*Neighbors, error)
 
+	// Deprecated: ListPrivateNetworks should no longer be used. Instead, use ListVPCInfo.
 	ListPrivateNetworks(ctx context.Context, instanceID string, options *ListOptions) ([]PrivateNetwork, *Meta, error)
+	// Deprecated: AttachPrivateNetwork should no longer be used. Instead, use AttachVPC.
 	AttachPrivateNetwork(ctx context.Context, instanceID, networkID string) error
+	// Deprecated: DetachPrivateNetwork should no longer be used. Instead, use DetachVPC.
 	DetachPrivateNetwork(ctx context.Context, instanceID, networkID string) error
 
 	ListVPCInfo(ctx context.Context, instanceID string, options *ListOptions) ([]VPCInfo, *Meta, error)
@@ -135,7 +138,7 @@ type privateNetworksBase struct {
 }
 
 // PrivateNetwork information for a given instance.
-// Deprecated: PrivateNetwork should no longer be used.  Instead use VPCInfo.
+// Deprecated: PrivateNetwork should no longer be used. Instead, use VPCInfo.
 type PrivateNetwork struct {
 	NetworkID  string `json:"network_id"`
 	MacAddress string `json:"mac_address"`
@@ -226,21 +229,23 @@ type Upgrades struct {
 
 // InstanceCreateReq struct used to create an instance.
 type InstanceCreateReq struct {
-	Region               string   `json:"region,omitempty"`
-	Plan                 string   `json:"plan,omitempty"`
-	Label                string   `json:"label,omitempty"`
-	Tag                  string   `json:"tag,omitempty"`
-	OsID                 int      `json:"os_id,omitempty"`
-	ISOID                string   `json:"iso_id,omitempty"`
-	AppID                int      `json:"app_id,omitempty"`
-	ImageID              string   `json:"image_id,omitempty"`
-	FirewallGroupID      string   `json:"firewall_group_id,omitempty"`
-	Hostname             string   `json:"hostname,omitempty"`
-	IPXEChainURL         string   `json:"ipxe_chain_url,omitempty"`
-	ScriptID             string   `json:"script_id,omitempty"`
-	SnapshotID           string   `json:"snapshot_id,omitempty"`
-	EnableIPv6           *bool    `json:"enable_ipv6,omitempty"`
-	EnablePrivateNetwork *bool    `json:"enable_private_network,omitempty"`
+	Region          string `json:"region,omitempty"`
+	Plan            string `json:"plan,omitempty"`
+	Label           string `json:"label,omitempty"`
+	Tag             string `json:"tag,omitempty"`
+	OsID            int    `json:"os_id,omitempty"`
+	ISOID           string `json:"iso_id,omitempty"`
+	AppID           int    `json:"app_id,omitempty"`
+	ImageID         string `json:"image_id,omitempty"`
+	FirewallGroupID string `json:"firewall_group_id,omitempty"`
+	Hostname        string `json:"hostname,omitempty"`
+	IPXEChainURL    string `json:"ipxe_chain_url,omitempty"`
+	ScriptID        string `json:"script_id,omitempty"`
+	SnapshotID      string `json:"snapshot_id,omitempty"`
+	EnableIPv6      *bool  `json:"enable_ipv6,omitempty"`
+	// Deprecated:  EnablePrivateNetwork should no longer be used. Instead, use EnableVPC.
+	EnablePrivateNetwork *bool `json:"enable_private_network,omitempty"`
+	// Deprecated:  AttachPrivateNetwork should no longer be used. Instead, use AttachVPC.
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
 	EnableVPC            *bool    `json:"enable_vpc,omitempty"`
 	AttachVPC            []string `json:"attach_vpc,omitempty"`
@@ -254,15 +259,18 @@ type InstanceCreateReq struct {
 
 // InstanceUpdateReq struct used to update an instance.
 type InstanceUpdateReq struct {
-	Plan                 string   `json:"plan,omitempty"`
-	Label                string   `json:"label,omitempty"`
-	Tag                  string   `json:"tag,omitempty"`
-	OsID                 int      `json:"os_id,omitempty"`
-	AppID                int      `json:"app_id,omitempty"`
-	ImageID              string   `json:"image_id,omitempty"`
-	EnableIPv6           *bool    `json:"enable_ipv6,omitempty"`
-	EnablePrivateNetwork *bool    `json:"enable_private_network,omitempty"`
+	Plan       string `json:"plan,omitempty"`
+	Label      string `json:"label,omitempty"`
+	Tag        string `json:"tag,omitempty"`
+	OsID       int    `json:"os_id,omitempty"`
+	AppID      int    `json:"app_id,omitempty"`
+	ImageID    string `json:"image_id,omitempty"`
+	EnableIPv6 *bool  `json:"enable_ipv6,omitempty"`
+	// Deprecated:  EnablePrivateNetwork should no longer be used. Instead, use EnableVPC.
+	EnablePrivateNetwork *bool `json:"enable_private_network,omitempty"`
+	// Deprecated:  AttachPrivateNetwork should no longer be used. Instead, use AttachVPC.
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
+	// Deprecated:  DetachPrivateNetwork should no longer be used. Instead, use DetachVPC.
 	DetachPrivateNetwork []string `json:"detach_private_network,omitempty"`
 	EnableVPC            *bool    `json:"enable_vpc,omitempty"`
 	AttachVPC            []string `json:"attach_vpc,omitempty"`
@@ -499,7 +507,7 @@ func (i *InstanceServiceHandler) GetNeighbors(ctx context.Context, instanceID st
 }
 
 // ListPrivateNetworks currently attached to an instance.
-// Deprecated: ListPrivateNetworks should no longer be used.  Instead use ListVPCInfo
+// Deprecated: ListPrivateNetworks should no longer be used. Instead, use ListVPCInfo
 func (i *InstanceServiceHandler) ListPrivateNetworks(ctx context.Context, instanceID string, options *ListOptions) ([]PrivateNetwork, *Meta, error) {
 	uri := fmt.Sprintf("%s/%s/private-networks", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -523,7 +531,7 @@ func (i *InstanceServiceHandler) ListPrivateNetworks(ctx context.Context, instan
 }
 
 // AttachPrivateNetwork to an instance
-// Deprecated: AttachPrivateNetwork should no longer be used.  Instead use AttachVPC
+// Deprecated: AttachPrivateNetwork should no longer be used. Instead, use AttachVPC
 func (i *InstanceServiceHandler) AttachPrivateNetwork(ctx context.Context, instanceID, networkID string) error {
 	uri := fmt.Sprintf("%s/%s/private-networks/attach", instancePath, instanceID)
 	body := RequestBody{"network_id": networkID}
@@ -537,7 +545,7 @@ func (i *InstanceServiceHandler) AttachPrivateNetwork(ctx context.Context, insta
 }
 
 // DetachPrivateNetwork from an instance.
-// Deprecated: DetachPrivateNetwork should no longer be used.  Instead use DetachVPC
+// Deprecated: DetachPrivateNetwork should no longer be used. Instead, use DetachVPC
 func (i *InstanceServiceHandler) DetachPrivateNetwork(ctx context.Context, instanceID, networkID string) error {
 	uri := fmt.Sprintf("%s/%s/private-networks/detach", instancePath, instanceID)
 	body := RequestBody{"network_id": networkID}
