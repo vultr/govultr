@@ -498,6 +498,7 @@ func (i *InstanceServiceHandler) GetNeighbors(ctx context.Context, instanceID st
 }
 
 // ListPrivateNetworks currently attached to an instance.
+// Deprecated: ListPrivateNetworks should no longer be used.  Instead use ListVPCInfo
 func (i *InstanceServiceHandler) ListPrivateNetworks(ctx context.Context, instanceID string, options *ListOptions) ([]PrivateNetwork, *Meta, error) {
 	uri := fmt.Sprintf("%s/%s/private-networks", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -521,6 +522,7 @@ func (i *InstanceServiceHandler) ListPrivateNetworks(ctx context.Context, instan
 }
 
 // AttachPrivateNetwork to an instance
+// Deprecated: AttachPrivateNetwork should no longer be used.  Instead use AttachVPC
 func (i *InstanceServiceHandler) AttachPrivateNetwork(ctx context.Context, instanceID, networkID string) error {
 	uri := fmt.Sprintf("%s/%s/private-networks/attach", instancePath, instanceID)
 	body := RequestBody{"network_id": networkID}
@@ -534,6 +536,7 @@ func (i *InstanceServiceHandler) AttachPrivateNetwork(ctx context.Context, insta
 }
 
 // DetachPrivateNetwork from an instance.
+// Deprecated: DetachPrivateNetwork should no longer be used.  Instead use DetachVPC
 func (i *InstanceServiceHandler) DetachPrivateNetwork(ctx context.Context, instanceID, networkID string) error {
 	uri := fmt.Sprintf("%s/%s/private-networks/detach", instancePath, instanceID)
 	body := RequestBody{"network_id": networkID}
@@ -546,7 +549,7 @@ func (i *InstanceServiceHandler) DetachPrivateNetwork(ctx context.Context, insta
 	return i.client.DoWithContext(ctx, req, nil)
 }
 
-// ListVPCs currently attached to an instance.
+// ListVPCInfo currently attached to an instance.
 func (i *InstanceServiceHandler) ListVPCInfo(ctx context.Context, instanceID string, options *ListOptions) ([]VPCInfo, *Meta, error) {
 	uri := fmt.Sprintf("%s/%s/vpcs", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
