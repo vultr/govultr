@@ -28,6 +28,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 						"ssl_redirect": false,
 						"proxy_protocol": false,
 						"private_network": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
+						"vpc": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
 						"sticky_sessions": {
 							"cookie_name": "my-cookie"
 						}
@@ -106,6 +107,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 				SSLRedirect:        BoolToBoolPtr(false),
 				ProxyProtocol:      BoolToBoolPtr(false),
 				PrivateNetwork:     "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
+				VPC:                "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
 				StickySessions: &StickySessions{
 					CookieName: "my-cookie",
 				},
@@ -181,6 +183,7 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 					"ssl_redirect": false,
 					"proxy_protocol": false,
 					"private_network": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
+					"vpc": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
 					"sticky_sessions": {
 						"cookie_name": "my-cookie"
 					}
@@ -250,6 +253,7 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 			SSLRedirect:        BoolToBoolPtr(false),
 			ProxyProtocol:      BoolToBoolPtr(false),
 			PrivateNetwork:     "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
+			VPC:                "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
 			StickySessions: &StickySessions{
 				CookieName: "my-cookie",
 			},
@@ -417,6 +421,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 						"ssl_redirect": false,
 						"proxy_protocol": false,
 						"private_network": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
+						"vpc": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
 						"sticky_sessions": {
 							"cookie_name": "my-cookie"
 						}
@@ -473,6 +478,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		SSLRedirect:        BoolToBoolPtr(false),
 		ProxyProtocol:      BoolToBoolPtr(false),
 		PrivateNetwork:     StringToStringPtr("8d5bdbdb-3324-4d0c-b303-03e1315e1c02"),
+		VPC:                StringToStringPtr("8d5bdbdb-3324-4d0c-b303-03e1315e1c02"),
 		HealthCheck: &HealthCheck{
 			Protocol:           "http",
 			Port:               80,
@@ -512,6 +518,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 			SSLRedirect:        BoolToBoolPtr(false),
 			ProxyProtocol:      BoolToBoolPtr(false),
 			PrivateNetwork:     "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
+			VPC:                "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
 			StickySessions: &StickySessions{
 				CookieName: "my-cookie",
 			},
@@ -565,6 +572,7 @@ func TestLoadBalancerHandler_Update(t *testing.T) {
 		SSLRedirect:        BoolToBoolPtr(false),
 		ProxyProtocol:      BoolToBoolPtr(false),
 		PrivateNetwork:     StringToStringPtr("8d5bdbdb-3324-4d0c-b303-03e1315e1c02"),
+		VPC:                StringToStringPtr("8d5bdbdb-3324-4d0c-b303-03e1315e1c02"),
 		HealthCheck: &HealthCheck{
 			Protocol:           "http",
 			Port:               80,
