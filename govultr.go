@@ -68,6 +68,7 @@ type Client struct {
 	SSHKey          SSHKeyService
 	StartupScript   StartupScriptService
 	User            UserService
+	VPC             VPCService
 
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
@@ -121,6 +122,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.SSHKey = &SSHKeyServiceHandler{client}
 	client.StartupScript = &StartupScriptServiceHandler{client}
 	client.User = &UserServiceHandler{client}
+	client.VPC = &VPCServiceHandler{client}
 
 	return client
 }
