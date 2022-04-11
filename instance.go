@@ -135,6 +135,7 @@ type privateNetworksBase struct {
 }
 
 // PrivateNetwork information for a given instance.
+// Deprecated: PrivateNetwork should no longer be used.  Instead use VPCInfo.
 type PrivateNetwork struct {
 	NetworkID  string `json:"network_id"`
 	MacAddress string `json:"mac_address"`
@@ -146,7 +147,7 @@ type vpcInfoBase struct {
 	Meta *Meta     `json:"meta"`
 }
 
-// VPC information for a given instance.
+// VPCInfo information for a given instance.
 type VPCInfo struct {
 	ID         string `json:"id"`
 	MacAddress string `json:"mac_address"`
