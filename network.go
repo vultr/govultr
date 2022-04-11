@@ -119,7 +119,6 @@ func (n *NetworkServiceHandler) Delete(ctx context.Context, networkID string) er
 // Deprecated: NetworkServiceHandler List should no longer be used.  Instead use VPCServiceHandler List.
 func (n *NetworkServiceHandler) List(ctx context.Context, options *ListOptions) ([]Network, *Meta, error) {
 	req, err := n.client.NewRequest(ctx, http.MethodGet, netPath, nil)
-	fmt.Println(req)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -135,8 +134,6 @@ func (n *NetworkServiceHandler) List(ctx context.Context, options *ListOptions) 
 	if err = n.client.DoWithContext(ctx, req, networks); err != nil {
 		return nil, nil, err
 	}
-
-	fmt.Println(networks)
 
 	return networks.Networks, networks.Meta, nil
 }
