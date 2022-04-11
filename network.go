@@ -14,10 +14,15 @@ const netPath = "/v2/private-networks"
 // Link : https://www.vultr.com/api/#tag/private-Networks
 // Deprecated: NetworkService should no longer be used. Instead, use VPCService.
 type NetworkService interface {
+	// Deprecated: NetworkService Create should no longer be used. Instead, use VPCService Create.
 	Create(ctx context.Context, createReq *NetworkReq) (*Network, error)
+	// Deprecated: NetworkService Get should no longer be used. Instead, use VPCService Get.
 	Get(ctx context.Context, networkID string) (*Network, error)
+	// Deprecated: NetworkService Update should no longer be used. Instead, use VPCService Update.
 	Update(ctx context.Context, networkID string, description string) error
+	// Deprecated: NetworkService Delete should no longer be used. Instead, use VPCService Delete.
 	Delete(ctx context.Context, networkID string) error
+	// Deprecated: NetworkService List should no longer be used. Instead, use VPCService List.
 	List(ctx context.Context, options *ListOptions) ([]Network, *Meta, error)
 }
 
