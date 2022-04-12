@@ -2,6 +2,10 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v2.15.1](https://github.com/vultr/govultr/compare/v2.15.0..v2.15.1) (2022-04-12)
+### Bug fixes
+* Block : add `omityempty` to `block_type` to prevent deploy issues [212](https://github.com/vultr/govultr/pull/212)
+
 ## [v2.15.0](https://github.com/vultr/govultr/compare/v2.14.2..v2.15.0) (2022-04-12)
 ### Enhancement 
 * Block : New optional field `block_type`. This new field is currently optional but may become required at a later release [209](https://github.com/vultr/govultr/pull/209)
