@@ -45,7 +45,7 @@ type BlockStorageCreate struct {
 	Region    string `json:"region"`
 	SizeGB    int    `json:"size_gb"`
 	Label     string `json:"label,omitempty"`
-	BlockType string `json:"block_type"`
+	BlockType string `json:"block_type,omitempty"`
 }
 
 // BlockStorageUpdate struct is used to update Block Storage.
