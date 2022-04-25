@@ -34,6 +34,9 @@ func TestKubernetesHandler_CreateCluster(t *testing.T) {
                 "plan": "vc2-1c-2gb",
                 "status": "pending",
                 "node_quantity": 1,
+				"min_nodes": 1,
+				"max_nodes": 2,
+				"auto_scaler": true,
                 "nodes": [
                     {
                         "id": "38364f79-17e3-4f1f-b7df-d9494bce0e4a",
@@ -79,6 +82,9 @@ func TestKubernetesHandler_CreateCluster(t *testing.T) {
 				Plan:         "vc2-1c-2gb",
 				Status:       "pending",
 				NodeQuantity: 1,
+				MinNodes:     1,
+				MaxNodes:     2,
+				AutoScaler:   true,
 				Nodes: []Node{
 					{
 						ID:          "38364f79-17e3-4f1f-b7df-d9494bce0e4a",
@@ -128,6 +134,9 @@ func TestKubernetesHandler_GetCluster(t *testing.T) {
                 "plan": "vc2-1c-2gb",
                 "status": "pending",
                 "node_quantity": 1,
+				"min_nodes": 1,
+				"max_nodes": 2,
+				"auto_scaler": true,
                 "nodes": [
                     {
                         "id": "38364f79-17e3-4f1f-b7df-d9494bce0e4a",
@@ -167,6 +176,9 @@ func TestKubernetesHandler_GetCluster(t *testing.T) {
 				Plan:         "vc2-1c-2gb",
 				Status:       "pending",
 				NodeQuantity: 1,
+				MinNodes:     1,
+				MaxNodes:     2,
+				AutoScaler:   true,
 				Nodes: []Node{
 					{
 						ID:          "38364f79-17e3-4f1f-b7df-d9494bce0e4a",
@@ -217,6 +229,9 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
                 "status": "pending",
 				"tag": "mytag",
                 "node_quantity": 1,
+				"min_nodes": 1,
+				"max_nodes": 2,
+				"auto_scaler": true,
                 "nodes": [
                     {
                         "id": "38364f79-17e3-4f1f-b7df-d9494bce0e4a",
@@ -266,6 +281,9 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
 					Status:       "pending",
 					Tag:          "mytag",
 					NodeQuantity: 1,
+					MinNodes:     1,
+					MaxNodes:     2,
+					AutoScaler:   true,
 					Nodes: []Node{
 						{
 							ID:          "38364f79-17e3-4f1f-b7df-d9494bce0e4a",
@@ -357,6 +375,9 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
         "plan": "vc2-1c-2gb",
         "status": "pending",
         "node_quantity": 1,
+		"min_nodes": 1,
+		"max_nodes": 2,
+		"auto_scaler": true,
 		"tag": "mytag",
         "nodes": [
             {
@@ -389,6 +410,9 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 		Plan:         "vc2-1c-2gb",
 		Status:       "pending",
 		NodeQuantity: 1,
+		MinNodes:     1,
+		MaxNodes:     2,
+		AutoScaler:   true,
 		Tag:          "mytag",
 		Nodes: []Node{
 			{
@@ -425,6 +449,9 @@ func TestKubernetesHandler_GetNodePool(t *testing.T) {
         "plan": "vc2-1c-2gb",
         "status": "pending",
         "node_quantity": 1,
+		"min_nodes": 1,
+		"max_nodes": 2,
+		"auto_scaler": true,
 		"tag": "mytag",
         "nodes": [
             {
@@ -452,6 +479,9 @@ func TestKubernetesHandler_GetNodePool(t *testing.T) {
 		Status:       "pending",
 		Tag:          "mytag",
 		NodeQuantity: 1,
+		MinNodes:     1,
+		MaxNodes:     2,
+		AutoScaler:   true,
 		Nodes: []Node{
 			{
 				ID:          "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -487,6 +517,9 @@ func TestKubernetesHandler_ListNodePools(t *testing.T) {
         "plan": "vc2-1c-2gb",
         "status": "pending",
         "node_quantity": 1,
+		"min_nodes": 1,
+		"max_nodes": 2,
+		"auto_scaler": true,
 		"tag": "mytag",
         "nodes": [
             {
@@ -522,6 +555,9 @@ func TestKubernetesHandler_ListNodePools(t *testing.T) {
 			Status:       "pending",
 			Tag:          "mytag",
 			NodeQuantity: 1,
+			MinNodes:     1,
+			MaxNodes:     2,
+			AutoScaler:   true,
 			Nodes: []Node{
 				{
 					ID:          "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -571,6 +607,9 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
     "plan": "vc2-1c-2gb",
     "status": "active",
     "node_quantity": 1,
+	"min_nodes": 1,
+	"max_nodes": 2,
+	"auto_scaler": true,
 	"tag": "mytag",
     "nodes": [
       {
@@ -598,6 +637,9 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
 		Plan:         "vc2-1c-2gb",
 		Status:       "active",
 		NodeQuantity: 1,
+		MinNodes:     1,
+		MaxNodes:     2,
+		AutoScaler:   true,
 		Tag:          "mytag",
 		Nodes: []Node{
 			{
