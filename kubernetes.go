@@ -101,8 +101,8 @@ type NodePoolReq struct {
 	Label        string `json:"label"`
 	Plan         string `json:"plan"`
 	Tag          string `json:"tag"`
-	MinNodes     int    `json:"min_nodes"`
-	MaxNodes     int    `json:"max_nodes"`
+	MinNodes     int    `json:"min_nodes,omitempty"`
+	MaxNodes     int    `json:"max_nodes,omitempty"`
 	AutoScaler   *bool  `json:"auto_scaler"`
 }
 
@@ -110,8 +110,8 @@ type NodePoolReq struct {
 type NodePoolReqUpdate struct {
 	NodeQuantity int    `json:"node_quantity,omitempty"`
 	Tag          string `json:"tag,omitempty"`
-	MinNodes     int    `json:"min_nodes"`
-	MaxNodes     int    `json:"max_nodes"`
+	MinNodes     int    `json:"min_nodes,omitempty"`
+	MaxNodes     int    `json:"max_nodes,omitempty"`
 	AutoScaler   *bool  `json:"auto_scaler"`
 }
 
