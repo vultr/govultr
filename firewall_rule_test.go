@@ -12,7 +12,7 @@ func TestFireWallRuleServiceHandler_Create(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/firewalls/abc123/rules", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"firewall_rule":{"id":1,"type":"v4","action":"accept","protocol":"tcp","port":"80","subnet":"127.0.0.1","subnet_size":32,"source":"","notes":"thisisanote"}}`
+		response := `{"firewall_rule":{"id":1,"type":"v4","ip_type":"v4","action":"accept","protocol":"tcp","port":"80","subnet":"127.0.0.1","subnet_size":32,"source":"","notes":"thisisanote"}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -34,6 +34,7 @@ func TestFireWallRuleServiceHandler_Create(t *testing.T) {
 		ID:         1,
 		Action:     "accept",
 		Type:       "v4",
+		IPType:     "v4",
 		Protocol:   "tcp",
 		Port:       "80",
 		Subnet:     "127.0.0.1",
@@ -67,7 +68,7 @@ func TestFireWallRuleServiceHandler_List(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/firewalls/abc123/rules", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"firewall_rules":[{"id":1,"type":"v4","action":"accept","protocol":"tcp","port":"22","subnet":"0.0.0.0","subnet_size":0,"source":"","notes":""}],"meta":{"total":5,"links":{"next":"","prev":""}}}`
+		response := `{"firewall_rules":[{"id":1,"type":"v4","ip_type":"v4","action":"accept","protocol":"tcp","port":"22","subnet":"0.0.0.0","subnet_size":0,"source":"","notes":""}],"meta":{"total":5,"links":{"next":"","prev":""}}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -81,6 +82,7 @@ func TestFireWallRuleServiceHandler_List(t *testing.T) {
 			ID:         1,
 			Action:     "accept",
 			Type:       "v4",
+			IPType:     "v4",
 			Protocol:   "tcp",
 			Port:       "22",
 			Subnet:     "0.0.0.0",
@@ -109,7 +111,7 @@ func TestFireWallRuleServiceHandler_Get(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/firewalls/abc123/rules/1", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"firewall_rule":{"id":1,"type":"v4","action":"accept","protocol":"tcp","port":"22","subnet":"0.0.0.0","subnet_size":0,"source":"","notes":""}}`
+		response := `{"firewall_rule":{"id":1,"type":"v4","ip_type":"v4","action":"accept","protocol":"tcp","port":"22","subnet":"0.0.0.0","subnet_size":0,"source":"","notes":""}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -122,6 +124,7 @@ func TestFireWallRuleServiceHandler_Get(t *testing.T) {
 		ID:         1,
 		Action:     "accept",
 		Type:       "v4",
+		IPType:     "v4",
 		Protocol:   "tcp",
 		Port:       "22",
 		Subnet:     "0.0.0.0",
