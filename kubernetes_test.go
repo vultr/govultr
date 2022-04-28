@@ -758,3 +758,45 @@ func TestKubernetesHandler_GetVersions(t *testing.T) {
 		t.Error("Kubernetes.GetVersions returned nil")
 	}
 }
+
+func TestKubernetesHandler_GetUpgrades(t *testing.T) {
+	setup()
+	defer teardown()
+	path := fmt.Sprintf("%s/%s/available-upgrades", vkePath, "1")
+	mux.HandleFunc(fmt.Sprintf(path), func(writer http.ResponseWriter, request *http.Request) {
+		response := `{"available_upgrades": ["v1.20.0+1"]}`
+		fmt.Fprint(writer, response)
+	})
+
+	config, err := client.Kubernetes.GetUpgrades(ctx, "1")
+	if err != nil {
+		t.Errorf("Kubernetes.GetVersions returned %+v", err)
+	}
+
+	expected := []string{"v1.20.0+1"}
+	if !reflect.DeepEqual(config, expected) {
+		t.Errorf("Kubernetes.GetVersions returned %+v, expected %+v", config, expected)
+	}
+
+	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
+	defer can()
+	_, err = client.Kubernetes.GetUpgrades(c, "1")
+	if err == nil {
+		t.Error("Kubernetes.GetUpgradeVersions returned nil")
+	}
+}
+
+func TestKubernetesHandler_Upgrade(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc(fmt.Sprintf("%s/%s/upgrades", vkePath, "1"), func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	req := &ClusterUpgradeReq{UpgradeVersion: "2"}
+	err := client.Kubernetes.Upgrade(ctx, "1", req)
+	if err != nil {
+		t.Errorf("Kubernetes.StartUpgrade returned %+v", err)
+	}
+}
