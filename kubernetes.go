@@ -31,6 +31,9 @@ type KubernetesService interface {
 
 	GetKubeConfig(ctx context.Context, vkeID string) (*KubeConfig, error)
 	GetVersions(ctx context.Context) (*Versions, error)
+
+	GetUpgrades(ctx context.Context, vkeID string) ([]string, error)
+	Upgrade(ctx context.Context, vkeID string, body *ClusterUpgradeReq) error
 }
 
 // KubernetesHandler handles interaction with the kubernetes methods for the Vultr API
@@ -136,6 +139,15 @@ type vkeNodePoolBase struct {
 // Versions that are supported for VKE
 type Versions struct {
 	Versions []string `json:"versions"`
+}
+
+// AvailableUpgrades for a given VKE cluster
+type availableUpgrades struct {
+	AvailableUpgrades []string `json:"available_upgrades"`
+}
+
+type ClusterUpgradeReq struct {
+	UpgradeVersion string `json:"upgrade_version,omitempty"`
 }
 
 // CreateCluster will create a Kubernetes cluster.
@@ -347,4 +359,30 @@ func (k *KubernetesHandler) GetVersions(ctx context.Context) (*Versions, error) 
 	}
 
 	return versions, nil
+}
+
+// GetUpgrades returns all version a VKE cluster can upgrade to
+func (k *KubernetesHandler) GetUpgrades(ctx context.Context, vkeID string) ([]string, error) {
+	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/available-upgrades", vkePath, vkeID), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	upgrades := new(availableUpgrades)
+	if err = k.client.DoWithContext(ctx, req, &upgrades); err != nil {
+		return nil, err
+	}
+
+	return upgrades.AvailableUpgrades, nil
+}
+
+// Upgrade beings a VKE cluster upgrade
+func (k *KubernetesHandler) Upgrade(ctx context.Context, vkeID string, body *ClusterUpgradeReq) error {
+
+	req, err := k.client.NewRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/upgrades", vkePath, vkeID), body)
+	if err != nil {
+		return err
+	}
+
+	return k.client.DoWithContext(ctx, req, nil)
 }
