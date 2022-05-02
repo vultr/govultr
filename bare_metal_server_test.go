@@ -32,7 +32,7 @@ func TestBareMetalServerServiceHandler_GetServer(t *testing.T) {
 				"v6_network_size": 64,
 				"mac_address": 2199756823533,
 				"label": "my label",
-				"tag": "my tag",
+				"tags": ["my tag"],
 				"os_id": 127,
 				"app_id": 0
 			}
@@ -64,7 +64,7 @@ func TestBareMetalServerServiceHandler_GetServer(t *testing.T) {
 		V6NetworkSize: 64,
 		MacAddress:    2199756823533,
 		Label:         "my label",
-		Tag:           "my tag",
+		Tags:          []string{"my tag"},
 		OsID:          127,
 		AppID:         0,
 	}
@@ -100,7 +100,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 					"v6_network_size": 64,
 					"mac_address": 0,
 					"label": "go-bm-test",
-					"tag": "my tag",
+					"tags": ["my tag"],
 					"os_id": 127,
 					"app_id": 0
 				}
@@ -121,7 +121,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 		UserData:        "echo Hello World",
 		ActivationEmail: BoolToBoolPtr(true),
 		Hostname:        "test",
-		Tag:             "go-test",
+		Tags:            []string{"my tag"},
 		ReservedIPv4:    "111.111.111.111",
 		PersistentPxe:   BoolToBoolPtr(true),
 	}
@@ -149,7 +149,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 		V6MainIP:        "2001:DB8:9000::100",
 		V6NetworkSize:   64,
 		Label:           "go-bm-test",
-		Tag:             "my tag",
+		Tags:            []string{"my tag"},
 		MacAddress:      0,
 		OsID:            127,
 		Region:          "ewr",
@@ -186,7 +186,7 @@ func TestBareMetalServerServiceHandler_Update(t *testing.T) {
 					"v6_main_ip": "2001:DB8:9000::100",
 					"v6_network_size": 64,
 					"label": "my new label",
-					"tag": "my tag",
+					"tags": ["my tag"],
 					"os_id": 127,
 					"app_id": 0
 				}
@@ -221,7 +221,7 @@ func TestBareMetalServerServiceHandler_Update(t *testing.T) {
 		V6MainIP:        "2001:DB8:9000::100",
 		V6NetworkSize:   64,
 		Label:           "my new label",
-		Tag:             "my tag",
+		Tags:            []string{"my tag"},
 		OsID:            127,
 		Region:          "ewr",
 		AppID:           0,
@@ -272,7 +272,7 @@ func TestBareMetalServerServiceHandler_List(t *testing.T) {
 					"v6_network_size": 64,
 					"mac_address": 2199756823533,
 					"label": "my label",
-					"tag": "my tag",
+					"tags": ["my tag"],
 					"os_id": 127,
 					"app_id": 0
 				}]
@@ -306,7 +306,7 @@ func TestBareMetalServerServiceHandler_List(t *testing.T) {
 			V6NetworkSize: 64,
 			MacAddress:    2199756823533,
 			Label:         "my label",
-			Tag:           "my tag",
+			Tags:          []string{"my tag"},
 			OsID:          127,
 			AppID:         0,
 		},
@@ -500,7 +500,7 @@ func TestBareMetalServerServiceHandler_Reinstall(t *testing.T) {
 					"v6_main_ip": "2001:DB8:9000::100",
 					"v6_network_size": 64,
 					"label": "go-bm-test",
-					"tag": "my tag",
+					"tags": ["my tag"],
 					"os_id": 127,
 					"app_id": 0
 				}
@@ -531,7 +531,7 @@ func TestBareMetalServerServiceHandler_Reinstall(t *testing.T) {
 		V6MainIP:        "2001:DB8:9000::100",
 		V6NetworkSize:   64,
 		Label:           "go-bm-test",
-		Tag:             "my tag",
+		Tags:            []string{"my tag"},
 		OsID:            127,
 		Region:          "ewr",
 		AppID:           0,
@@ -733,7 +733,7 @@ func TestBareMetalServerServiceHandler_CreateMarketplaceImage(t *testing.T) {
 					"v6_network_size": 64,
 					"mac_address": 0,
 					"label": "go-bm-test",
-					"tag": "my tag",
+					"tags": ["my tag"],
 					"os_id": 127,
 					"app_id": 0,
 					"image_id": "test"
@@ -755,7 +755,7 @@ func TestBareMetalServerServiceHandler_CreateMarketplaceImage(t *testing.T) {
 		UserData:        "echo Hello World",
 		ActivationEmail: BoolToBoolPtr(true),
 		Hostname:        "test",
-		Tag:             "go-test",
+		Tags:            []string{"go-test"},
 		ReservedIPv4:    "111.111.111.111",
 		PersistentPxe:   BoolToBoolPtr(true),
 		ImageID:         "test",
@@ -784,7 +784,7 @@ func TestBareMetalServerServiceHandler_CreateMarketplaceImage(t *testing.T) {
 		V6MainIP:        "2001:DB8:9000::100",
 		V6NetworkSize:   64,
 		Label:           "go-bm-test",
-		Tag:             "my tag",
+		Tags:            []string{"my tag"},
 		MacAddress:      0,
 		OsID:            127,
 		Region:          "ewr",
