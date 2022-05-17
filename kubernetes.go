@@ -112,10 +112,10 @@ type NodePoolReq struct {
 // NodePoolReqUpdate struct used to update a node pool
 type NodePoolReqUpdate struct {
 	NodeQuantity int     `json:"node_quantity,omitempty"`
-	Tag          *string `json:"tag"`
+	Tag          *string `json:"tag,omitempty"`
 	MinNodes     int     `json:"min_nodes,omitempty"`
 	MaxNodes     int     `json:"max_nodes,omitempty"`
-	AutoScaler   *bool   `json:"auto_scaler"`
+	AutoScaler   *bool   `json:"auto_scaler,omitempty"`
 }
 
 type vkeClustersBase struct {
