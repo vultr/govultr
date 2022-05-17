@@ -12,6 +12,13 @@
 ### Bug fixes
 * Kubernetes: fix data type for `auto_scaler` to avoid sending null values in requests when not set [222](https://github.com/vultr/govultr/pull/222)
 
+### Breaking Change
+* Kubernetes: change data type for `Tag` in node pool update requirements struct [222](https://github.com/vultr/govultr/pull/222)
+* Kubernetes: change data type for `AutoScaler` in node pool update requirements struct [222](https://github.com/vultr/govultr/pull/222)
+* Baremetal: change data type for `Tag` in update requirements struct [222](https://github.com/vultr/govultr/pull/222)
+* Instance: change data type for `Tag` in update requirements struct [222](https://github.com/vultr/govultr/pull/222)
+
+
 ## [v2.16.0](https://github.com/vultr/govultr/compare/v2.15.1..v2.16.0) (2022-05-04)
 
 ### Enhancement
