@@ -2,6 +2,16 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v2.17.0](https://github.com/vultr/govultr/compare/v2.16.0..v2.17.0) (2022-05-17)
+
+### Enhancement
+* Kubernetes: allow `tag` update to delete existing value [222](https://github.com/vultr/govultr/pull/222)
+* Baremetal: allow `tag` update to delete existing value [222](https://github.com/vultr/govultr/pull/222)
+* Instance: allow `tag` update to delete existing value [222](https://github.com/vultr/govultr/pull/222)
+
+### Bug fixes
+* Kubernetes: fix data type for `auto_scaler` to avoid sending null values in requests when not set [222](https://github.com/vultr/govultr/pull/222)
+
 ## [v2.16.0](https://github.com/vultr/govultr/compare/v2.15.1..v2.16.0) (2022-05-04)
 
 ### Enhancement
