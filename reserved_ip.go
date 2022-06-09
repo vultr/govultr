@@ -51,7 +51,7 @@ type ReservedIPReq struct {
 
 // ReservedIPUpdateReq represents the parameters for updating a Reserved IP on Vultr
 type ReservedIPUpdateReq struct {
-	Label string `json:"label"`
+	Label *string `json:"label"`
 }
 
 type reservedIPsBase struct {
