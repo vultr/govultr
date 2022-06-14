@@ -5,7 +5,7 @@
 ## [v2.17.2](https://github.com/vultr/govultr/compare/v2.17.1...v2.17.2) (2022-06-13)
 
 ### Enhancement
-* Reserved IP: Add support for updating label [227](https://github.com/vultr/govultr/pull/227)
+* Reserved IP: Add support for updating label [227](https://github.com/vultr/govultr/pull/227) 
 
 ## [v2.17.1](https://github.com/vultr/govultr/compare/v2.17.0...v2.17.1) (2022-06-02)
 * Plans: Add GPU specific fields to plan struct [224](https://github.com/vultr/govultr/pull/224)
