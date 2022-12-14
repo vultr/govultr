@@ -85,7 +85,7 @@ func TestNetworkServiceHandler_List(t *testing.T) {
 			}]
 		}
 		`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	networks, _, err := client.Network.List(ctx, nil)

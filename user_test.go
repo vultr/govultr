@@ -84,7 +84,7 @@ func TestUserServiceHandler_List(t *testing.T) {
     }
 }
 		`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	options := &ListOptions{

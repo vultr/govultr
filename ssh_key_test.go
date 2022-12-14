@@ -105,7 +105,7 @@ func TestSSHKeyServiceHandler_List(t *testing.T) {
 
 	mux.HandleFunc("/v2/ssh-keys", func(writer http.ResponseWriter, request *http.Request) {
 		response := `{"ssh_keys": [{"id": "5ed139d1890db","date_created": "2020-05-29 16:35:29","name": "api-test-ssh","ssh_key": "ssh-rsa AAAAB3NzaC1ycYYw== test@admin.com"}],"meta": {"total": 8,"links": {"next": "","prev": ""}}}`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	sshKeys, meta, err := client.SSHKey.List(ctx, nil)

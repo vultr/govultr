@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -22,12 +22,6 @@ const (
 	rateLimit   = 500 * time.Millisecond
 	retryLimit  = 3
 )
-
-// APIKey contains a users API Key for interacting with the API
-type APIKey struct {
-	// API Key
-	key string
-}
 
 // RequestBody is used to create JSON bodies for one off calls
 type RequestBody map[string]interface{}
@@ -177,7 +171,7 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 
 	defer res.Body.Close()
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -236,7 +230,7 @@ func (c *Client) vultrErrorHandler(resp *http.Response, err error, numTries int)
 		return nil, fmt.Errorf("gave up after %d attempts, last error unavailable (resp == nil)", numTries)
 	}
 
-	buf, err := ioutil.ReadAll(resp.Body)
+	buf, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("gave up after %d attempts, last error unavailable (error reading response body: %v)", numTries, err)
 	}

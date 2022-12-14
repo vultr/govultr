@@ -59,7 +59,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 							"source": "0.0.0.0/0",
 							"ip_type": "v4"
 						}
-					],					
+					],
 					"instances": [
 						"12345"
 					]
@@ -74,7 +74,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 			}
 		}
 		`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	list, meta, err := client.LoadBalancer.List(ctx, nil)
@@ -214,14 +214,14 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 						"source": "0.0.0.0/0",
 						"ip_type": "v4"
 					}
-				], 				
+				],
 				"instances": [
 					"12345"
 				]
 			}
 		}
 		`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	info, err := client.LoadBalancer.Get(ctx, "1317575")
@@ -307,7 +307,7 @@ func TestLoadBalancerHandler_ListForwardingRules(t *testing.T) {
 			}
 		}
 		`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	list, meta, err := client.LoadBalancer.ListForwardingRules(ctx, "12345", nil)
@@ -371,7 +371,7 @@ func TestLoadBalancerHandler_CreateForwardingRule(t *testing.T) {
 			}
 		}
 		`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	rule := &ForwardingRule{
@@ -452,14 +452,14 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 							"source": "0.0.0.0/0",
 							"ip_type": "v4"
 						}
-					], 						
+					],
 					"instances": [
 						"1234"
 					]
 				}
 		}
 		`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	lbCreate := &LoadBalancerReq{

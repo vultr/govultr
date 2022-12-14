@@ -48,7 +48,7 @@ func TestStartupScriptServiceHandler_GET(t *testing.T) {
 
 	mux.HandleFunc("/v2/startup-scripts/14350", func(writer http.ResponseWriter, request *http.Request) {
 		response := `{"startup_script": {"id": "14350","date_created": "2020-06-08 17:58:10","date_modified": "2020-06-08 17:59:54","name": "govultr","type": "pxe","script": "dGVzdA=="}}`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	scripts, err := client.StartupScript.Get(ctx, "14350")
@@ -113,7 +113,7 @@ func TestStartupScriptServiceHandler_List(t *testing.T) {
 
 	mux.HandleFunc("/v2/startup-scripts", func(writer http.ResponseWriter, request *http.Request) {
 		response := `{"startup_scripts": [{"id": "14350","date_created": "2020-06-08 17:58:10","date_modified": "2020-06-08 17:59:54","name": "govultr","type": "pxe","script": "dGVzdA=="}],"meta": {"total": 1,"links": {"next": "","prev": ""}}}`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	scripts, meta, err := client.StartupScript.List(ctx, nil)

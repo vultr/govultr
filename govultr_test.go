@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/http/httputil"
@@ -141,7 +141,9 @@ func TestClient_DoWithContextError(t *testing.T) {
 				panicked = fmt.Sprint(err)
 			}
 		}()
-		client.DoWithContext(context.Background(), req, nil)
+		if err := client.DoWithContext(context.Background(), req, nil); err != nil {
+			t.Errorf("dowithcontext error: %s", err)
+		}
 	}()
 	if panicked != "" {
 		t.Errorf("unexpected panic: %s", panicked)
@@ -162,7 +164,7 @@ func TestClient_NewRequest(t *testing.T) {
 		t.Errorf("NewRequest(%v) URL = %v, expected %v", in, req.URL, out)
 	}
 
-	body, _ := ioutil.ReadAll(req.Body)
+	body, _ := io.ReadAll(req.Body)
 
 	if string(body) != outRequest {
 		t.Errorf("NewRequest(%v)Body = %v, expected %v", inRequest, string(body), outRequest)
