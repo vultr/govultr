@@ -137,7 +137,7 @@ func TestReservedIPServiceHandler_Update(t *testing.T) {
 			}
 		}
 		`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	ip, err := client.ReservedIP.Update(ctx, "12345", options)
@@ -209,7 +209,7 @@ func TestReservedIPServiceHandler_Get(t *testing.T) {
 			}
 		}
 		`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	ip, err := client.ReservedIP.Get(ctx, "1313044")
@@ -251,7 +251,7 @@ func TestReservedIPServiceHandler_List(t *testing.T) {
 			}]
 		}
 		`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	ips, _, err := client.ReservedIP.List(ctx, nil)

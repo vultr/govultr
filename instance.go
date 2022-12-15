@@ -294,9 +294,7 @@ type ReinstallReq struct {
 
 // Create will create the server with the given parameters
 func (i *InstanceServiceHandler) Create(ctx context.Context, instanceReq *InstanceCreateReq) (*Instance, error) {
-	uri := fmt.Sprintf("%s", instancePath)
-
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, instanceReq)
+	req, err := i.client.NewRequest(ctx, http.MethodPost, instancePath, instanceReq)
 	if err != nil {
 		return nil, err
 	}

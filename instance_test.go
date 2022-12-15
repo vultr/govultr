@@ -2,7 +2,7 @@ package govultr
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"reflect"
 	"testing"
@@ -79,7 +79,7 @@ func TestServerServiceHandler_RestoreSnapshot(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/instances/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/restore", func(writer http.ResponseWriter, request *http.Request) {
-		body, err := ioutil.ReadAll(request.Body)
+		body, err := io.ReadAll(request.Body)
 		if err != nil || len(body) == 0 {
 			http.Error(writer, "can't read body", http.StatusBadRequest)
 			return
@@ -363,7 +363,7 @@ func TestServerServiceHandler_GetBandwidth(t *testing.T) {
 					"outgoing_bytes": 3084731
 				}
 			}
-		}		
+		}
 		`
 		fmt.Fprint(writer, response)
 	})
@@ -758,7 +758,7 @@ func TestServerServiceHandler_List(t *testing.T) {
 					"next":"thisismycusror",
 					"prev":""
 				}
-			}			
+			}
 		}`
 		fmt.Fprint(writer, response)
 	})

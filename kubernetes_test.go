@@ -49,7 +49,7 @@ func TestKubernetesHandler_CreateCluster(t *testing.T) {
         ]
     }
 }`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	createReq := &ClusterReq{
@@ -149,7 +149,7 @@ func TestKubernetesHandler_GetCluster(t *testing.T) {
         ]
     }
 }`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	vke, err := client.Kubernetes.GetCluster(ctx, "014da059-21e3-47eb-acb5-91bf697c31aa")
@@ -207,7 +207,7 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc(fmt.Sprintf("%s", vkePath), func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc(vkePath, func(writer http.ResponseWriter, request *http.Request) {
 		response := `{
     "vke_clusters": [{
         "id": "014da059-21e3-47eb-acb5-91bf697c31aa",
@@ -252,7 +252,7 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
         }
     }
 }`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	vke, meta, err := client.Kubernetes.ListClusters(ctx, nil)
@@ -389,7 +389,7 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
         ]
     }
 }`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	createReq := &NodePoolReq{
@@ -463,7 +463,7 @@ func TestKubernetesHandler_GetNodePool(t *testing.T) {
         ]
     }
 }`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	np, err := client.Kubernetes.GetNodePool(ctx, "1", "2")
@@ -538,7 +538,7 @@ func TestKubernetesHandler_ListNodePools(t *testing.T) {
         }
     }
 }`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 
 	np, meta, err := client.Kubernetes.ListNodePools(ctx, "1", nil)
@@ -621,7 +621,7 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
     ]
   }
 }`
-		fmt.Fprintf(writer, response)
+		fmt.Fprint(writer, response)
 	})
 	update := NodePoolReqUpdate{NodeQuantity: 1}
 	response, err := client.Kubernetes.UpdateNodePool(ctx, "1", "2", &update)
@@ -681,7 +681,7 @@ func TestKubernetesHandler_DeleteNodePoolInstance(t *testing.T) {
 	setup()
 	defer teardown()
 	path := fmt.Sprintf("%s/%s/node-pools/%s/nodes/%s", vkePath, "1", "2", "3")
-	mux.HandleFunc(fmt.Sprintf(path), func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
@@ -695,7 +695,7 @@ func TestKubernetesHandler_RecycleNodePoolInstance(t *testing.T) {
 	setup()
 	defer teardown()
 	path := fmt.Sprintf("%s/%s/node-pools/%s/nodes/%s/recycle", vkePath, "1", "2", "3")
-	mux.HandleFunc(fmt.Sprintf(path), func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprint(writer)
 	})
 
@@ -709,7 +709,7 @@ func TestKubernetesHandler_GetKubeConfig(t *testing.T) {
 	setup()
 	defer teardown()
 	path := fmt.Sprintf("%s/%s/config", vkePath, "1")
-	mux.HandleFunc(fmt.Sprintf(path), func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
 		response := `{"kube_config": "config="}`
 		fmt.Fprint(writer, response)
 	})
@@ -736,7 +736,7 @@ func TestKubernetesHandler_GetVersions(t *testing.T) {
 	setup()
 	defer teardown()
 	path := "/v2/kubernetes/versions"
-	mux.HandleFunc(fmt.Sprintf(path), func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
 		response := `{"versions": ["v1.20.0+1"]}`
 		fmt.Fprint(writer, response)
 	})
@@ -763,7 +763,7 @@ func TestKubernetesHandler_GetUpgrades(t *testing.T) {
 	setup()
 	defer teardown()
 	path := fmt.Sprintf("%s/%s/available-upgrades", vkePath, "1")
-	mux.HandleFunc(fmt.Sprintf(path), func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
 		response := `{"available_upgrades": ["v1.20.0+1"]}`
 		fmt.Fprint(writer, response)
 	})
