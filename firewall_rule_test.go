@@ -25,7 +25,7 @@ func TestFireWallRuleServiceHandler_Create(t *testing.T) {
 		Notes:      "thisisanote",
 	}
 
-	firewallRule, err := client.FirewallRule.Create(ctx, "abc123", rule)
+	firewallRule,_, err := client.FirewallRule.Create(ctx, "abc123", rule)
 	if err != nil {
 		t.Errorf("FirewallRule.Create returned error: %v", err)
 	}
@@ -72,7 +72,7 @@ func TestFireWallRuleServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	firewallRule, meta, err := client.FirewallRule.List(ctx, "abc123", nil)
+	firewallRule, meta,_, err := client.FirewallRule.List(ctx, "abc123", nil)
 	if err != nil {
 		t.Errorf("FirewallRule.List returned error: %v", err)
 	}
@@ -115,7 +115,7 @@ func TestFireWallRuleServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	firewallRule, err := client.FirewallRule.Get(ctx, "abc123", 1)
+	firewallRule, _, err := client.FirewallRule.Get(ctx, "abc123", 1)
 	if err != nil {
 		t.Errorf("FirewallRule.Get returned error: %v", err)
 	}

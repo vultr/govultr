@@ -43,7 +43,7 @@ func TestApplicationServiceHandler_List(t *testing.T) {
 		PerPage: 1,
 		Cursor:  "",
 	}
-	apps, meta, err := client.Application.List(ctx, options)
+	apps, meta,_, err := client.Application.List(ctx, options)
 	if err != nil {
 		t.Errorf("Application.List returned error: %v", err)
 	}

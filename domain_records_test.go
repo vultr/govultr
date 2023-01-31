@@ -22,7 +22,7 @@ func TestDomainRecordsServiceHandler_Create(t *testing.T) {
 		Data:     "127.0.0.1",
 		Priority: &p,
 	}
-	record, err := client.DomainRecord.Create(ctx, "vultr.com", r)
+	record, _, err := client.DomainRecord.Create(ctx, "vultr.com", r)
 	if err != nil {
 		t.Errorf("DomainRecord.Create returned %+v, expected %+v", err, nil)
 	}
@@ -50,7 +50,7 @@ func TestDomainRecordsServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	record, err := client.DomainRecord.Get(ctx, "vultr.com", "dev-preview-abc123")
+	record, _, err := client.DomainRecord.Get(ctx, "vultr.com", "dev-preview-abc123")
 	if err != nil {
 		t.Errorf("DomainRecord.Get returned %+v, expected %+v", err, nil)
 	}
@@ -116,7 +116,7 @@ func TestDomainRecordsServiceHandler_List(t *testing.T) {
 	options := &ListOptions{
 		PerPage: 1,
 	}
-	records, meta, err := client.DomainRecord.List(ctx, "vultr.com", options)
+	records, meta, _,  err := client.DomainRecord.List(ctx, "vultr.com", options)
 	if err != nil {
 		t.Errorf("DomainRecord.List returned %+v, expected %+v", err, nil)
 	}

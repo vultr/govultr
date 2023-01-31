@@ -24,7 +24,7 @@ func TestUserServiceHandler_Create(t *testing.T) {
 		Password:   "password",
 	}
 
-	user, err := client.User.Create(ctx, userReq)
+	user,_, err := client.User.Create(ctx, userReq)
 
 	if err != nil {
 		t.Errorf("User.Create returned %+v, expected %+v", err, nil)
@@ -90,7 +90,7 @@ func TestUserServiceHandler_List(t *testing.T) {
 	options := &ListOptions{
 		PerPage: 1,
 	}
-	users, meta, err := client.User.List(ctx, options)
+	users, meta,_, err := client.User.List(ctx, options)
 
 	if err != nil {
 		t.Errorf("User.List returned error: %v", err)
@@ -156,7 +156,7 @@ func TestUserServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	user, err := client.User.Get(ctx, "abc123")
+	user,_, err := client.User.Get(ctx, "abc123")
 	if err != nil {
 		t.Errorf("User.Get returned error: %v", err)
 	}

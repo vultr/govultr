@@ -19,7 +19,7 @@ func TestDomainServiceHandler_Create(t *testing.T) {
 	req := &DomainReq{
 		Domain: "vultr.com",
 	}
-	domain, err := client.Domain.Create(ctx, req)
+	domain, _, err := client.Domain.Create(ctx, req)
 	if err != nil {
 		t.Errorf("DNSDomain.Create returned %+v, expected %+v", err, nil)
 	}
@@ -43,7 +43,7 @@ func TestDomainServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	domain, err := client.Domain.Get(ctx, "vultr.com")
+	domain, _, err := client.Domain.Get(ctx, "vultr.com")
 	if err != nil {
 		t.Errorf("DNSDomain.Create returned %+v, expected %+v", err, nil)
 	}
@@ -97,7 +97,7 @@ func TestDNSDomainServiceHandler_List(t *testing.T) {
 	options := &ListOptions{
 		PerPage: 1,
 	}
-	domains, meta, err := client.Domain.List(ctx, options)
+	domains, meta, _, err := client.Domain.List(ctx, options)
 	if err != nil {
 		t.Errorf("Domain.List returned %+v, expected %+v", err, nil)
 	}
@@ -135,7 +135,7 @@ func TestDomainServiceHandler_GetSoa(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	soa, err := client.Domain.GetSoa(ctx, "vultr.com")
+	soa, _, err := client.Domain.GetSoa(ctx, "vultr.com")
 	if err != nil {
 		t.Errorf("Domain.GetSoa returned %+v, expected %+v", err, nil)
 	}
@@ -178,7 +178,7 @@ func TestDNSDomainServiceHandler_DNSSecInfo(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	dnsSec, err := client.Domain.GetDNSSec(ctx, "vultr.com")
+	dnsSec, _, err := client.Domain.GetDNSSec(ctx, "vultr.com")
 	if err != nil {
 		t.Errorf("Domain.GetDnsSec returned %+v, expected %+v", err, nil)
 	}

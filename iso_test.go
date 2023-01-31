@@ -17,7 +17,7 @@ func TestIsoServiceHandler_Create(t *testing.T) {
 	})
 
 	isoReq := &ISOReq{URL: "http://centos.com/CentOS-8.1.1911-x86_64-dvd1.iso"}
-	iso, err := client.ISO.Create(ctx, isoReq)
+	iso,_, err := client.ISO.Create(ctx, isoReq)
 	if err != nil {
 		t.Errorf("Iso.Create returned %+v, expected %+v", err, nil)
 	}
@@ -46,7 +46,7 @@ func TestIsoServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	iso, err := client.ISO.Get(ctx, "9931")
+	iso,_, err := client.ISO.Get(ctx, "9931")
 	if err != nil {
 		t.Errorf("Iso.Get returned %+v, expected %+v", err, nil)
 	}
@@ -90,7 +90,7 @@ func TestIsoServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	iso, meta, err := client.ISO.List(ctx, nil)
+	iso, meta,_, err := client.ISO.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Iso.List returned %+v, expected %+v", err, nil)
 	}
@@ -129,7 +129,7 @@ func TestIsoServiceHandler_ListPublic(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	iso, meta, err := client.ISO.ListPublic(ctx, nil)
+	iso, meta,_, err := client.ISO.ListPublic(ctx, nil)
 	if err != nil {
 		t.Errorf("Iso.ListPublic returned %+v, expected %+v", err, nil)
 	}

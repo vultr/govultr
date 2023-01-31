@@ -17,7 +17,7 @@ func TestFireWallGroupServiceHandler_Create(t *testing.T) {
 	})
 
 	group := &FirewallGroupReq{Description: "govultr test"}
-	firewallGroup, err := client.FirewallGroup.Create(ctx, group)
+	firewallGroup, _, err := client.FirewallGroup.Create(ctx, group)
 	if err != nil {
 		t.Errorf("FirewallGroup.Create returned error: %v", err)
 	}
@@ -46,7 +46,7 @@ func TestFireWallGroupServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	firewallGroup, err := client.FirewallGroup.Get(ctx, "44d0f934")
+	firewallGroup,_, err := client.FirewallGroup.Get(ctx, "44d0f934")
 	if err != nil {
 		t.Errorf("FirewallGroup.Create returned error: %v", err)
 	}
@@ -105,7 +105,7 @@ func TestFireWallGroupServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	firewallGroup, meta, err := client.FirewallGroup.List(ctx, nil)
+	firewallGroup, meta, _, err := client.FirewallGroup.List(ctx, nil)
 	if err != nil {
 		t.Errorf("FirewallGroup.List returned error: %v", err)
 	}

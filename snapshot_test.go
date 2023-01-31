@@ -21,7 +21,7 @@ func TestSnapshotServiceHandler_Create(t *testing.T) {
 		Description: "Test snapshot",
 	}
 
-	snapshot, err := client.Snapshot.Create(ctx, snap)
+	snapshot,_, err := client.Snapshot.Create(ctx, snap)
 	if err != nil {
 		t.Errorf("Snapshot.Create returned error: %v", err)
 	}
@@ -51,7 +51,7 @@ func TestSnapshotServiceHandler_CreateFromURL(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 	snap := SnapshotURLReq{URL: "http://vultr.com"}
-	snapshot, err := client.Snapshot.CreateFromURL(ctx, &snap)
+	snapshot,_, err := client.Snapshot.CreateFromURL(ctx, &snap)
 	if err != nil {
 		t.Errorf("Snapshot.CreateFromURL returned error: %v", err)
 	}
@@ -81,7 +81,7 @@ func TestSnapshotServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	snapshot, err := client.Snapshot.Get(ctx, "5359435d28b9a")
+	snapshot,_, err := client.Snapshot.Get(ctx, "5359435d28b9a")
 	if err != nil {
 		t.Errorf("Snapshot.Get returned error: %v", err)
 	}
@@ -126,7 +126,7 @@ func TestSnapshotServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	snapshots, meta, err := client.Snapshot.List(ctx, nil)
+	snapshots, meta,_, err := client.Snapshot.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Snapshot.List returned error: %v", err)
 	}

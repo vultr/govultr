@@ -151,10 +151,10 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 // DoWithContext sends an API Request and returns back the response. The API response is checked  to see if it was
 // a successful call. A successful call is then checked to see if we need to unmarshal since some resources
 // have their own implements of unmarshal.
-func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) error {
+func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) (*http.Response, error) {
 	rreq, err := retryablehttp.FromRequest(r)
 	if err != nil {
-		return err
+		return nil,err
 	}
 
 	rreq = rreq.WithContext(ctx)
@@ -166,26 +166,26 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 	}
 
 	if err != nil {
-		return err
+		return nil,err
 	}
 
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if res.StatusCode >= http.StatusOK && res.StatusCode <= http.StatusNoContent {
 		if data != nil {
 			if err := json.Unmarshal(body, data); err != nil {
-				return err
+				return nil, err
 			}
 		}
-		return nil
+		return res,nil
 	}
 
-	return errors.New(string(body))
+	return res, errors.New(string(body))
 }
 
 // SetBaseURL Overrides the default BaseUrl
