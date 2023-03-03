@@ -44,6 +44,7 @@ type Client struct {
 	BareMetalServer BareMetalServerService
 	Billing         BillingService
 	BlockStorage    BlockStorageService
+	Database        DatabaseService
 	Domain          DomainService
 	DomainRecord    DomainRecordService
 	FirewallGroup   FirewallGroupService
@@ -99,6 +100,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.BareMetalServer = &BareMetalServerServiceHandler{client}
 	client.Billing = &BillingServiceHandler{client}
 	client.BlockStorage = &BlockStorageServiceHandler{client}
+	client.Database = &DatabaseServiceHandler{client}
 	client.Domain = &DomainServiceHandler{client}
 	client.DomainRecord = &DomainRecordsServiceHandler{client}
 	client.FirewallGroup = &FireWallGroupServiceHandler{client}
