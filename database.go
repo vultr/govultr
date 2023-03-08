@@ -26,6 +26,16 @@ type DatabaseService interface {
 	GetUser(ctx context.Context, databaseID string, username string) (*DatabaseUser, error)
 	UpdateUser(ctx context.Context, databaseID string, username string, databaseUserReq *DatabaseUserUpdateReq) (*DatabaseUser, error)
 	DeleteUser(ctx context.Context, databaseID string, username string) error
+
+	ListDBs(ctx context.Context, databaseID string) ([]DatabaseDB, *Meta, error)
+	CreateDB(ctx context.Context, databaseID string, databaseDBReq *DatabaseDBCreateReq) (*DatabaseDB, error)
+	GetDB(ctx context.Context, databaseID string, dbname string) (*DatabaseDB, error)
+	DeleteDB(ctx context.Context, databaseID string, dbname string) error
+
+	ListMaintenanceUpdates(ctx context.Context, databaseID string) ([]string, error)
+	StartMaintenance(ctx context.Context, databaseID string) (string, error)
+
+	ListServiceAlerts(ctx context.Context, databaseID string, databaseAlertsReq *DatabaseListAlertsReq) ([]DatabaseAlert, error)
 }
 
 // DatabaseServiceHandler handles interaction with the server methods for the Vultr API
@@ -189,6 +199,50 @@ type DatabaseUserCreateReq struct {
 // DatabaseUserUpdateReq struct used to update a user within a Managed Database.
 type DatabaseUserUpdateReq struct {
 	Password string `json:"password,omitempty"`
+}
+
+// DatabaseDB represents a logical database within a Managed Database cluster
+type DatabaseDB struct {
+	Name string `json:"name"`
+}
+
+type databaseDBBase struct {
+	DatabaseDB *DatabaseDB `json:"db"`
+}
+
+type databaseDBsBase struct {
+	DatabaseDBs []DatabaseDB `json:"dbs"`
+	Meta        *Meta        `json:"meta"`
+}
+
+// DatabaseDBCreateReq struct used to create a logical database within a Managed Database.
+type DatabaseDBCreateReq struct {
+	Name string `json:"name"`
+}
+
+type databaseUpdatesBase struct {
+	AvailableUpdates []string `json:"available_updates"`
+	Message          string   `json:"message"`
+}
+
+// DatabaseAlert represents a service alert for a Managed Database cluster
+type DatabaseAlert struct {
+	Timestamp            string `json:"timestamp"`
+	MessageType          string `json:"message_type"`
+	Description          string `json:"description"`
+	Recommendation       string `json:"recommendation,omitempty"`
+	MaintenanceScheduled string `json:"maintenance_scheduled,omitempty"`
+	ResourceType         string `json:"resource_type,omitempty"`
+	TableCount           int    `json:"table_count,omitempty"`
+}
+
+type databaseAlertsBase struct {
+	DatabaseAlerts []DatabaseAlert `json:"alerts"`
+}
+
+// DatabaseListAlertsReq struct used to query service alerts for a Managed Database.
+type DatabaseListAlertsReq struct {
+	Period string `json:"period"`
 }
 
 // List all database plans
@@ -376,4 +430,122 @@ func (i *DatabaseServiceHandler) DeleteUser(ctx context.Context, databaseID stri
 	}
 
 	return i.client.DoWithContext(ctx, req, nil)
+}
+
+// List all logical databases on your Managed Database.
+func (i *DatabaseServiceHandler) ListDBs(ctx context.Context, databaseID string) ([]DatabaseDB, *Meta, error) {
+	uri := fmt.Sprintf("%s/%s/dbs", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseDBs := new(databaseDBsBase)
+	if err = i.client.DoWithContext(ctx, req, databaseDBs); err != nil {
+		return nil, nil, err
+	}
+
+	return databaseDBs.DatabaseDBs, databaseDBs.Meta, nil
+}
+
+// Create a logical database within the Managed Database with the given parameters
+func (i *DatabaseServiceHandler) CreateDB(ctx context.Context, databaseID string, databaseDBReq *DatabaseDBCreateReq) (*DatabaseDB, error) {
+	uri := fmt.Sprintf("%s/%s/dbs", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseDBReq)
+	if err != nil {
+		return nil, err
+	}
+
+	databaseDB := new(databaseDBBase)
+	if err = i.client.DoWithContext(ctx, req, databaseDB); err != nil {
+		return nil, err
+	}
+
+	return databaseDB.DatabaseDB, nil
+}
+
+// Get information on an individual logical database within a Managed Database based on a dbname and databaseID
+func (i *DatabaseServiceHandler) GetDB(ctx context.Context, databaseID string, dbname string) (*DatabaseDB, error) {
+	uri := fmt.Sprintf("%s/%s/dbs/%s", databasePath, databaseID, dbname)
+
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	databaseDB := new(databaseDBBase)
+	if err = i.client.DoWithContext(ctx, req, databaseDB); err != nil {
+		return nil, err
+	}
+
+	return databaseDB.DatabaseDB, nil
+}
+
+// Delete a user within the Managed database. All data will be permanently lost.
+func (i *DatabaseServiceHandler) DeleteDB(ctx context.Context, databaseID string, dbname string) error {
+	uri := fmt.Sprintf("%s/%s/dbs/%s", databasePath, databaseID, dbname)
+
+	req, err := i.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	return i.client.DoWithContext(ctx, req, nil)
+}
+
+// List all available maintenance updates for your Managed Database.
+func (i *DatabaseServiceHandler) ListMaintenanceUpdates(ctx context.Context, databaseID string) ([]string, error) {
+	uri := fmt.Sprintf("%s/%s/maintenance", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	databaseUpdates := new(databaseUpdatesBase)
+	if err = i.client.DoWithContext(ctx, req, databaseUpdates); err != nil {
+		return nil, err
+	}
+
+	if databaseUpdates.AvailableUpdates == nil {
+		return []string{databaseUpdates.Message}, nil
+	}
+
+	return databaseUpdates.AvailableUpdates, nil
+}
+
+// Start the maintenance update process for your Managed Database
+func (i *DatabaseServiceHandler) StartMaintenance(ctx context.Context, databaseID string) (string, error) {
+	uri := fmt.Sprintf("%s/%s/maintenance", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return "", err
+	}
+
+	databaseUpdates := new(databaseUpdatesBase)
+	if err = i.client.DoWithContext(ctx, req, databaseUpdates); err != nil {
+		return "", err
+	}
+
+	return databaseUpdates.Message, nil
+}
+
+// Query for service alerts for the Managed Database using the given parameters
+func (i *DatabaseServiceHandler) ListServiceAlerts(ctx context.Context, databaseID string, databaseAlertsReq *DatabaseListAlertsReq) ([]DatabaseAlert, error) {
+	uri := fmt.Sprintf("%s/%s/alerts", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseAlertsReq)
+	if err != nil {
+		return nil, err
+	}
+
+	databaseAlerts := new(databaseAlertsBase)
+	if err = i.client.DoWithContext(ctx, req, databaseAlerts); err != nil {
+		return nil, err
+	}
+
+	return databaseAlerts.DatabaseAlerts, nil
 }
