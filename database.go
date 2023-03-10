@@ -36,6 +36,28 @@ type DatabaseService interface {
 	StartMaintenance(ctx context.Context, databaseID string) (string, error)
 
 	ListServiceAlerts(ctx context.Context, databaseID string, databaseAlertsReq *DatabaseListAlertsReq) ([]DatabaseAlert, error)
+
+	GetMigrationStatus(ctx context.Context, databaseID string) (*DatabaseMigration, error)
+	StartMigration(ctx context.Context, databaseID string, databaseMigrationReq *DatabaseMigrationStartReq) (*DatabaseMigration, error)
+	DetachMigration(ctx context.Context, databaseID string) error
+
+	AddReadOnlyReplica(ctx context.Context, databaseID string, databaseReplicaReq *DatabaseAddReplicaReq) (*Database, error)
+
+	GetBackupInformation(ctx context.Context, databaseID string) (*DatabaseBackups, error)
+	RestoreFromBackup(ctx context.Context, databaseID string, databaseRestoreReq *DatabaseBackupRestoreReq) (*Database, error)
+	Fork(ctx context.Context, databaseID string, databaseForkReq *DatabaseForkReq) (*Database, error)
+
+	ListConnectionPools(ctx context.Context, databaseID string) (*DatabaseConnections, []DatabaseConnectionPool, *Meta, error)
+	CreateConnectionPool(ctx context.Context, databaseID string, databaseConnectionPoolReq *DatabaseConnectionPoolCreateReq) (*DatabaseConnectionPool, error)
+	GetConnectionPool(ctx context.Context, databaseID string, poolName string) (*DatabaseConnectionPool, error)
+	UpdateConnectionPool(ctx context.Context, databaseID string, poolName string, databaseConnectionPoolReq *DatabaseConnectionPoolUpdateReq) (*DatabaseConnectionPool, error)
+	DeleteConnectionPool(ctx context.Context, databaseID string, poolName string) error
+
+	ListAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseAdvancedOptions, []AvailableOption, error)
+	UpdateAdvancedOptions(ctx context.Context, databaseID string, databaseAdvancedOptionsReq *DatabaseAdvancedOptions) (*DatabaseAdvancedOptions, []AvailableOption, error)
+
+	ListAvailableVersions(ctx context.Context, databaseID string) ([]string, error)
+	StartVersionUpgrade(ctx context.Context, databaseID string, databaseVersionUpgradeReq *DatabaseVersionUpgradeReq) (string, error)
 }
 
 // DatabaseServiceHandler handles interaction with the server methods for the Vultr API
@@ -222,7 +244,10 @@ type DatabaseDBCreateReq struct {
 
 type databaseUpdatesBase struct {
 	AvailableUpdates []string `json:"available_updates"`
-	Message          string   `json:"message"`
+}
+
+type databaseMessage struct {
+	Message string `json:"message"`
 }
 
 // DatabaseAlert represents a service alert for a Managed Database cluster
@@ -243,6 +268,193 @@ type databaseAlertsBase struct {
 // DatabaseListAlertsReq struct used to query service alerts for a Managed Database.
 type DatabaseListAlertsReq struct {
 	Period string `json:"period"`
+}
+
+// DatabaseMigration represents migration details for a Managed Database cluster
+type DatabaseMigration struct {
+	Status      string              `json:"status"`
+	Method      string              `json:"method,omitempty"`
+	Error       string              `json:"error,omitempty"`
+	Credentials DatabaseCredentials `json:"credentials"`
+}
+
+// DatabaseCredentials represents migration credentials for migration within a Managed Database cluster
+type DatabaseCredentials struct {
+	Host             string `json:"host"`
+	Port             int    `json:"port"`
+	Username         string `json:"username"`
+	Password         string `json:"password"`
+	Database         string `json:"database,omitempty"`
+	IgnoredDatabases string `json:"ignored_databases,omitempty"`
+	SSL              *bool  `json:"ssl"`
+}
+
+type databaseMigrationBase struct {
+	Migration *DatabaseMigration `json:"migration"`
+}
+
+// DatabaseMigrationStartReq struct used to start a migration for a Managed Database.
+type DatabaseMigrationStartReq struct {
+	Host             string `json:"host"`
+	Port             int    `json:"port"`
+	Username         string `json:"username"`
+	Password         string `json:"password"`
+	Database         string `json:"database,omitempty"`
+	IgnoredDatabases string `json:"ignored_databases,omitempty"`
+	SSL              *bool  `json:"ssl"`
+}
+
+// DatabaseAddReplicaReq struct used to add a read-only replica to a Managed Database.
+type DatabaseAddReplicaReq struct {
+	Region string `json:"region,omitempty"`
+	Label  string `json:"label,omitempty"`
+}
+
+// DatabaseBackups represents backup information for a Managed Database cluster
+type DatabaseBackups struct {
+	LatestBackup DatabaseBackup `json:"latest_backup,omitempty"`
+	OldestBackup DatabaseBackup `json:"oldest_backup,omitempty"`
+}
+
+// DatabaseBackup represents individual backup details for a Managed Database cluster
+type DatabaseBackup struct {
+	Date string `json:"date"`
+	Time string `json:"time"`
+}
+
+// DatabaseBackupRestoreReq struct used to restore the backup of a Managed Database to a new subscription.
+type DatabaseBackupRestoreReq struct {
+	Label string `json:"label,omitempty"`
+	Type  string `json:"type,omitempty"`
+	Date  string `json:"date,omitempty"`
+	Time  string `json:"time,omitempty"`
+}
+
+// DatabaseForkReq struct used to fork a Managed Database to a new subscription from a backup.
+type DatabaseForkReq struct {
+	Label  string `json:"label,omitempty"`
+	Region string `json:"region,omitempty"`
+	Plan   string `json:"plan,omitempty"`
+	Type   string `json:"type,omitempty"`
+	Date   string `json:"date,omitempty"`
+	Time   string `json:"time,omitempty"`
+}
+
+// DatabaseConnectionPool represents a PostgreSQL connection pool within a Managed Database cluster
+type DatabaseConnectionPool struct {
+	Name     string `json:"name"`
+	Database string `json:"database"`
+	Username string `json:"username"`
+	Mode     string `json:"mode"`
+	Size     int    `json:"size"`
+}
+
+// DatabaseConnections represents a an object containing used and available connections for a PostgreSQL Managed Database cluster
+type DatabaseConnections struct {
+	Used      int `json:"used"`
+	Available int `json:"available"`
+	Max       int `json:"max"`
+}
+
+type databaseConnectionPoolBase struct {
+	ConnectionPool *DatabaseConnectionPool `json:"connection_pool"`
+}
+
+type databaseConnectionPoolsBase struct {
+	Connections     *DatabaseConnections     `json:"connections"`
+	ConnectionPools []DatabaseConnectionPool `json:"connection_pools"`
+	Meta            *Meta                    `json:"meta"`
+}
+
+// DatabaseConnectionPoolCreateReq struct used to create a connection pool within a PostgreSQL Managed Database.
+type DatabaseConnectionPoolCreateReq struct {
+	Name     string `json:"name,omitempty"`
+	Database string `json:"database,omitempty"`
+	Username string `json:"username,omitempty"`
+	Mode     string `json:"mode,omitempty"`
+	Size     int    `json:"size,omitempty"`
+}
+
+// DatabaseConnectionPoolUpdateReq struct used to update a connection pool within a PostgreSQL Managed Database.
+type DatabaseConnectionPoolUpdateReq struct {
+	Database string `json:"database,omitempty"`
+	Username string `json:"username,omitempty"`
+	Mode     string `json:"mode,omitempty"`
+	Size     int    `json:"size,omitempty"`
+}
+
+// DatabaseAdvancedOptions represents user configurable advanced options within a PostgreSQL Managed Database cluster
+type DatabaseAdvancedOptions struct {
+	AutovacuumAnalyzeScaleFactor    float32 `json:"autovacuum_analyze_scale_factor,omitempty"`
+	AutovacuumAnalyzeThreshold      int     `json:"autovacuum_analyze_threshold,omitempty"`
+	AutovacuumFreezeMaxAge          int     `json:"autovacuum_freeze_max_age,omitempty"`
+	AutovacuumMaxWorkers            int     `json:"autovacuum_max_workers,omitempty"`
+	AutovacuumNaptime               int     `json:"autovacuum_naptime,omitempty"`
+	AutovacuumVacuumCostDelay       int     `json:"autovacuum_vacuum_cost_delay,omitempty"`
+	AutovacuumVacuumCostLimit       int     `json:"autovacuum_vacuum_cost_limit,omitempty"`
+	AutovacuumVacuumScaleFactor     float32 `json:"autovacuum_vacuum_scale_factor,omitempty"`
+	AutovacuumVacuumThreshold       int     `json:"autovacuum_vacuum_threshold,omitempty"`
+	BGWRITERDelay                   int     `json:"bgwriter_delay,omitempty"`
+	BGWRITERFlushAFter              int     `json:"bgwriter_flush_after,omitempty"`
+	BGWRITERLRUMaxPages             int     `json:"bgwriter_lru_maxpages,omitempty"`
+	BGWRITERLRUMultiplier           float32 `json:"bgwriter_lru_multiplier,omitempty"`
+	DeadlockTimeout                 int     `json:"deadlock_timeout,omitempty"`
+	DefaultToastCompression         string  `json:"default_toast_compression,omitempty"`
+	IdleInTransactionSessionTimeout int     `json:"idle_in_transaction_session_timeout,omitempty"`
+	Jit                             *bool   `json:"jit,omitempty"`
+	LogAutovacuumMinDuration        int     `json:"log_autovacuum_min_duration,omitempty"`
+	LogErrorVerbosity               string  `json:"log_error_verbosity,omitempty"`
+	LogLinePrefix                   string  `json:"log_line_prefix,omitempty"`
+	LogMinDurationStatement         int     `json:"log_min_duration_statement,omitempty"`
+	MaxFilesPerProcess              int     `json:"max_files_per_process,omitempty"`
+	MaxLocksPerTransaction          int     `json:"max_locks_per_transaction,omitempty"`
+	MaxLogicalReplicationWorkers    int     `json:"max_logical_replication_workers,omitempty"`
+	MaxParallelWorkers              int     `json:"max_parallel_workers,omitempty"`
+	MaxParallelWorkersPerGather     int     `json:"max_parallel_workers_per_gather,omitempty"`
+	MaxPredLocksPerTransaction      int     `json:"max_pred_locks_per_transaction,omitempty"`
+	MaxPreparedTransactions         int     `json:"max_prepared_transactions,omitempty"`
+	MaxReplicationSlots             int     `json:"max_replication_slots,omitempty"`
+	MaxStackDepth                   int     `json:"max_stack_depth,omitempty"`
+	MaxStandbyArchiveDelay          int     `json:"max_standby_archive_delay,omitempty"`
+	MaxStandbyStreamingDelay        int     `json:"max_standby_streaming_delay,omitempty"`
+	MaxWalSenders                   int     `json:"max_wal_senders,omitempty"`
+	MaxWorkerProcesses              int     `json:"max_worker_processes,omitempty"`
+	PGPartmanBGWInterval            int     `json:"pg_partman_bgw.interval,omitempty"`
+	PGPartmanBGWRole                string  `json:"pg_partman_bgw.role,omitempty"`
+	PGStateStatementsTrack          string  `json:"pg_stat_statements.track,omitempty"`
+	TempFileLimit                   int     `json:"temp_file_limit,omitempty"`
+	TrackActivityQuerySize          int     `json:"track_activity_query_size,omitempty"`
+	TrackCommitTimestamp            string  `json:"track_commit_timestamp,omitempty"`
+	TrackFunctions                  string  `json:"track_functions,omitempty"`
+	TrackIOTiming                   string  `json:"track_io_timing,omitempty"`
+	WALSenderTImeout                int     `json:"wal_sender_timeout,omitempty"`
+	WALWriterDelay                  int     `json:"wal_writer_delay,omitempty"`
+}
+
+// AvailableOption represents an available advanced configuration option for a PostgreSQL Managed Database cluster
+type AvailableOption struct {
+	Name      string   `json:"name"`
+	Type      string   `json:"type"`
+	Enumerals []string `json:"enumerals,omitempty"`
+	MinValue  *int     `json:"min_value,omitempty"`
+	MaxValue  *int     `json:"max_value,omitempty"`
+	AltValues []int    `json:"alt_values,omitempty"`
+	Units     string   `json:"units,omitempty"`
+}
+
+type databaseAdvancedOptionsBase struct {
+	ConfiguredOptions *DatabaseAdvancedOptions `json:"configured_options"`
+	AvailableOptions  []AvailableOption        `json:"available_options"`
+}
+
+// DatabaseAvailableVersions represents available versions upgrades for a Managed Database cluster
+type DatabaseAvailableVersions struct {
+	AvailableVersions []string `json:"available_versions"`
+}
+
+// DatabaseVersionUpgradeReq struct used to initiate a version upgrade for a PostgreSQL Managed Database.
+type DatabaseVersionUpgradeReq struct {
+	Version string `json:"version,omitempty"`
 }
 
 // List all database plans
@@ -509,10 +721,6 @@ func (i *DatabaseServiceHandler) ListMaintenanceUpdates(ctx context.Context, dat
 		return nil, err
 	}
 
-	if databaseUpdates.AvailableUpdates == nil {
-		return []string{databaseUpdates.Message}, nil
-	}
-
 	return databaseUpdates.AvailableUpdates, nil
 }
 
@@ -525,7 +733,7 @@ func (i *DatabaseServiceHandler) StartMaintenance(ctx context.Context, databaseI
 		return "", err
 	}
 
-	databaseUpdates := new(databaseUpdatesBase)
+	databaseUpdates := new(databaseMessage)
 	if err = i.client.DoWithContext(ctx, req, databaseUpdates); err != nil {
 		return "", err
 	}
@@ -548,4 +756,266 @@ func (i *DatabaseServiceHandler) ListServiceAlerts(ctx context.Context, database
 	}
 
 	return databaseAlerts.DatabaseAlerts, nil
+}
+
+// View the migration status for your Managed Database.
+func (i *DatabaseServiceHandler) GetMigrationStatus(ctx context.Context, databaseID string) (*DatabaseMigration, error) {
+	uri := fmt.Sprintf("%s/%s/migration", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	databaseMigration := new(databaseMigrationBase)
+	if err = i.client.DoWithContext(ctx, req, databaseMigration); err != nil {
+		return nil, err
+	}
+
+	return databaseMigration.Migration, nil
+}
+
+// Start a migration for the Managed Database using the given credentials.
+func (i *DatabaseServiceHandler) StartMigration(ctx context.Context, databaseID string, databaseMigrationReq *DatabaseMigrationStartReq) (*DatabaseMigration, error) {
+	uri := fmt.Sprintf("%s/%s/migration", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseMigrationReq)
+	if err != nil {
+		return nil, err
+	}
+
+	databaseMigration := new(databaseMigrationBase)
+	if err = i.client.DoWithContext(ctx, req, databaseMigration); err != nil {
+		return nil, err
+	}
+
+	return databaseMigration.Migration, nil
+}
+
+// Detach a migration from the Managed database.
+func (i *DatabaseServiceHandler) DetachMigration(ctx context.Context, databaseID string) error {
+	uri := fmt.Sprintf("%s/%s/migration", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	return i.client.DoWithContext(ctx, req, nil)
+}
+
+// AddReadOnlyReplica will add a read-only replica node to the Managed Database with the given parameters
+func (i *DatabaseServiceHandler) AddReadOnlyReplica(ctx context.Context, databaseID string, databaseReplicaReq *DatabaseAddReplicaReq) (*Database, error) {
+	uri := fmt.Sprintf("%s/%s/read-replica", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseReplicaReq)
+	if err != nil {
+		return nil, err
+	}
+
+	database := new(databaseBase)
+	if err = i.client.DoWithContext(ctx, req, database); err != nil {
+		return nil, err
+	}
+
+	return database.Database, nil
+}
+
+// Get backup information for your Managed Database.
+func (i *DatabaseServiceHandler) GetBackupInformation(ctx context.Context, databaseID string) (*DatabaseBackups, error) {
+	uri := fmt.Sprintf("%s/%s/backups", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	databaseBackups := new(DatabaseBackups)
+	if err = i.client.DoWithContext(ctx, req, databaseBackups); err != nil {
+		return nil, err
+	}
+
+	return databaseBackups, nil
+}
+
+// RestoreFromBackup will create a new subscription of the same plan from a backup of the Managed Database using the given parameters
+func (i *DatabaseServiceHandler) RestoreFromBackup(ctx context.Context, databaseID string, databaseRestoreReq *DatabaseBackupRestoreReq) (*Database, error) {
+	uri := fmt.Sprintf("%s/%s/restore", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseRestoreReq)
+	if err != nil {
+		return nil, err
+	}
+
+	database := new(databaseBase)
+	if err = i.client.DoWithContext(ctx, req, database); err != nil {
+		return nil, err
+	}
+
+	return database.Database, nil
+}
+
+// Fork will create a new subscription of any plan from a backup of the Managed Database using the given parameters
+func (i *DatabaseServiceHandler) Fork(ctx context.Context, databaseID string, databaseForkReq *DatabaseForkReq) (*Database, error) {
+	uri := fmt.Sprintf("%s/%s/fork", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseForkReq)
+	if err != nil {
+		return nil, err
+	}
+
+	database := new(databaseBase)
+	if err = i.client.DoWithContext(ctx, req, database); err != nil {
+		return nil, err
+	}
+
+	return database.Database, nil
+}
+
+// List all connection pools within your PostgreSQL Managed Database.
+func (i *DatabaseServiceHandler) ListConnectionPools(ctx context.Context, databaseID string) (*DatabaseConnections, []DatabaseConnectionPool, *Meta, error) {
+	uri := fmt.Sprintf("%s/%s/connection-pools", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	databaseConnectionPools := new(databaseConnectionPoolsBase)
+	if err = i.client.DoWithContext(ctx, req, databaseConnectionPools); err != nil {
+		return nil, nil, nil, err
+	}
+
+	return databaseConnectionPools.Connections, databaseConnectionPools.ConnectionPools, databaseConnectionPools.Meta, nil
+}
+
+// Create a connection pool within the PostgreSQL Managed Database with the given parameters
+func (i *DatabaseServiceHandler) CreateConnectionPool(ctx context.Context, databaseID string, databaseConnectionPoolReq *DatabaseConnectionPoolCreateReq) (*DatabaseConnectionPool, error) {
+	uri := fmt.Sprintf("%s/%s/connection-pools", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseConnectionPoolReq)
+	if err != nil {
+		return nil, err
+	}
+
+	databaseConnectionPool := new(databaseConnectionPoolBase)
+	if err = i.client.DoWithContext(ctx, req, databaseConnectionPool); err != nil {
+		return nil, err
+	}
+
+	return databaseConnectionPool.ConnectionPool, nil
+}
+
+// Get information on an individual connection pool within a PostgreSQL Managed Database based on a poolName and databaseID
+func (i *DatabaseServiceHandler) GetConnectionPool(ctx context.Context, databaseID string, poolName string) (*DatabaseConnectionPool, error) {
+	uri := fmt.Sprintf("%s/%s/connection-pools/%s", databasePath, databaseID, poolName)
+
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	databaseConnectionPool := new(databaseConnectionPoolBase)
+	if err = i.client.DoWithContext(ctx, req, databaseConnectionPool); err != nil {
+		return nil, err
+	}
+
+	return databaseConnectionPool.ConnectionPool, nil
+}
+
+// Update a connection pool within the PostgreSQL Managed Database with the given parameters
+func (i *DatabaseServiceHandler) UpdateConnectionPool(ctx context.Context, databaseID string, poolName string, databaseConnectionPoolReq *DatabaseConnectionPoolUpdateReq) (*DatabaseConnectionPool, error) {
+	uri := fmt.Sprintf("%s/%s/connection-pools/%s", databasePath, databaseID, poolName)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPut, uri, databaseConnectionPoolReq)
+	if err != nil {
+		return nil, err
+	}
+
+	databaseConnectionPool := new(databaseConnectionPoolBase)
+	if err := i.client.DoWithContext(ctx, req, databaseConnectionPool); err != nil {
+		return nil, err
+	}
+
+	return databaseConnectionPool.ConnectionPool, nil
+}
+
+// Delete a user within the Managed database. All data will be permanently lost.
+func (i *DatabaseServiceHandler) DeleteConnectionPool(ctx context.Context, databaseID string, poolName string) error {
+	uri := fmt.Sprintf("%s/%s/connection-pools/%s", databasePath, databaseID, poolName)
+
+	req, err := i.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	return i.client.DoWithContext(ctx, req, nil)
+}
+
+// List all connection pools within your PostgreSQL Managed Database.
+func (i *DatabaseServiceHandler) ListAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseAdvancedOptions, []AvailableOption, error) {
+	uri := fmt.Sprintf("%s/%s/advanced-options", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseAdvancedOptions := new(databaseAdvancedOptionsBase)
+	if err = i.client.DoWithContext(ctx, req, databaseAdvancedOptions); err != nil {
+		return nil, nil, err
+	}
+
+	return databaseAdvancedOptions.ConfiguredOptions, databaseAdvancedOptions.AvailableOptions, nil
+}
+
+// Update a connection pool within the PostgreSQL Managed Database with the given parameters
+func (i *DatabaseServiceHandler) UpdateAdvancedOptions(ctx context.Context, databaseID string, databaseAdvancedOptionsReq *DatabaseAdvancedOptions) (*DatabaseAdvancedOptions, []AvailableOption, error) {
+	uri := fmt.Sprintf("%s/%s/advanced-options", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPut, uri, databaseAdvancedOptionsReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseAdvancedOptions := new(databaseAdvancedOptionsBase)
+	if err := i.client.DoWithContext(ctx, req, databaseAdvancedOptions); err != nil {
+		return nil, nil, err
+	}
+
+	return databaseAdvancedOptions.ConfiguredOptions, databaseAdvancedOptions.AvailableOptions, nil
+}
+
+// List all available version upgrades for your Managed Database.
+func (i *DatabaseServiceHandler) ListAvailableVersions(ctx context.Context, databaseID string) ([]string, error) {
+	uri := fmt.Sprintf("%s/%s/version-upgrade", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	databaseVersions := new(DatabaseAvailableVersions)
+	if err = i.client.DoWithContext(ctx, req, databaseVersions); err != nil {
+		return nil, err
+	}
+
+	return databaseVersions.AvailableVersions, nil
+}
+
+// Start a migration for the Managed Database using the given credentials.
+func (i *DatabaseServiceHandler) StartVersionUpgrade(ctx context.Context, databaseID string, databaseVersionUpgradeReq *DatabaseVersionUpgradeReq) (string, error) {
+	uri := fmt.Sprintf("%s/%s/version-upgrade", databasePath, databaseID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseVersionUpgradeReq)
+	if err != nil {
+		return "", err
+	}
+
+	databaseVersionUpgrade := new(databaseMessage)
+	if err = i.client.DoWithContext(ctx, req, databaseVersionUpgrade); err != nil {
+		return "", err
+	}
+
+	return databaseVersionUpgrade.Message, nil
 }
