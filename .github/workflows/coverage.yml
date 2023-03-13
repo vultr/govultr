@@ -25,30 +25,3 @@ jobs:
         id: test-coverage
         run: |
           go test -cover -v
-
-  comment:
-    runs-on: ubuntu-latest
-    if: github.event_name != 'push'
-    needs: coverage
-    steps:
-      - name: Add Comment
-        uses: actions/github-script@v5
-        if: always()
-        with:
-          script: |
-            const output = `### Unit Tests and Coverage
-            <details><summary>Show Output</summary>
-
-            \`\`\`
-            ${{ needs.coverage.outputs.msg }}
-            \`\`\`
-            </details>
-
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
-
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
