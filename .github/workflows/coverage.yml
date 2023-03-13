@@ -24,7 +24,7 @@ jobs:
       - name: Run unit tests and coverage test
         id: test-coverage
         run: |
-          go test -cover -v > output.txt
+          go test -cover -v
 
   comment:
     runs-on: ubuntu-latest
