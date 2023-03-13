@@ -26,16 +26,6 @@ jobs:
         run: |
           go test -cover -v > output.txt
 
-      - name: Transform output
-        id: results
-        if: always()
-        run: |
-          CONTENT=$(cat output.txt)
-          CONTENT="${CONTENT//'%'/'%25'}"
-          CONTENT="${CONTENT//$'\n'/'%0A'}"
-          CONTENT="${CONTENT//$'\r'/'%0D'}"
-          echo "::set-output name=content::$CONTENT"
-
   comment:
     runs-on: ubuntu-latest
     if: github.event_name != 'push'
