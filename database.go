@@ -65,6 +65,7 @@ type DatabaseServiceHandler struct {
 	client *Client
 }
 
+// DBPlanListOptions handles GET request parameters for the ListPlans endpoint
 type DBPlanListOptions struct {
 	Engine string `url:"engine,omitempty"`
 	Nodes  int    `url:"nodes,omitempty"`
@@ -98,11 +99,13 @@ type MaxConnections struct {
 	PG    int `json:"pg,omitempty"`
 }
 
+// databasePlansBase holds the entire ListPlans API response
 type databasePlansBase struct {
 	DatabasePlans []DatabasePlan `json:"plans"`
 	Meta          *Meta          `json:"meta"`
 }
 
+// DBListOptions handles GET request parameters for the List endpoint
 type DBListOptions struct {
 	Label  string `url:"label,omitempty"`
 	Tag    string `url:"tag,omitempty"`
@@ -149,11 +152,13 @@ type PGExtension struct {
 	Versions []string `json:"versions,omitempty"`
 }
 
+// databasesBase holds the entire List API response
 type databasesBase struct {
 	Databases []Database `json:"databases"`
 	Meta      *Meta      `json:"meta"`
 }
 
+// databaseBase holds the entire Get API response
 type databaseBase struct {
 	Database *Database `json:"database"`
 }
@@ -202,10 +207,12 @@ type DatabaseUser struct {
 	Encryption string `json:"encryption,omitempty"`
 }
 
+// databaseUserBase holds the API response for retrieving a single database user within a Managed Database
 type databaseUserBase struct {
 	DatabaseUser *DatabaseUser `json:"user"`
 }
 
+// databaseUsersBase holds the API response for retrieving a list of database users within a Managed Database
 type databaseUsersBase struct {
 	DatabaseUsers []DatabaseUser `json:"users"`
 	Meta          *Meta          `json:"meta"`
@@ -228,10 +235,12 @@ type DatabaseDB struct {
 	Name string `json:"name"`
 }
 
+// databaseDBBase holds the API response for retrieving a single logical database within a Managed Database
 type databaseDBBase struct {
 	DatabaseDB *DatabaseDB `json:"db"`
 }
 
+// databaseDBsBase holds the API response for retrieving a list of logical databases within a Managed Database
 type databaseDBsBase struct {
 	DatabaseDBs []DatabaseDB `json:"dbs"`
 	Meta        *Meta        `json:"meta"`
@@ -242,10 +251,12 @@ type DatabaseDBCreateReq struct {
 	Name string `json:"name"`
 }
 
+// databaseDBsBase holds the API response for retrieving a list of available maintenance updates within a Managed Database
 type databaseUpdatesBase struct {
 	AvailableUpdates []string `json:"available_updates"`
 }
 
+// databaseMessage is a bsic object holding a return message for certain API endpoints
 type databaseMessage struct {
 	Message string `json:"message"`
 }
@@ -261,6 +272,7 @@ type DatabaseAlert struct {
 	TableCount           int    `json:"table_count,omitempty"`
 }
 
+// databaseDBsBase holds the API response for querying service alerts within a Managed Database
 type databaseAlertsBase struct {
 	DatabaseAlerts []DatabaseAlert `json:"alerts"`
 }
@@ -289,6 +301,7 @@ type DatabaseCredentials struct {
 	SSL              *bool  `json:"ssl"`
 }
 
+// databaseMigrationBase represents a migration status object API response for a Managed Database
 type databaseMigrationBase struct {
 	Migration *DatabaseMigration `json:"migration"`
 }
@@ -356,10 +369,12 @@ type DatabaseConnections struct {
 	Max       int `json:"max"`
 }
 
+// databaseConnectionPoolBase represents the API response for retrieving a single connection pool for a PostgreSQL Managed Database
 type databaseConnectionPoolBase struct {
 	ConnectionPool *DatabaseConnectionPool `json:"connection_pool"`
 }
 
+// databaseConnectionPoolBase represents the API response for retrieving all connection pool information for a PostgreSQL Managed Database
 type databaseConnectionPoolsBase struct {
 	Connections     *DatabaseConnections     `json:"connections"`
 	ConnectionPools []DatabaseConnectionPool `json:"connection_pools"`
@@ -442,6 +457,7 @@ type AvailableOption struct {
 	Units     string   `json:"units,omitempty"`
 }
 
+// databaseAdvancedOptionsBase represents the API response for PostgreSQL advanced configuration options for a Managed Database
 type databaseAdvancedOptionsBase struct {
 	ConfiguredOptions *DatabaseAdvancedOptions `json:"configured_options"`
 	AvailableOptions  []AvailableOption        `json:"available_options"`
