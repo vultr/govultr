@@ -12,7 +12,7 @@ import (
 // Link : https://www.vultr.com/api/#tag/backup
 type BackupService interface {
 	Get(ctx context.Context, backupID string) (*Backup, *http.Response, error)
-	List(ctx context.Context, options *ListOptions) ([]Backup, *Meta, error)
+	List(ctx context.Context, options *ListOptions) ([]Backup, *Meta, *http.Response, error)
 }
 
 // BackupServiceHandler handles interaction with the backup methods for the Vultr API
@@ -57,25 +57,26 @@ func (b *BackupServiceHandler) Get(ctx context.Context, backupID string) (*Backu
 }
 
 // List retrieves a list of all backups on the current account
-func (b *BackupServiceHandler) List(ctx context.Context, options *ListOptions) ([]Backup, *Meta, error) {
+func (b *BackupServiceHandler) List(ctx context.Context, options *ListOptions) ([]Backup, *Meta, *http.Response, error) {
 	uri := "/v2/backups"
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	backups := new(backupsBase)
-	if _, err = b.client.DoWithContext(ctx, req, backups); err != nil {
-		return nil, nil, err
+	resp, err := b.client.DoWithContext(ctx, req, backups)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return backups.Backups, backups.Meta, nil
+	return backups.Backups, backups.Meta, resp, nil
 }

@@ -37,7 +37,7 @@ func TestBackupServiceHandler_List(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	backups, meta, err := client.Backup.List(ctx, nil)
+	backups, meta, _, err := client.Backup.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Backup.List returned error: %v", err)
 	}
@@ -88,7 +88,7 @@ func TestBackupServiceHandler_ListEmpty(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	backups, meta, err := client.Backup.List(ctx, nil)
+	backups, meta, _, err := client.Backup.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Backup.List returned error: %v", err)
 	}
