@@ -13,11 +13,11 @@ const path = "/v2/users"
 // UserService is the interface to interact with the user management endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/users
 type UserService interface {
-	Create(ctx context.Context, userCreate *UserReq) (*User,*http.Response, error)
-	Get(ctx context.Context, userID string) (*User, *http.Response,error)
+	Create(ctx context.Context, userCreate *UserReq) (*User, *http.Response, error)
+	Get(ctx context.Context, userID string) (*User, *http.Response, error)
 	Update(ctx context.Context, userID string, userReq *UserReq) error
 	Delete(ctx context.Context, userID string) error
-	List(ctx context.Context, options *ListOptions) ([]User, *Meta,*http.Response, error)
+	List(ctx context.Context, options *ListOptions) ([]User, *Meta, *http.Response, error)
 }
 
 var _ UserService = &UserServiceHandler{}
@@ -56,37 +56,37 @@ type userBase struct {
 }
 
 // Create will add the specified user to your Vultr account
-func (u *UserServiceHandler) Create(ctx context.Context, userCreate *UserReq) (*User,*http.Response, error) {
+func (u *UserServiceHandler) Create(ctx context.Context, userCreate *UserReq) (*User, *http.Response, error) {
 	req, err := u.client.NewRequest(ctx, http.MethodPost, path, userCreate)
 	if err != nil {
-		return nil,nil, err
+		return nil, nil, err
 	}
 
 	user := new(userBase)
 	resp, err := u.client.DoWithContext(ctx, req, user)
 	if err != nil {
-		return nil,resp, err
+		return nil, resp, err
 	}
 
-	return user.User,resp, nil
+	return user.User, resp, nil
 }
 
 // Get will retrieve a specific user account
-func (u *UserServiceHandler) Get(ctx context.Context, userID string) (*User,*http.Response, error) {
+func (u *UserServiceHandler) Get(ctx context.Context, userID string) (*User, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s", path, userID)
 
 	req, err := u.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil,nil, err
+		return nil, nil, err
 	}
 
 	user := new(userBase)
 	resp, err := u.client.DoWithContext(ctx, req, user)
 	if err != nil {
-		return nil,resp,err
+		return nil, resp, err
 	}
 
-	return user.User,resp,nil
+	return user.User, resp, nil
 }
 
 // Update will update the given user. Empty strings will be ignored.
@@ -97,7 +97,7 @@ func (u *UserServiceHandler) Update(ctx context.Context, userID string, userReq 
 		return err
 	}
 
-	_,err = u.client.DoWithContext(ctx, req, nil)
+	_, err = u.client.DoWithContext(ctx, req, nil)
 	return err
 }
 
@@ -110,29 +110,29 @@ func (u *UserServiceHandler) Delete(ctx context.Context, userID string) error {
 		return err
 	}
 
-	_,err = u.client.DoWithContext(ctx, req, nil)
+	_, err = u.client.DoWithContext(ctx, req, nil)
 	return err
 }
 
 // List will list all the users associated with your Vultr account
-func (u *UserServiceHandler) List(ctx context.Context, options *ListOptions) ([]User, *Meta,*http.Response, error) {
+func (u *UserServiceHandler) List(ctx context.Context, options *ListOptions) ([]User, *Meta, *http.Response, error) {
 	req, err := u.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	users := new(usersBase)
-	resp,err := u.client.DoWithContext(ctx, req, &users)
+	resp, err := u.client.DoWithContext(ctx, req, &users)
 	if err != nil {
-		return nil, nil,resp, err
+		return nil, nil, resp, err
 	}
 
-	return users.Users, users.Meta,resp, nil
+	return users.Users, users.Meta, resp, nil
 }

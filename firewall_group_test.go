@@ -46,7 +46,7 @@ func TestFireWallGroupServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	firewallGroup,_, err := client.FirewallGroup.Get(ctx, "44d0f934")
+	firewallGroup, _, err := client.FirewallGroup.Get(ctx, "44d0f934")
 	if err != nil {
 		t.Errorf("FirewallGroup.Create returned error: %v", err)
 	}

@@ -16,7 +16,7 @@ func TestPlanServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	plans, meta,_,err := client.Plan.List(ctx, "vc2", nil)
+	plans, meta, _, err := client.Plan.List(ctx, "vc2", nil)
 	if err != nil {
 		t.Errorf("Plan.List returned %+v", err)
 	}
@@ -59,7 +59,7 @@ func TestPlanServiceHandler_GetBareMetalList(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bareMetalPlans, meta,_,err := client.Plan.ListBareMetal(ctx, nil)
+	bareMetalPlans, meta, _, err := client.Plan.ListBareMetal(ctx, nil)
 	if err != nil {
 		t.Errorf("Plan.GetBareMetalList returned %+v", err)
 	}

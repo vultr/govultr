@@ -16,7 +16,7 @@ func TestRegionServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	region, meta,_, err := client.Region.List(ctx, nil)
+	region, meta, _, err := client.Region.List(ctx, nil)
 
 	if err != nil {
 		t.Errorf("Region.List returned error: %v", err)
@@ -55,7 +55,7 @@ func TestRegionServiceHandler_Availability(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	region,_, err := client.Region.Availability(ctx, "ewr", "")
+	region, _, err := client.Region.Availability(ctx, "ewr", "")
 
 	if err != nil {
 		t.Errorf("Region.Availability returned error: %v", err)

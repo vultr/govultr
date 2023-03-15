@@ -165,7 +165,7 @@ func TestBackupServiceHandler_GetEmpty(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	backup,_, err := client.Backup.Get(ctx, "543d34149403a")
+	backup, _, err := client.Backup.Get(ctx, "543d34149403a")
 	if err != nil {
 		t.Errorf("Backup.Get returned error: %v", err)
 	}

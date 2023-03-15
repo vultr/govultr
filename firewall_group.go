@@ -11,8 +11,8 @@ import (
 // FirewallGroupService is the interface to interact with the firewall group endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/firewall
 type FirewallGroupService interface {
-	Create(ctx context.Context, fwGroupReq *FirewallGroupReq) (*FirewallGroup,*http.Response, error)
-	Get(ctx context.Context, groupID string) (*FirewallGroup,*http.Response, error)
+	Create(ctx context.Context, fwGroupReq *FirewallGroupReq) (*FirewallGroup, *http.Response, error)
+	Get(ctx context.Context, groupID string) (*FirewallGroup, *http.Response, error)
 	Update(ctx context.Context, fwGroupID string, fwGroupReq *FirewallGroupReq) error
 	Delete(ctx context.Context, fwGroupID string) error
 	List(ctx context.Context, options *ListOptions) ([]FirewallGroup, *Meta, *http.Response, error)
@@ -76,7 +76,7 @@ func (f *FireWallGroupServiceHandler) Get(ctx context.Context, fwGroupID string)
 	}
 
 	firewall := new(firewallGroupBase)
-	resp, err := f.client.DoWithContext(ctx, req, firewall) 
+	resp, err := f.client.DoWithContext(ctx, req, firewall)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -128,8 +128,8 @@ func (f *FireWallGroupServiceHandler) List(ctx context.Context, options *ListOpt
 	firewalls := new(firewallGroupsBase)
 	resp, err := f.client.DoWithContext(ctx, req, firewalls)
 	if err != nil {
-		return nil, nil,resp, err
+		return nil, nil, resp, err
 	}
 
-	return firewalls.FirewallGroups, firewalls.Meta,resp, nil
+	return firewalls.FirewallGroups, firewalls.Meta, resp, nil
 }

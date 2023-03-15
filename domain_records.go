@@ -11,8 +11,8 @@ import (
 // DomainRecordService is the interface to interact with the DNS Records endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#tag/dns
 type DomainRecordService interface {
-	Create(ctx context.Context, domain string, domainRecordReq *DomainRecordReq) (*DomainRecord,*http.Response, error)
-	Get(ctx context.Context, domain, recordID string) (*DomainRecord,*http.Response, error)
+	Create(ctx context.Context, domain string, domainRecordReq *DomainRecordReq) (*DomainRecord, *http.Response, error)
+	Get(ctx context.Context, domain, recordID string) (*DomainRecord, *http.Response, error)
 	Update(ctx context.Context, domain, recordID string, domainRecordReq *DomainRecordReq) error
 	Delete(ctx context.Context, domain, recordID string) error
 	List(ctx context.Context, domain string, options *ListOptions) ([]DomainRecord, *Meta, *http.Response, error)
@@ -61,21 +61,21 @@ func (d *DomainRecordsServiceHandler) Create(ctx context.Context, domain string,
 	record := new(domainRecordBase)
 	resp, err := d.client.DoWithContext(ctx, req, record)
 	if err != nil {
-		return nil,resp, err
+		return nil, resp, err
 	}
 
 	return record.Record, resp, nil
 }
 
 // Get record from a domain
-func (d *DomainRecordsServiceHandler) Get(ctx context.Context, domain, recordID string) (*DomainRecord,*http.Response, error) {
+func (d *DomainRecordsServiceHandler) Get(ctx context.Context, domain, recordID string) (*DomainRecord, *http.Response, error) {
 	req, err := d.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/records/%s", domainPath, domain, recordID), nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	record := new(domainRecordBase)
-	resp,err := d.client.DoWithContext(ctx, req, record)
+	resp, err := d.client.DoWithContext(ctx, req, record)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -118,9 +118,9 @@ func (d *DomainRecordsServiceHandler) List(ctx context.Context, domain string, o
 	req.URL.RawQuery = newValues.Encode()
 
 	records := new(domainRecordsBase)
-	resp, err := d.client.DoWithContext(ctx, req, records) 
+	resp, err := d.client.DoWithContext(ctx, req, records)
 	if err != nil {
-		return nil, nil,resp, err
+		return nil, nil, resp, err
 	}
 
 	return records.Records, records.Meta, resp, nil

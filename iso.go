@@ -11,11 +11,11 @@ import (
 // ISOService is the interface to interact with the ISO endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/iso
 type ISOService interface {
-	Create(ctx context.Context, isoReq *ISOReq) (*ISO,*http.Response, error)
-	Get(ctx context.Context, isoID string) (*ISO,*http.Response, error)
+	Create(ctx context.Context, isoReq *ISOReq) (*ISO, *http.Response, error)
+	Get(ctx context.Context, isoID string) (*ISO, *http.Response, error)
 	Delete(ctx context.Context, isoID string) error
 	List(ctx context.Context, options *ListOptions) ([]ISO, *Meta, *http.Response, error)
-	ListPublic(ctx context.Context, options *ListOptions) ([]PublicISO, *Meta,*http.Response, error)
+	ListPublic(ctx context.Context, options *ListOptions) ([]PublicISO, *Meta, *http.Response, error)
 }
 
 // ISOServiceHandler handles interaction with the ISO methods for the Vultr API
@@ -62,38 +62,38 @@ type publicIsosBase struct {
 }
 
 // Create will create a new ISO image on your account
-func (i *ISOServiceHandler) Create(ctx context.Context, isoReq *ISOReq) (*ISO,*http.Response, error) {
+func (i *ISOServiceHandler) Create(ctx context.Context, isoReq *ISOReq) (*ISO, *http.Response, error) {
 	uri := "/v2/iso"
 
 	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, isoReq)
 	if err != nil {
-		return nil,nil, err
+		return nil, nil, err
 	}
 
 	iso := new(isoBase)
 	resp, err := i.client.DoWithContext(ctx, req, iso)
 	if err != nil {
-		return nil,resp, err
+		return nil, resp, err
 	}
 
-	return iso.ISO,resp, nil
+	return iso.ISO, resp, nil
 }
 
 // Get an ISO
-func (i *ISOServiceHandler) Get(ctx context.Context, isoID string) (*ISO,*http.Response, error) {
+func (i *ISOServiceHandler) Get(ctx context.Context, isoID string) (*ISO, *http.Response, error) {
 	uri := fmt.Sprintf("/v2/iso/%s", isoID)
 
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil,nil, err
+		return nil, nil, err
 	}
 
 	iso := new(isoBase)
-	resp,err := i.client.DoWithContext(ctx, req, iso)
+	resp, err := i.client.DoWithContext(ctx, req, iso)
 	if err != nil {
-		return nil,resp, err
+		return nil, resp, err
 	}
-	return iso.ISO,resp, nil
+	return iso.ISO, resp, nil
 }
 
 // Delete will delete an ISO image from your account
@@ -110,7 +110,7 @@ func (i *ISOServiceHandler) Delete(ctx context.Context, isoID string) error {
 }
 
 // List will list all ISOs currently available on your account
-func (i *ISOServiceHandler) List(ctx context.Context, options *ListOptions) ([]ISO, *Meta,*http.Response, error) {
+func (i *ISOServiceHandler) List(ctx context.Context, options *ListOptions) ([]ISO, *Meta, *http.Response, error) {
 	uri := "/v2/iso"
 
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -120,7 +120,7 @@ func (i *ISOServiceHandler) List(ctx context.Context, options *ListOptions) ([]I
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
@@ -128,14 +128,14 @@ func (i *ISOServiceHandler) List(ctx context.Context, options *ListOptions) ([]I
 	iso := new(isosBase)
 	resp, err := i.client.DoWithContext(ctx, req, iso)
 	if err != nil {
-		return nil, nil,resp, err
+		return nil, nil, resp, err
 	}
 
-	return iso.ISOs, iso.Meta,resp, nil
+	return iso.ISOs, iso.Meta, resp, nil
 }
 
 // ListPublic will list public ISOs offered in the Vultr ISO library.
-func (i *ISOServiceHandler) ListPublic(ctx context.Context, options *ListOptions) ([]PublicISO, *Meta,*http.Response, error) {
+func (i *ISOServiceHandler) ListPublic(ctx context.Context, options *ListOptions) ([]PublicISO, *Meta, *http.Response, error) {
 	uri := "/v2/iso-public"
 
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -145,7 +145,7 @@ func (i *ISOServiceHandler) ListPublic(ctx context.Context, options *ListOptions
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
@@ -153,8 +153,8 @@ func (i *ISOServiceHandler) ListPublic(ctx context.Context, options *ListOptions
 	iso := new(publicIsosBase)
 	resp, err := i.client.DoWithContext(ctx, req, iso)
 	if err != nil {
-		return nil, nil,resp, err
+		return nil, nil, resp, err
 	}
 
-	return iso.PublicIsos, iso.Meta,resp, nil
+	return iso.PublicIsos, iso.Meta, resp, nil
 }

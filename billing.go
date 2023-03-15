@@ -11,10 +11,10 @@ import (
 // BillingService is the interface to interact with the billing endpoint on the Vultr API
 // Link : https://www.vultr.com/api/#tag/billing
 type BillingService interface {
-	ListHistory(ctx context.Context, options *ListOptions) ([]History, *Meta,*http.Response, error)
-	ListInvoices(ctx context.Context, options *ListOptions) ([]Invoice, *Meta,*http.Response, error)
-	GetInvoice(ctx context.Context, invoiceID string) (*Invoice,*http.Response, error)
-	ListInvoiceItems(ctx context.Context, invoiceID int, options *ListOptions) ([]InvoiceItem, *Meta,*http.Response, error)
+	ListHistory(ctx context.Context, options *ListOptions) ([]History, *Meta, *http.Response, error)
+	ListInvoices(ctx context.Context, options *ListOptions) ([]Invoice, *Meta, *http.Response, error)
+	GetInvoice(ctx context.Context, invoiceID string) (*Invoice, *http.Response, error)
+	ListInvoiceItems(ctx context.Context, invoiceID int, options *ListOptions) ([]InvoiceItem, *Meta, *http.Response, error)
 }
 
 // BillingServiceHandler handles interaction with the billing methods for the Vultr API
@@ -73,16 +73,16 @@ type invoiceItemsBase struct {
 }
 
 // ListHistory retrieves a list of all billing history on the current account
-func (b *BillingServiceHandler) ListHistory(ctx context.Context, options *ListOptions) ([]History, *Meta,*http.Response, error) {
+func (b *BillingServiceHandler) ListHistory(ctx context.Context, options *ListOptions) ([]History, *Meta, *http.Response, error) {
 	uri := "/v2/billing/history"
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
@@ -90,14 +90,14 @@ func (b *BillingServiceHandler) ListHistory(ctx context.Context, options *ListOp
 	invoices := new(billingHistoryBase)
 	resp, err := b.client.DoWithContext(ctx, req, invoices)
 	if err != nil {
-		return nil, nil,resp, err
+		return nil, nil, resp, err
 	}
 
-	return invoices.History, invoices.Meta,resp, nil
+	return invoices.History, invoices.Meta, resp, nil
 }
 
 // ListInvoices retrieves a list of all billing invoices on the current account
-func (b *BillingServiceHandler) ListInvoices(ctx context.Context, options *ListOptions) ([]Invoice, *Meta,*http.Response, error) {
+func (b *BillingServiceHandler) ListInvoices(ctx context.Context, options *ListOptions) ([]Invoice, *Meta, *http.Response, error) {
 	uri := "/v2/billing/invoices"
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -106,58 +106,58 @@ func (b *BillingServiceHandler) ListInvoices(ctx context.Context, options *ListO
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	invoices := new(invoicesBase)
-	resp,err := b.client.DoWithContext(ctx, req, invoices)
+	resp, err := b.client.DoWithContext(ctx, req, invoices)
 	if err != nil {
-		return nil, nil,resp, err
+		return nil, nil, resp, err
 	}
 
-	return invoices.Invoice, invoices.Meta,resp, nil
+	return invoices.Invoice, invoices.Meta, resp, nil
 }
 
 // GetInvoice retrieves an invoice that matches the given invoiceID
-func (b *BillingServiceHandler) GetInvoice(ctx context.Context, invoiceID string) (*Invoice,*http.Response, error) {
+func (b *BillingServiceHandler) GetInvoice(ctx context.Context, invoiceID string) (*Invoice, *http.Response, error) {
 	uri := fmt.Sprintf("/v2/billing/invoices/%s", invoiceID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 
 	if err != nil {
-		return nil,nil, err
+		return nil, nil, err
 	}
 
 	invoice := new(invoiceBase)
 	resp, err := b.client.DoWithContext(ctx, req, invoice)
 	if err != nil {
-		return nil,resp, err
+		return nil, resp, err
 	}
 
-	return invoice.Invoice,resp, nil
+	return invoice.Invoice, resp, nil
 }
 
 // ListInvoiceItems retrieves items in an invoice that matches the given invoiceID
-func (b *BillingServiceHandler) ListInvoiceItems(ctx context.Context, invoiceID int, options *ListOptions) ([]InvoiceItem, *Meta,*http.Response, error) {
+func (b *BillingServiceHandler) ListInvoiceItems(ctx context.Context, invoiceID int, options *ListOptions) ([]InvoiceItem, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("/v2/billing/invoices/%d/items", invoiceID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	invoice := new(invoiceItemsBase)
-	resp,err := b.client.DoWithContext(ctx, req, invoice)
+	resp, err := b.client.DoWithContext(ctx, req, invoice)
 	if err != nil {
-		return nil, nil,resp, err
+		return nil, nil, resp, err
 	}
 
-	return invoice.InvoiceItems, invoice.Meta,resp, nil
+	return invoice.InvoiceItems, invoice.Meta, resp, nil
 }

@@ -21,7 +21,7 @@ func TestSSHKeyServiceHandler_Create(t *testing.T) {
 		SSHKey: "ssh-rsa AF+LbfYYw== test@admin.com",
 	}
 
-	key,_, err := client.SSHKey.Create(ctx, sshKey)
+	key, _, err := client.SSHKey.Create(ctx, sshKey)
 	if err != nil {
 		t.Errorf("SSHKey.Create returned %+v, expected %+v", err, nil)
 	}
@@ -47,7 +47,7 @@ func TestSSHKeyServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	key,_, err := client.SSHKey.Get(ctx, "abc123")
+	key, _, err := client.SSHKey.Get(ctx, "abc123")
 	if err != nil {
 		t.Errorf("SSHKey.Get returned %+v, expected %+v", err, nil)
 	}
@@ -108,7 +108,7 @@ func TestSSHKeyServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	sshKeys, meta,_, err := client.SSHKey.List(ctx, nil)
+	sshKeys, meta, _, err := client.SSHKey.List(ctx, nil)
 	if err != nil {
 		t.Errorf("SSHKey.List returned error: %v", err)
 	}

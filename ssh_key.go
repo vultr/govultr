@@ -11,11 +11,11 @@ import (
 // SSHKeyService is the interface to interact with the SSH Key endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/ssh
 type SSHKeyService interface {
-	Create(ctx context.Context, sshKeyReq *SSHKeyReq) (*SSHKey,*http.Response, error)
-	Get(ctx context.Context, sshKeyID string) (*SSHKey,*http.Response, error)
+	Create(ctx context.Context, sshKeyReq *SSHKeyReq) (*SSHKey, *http.Response, error)
+	Get(ctx context.Context, sshKeyID string) (*SSHKey, *http.Response, error)
 	Update(ctx context.Context, sshKeyID string, sshKeyReq *SSHKeyReq) error
 	Delete(ctx context.Context, sshKeyID string) error
-	List(ctx context.Context, options *ListOptions) ([]SSHKey, *Meta,*http.Response, error)
+	List(ctx context.Context, options *ListOptions) ([]SSHKey, *Meta, *http.Response, error)
 }
 
 // SSHKeyServiceHandler handles interaction with the SSH Key methods for the Vultr API
@@ -47,39 +47,39 @@ type sshKeyBase struct {
 }
 
 // Create a ssh key
-func (s *SSHKeyServiceHandler) Create(ctx context.Context, sshKeyReq *SSHKeyReq) (*SSHKey,*http.Response, error) {
+func (s *SSHKeyServiceHandler) Create(ctx context.Context, sshKeyReq *SSHKeyReq) (*SSHKey, *http.Response, error) {
 	uri := "/v2/ssh-keys"
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, sshKeyReq)
 	if err != nil {
-		return nil,nil, err
+		return nil, nil, err
 	}
 
 	key := new(sshKeyBase)
-	resp,err := s.client.DoWithContext(ctx, req, key)
+	resp, err := s.client.DoWithContext(ctx, req, key)
 	if err != nil {
-		return nil,resp, err
+		return nil, resp, err
 	}
 
-	return key.SSHKey,resp, nil
+	return key.SSHKey, resp, nil
 }
 
 // Get a specific ssh key.
-func (s *SSHKeyServiceHandler) Get(ctx context.Context, sshKeyID string) (*SSHKey,*http.Response, error) {
+func (s *SSHKeyServiceHandler) Get(ctx context.Context, sshKeyID string) (*SSHKey, *http.Response, error) {
 	uri := fmt.Sprintf("/v2/ssh-keys/%s", sshKeyID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil,nil, err
+		return nil, nil, err
 	}
 
 	sshKey := new(sshKeyBase)
-	resp,err := s.client.DoWithContext(ctx, req, sshKey)
+	resp, err := s.client.DoWithContext(ctx, req, sshKey)
 	if err != nil {
-		return nil,resp, err
+		return nil, resp, err
 	}
 
-	return sshKey.SSHKey,resp, nil
+	return sshKey.SSHKey, resp, nil
 }
 
 // Update will update the given SSH Key. Empty strings will be ignored.
@@ -91,7 +91,7 @@ func (s *SSHKeyServiceHandler) Update(ctx context.Context, sshKeyID string, sshK
 		return err
 	}
 
-	_,err = s.client.DoWithContext(ctx, req, nil)
+	_, err = s.client.DoWithContext(ctx, req, nil)
 	return err
 }
 
@@ -103,31 +103,31 @@ func (s *SSHKeyServiceHandler) Delete(ctx context.Context, sshKeyID string) erro
 	if err != nil {
 		return err
 	}
-	_,err = s.client.DoWithContext(ctx, req, nil)
+	_, err = s.client.DoWithContext(ctx, req, nil)
 	return err
 }
 
 // List all available SSH Keys.
-func (s *SSHKeyServiceHandler) List(ctx context.Context, options *ListOptions) ([]SSHKey, *Meta,*http.Response, error) {
+func (s *SSHKeyServiceHandler) List(ctx context.Context, options *ListOptions) ([]SSHKey, *Meta, *http.Response, error) {
 	uri := "/v2/ssh-keys"
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	sshKeys := new(sshKeysBase)
-	resp,err := s.client.DoWithContext(ctx, req, sshKeys)
+	resp, err := s.client.DoWithContext(ctx, req, sshKeys)
 	if err != nil {
-		return nil, nil,resp, err
+		return nil, nil, resp, err
 	}
 
-	return sshKeys.SSHKeys, sshKeys.Meta,resp, nil
+	return sshKeys.SSHKeys, sshKeys.Meta, resp, nil
 }

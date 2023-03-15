@@ -11,11 +11,11 @@ import (
 // SnapshotService is the interface to interact with Snapshot endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/snapshot
 type SnapshotService interface {
-	Create(ctx context.Context, snapshotReq *SnapshotReq) (*Snapshot,*http.Response, error)
-	CreateFromURL(ctx context.Context, snapshotURLReq *SnapshotURLReq) (*Snapshot,*http.Response,error)
-	Get(ctx context.Context, snapshotID string) (*Snapshot,*http.Response,error)
+	Create(ctx context.Context, snapshotReq *SnapshotReq) (*Snapshot, *http.Response, error)
+	CreateFromURL(ctx context.Context, snapshotURLReq *SnapshotURLReq) (*Snapshot, *http.Response, error)
+	Get(ctx context.Context, snapshotID string) (*Snapshot, *http.Response, error)
 	Delete(ctx context.Context, snapshotID string) error
-	List(ctx context.Context, options *ListOptions) ([]Snapshot, *Meta,*http.Response,error)
+	List(ctx context.Context, options *ListOptions) ([]Snapshot, *Meta, *http.Response, error)
 }
 
 // SnapshotServiceHandler handles interaction with the snapshot methods for the Vultr API
@@ -57,57 +57,57 @@ type snapshotBase struct {
 }
 
 // Create makes a snapshot of a provided server
-func (s *SnapshotServiceHandler) Create(ctx context.Context, snapshotReq *SnapshotReq) (*Snapshot,*http.Response, error) {
+func (s *SnapshotServiceHandler) Create(ctx context.Context, snapshotReq *SnapshotReq) (*Snapshot, *http.Response, error) {
 	uri := "/v2/snapshots"
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, snapshotReq)
 	if err != nil {
-		return nil,nil, err
+		return nil, nil, err
 	}
 
 	snapshot := new(snapshotBase)
-	resp, err := s.client.DoWithContext(ctx, req, snapshot) 
+	resp, err := s.client.DoWithContext(ctx, req, snapshot)
 	if err != nil {
-		return nil,resp,err
+		return nil, resp, err
 	}
 
-	return snapshot.Snapshot,resp,nil
+	return snapshot.Snapshot, resp, nil
 }
 
 // CreateFromURL will create a snapshot based on an image iso from a URL you provide
-func (s *SnapshotServiceHandler) CreateFromURL(ctx context.Context, snapshotURLReq *SnapshotURLReq) (*Snapshot,*http.Response, error) {
+func (s *SnapshotServiceHandler) CreateFromURL(ctx context.Context, snapshotURLReq *SnapshotURLReq) (*Snapshot, *http.Response, error) {
 	uri := "/v2/snapshots/create-from-url"
 
 	req, err := s.client.NewRequest(ctx, http.MethodPost, uri, snapshotURLReq)
 	if err != nil {
-		return nil,nil, err
+		return nil, nil, err
 	}
 
 	snapshot := new(snapshotBase)
-	resp,err := s.client.DoWithContext(ctx, req, snapshot)
+	resp, err := s.client.DoWithContext(ctx, req, snapshot)
 	if err != nil {
-		return nil,resp,err
+		return nil, resp, err
 	}
 
-	return snapshot.Snapshot,resp,nil
+	return snapshot.Snapshot, resp, nil
 }
 
 // Get a specific snapshot
-func (s *SnapshotServiceHandler) Get(ctx context.Context, snapshotID string) (*Snapshot,*http.Response, error) {
+func (s *SnapshotServiceHandler) Get(ctx context.Context, snapshotID string) (*Snapshot, *http.Response, error) {
 	uri := fmt.Sprintf("/v2/snapshots/%s", snapshotID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil,nil, err
+		return nil, nil, err
 	}
 
 	snapshot := new(snapshotBase)
-	resp,err := s.client.DoWithContext(ctx, req, snapshot)
+	resp, err := s.client.DoWithContext(ctx, req, snapshot)
 	if err != nil {
-		return nil,resp,err
+		return nil, resp, err
 	}
 
-	return snapshot.Snapshot,resp,nil
+	return snapshot.Snapshot, resp, nil
 }
 
 // Delete a snapshot.
@@ -119,30 +119,30 @@ func (s *SnapshotServiceHandler) Delete(ctx context.Context, snapshotID string) 
 		return err
 	}
 
-	_,err = s.client.DoWithContext(ctx, req, nil)
+	_, err = s.client.DoWithContext(ctx, req, nil)
 	return err
 }
 
 // List all available snapshots.
-func (s *SnapshotServiceHandler) List(ctx context.Context, options *ListOptions) ([]Snapshot, *Meta,*http.Response, error) {
+func (s *SnapshotServiceHandler) List(ctx context.Context, options *ListOptions) ([]Snapshot, *Meta, *http.Response, error) {
 	uri := "/v2/snapshots"
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	snapshots := new(snapshotsBase)
-	resp,err := s.client.DoWithContext(ctx, req, snapshots)
+	resp, err := s.client.DoWithContext(ctx, req, snapshots)
 	if err != nil {
-		return nil, nil,resp,err
+		return nil, nil, resp, err
 	}
 
-	return snapshots.Snapshots, snapshots.Meta,resp,nil
+	return snapshots.Snapshots, snapshots.Meta, resp, nil
 }

@@ -116,7 +116,7 @@ func TestDomainRecordsServiceHandler_List(t *testing.T) {
 	options := &ListOptions{
 		PerPage: 1,
 	}
-	records, meta, _,  err := client.DomainRecord.List(ctx, "vultr.com", options)
+	records, meta, _, err := client.DomainRecord.List(ctx, "vultr.com", options)
 	if err != nil {
 		t.Errorf("DomainRecord.List returned %+v, expected %+v", err, nil)
 	}

@@ -41,8 +41,8 @@ func (a *AccountServiceHandler) Get(ctx context.Context) (*Account, *http.Respon
 
 	account := new(accountBase)
 	resp, err := a.client.DoWithContext(ctx, req, account)
-    if err != nil {
-		return nil,resp, err
+	if err != nil {
+		return nil, resp, err
 	}
 
 	return account.Account, resp, nil

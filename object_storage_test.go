@@ -16,7 +16,7 @@ func TestObjectStorageServiceHandler_Create(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	objectStorage,_,err := client.ObjectStorage.Create(ctx, 2, "api-obj-storage2")
+	objectStorage, _, err := client.ObjectStorage.Create(ctx, 2, "api-obj-storage2")
 	if err != nil {
 		t.Errorf("ObjectStorage.Create returned %+v", err)
 	}
@@ -45,7 +45,7 @@ func TestObjectStorageServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	s3,_, err := client.ObjectStorage.Get(ctx, "39239784")
+	s3, _, err := client.ObjectStorage.Get(ctx, "39239784")
 
 	if err != nil {
 		t.Errorf("ObjectStorage.Get returned %+v", err)
@@ -105,7 +105,7 @@ func TestObjectStorageServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	s3s, meta,_, err := client.ObjectStorage.List(ctx, nil)
+	s3s, meta, _, err := client.ObjectStorage.List(ctx, nil)
 	if err != nil {
 		t.Errorf("ObjectStorage.List returned %+v", err)
 	}
@@ -148,7 +148,7 @@ func TestObjectStorageServiceHandler_ListCluster(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	clusters, meta,_, err := client.ObjectStorage.ListCluster(ctx, nil)
+	clusters, meta, _, err := client.ObjectStorage.ListCluster(ctx, nil)
 
 	if err != nil {
 		t.Errorf("ObjectStorage.ListCluster returned %+v", err)
@@ -185,7 +185,7 @@ func TestObjectStorageServiceHandler_RegenerateKeys(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	s3Keys,_, err := client.ObjectStorage.RegenerateKeys(ctx, "1234")
+	s3Keys, _, err := client.ObjectStorage.RegenerateKeys(ctx, "1234")
 
 	if err != nil {
 		t.Errorf("ObjectStorage.RegenerateKeys returned %+v", err)

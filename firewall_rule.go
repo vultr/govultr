@@ -12,9 +12,9 @@ import (
 // Link : https://www.vultr.com/api/#tag/firewall
 type FireWallRuleService interface {
 	Create(ctx context.Context, fwGroupID string, fwRuleReq *FirewallRuleReq) (*FirewallRule, *http.Response, error)
-	Get(ctx context.Context, fwGroupID string, fwRuleID int) (*FirewallRule, *http.Response ,error)
+	Get(ctx context.Context, fwGroupID string, fwRuleID int) (*FirewallRule, *http.Response, error)
 	Delete(ctx context.Context, fwGroupID string, fwRuleID int) error
-	List(ctx context.Context, fwGroupID string, options *ListOptions) ([]FirewallRule, *Meta,*http.Response, error)
+	List(ctx context.Context, fwGroupID string, options *ListOptions) ([]FirewallRule, *Meta, *http.Response, error)
 }
 
 // FireWallRuleServiceHandler handles interaction with the firewall rule methods for the Vultr API
@@ -67,7 +67,7 @@ func (f *FireWallRuleServiceHandler) Create(ctx context.Context, fwGroupID strin
 	}
 
 	firewallRule := new(firewallRuleBase)
-	resp, err := f.client.DoWithContext(ctx, req, firewallRule) 
+	resp, err := f.client.DoWithContext(ctx, req, firewallRule)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -85,7 +85,7 @@ func (f *FireWallRuleServiceHandler) Get(ctx context.Context, fwGroupID string, 
 	}
 
 	firewallRule := new(firewallRuleBase)
-	resp, err := f.client.DoWithContext(ctx, req, firewallRule) 
+	resp, err := f.client.DoWithContext(ctx, req, firewallRule)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -122,10 +122,10 @@ func (f *FireWallRuleServiceHandler) List(ctx context.Context, fwGroupID string,
 	req.URL.RawQuery = newValues.Encode()
 
 	firewallRule := new(firewallRulesBase)
-	resp, err := f.client.DoWithContext(ctx, req, firewallRule) 
+	resp, err := f.client.DoWithContext(ctx, req, firewallRule)
 	if err != nil {
 		return nil, nil, resp, err
 	}
 
-	return firewallRule.FirewallRules, firewallRule.Meta,resp, nil
+	return firewallRule.FirewallRules, firewallRule.Meta, resp, nil
 }

@@ -41,7 +41,7 @@ func TestBareMetalServerServiceHandler_GetServer(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bm,_, err := client.BareMetalServer.Get(ctx, "abc123")
+	bm, _, err := client.BareMetalServer.Get(ctx, "abc123")
 	if err != nil {
 		t.Errorf("BareMetalServer.GetServer returned error: %v", err)
 	}
@@ -126,7 +126,7 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 		PersistentPxe:   BoolToBoolPtr(true),
 	}
 
-	bm,_, err := client.BareMetalServer.Create(ctx, options)
+	bm, _, err := client.BareMetalServer.Create(ctx, options)
 
 	if err != nil {
 		t.Errorf("BareMetalServer.Create returned error: %v", err)
@@ -199,7 +199,7 @@ func TestBareMetalServerServiceHandler_Update(t *testing.T) {
 		Label: "my new label",
 	}
 
-	bm,_, err := client.BareMetalServer.Update(ctx, "dev-preview-abc123", options)
+	bm, _, err := client.BareMetalServer.Update(ctx, "dev-preview-abc123", options)
 	if err != nil {
 		t.Errorf("BareMetal.Update returned %+v, expected %+v", err, nil)
 	}
@@ -281,7 +281,7 @@ func TestBareMetalServerServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bm, _,_, err := client.BareMetalServer.List(ctx, nil)
+	bm, _, _, err := client.BareMetalServer.List(ctx, nil)
 
 	if err != nil {
 		t.Errorf("BareMetalServer.List returned error: %v", err)
@@ -335,7 +335,7 @@ func TestBareMetalServerServiceHandler_GetBandwidth(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bandwidth,_, err := client.BareMetalServer.GetBandwidth(ctx, "dev-preview-abc123")
+	bandwidth, _, err := client.BareMetalServer.GetBandwidth(ctx, "dev-preview-abc123")
 	if err != nil {
 		t.Errorf("BareMetalServer.GetBandwidth returned %+v", err)
 	}
@@ -400,7 +400,7 @@ func TestBareMetalServerServiceHandler_ListIPv4s(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	ipv4, _,_, err := client.BareMetalServer.ListIPv4s(ctx, "900000", nil)
+	ipv4, _, _, err := client.BareMetalServer.ListIPv4s(ctx, "900000", nil)
 	if err != nil {
 		t.Errorf("BareMetalServer.ListIPv4s returned %+v", err)
 	}
@@ -440,7 +440,7 @@ func TestBareMetalServerServiceHandler_ListIPv6s(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	ipv6,_,_, err := client.BareMetalServer.ListIPv6s(ctx, "900000", nil)
+	ipv6, _, _, err := client.BareMetalServer.ListIPv6s(ctx, "900000", nil)
 
 	if err != nil {
 		t.Errorf("BareMetalServer.IPV6Info returned %+v", err)
@@ -578,8 +578,8 @@ func TestBareMetalServerServiceHandler_GetUserData(t *testing.T) {
 	}
 
 	if resp == nil {
-        t.Errorf("Expected a non-nil response")
-    }
+		t.Errorf("Expected a non-nil response")
+	}
 }
 
 func TestBareMetalServerServiceHandler_GetUpgrades(t *testing.T) {
@@ -613,7 +613,7 @@ func TestBareMetalServerServiceHandler_GetUpgrades(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	server,_, err := client.BareMetalServer.GetUpgrades(ctx, "dev-preview-abc123")
+	server, _, err := client.BareMetalServer.GetUpgrades(ctx, "dev-preview-abc123")
 	if err != nil {
 		t.Errorf("BareMetalServer.GetUpgrades returned %+v", err)
 	}
@@ -654,7 +654,7 @@ func TestBareMetalServerServiceHandler_GetVNCUrl(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	vnc,_, err := client.BareMetalServer.GetVNCUrl(ctx, "dev-preview-abc123")
+	vnc, _, err := client.BareMetalServer.GetVNCUrl(ctx, "dev-preview-abc123")
 	if err != nil {
 		t.Errorf("BareMetalServer.GetVNCUrl return %+v ", err)
 	}
@@ -765,7 +765,7 @@ func TestBareMetalServerServiceHandler_CreateMarketplaceImage(t *testing.T) {
 		ImageID:         "test",
 	}
 
-	bm,_, err := client.BareMetalServer.Create(ctx, options)
+	bm, _, err := client.BareMetalServer.Create(ctx, options)
 
 	if err != nil {
 		t.Errorf("BareMetalServer.Create returned error: %v", err)

@@ -11,8 +11,8 @@ import (
 // RegionService is the interface to interact with Region endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/region
 type RegionService interface {
-	Availability(ctx context.Context, regionID string, planType string) (*PlanAvailability,*http.Response,error)
-	List(ctx context.Context, options *ListOptions) ([]Region, *Meta,*http.Response,error)
+	Availability(ctx context.Context, regionID string, planType string) (*PlanAvailability, *http.Response, error)
+	List(ctx context.Context, options *ListOptions) ([]Region, *Meta, *http.Response, error)
 }
 
 var _ RegionService = &RegionServiceHandler{}
@@ -42,17 +42,17 @@ type PlanAvailability struct {
 }
 
 // List returns all available regions
-func (r *RegionServiceHandler) List(ctx context.Context, options *ListOptions) ([]Region, *Meta,*http.Response, error) {
+func (r *RegionServiceHandler) List(ctx context.Context, options *ListOptions) ([]Region, *Meta, *http.Response, error) {
 	uri := "/v2/regions"
 
 	req, err := r.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil,nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
@@ -60,20 +60,20 @@ func (r *RegionServiceHandler) List(ctx context.Context, options *ListOptions) (
 	regions := new(regionBase)
 	resp, err := r.client.DoWithContext(ctx, req, &regions)
 	if err != nil {
-		return nil, nil,resp, err
+		return nil, nil, resp, err
 	}
 
-	return regions.Regions, regions.Meta,resp,nil
+	return regions.Regions, regions.Meta, resp, nil
 }
 
 // Availability retrieves a list of the plan IDs currently available for a given location.
-func (r *RegionServiceHandler) Availability(ctx context.Context, regionID string, planType string) (*PlanAvailability,*http.Response,error) {
+func (r *RegionServiceHandler) Availability(ctx context.Context, regionID string, planType string) (*PlanAvailability, *http.Response, error) {
 	uri := fmt.Sprintf("/v2/regions/%s/availability", regionID)
 
 	req, err := r.client.NewRequest(ctx, http.MethodGet, uri, nil)
 
 	if err != nil {
-		return nil,nil, err
+		return nil, nil, err
 	}
 
 	// Optional planType filter
@@ -86,7 +86,7 @@ func (r *RegionServiceHandler) Availability(ctx context.Context, regionID string
 	plans := new(PlanAvailability)
 	resp, err := r.client.DoWithContext(ctx, req, plans)
 	if err != nil {
-		return nil,resp, err
+		return nil, resp, err
 	}
 
 	return plans, resp, nil

@@ -33,7 +33,7 @@ func TestNetworkServiceHandler_Create(t *testing.T) {
 		Description: "test1",
 	}
 
-	net,_, err := client.Network.Create(ctx, options)
+	net, _, err := client.Network.Create(ctx, options)
 
 	if err != nil {
 		t.Errorf("Network.Create returned %+v, expected %+v", err, nil)
@@ -134,7 +134,7 @@ func TestNetworkServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, req)
 	})
 
-	network,_,err := client.Network.Get(ctx, "net539626f0798d7")
+	network, _, err := client.Network.Get(ctx, "net539626f0798d7")
 	if err != nil {
 		t.Errorf("Network.Get returned %+v, expected %+v", err, nil)
 	}

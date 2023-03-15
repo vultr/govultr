@@ -53,7 +53,7 @@ func TestBlockStorageServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	blockStorage,_, err := client.BlockStorage.Get(ctx, "123456")
+	blockStorage, _, err := client.BlockStorage.Get(ctx, "123456")
 	if err != nil {
 		t.Errorf("BlockStorage.Create returned error: %v", err)
 	}

@@ -154,7 +154,7 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) (*http.Response, error) {
 	rreq, err := retryablehttp.FromRequest(r)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
 	rreq = rreq.WithContext(ctx)
@@ -166,7 +166,7 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 	}
 
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
 	defer res.Body.Close()
@@ -182,7 +182,7 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 				return nil, err
 			}
 		}
-		return res,nil
+		return res, nil
 	}
 
 	return res, errors.New(string(body))
