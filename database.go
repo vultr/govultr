@@ -13,51 +13,51 @@ const databasePath = "/v2/databases"
 // DatabaseService is the interface to interact with the Database endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#tag/managed-databases
 type DatabaseService interface {
-	ListPlans(ctx context.Context, options *DBPlanListOptions) ([]DatabasePlan, *Meta, error)
+	ListPlans(ctx context.Context, options *DBPlanListOptions) ([]DatabasePlan, *Meta, *http.Response, error)
 
-	List(ctx context.Context, options *DBListOptions) ([]Database, *Meta, error)
-	Create(ctx context.Context, databaseReq *DatabaseCreateReq) (*Database, error)
-	Get(ctx context.Context, databaseID string) (*Database, error)
-	Update(ctx context.Context, databaseID string, databaseReq *DatabaseUpdateReq) (*Database, error)
+	List(ctx context.Context, options *DBListOptions) ([]Database, *Meta, *http.Response, error)
+	Create(ctx context.Context, databaseReq *DatabaseCreateReq) (*Database, *http.Response, error)
+	Get(ctx context.Context, databaseID string) (*Database, *http.Response, error)
+	Update(ctx context.Context, databaseID string, databaseReq *DatabaseUpdateReq) (*Database, *http.Response, error)
 	Delete(ctx context.Context, databaseID string) error
 
-	ListUsers(ctx context.Context, databaseID string) ([]DatabaseUser, *Meta, error)
-	CreateUser(ctx context.Context, databaseID string, databaseUserReq *DatabaseUserCreateReq) (*DatabaseUser, error)
-	GetUser(ctx context.Context, databaseID string, username string) (*DatabaseUser, error)
-	UpdateUser(ctx context.Context, databaseID string, username string, databaseUserReq *DatabaseUserUpdateReq) (*DatabaseUser, error)
+	ListUsers(ctx context.Context, databaseID string) ([]DatabaseUser, *Meta, *http.Response, error)
+	CreateUser(ctx context.Context, databaseID string, databaseUserReq *DatabaseUserCreateReq) (*DatabaseUser, *http.Response, error)
+	GetUser(ctx context.Context, databaseID string, username string) (*DatabaseUser, *http.Response, error)
+	UpdateUser(ctx context.Context, databaseID string, username string, databaseUserReq *DatabaseUserUpdateReq) (*DatabaseUser, *http.Response, error)
 	DeleteUser(ctx context.Context, databaseID string, username string) error
 
-	ListDBs(ctx context.Context, databaseID string) ([]DatabaseDB, *Meta, error)
-	CreateDB(ctx context.Context, databaseID string, databaseDBReq *DatabaseDBCreateReq) (*DatabaseDB, error)
-	GetDB(ctx context.Context, databaseID string, dbname string) (*DatabaseDB, error)
+	ListDBs(ctx context.Context, databaseID string) ([]DatabaseDB, *Meta, *http.Response, error)
+	CreateDB(ctx context.Context, databaseID string, databaseDBReq *DatabaseDBCreateReq) (*DatabaseDB, *http.Response, error)
+	GetDB(ctx context.Context, databaseID string, dbname string) (*DatabaseDB, *http.Response, error)
 	DeleteDB(ctx context.Context, databaseID string, dbname string) error
 
-	ListMaintenanceUpdates(ctx context.Context, databaseID string) ([]string, error)
-	StartMaintenance(ctx context.Context, databaseID string) (string, error)
+	ListMaintenanceUpdates(ctx context.Context, databaseID string) ([]string, *http.Response, error)
+	StartMaintenance(ctx context.Context, databaseID string) (string, *http.Response, error)
 
-	ListServiceAlerts(ctx context.Context, databaseID string, databaseAlertsReq *DatabaseListAlertsReq) ([]DatabaseAlert, error)
+	ListServiceAlerts(ctx context.Context, databaseID string, databaseAlertsReq *DatabaseListAlertsReq) ([]DatabaseAlert, *http.Response, error)
 
-	GetMigrationStatus(ctx context.Context, databaseID string) (*DatabaseMigration, error)
-	StartMigration(ctx context.Context, databaseID string, databaseMigrationReq *DatabaseMigrationStartReq) (*DatabaseMigration, error)
+	GetMigrationStatus(ctx context.Context, databaseID string) (*DatabaseMigration, *http.Response, error)
+	StartMigration(ctx context.Context, databaseID string, databaseMigrationReq *DatabaseMigrationStartReq) (*DatabaseMigration, *http.Response, error)
 	DetachMigration(ctx context.Context, databaseID string) error
 
-	AddReadOnlyReplica(ctx context.Context, databaseID string, databaseReplicaReq *DatabaseAddReplicaReq) (*Database, error)
+	AddReadOnlyReplica(ctx context.Context, databaseID string, databaseReplicaReq *DatabaseAddReplicaReq) (*Database, *http.Response, error)
 
-	GetBackupInformation(ctx context.Context, databaseID string) (*DatabaseBackups, error)
-	RestoreFromBackup(ctx context.Context, databaseID string, databaseRestoreReq *DatabaseBackupRestoreReq) (*Database, error)
-	Fork(ctx context.Context, databaseID string, databaseForkReq *DatabaseForkReq) (*Database, error)
+	GetBackupInformation(ctx context.Context, databaseID string) (*DatabaseBackups, *http.Response, error)
+	RestoreFromBackup(ctx context.Context, databaseID string, databaseRestoreReq *DatabaseBackupRestoreReq) (*Database, *http.Response, error)
+	Fork(ctx context.Context, databaseID string, databaseForkReq *DatabaseForkReq) (*Database, *http.Response, error)
 
-	ListConnectionPools(ctx context.Context, databaseID string) (*DatabaseConnections, []DatabaseConnectionPool, *Meta, error)
-	CreateConnectionPool(ctx context.Context, databaseID string, databaseConnectionPoolReq *DatabaseConnectionPoolCreateReq) (*DatabaseConnectionPool, error)
-	GetConnectionPool(ctx context.Context, databaseID string, poolName string) (*DatabaseConnectionPool, error)
-	UpdateConnectionPool(ctx context.Context, databaseID string, poolName string, databaseConnectionPoolReq *DatabaseConnectionPoolUpdateReq) (*DatabaseConnectionPool, error)
+	ListConnectionPools(ctx context.Context, databaseID string) (*DatabaseConnections, []DatabaseConnectionPool, *Meta, *http.Response, error)
+	CreateConnectionPool(ctx context.Context, databaseID string, databaseConnectionPoolReq *DatabaseConnectionPoolCreateReq) (*DatabaseConnectionPool, *http.Response, error)
+	GetConnectionPool(ctx context.Context, databaseID string, poolName string) (*DatabaseConnectionPool, *http.Response, error)
+	UpdateConnectionPool(ctx context.Context, databaseID string, poolName string, databaseConnectionPoolReq *DatabaseConnectionPoolUpdateReq) (*DatabaseConnectionPool, *http.Response, error)
 	DeleteConnectionPool(ctx context.Context, databaseID string, poolName string) error
 
-	ListAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseAdvancedOptions, []AvailableOption, error)
-	UpdateAdvancedOptions(ctx context.Context, databaseID string, databaseAdvancedOptionsReq *DatabaseAdvancedOptions) (*DatabaseAdvancedOptions, []AvailableOption, error)
+	ListAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseAdvancedOptions, []AvailableOption, *http.Response, error)
+	UpdateAdvancedOptions(ctx context.Context, databaseID string, databaseAdvancedOptionsReq *DatabaseAdvancedOptions) (*DatabaseAdvancedOptions, []AvailableOption, *http.Response, error)
 
-	ListAvailableVersions(ctx context.Context, databaseID string) ([]string, error)
-	StartVersionUpgrade(ctx context.Context, databaseID string, databaseVersionUpgradeReq *DatabaseVersionUpgradeReq) (string, error)
+	ListAvailableVersions(ctx context.Context, databaseID string) ([]string, *http.Response, error)
+	StartVersionUpgrade(ctx context.Context, databaseID string, databaseVersionUpgradeReq *DatabaseVersionUpgradeReq) (string, *http.Response, error)
 }
 
 // DatabaseServiceHandler handles interaction with the server methods for the Vultr API
@@ -474,564 +474,598 @@ type DatabaseVersionUpgradeReq struct {
 }
 
 // List all database plans
-func (i *DatabaseServiceHandler) ListPlans(ctx context.Context, options *DBPlanListOptions) ([]DatabasePlan, *Meta, error) {
+func (d *DatabaseServiceHandler) ListPlans(ctx context.Context, options *DBPlanListOptions) ([]DatabasePlan, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/plans", databasePath)
 
-	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	databasePlans := new(databasePlansBase)
-	if err = i.client.DoWithContext(ctx, req, databasePlans); err != nil {
-		return nil, nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databasePlans)
+	if err != nil {
+		return nil, nil, nil, err
 	}
 
-	return databasePlans.DatabasePlans, databasePlans.Meta, nil
+	return databasePlans.DatabasePlans, databasePlans.Meta, resp, nil
 }
 
 // List all databases on your account.
-func (i *DatabaseServiceHandler) List(ctx context.Context, options *DBListOptions) ([]Database, *Meta, error) {
-	req, err := i.client.NewRequest(ctx, http.MethodGet, databasePath, nil)
+func (d *DatabaseServiceHandler) List(ctx context.Context, options *DBListOptions) ([]Database, *Meta, *http.Response, error) {
+	req, err := d.client.NewRequest(ctx, http.MethodGet, databasePath, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	databases := new(databasesBase)
-	if err = i.client.DoWithContext(ctx, req, databases); err != nil {
-		return nil, nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databases)
+	if err != nil {
+		return nil, nil, nil, err
 	}
 
-	return databases.Databases, databases.Meta, nil
+	return databases.Databases, databases.Meta, resp, nil
 }
 
 // Create will create the Managed Database with the given parameters
-func (i *DatabaseServiceHandler) Create(ctx context.Context, databaseReq *DatabaseCreateReq) (*Database, error) {
-	req, err := i.client.NewRequest(ctx, http.MethodPost, databasePath, databaseReq)
+func (d *DatabaseServiceHandler) Create(ctx context.Context, databaseReq *DatabaseCreateReq) (*Database, *http.Response, error) {
+	req, err := d.client.NewRequest(ctx, http.MethodPost, databasePath, databaseReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	database := new(databaseBase)
-	if err = i.client.DoWithContext(ctx, req, database); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, database)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return database.Database, nil
+	return database.Database, resp, nil
 }
 
 // Get will get the server with the given databaseID
-func (i *DatabaseServiceHandler) Get(ctx context.Context, databaseID string) (*Database, error) {
+func (d *DatabaseServiceHandler) Get(ctx context.Context, databaseID string) (*Database, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	database := new(databaseBase)
-	if err = i.client.DoWithContext(ctx, req, database); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, database)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return database.Database, nil
+	return database.Database, resp, nil
 }
 
 // Update will update the Managed Database with the given parameters
-func (i *DatabaseServiceHandler) Update(ctx context.Context, databaseID string, databaseReq *DatabaseUpdateReq) (*Database, error) {
+func (d *DatabaseServiceHandler) Update(ctx context.Context, databaseID string, databaseReq *DatabaseUpdateReq) (*Database, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPut, uri, databaseReq)
+	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	database := new(databaseBase)
-	if err := i.client.DoWithContext(ctx, req, database); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, database)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return database.Database, nil
+	return database.Database, resp, nil
 }
 
 // Delete a Managed database. All data will be permanently lost.
-func (i *DatabaseServiceHandler) Delete(ctx context.Context, databaseID string) error {
+func (d *DatabaseServiceHandler) Delete(ctx context.Context, databaseID string) error {
 	uri := fmt.Sprintf("%s/%s", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return err
 	}
 
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // List all database users on your Managed Database.
-func (i *DatabaseServiceHandler) ListUsers(ctx context.Context, databaseID string) ([]DatabaseUser, *Meta, error) {
+func (d *DatabaseServiceHandler) ListUsers(ctx context.Context, databaseID string) ([]DatabaseUser, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/users", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	databaseUsers := new(databaseUsersBase)
-	if err = i.client.DoWithContext(ctx, req, databaseUsers); err != nil {
-		return nil, nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseUsers)
+	if err != nil {
+		return nil, nil, nil, err
 	}
 
-	return databaseUsers.DatabaseUsers, databaseUsers.Meta, nil
+	return databaseUsers.DatabaseUsers, databaseUsers.Meta, resp, nil
 }
 
 // Create a user within the Managed Database with the given parameters
-func (i *DatabaseServiceHandler) CreateUser(ctx context.Context, databaseID string, databaseUserReq *DatabaseUserCreateReq) (*DatabaseUser, error) {
+func (d *DatabaseServiceHandler) CreateUser(ctx context.Context, databaseID string, databaseUserReq *DatabaseUserCreateReq) (*DatabaseUser, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/users", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseUserReq)
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, databaseUserReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	databaseUser := new(databaseUserBase)
-	if err = i.client.DoWithContext(ctx, req, databaseUser); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseUser)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return databaseUser.DatabaseUser, nil
+	return databaseUser.DatabaseUser, resp, nil
 }
 
 // Get information on an individual user within a Managed Database based on a username and databaseID
-func (i *DatabaseServiceHandler) GetUser(ctx context.Context, databaseID string, username string) (*DatabaseUser, error) {
+func (d *DatabaseServiceHandler) GetUser(ctx context.Context, databaseID string, username string) (*DatabaseUser, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/users/%s", databasePath, databaseID, username)
 
-	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	databaseUser := new(databaseUserBase)
-	if err = i.client.DoWithContext(ctx, req, databaseUser); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseUser)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return databaseUser.DatabaseUser, nil
+	return databaseUser.DatabaseUser, resp, nil
 }
 
 // Update a user within the Managed Database with the given parameters
-func (i *DatabaseServiceHandler) UpdateUser(ctx context.Context, databaseID string, username string, databaseUserReq *DatabaseUserUpdateReq) (*DatabaseUser, error) {
+func (d *DatabaseServiceHandler) UpdateUser(ctx context.Context, databaseID string, username string, databaseUserReq *DatabaseUserUpdateReq) (*DatabaseUser, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/users/%s", databasePath, databaseID, username)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPut, uri, databaseUserReq)
+	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseUserReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	databaseUser := new(databaseUserBase)
-	if err := i.client.DoWithContext(ctx, req, databaseUser); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseUser)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return databaseUser.DatabaseUser, nil
+	return databaseUser.DatabaseUser, resp, nil
 }
 
 // Delete a user within the Managed database. All data will be permanently lost.
-func (i *DatabaseServiceHandler) DeleteUser(ctx context.Context, databaseID string, username string) error {
+func (d *DatabaseServiceHandler) DeleteUser(ctx context.Context, databaseID string, username string) error {
 	uri := fmt.Sprintf("%s/%s/users/%s", databasePath, databaseID, username)
 
-	req, err := i.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return err
 	}
 
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // List all logical databases on your Managed Database.
-func (i *DatabaseServiceHandler) ListDBs(ctx context.Context, databaseID string) ([]DatabaseDB, *Meta, error) {
+func (d *DatabaseServiceHandler) ListDBs(ctx context.Context, databaseID string) ([]DatabaseDB, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/dbs", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	databaseDBs := new(databaseDBsBase)
-	if err = i.client.DoWithContext(ctx, req, databaseDBs); err != nil {
-		return nil, nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseDBs)
+	if err != nil {
+		return nil, nil, nil, err
 	}
 
-	return databaseDBs.DatabaseDBs, databaseDBs.Meta, nil
+	return databaseDBs.DatabaseDBs, databaseDBs.Meta, resp, nil
 }
 
 // Create a logical database within the Managed Database with the given parameters
-func (i *DatabaseServiceHandler) CreateDB(ctx context.Context, databaseID string, databaseDBReq *DatabaseDBCreateReq) (*DatabaseDB, error) {
+func (d *DatabaseServiceHandler) CreateDB(ctx context.Context, databaseID string, databaseDBReq *DatabaseDBCreateReq) (*DatabaseDB, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/dbs", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseDBReq)
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, databaseDBReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	databaseDB := new(databaseDBBase)
-	if err = i.client.DoWithContext(ctx, req, databaseDB); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseDB)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return databaseDB.DatabaseDB, nil
+	return databaseDB.DatabaseDB, resp, nil
 }
 
 // Get information on an individual logical database within a Managed Database based on a dbname and databaseID
-func (i *DatabaseServiceHandler) GetDB(ctx context.Context, databaseID string, dbname string) (*DatabaseDB, error) {
+func (d *DatabaseServiceHandler) GetDB(ctx context.Context, databaseID string, dbname string) (*DatabaseDB, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/dbs/%s", databasePath, databaseID, dbname)
 
-	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	databaseDB := new(databaseDBBase)
-	if err = i.client.DoWithContext(ctx, req, databaseDB); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseDB)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return databaseDB.DatabaseDB, nil
+	return databaseDB.DatabaseDB, resp, nil
 }
 
 // Delete a user within the Managed database. All data will be permanently lost.
-func (i *DatabaseServiceHandler) DeleteDB(ctx context.Context, databaseID string, dbname string) error {
+func (d *DatabaseServiceHandler) DeleteDB(ctx context.Context, databaseID string, dbname string) error {
 	uri := fmt.Sprintf("%s/%s/dbs/%s", databasePath, databaseID, dbname)
 
-	req, err := i.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return err
 	}
 
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // List all available maintenance updates for your Managed Database.
-func (i *DatabaseServiceHandler) ListMaintenanceUpdates(ctx context.Context, databaseID string) ([]string, error) {
+func (d *DatabaseServiceHandler) ListMaintenanceUpdates(ctx context.Context, databaseID string) ([]string, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/maintenance", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	databaseUpdates := new(databaseUpdatesBase)
-	if err = i.client.DoWithContext(ctx, req, databaseUpdates); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseUpdates)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return databaseUpdates.AvailableUpdates, nil
+	return databaseUpdates.AvailableUpdates, resp, nil
 }
 
 // Start the maintenance update process for your Managed Database
-func (i *DatabaseServiceHandler) StartMaintenance(ctx context.Context, databaseID string) (string, error) {
+func (d *DatabaseServiceHandler) StartMaintenance(ctx context.Context, databaseID string) (string, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/maintenance", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
 	databaseUpdates := new(databaseMessage)
-	if err = i.client.DoWithContext(ctx, req, databaseUpdates); err != nil {
-		return "", err
+	resp, err := d.client.DoWithContext(ctx, req, databaseUpdates)
+	if err != nil {
+		return "", nil, err
 	}
 
-	return databaseUpdates.Message, nil
+	return databaseUpdates.Message, resp, nil
 }
 
 // Query for service alerts for the Managed Database using the given parameters
-func (i *DatabaseServiceHandler) ListServiceAlerts(ctx context.Context, databaseID string, databaseAlertsReq *DatabaseListAlertsReq) ([]DatabaseAlert, error) {
+func (d *DatabaseServiceHandler) ListServiceAlerts(ctx context.Context, databaseID string, databaseAlertsReq *DatabaseListAlertsReq) ([]DatabaseAlert, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/alerts", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseAlertsReq)
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, databaseAlertsReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	databaseAlerts := new(databaseAlertsBase)
-	if err = i.client.DoWithContext(ctx, req, databaseAlerts); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseAlerts)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return databaseAlerts.DatabaseAlerts, nil
+	return databaseAlerts.DatabaseAlerts, resp, nil
 }
 
 // View the migration status for your Managed Database.
-func (i *DatabaseServiceHandler) GetMigrationStatus(ctx context.Context, databaseID string) (*DatabaseMigration, error) {
+func (d *DatabaseServiceHandler) GetMigrationStatus(ctx context.Context, databaseID string) (*DatabaseMigration, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/migration", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	databaseMigration := new(databaseMigrationBase)
-	if err = i.client.DoWithContext(ctx, req, databaseMigration); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseMigration)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return databaseMigration.Migration, nil
+	return databaseMigration.Migration, resp, nil
 }
 
 // Start a migration for the Managed Database using the given credentials.
-func (i *DatabaseServiceHandler) StartMigration(ctx context.Context, databaseID string, databaseMigrationReq *DatabaseMigrationStartReq) (*DatabaseMigration, error) {
+func (d *DatabaseServiceHandler) StartMigration(ctx context.Context, databaseID string, databaseMigrationReq *DatabaseMigrationStartReq) (*DatabaseMigration, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/migration", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseMigrationReq)
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, databaseMigrationReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	databaseMigration := new(databaseMigrationBase)
-	if err = i.client.DoWithContext(ctx, req, databaseMigration); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseMigration)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return databaseMigration.Migration, nil
+	return databaseMigration.Migration, resp, nil
 }
 
 // Detach a migration from the Managed database.
-func (i *DatabaseServiceHandler) DetachMigration(ctx context.Context, databaseID string) error {
+func (d *DatabaseServiceHandler) DetachMigration(ctx context.Context, databaseID string) error {
 	uri := fmt.Sprintf("%s/%s/migration", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return err
 	}
 
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // AddReadOnlyReplica will add a read-only replica node to the Managed Database with the given parameters
-func (i *DatabaseServiceHandler) AddReadOnlyReplica(ctx context.Context, databaseID string, databaseReplicaReq *DatabaseAddReplicaReq) (*Database, error) {
+func (d *DatabaseServiceHandler) AddReadOnlyReplica(ctx context.Context, databaseID string, databaseReplicaReq *DatabaseAddReplicaReq) (*Database, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/read-replica", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseReplicaReq)
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, databaseReplicaReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	database := new(databaseBase)
-	if err = i.client.DoWithContext(ctx, req, database); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, database)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return database.Database, nil
+	return database.Database, resp, nil
 }
 
 // Get backup information for your Managed Database.
-func (i *DatabaseServiceHandler) GetBackupInformation(ctx context.Context, databaseID string) (*DatabaseBackups, error) {
+func (d *DatabaseServiceHandler) GetBackupInformation(ctx context.Context, databaseID string) (*DatabaseBackups, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/backups", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	databaseBackups := new(DatabaseBackups)
-	if err = i.client.DoWithContext(ctx, req, databaseBackups); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseBackups)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return databaseBackups, nil
+	return databaseBackups, resp, nil
 }
 
 // RestoreFromBackup will create a new subscription of the same plan from a backup of the Managed Database using the given parameters
-func (i *DatabaseServiceHandler) RestoreFromBackup(ctx context.Context, databaseID string, databaseRestoreReq *DatabaseBackupRestoreReq) (*Database, error) {
+func (d *DatabaseServiceHandler) RestoreFromBackup(ctx context.Context, databaseID string, databaseRestoreReq *DatabaseBackupRestoreReq) (*Database, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/restore", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseRestoreReq)
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, databaseRestoreReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	database := new(databaseBase)
-	if err = i.client.DoWithContext(ctx, req, database); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, database)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return database.Database, nil
+	return database.Database, resp, nil
 }
 
 // Fork will create a new subscription of any plan from a backup of the Managed Database using the given parameters
-func (i *DatabaseServiceHandler) Fork(ctx context.Context, databaseID string, databaseForkReq *DatabaseForkReq) (*Database, error) {
+func (d *DatabaseServiceHandler) Fork(ctx context.Context, databaseID string, databaseForkReq *DatabaseForkReq) (*Database, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/fork", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseForkReq)
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, databaseForkReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	database := new(databaseBase)
-	if err = i.client.DoWithContext(ctx, req, database); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, database)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return database.Database, nil
+	return database.Database, resp, nil
 }
 
 // List all connection pools within your PostgreSQL Managed Database.
-func (i *DatabaseServiceHandler) ListConnectionPools(ctx context.Context, databaseID string) (*DatabaseConnections, []DatabaseConnectionPool, *Meta, error) {
+func (d *DatabaseServiceHandler) ListConnectionPools(ctx context.Context, databaseID string) (*DatabaseConnections, []DatabaseConnectionPool, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/connection-pools", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 
 	databaseConnectionPools := new(databaseConnectionPoolsBase)
-	if err = i.client.DoWithContext(ctx, req, databaseConnectionPools); err != nil {
-		return nil, nil, nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseConnectionPools)
+	if err != nil {
+		return nil, nil, nil, nil, err
 	}
 
-	return databaseConnectionPools.Connections, databaseConnectionPools.ConnectionPools, databaseConnectionPools.Meta, nil
+	return databaseConnectionPools.Connections, databaseConnectionPools.ConnectionPools, databaseConnectionPools.Meta, resp, nil
 }
 
 // Create a connection pool within the PostgreSQL Managed Database with the given parameters
-func (i *DatabaseServiceHandler) CreateConnectionPool(ctx context.Context, databaseID string, databaseConnectionPoolReq *DatabaseConnectionPoolCreateReq) (*DatabaseConnectionPool, error) {
+func (d *DatabaseServiceHandler) CreateConnectionPool(ctx context.Context, databaseID string, databaseConnectionPoolReq *DatabaseConnectionPoolCreateReq) (*DatabaseConnectionPool, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/connection-pools", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseConnectionPoolReq)
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, databaseConnectionPoolReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	databaseConnectionPool := new(databaseConnectionPoolBase)
-	if err = i.client.DoWithContext(ctx, req, databaseConnectionPool); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseConnectionPool)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return databaseConnectionPool.ConnectionPool, nil
+	return databaseConnectionPool.ConnectionPool, resp, nil
 }
 
 // Get information on an individual connection pool within a PostgreSQL Managed Database based on a poolName and databaseID
-func (i *DatabaseServiceHandler) GetConnectionPool(ctx context.Context, databaseID string, poolName string) (*DatabaseConnectionPool, error) {
+func (d *DatabaseServiceHandler) GetConnectionPool(ctx context.Context, databaseID string, poolName string) (*DatabaseConnectionPool, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/connection-pools/%s", databasePath, databaseID, poolName)
 
-	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	databaseConnectionPool := new(databaseConnectionPoolBase)
-	if err = i.client.DoWithContext(ctx, req, databaseConnectionPool); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseConnectionPool)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return databaseConnectionPool.ConnectionPool, nil
+	return databaseConnectionPool.ConnectionPool, resp, nil
 }
 
 // Update a connection pool within the PostgreSQL Managed Database with the given parameters
-func (i *DatabaseServiceHandler) UpdateConnectionPool(ctx context.Context, databaseID string, poolName string, databaseConnectionPoolReq *DatabaseConnectionPoolUpdateReq) (*DatabaseConnectionPool, error) {
+func (d *DatabaseServiceHandler) UpdateConnectionPool(ctx context.Context, databaseID string, poolName string, databaseConnectionPoolReq *DatabaseConnectionPoolUpdateReq) (*DatabaseConnectionPool, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/connection-pools/%s", databasePath, databaseID, poolName)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPut, uri, databaseConnectionPoolReq)
+	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseConnectionPoolReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	databaseConnectionPool := new(databaseConnectionPoolBase)
-	if err := i.client.DoWithContext(ctx, req, databaseConnectionPool); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseConnectionPool)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return databaseConnectionPool.ConnectionPool, nil
+	return databaseConnectionPool.ConnectionPool, resp, nil
 }
 
 // Delete a user within the Managed database. All data will be permanently lost.
-func (i *DatabaseServiceHandler) DeleteConnectionPool(ctx context.Context, databaseID string, poolName string) error {
+func (d *DatabaseServiceHandler) DeleteConnectionPool(ctx context.Context, databaseID string, poolName string) error {
 	uri := fmt.Sprintf("%s/%s/connection-pools/%s", databasePath, databaseID, poolName)
 
-	req, err := i.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return err
 	}
 
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // List all connection pools within your PostgreSQL Managed Database.
-func (i *DatabaseServiceHandler) ListAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseAdvancedOptions, []AvailableOption, error) {
+func (d *DatabaseServiceHandler) ListAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseAdvancedOptions, []AvailableOption, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/advanced-options", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	databaseAdvancedOptions := new(databaseAdvancedOptionsBase)
-	if err = i.client.DoWithContext(ctx, req, databaseAdvancedOptions); err != nil {
-		return nil, nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseAdvancedOptions)
+	if err != nil {
+		return nil, nil, nil, err
 	}
 
-	return databaseAdvancedOptions.ConfiguredOptions, databaseAdvancedOptions.AvailableOptions, nil
+	return databaseAdvancedOptions.ConfiguredOptions, databaseAdvancedOptions.AvailableOptions, resp, nil
 }
 
 // Update a connection pool within the PostgreSQL Managed Database with the given parameters
-func (i *DatabaseServiceHandler) UpdateAdvancedOptions(ctx context.Context, databaseID string, databaseAdvancedOptionsReq *DatabaseAdvancedOptions) (*DatabaseAdvancedOptions, []AvailableOption, error) {
+func (d *DatabaseServiceHandler) UpdateAdvancedOptions(ctx context.Context, databaseID string, databaseAdvancedOptionsReq *DatabaseAdvancedOptions) (*DatabaseAdvancedOptions, []AvailableOption, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/advanced-options", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPut, uri, databaseAdvancedOptionsReq)
+	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseAdvancedOptionsReq)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	databaseAdvancedOptions := new(databaseAdvancedOptionsBase)
-	if err := i.client.DoWithContext(ctx, req, databaseAdvancedOptions); err != nil {
-		return nil, nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseAdvancedOptions)
+	if err != nil {
+		return nil, nil, nil, err
 	}
 
-	return databaseAdvancedOptions.ConfiguredOptions, databaseAdvancedOptions.AvailableOptions, nil
+	return databaseAdvancedOptions.ConfiguredOptions, databaseAdvancedOptions.AvailableOptions, resp, nil
 }
 
 // List all available version upgrades for your Managed Database.
-func (i *DatabaseServiceHandler) ListAvailableVersions(ctx context.Context, databaseID string) ([]string, error) {
+func (d *DatabaseServiceHandler) ListAvailableVersions(ctx context.Context, databaseID string) ([]string, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/version-upgrade", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	databaseVersions := new(DatabaseAvailableVersions)
-	if err = i.client.DoWithContext(ctx, req, databaseVersions); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, databaseVersions)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return databaseVersions.AvailableVersions, nil
+	return databaseVersions.AvailableVersions, resp, nil
 }
 
 // Start a migration for the Managed Database using the given credentials.
-func (i *DatabaseServiceHandler) StartVersionUpgrade(ctx context.Context, databaseID string, databaseVersionUpgradeReq *DatabaseVersionUpgradeReq) (string, error) {
+func (d *DatabaseServiceHandler) StartVersionUpgrade(ctx context.Context, databaseID string, databaseVersionUpgradeReq *DatabaseVersionUpgradeReq) (string, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/version-upgrade", databasePath, databaseID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, databaseVersionUpgradeReq)
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, databaseVersionUpgradeReq)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
 	databaseVersionUpgrade := new(databaseMessage)
-	if err = i.client.DoWithContext(ctx, req, databaseVersionUpgrade); err != nil {
-		return "", err
+	resp, err := d.client.DoWithContext(ctx, req, databaseVersionUpgrade)
+	if err != nil {
+		return "", nil, err
 	}
 
-	return databaseVersionUpgrade.Message, nil
+	return databaseVersionUpgrade.Message, resp, nil
 }

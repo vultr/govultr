@@ -94,7 +94,7 @@ func TestDatabaseServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	database, meta, err := client.Database.List(ctx, nil)
+	database, meta, _, err := client.Database.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Database.List returned %+v", err)
 	}
@@ -238,7 +238,7 @@ func TestDatabaseServiceHandler_Create(t *testing.T) {
 		Label:                 "testy-mc-testerton-the-8th",
 	}
 
-	database, err := client.Database.Create(ctx, options)
+	database, _, err := client.Database.Create(ctx, options)
 	if err != nil {
 		t.Errorf("Database.Create returned %+v", err)
 	}
@@ -369,7 +369,7 @@ func TestDatabaseServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	database, err := client.Database.Get(ctx, "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5")
+	database, _, err := client.Database.Get(ctx, "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5")
 	if err != nil {
 		t.Errorf("Database.Get returned %+v", err)
 	}
@@ -540,7 +540,7 @@ func TestDatabaseServiceHandler_Update(t *testing.T) {
 		MySQLLongQueryTime: 2,
 	}
 
-	database, err := client.Database.Update(ctx, "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5", options)
+	database, _, err := client.Database.Update(ctx, "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5", options)
 	if err != nil {
 		t.Errorf("Database.Update returned %+v", err)
 	}
