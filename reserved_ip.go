@@ -13,13 +13,13 @@ const ripPath = "/v2/reserved-ips"
 // ReservedIPService is the interface to interact with the reserved IP endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/reserved-ip
 type ReservedIPService interface {
-	Create(ctx context.Context, ripCreate *ReservedIPReq) (*ReservedIP, error)
-	Update(ctx context.Context, id string, ripUpdate *ReservedIPUpdateReq) (*ReservedIP, error)
-	Get(ctx context.Context, id string) (*ReservedIP, error)
+	Create(ctx context.Context, ripCreate *ReservedIPReq) (*ReservedIP, *http.Response, error)
+	Update(ctx context.Context, id string, ripUpdate *ReservedIPUpdateReq) (*ReservedIP, *http.Response, error)
+	Get(ctx context.Context, id string) (*ReservedIP, *http.Response, error)
 	Delete(ctx context.Context, id string) error
-	List(ctx context.Context, options *ListOptions) ([]ReservedIP, *Meta, error)
+	List(ctx context.Context, options *ListOptions) ([]ReservedIP, *Meta, *http.Response, error)
 
-	Convert(ctx context.Context, ripConvert *ReservedIPConvertReq) (*ReservedIP, error)
+	Convert(ctx context.Context, ripConvert *ReservedIPConvertReq) (*ReservedIP, *http.Response, error)
 	Attach(ctx context.Context, id, instance string) error
 	Detach(ctx context.Context, id string) error
 }
@@ -70,50 +70,53 @@ type ReservedIPConvertReq struct {
 }
 
 // Create adds the specified reserved IP to your Vultr account
-func (r *ReservedIPServiceHandler) Create(ctx context.Context, ripCreate *ReservedIPReq) (*ReservedIP, error) {
+func (r *ReservedIPServiceHandler) Create(ctx context.Context, ripCreate *ReservedIPReq) (*ReservedIP, *http.Response, error) {
 	req, err := r.client.NewRequest(ctx, http.MethodPost, ripPath, ripCreate)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	rip := new(reservedIPBase)
-	if err = r.client.DoWithContext(ctx, req, rip); err != nil {
-		return nil, err
+	resp, err := r.client.DoWithContext(ctx, req, rip)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return rip.ReservedIP, nil
+	return rip.ReservedIP, resp, nil
 }
 
 // Update updates label on the Reserved IP
-func (r *ReservedIPServiceHandler) Update(ctx context.Context, id string, ripUpdate *ReservedIPUpdateReq) (*ReservedIP, error) {
+func (r *ReservedIPServiceHandler) Update(ctx context.Context, id string, ripUpdate *ReservedIPUpdateReq) (*ReservedIP, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s", ripPath, id)
 	req, err := r.client.NewRequest(ctx, http.MethodPatch, uri, ripUpdate)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	rip := new(reservedIPBase)
-	if err = r.client.DoWithContext(ctx, req, rip); err != nil {
-		return nil, err
+	resp, err := r.client.DoWithContext(ctx, req, rip)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return rip.ReservedIP, nil
+	return rip.ReservedIP, resp, nil
 }
 
 // Get gets the reserved IP associated with provided ID
-func (r *ReservedIPServiceHandler) Get(ctx context.Context, id string) (*ReservedIP, error) {
+func (r *ReservedIPServiceHandler) Get(ctx context.Context, id string) (*ReservedIP, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s", ripPath, id)
 	req, err := r.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	rip := new(reservedIPBase)
-	if err = r.client.DoWithContext(ctx, req, rip); err != nil {
-		return nil, err
+	resp, err := r.client.DoWithContext(ctx, req, rip)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return rip.ReservedIP, nil
+	return rip.ReservedIP, resp, nil
 }
 
 // Delete removes the specified reserved IP from your Vultr account
@@ -124,46 +127,49 @@ func (r *ReservedIPServiceHandler) Delete(ctx context.Context, id string) error 
 		return err
 	}
 
-	return r.client.DoWithContext(ctx, req, nil)
+	_, err = r.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // List lists all the reserved IPs associated with your Vultr account
-func (r *ReservedIPServiceHandler) List(ctx context.Context, options *ListOptions) ([]ReservedIP, *Meta, error) {
+func (r *ReservedIPServiceHandler) List(ctx context.Context, options *ListOptions) ([]ReservedIP, *Meta, *http.Response, error) {
 	req, err := r.client.NewRequest(ctx, http.MethodGet, ripPath, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	ips := new(reservedIPsBase)
-	if err = r.client.DoWithContext(ctx, req, ips); err != nil {
-		return nil, nil, err
+	resp, err := r.client.DoWithContext(ctx, req, ips)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return ips.ReservedIPs, ips.Meta, nil
+	return ips.ReservedIPs, ips.Meta, resp, nil
 }
 
 // Convert an existing IP on a subscription to a reserved IP.
-func (r *ReservedIPServiceHandler) Convert(ctx context.Context, ripConvert *ReservedIPConvertReq) (*ReservedIP, error) {
+func (r *ReservedIPServiceHandler) Convert(ctx context.Context, ripConvert *ReservedIPConvertReq) (*ReservedIP, *http.Response, error) {
 	uri := fmt.Sprintf("%s/convert", ripPath)
 	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, ripConvert)
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	rip := new(reservedIPBase)
-	if err = r.client.DoWithContext(ctx, req, rip); err != nil {
-		return nil, err
+	resp, err := r.client.DoWithContext(ctx, req, rip)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return rip.ReservedIP, nil
+	return rip.ReservedIP, resp, nil
 }
 
 // Attach a reserved IP to an existing subscription
@@ -174,8 +180,8 @@ func (r *ReservedIPServiceHandler) Attach(ctx context.Context, id, instance stri
 	if err != nil {
 		return err
 	}
-
-	return r.client.DoWithContext(ctx, req, nil)
+	_, err = r.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Detach a reserved IP from an existing subscription.
@@ -185,6 +191,6 @@ func (r *ReservedIPServiceHandler) Detach(ctx context.Context, id string) error 
 	if err != nil {
 		return err
 	}
-
-	return r.client.DoWithContext(ctx, req, nil)
+	_, err = r.client.DoWithContext(ctx, req, nil)
+	return err
 }

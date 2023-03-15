@@ -11,11 +11,11 @@ import (
 // BlockStorageService is the interface to interact with Block-Storage endpoint on the Vultr API
 // Link : https://www.vultr.com/api/#tag/block
 type BlockStorageService interface {
-	Create(ctx context.Context, blockReq *BlockStorageCreate) (*BlockStorage, error)
-	Get(ctx context.Context, blockID string) (*BlockStorage, error)
+	Create(ctx context.Context, blockReq *BlockStorageCreate) (*BlockStorage, *http.Response, error)
+	Get(ctx context.Context, blockID string) (*BlockStorage, *http.Response, error)
 	Update(ctx context.Context, blockID string, blockReq *BlockStorageUpdate) error
 	Delete(ctx context.Context, blockID string) error
-	List(ctx context.Context, options *ListOptions) ([]BlockStorage, *Meta, error)
+	List(ctx context.Context, options *ListOptions) ([]BlockStorage, *Meta, *http.Response, error)
 
 	Attach(ctx context.Context, blockID string, attach *BlockStorageAttach) error
 	Detach(ctx context.Context, blockID string, detach *BlockStorageDetach) error
@@ -75,37 +75,39 @@ type blockStorageBase struct {
 }
 
 // Create builds out a block storage
-func (b *BlockStorageServiceHandler) Create(ctx context.Context, blockReq *BlockStorageCreate) (*BlockStorage, error) {
+func (b *BlockStorageServiceHandler) Create(ctx context.Context, blockReq *BlockStorageCreate) (*BlockStorage, *http.Response, error) {
 	uri := "/v2/blocks"
 
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, blockReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	block := new(blockStorageBase)
-	if err = b.client.DoWithContext(ctx, req, block); err != nil {
-		return nil, err
+	resp, err := b.client.DoWithContext(ctx, req, block)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return block.Block, nil
+	return block.Block, resp, nil
 }
 
 // Get returns a single block storage instance based ony our blockID you provide from your Vultr Account
-func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID string) (*BlockStorage, error) {
+func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID string) (*BlockStorage, *http.Response, error) {
 	uri := fmt.Sprintf("/v2/blocks/%s", blockID)
 
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	block := new(blockStorageBase)
-	if err = b.client.DoWithContext(ctx, req, block); err != nil {
-		return nil, err
+	resp, err := b.client.DoWithContext(ctx, req, block)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return block.Block, nil
+	return block.Block, resp, nil
 }
 
 // Update a block storage subscription.
@@ -116,8 +118,8 @@ func (b *BlockStorageServiceHandler) Update(ctx context.Context, blockID string,
 	if err != nil {
 		return err
 	}
-
-	return b.client.DoWithContext(ctx, req, nil)
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Delete a block storage subscription from your Vultr account
@@ -128,32 +130,33 @@ func (b *BlockStorageServiceHandler) Delete(ctx context.Context, blockID string)
 	if err != nil {
 		return err
 	}
-
-	return b.client.DoWithContext(ctx, req, nil)
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // List returns a list of all block storage instances on your Vultr Account
-func (b *BlockStorageServiceHandler) List(ctx context.Context, options *ListOptions) ([]BlockStorage, *Meta, error) {
+func (b *BlockStorageServiceHandler) List(ctx context.Context, options *ListOptions) ([]BlockStorage, *Meta, *http.Response, error) {
 	uri := "/v2/blocks"
 
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	blocks := new(blockStoragesBase)
-	if err = b.client.DoWithContext(ctx, req, blocks); err != nil {
-		return nil, nil, err
+	resp, err := b.client.DoWithContext(ctx, req, blocks)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return blocks.Blocks, blocks.Meta, nil
+	return blocks.Blocks, blocks.Meta, resp, nil
 }
 
 // Attach will link a given block storage to a given Vultr instance
@@ -165,8 +168,8 @@ func (b *BlockStorageServiceHandler) Attach(ctx context.Context, blockID string,
 	if err != nil {
 		return err
 	}
-
-	return b.client.DoWithContext(ctx, req, nil)
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Detach will de-link a given block storage to the Vultr instance it is attached to
@@ -178,6 +181,6 @@ func (b *BlockStorageServiceHandler) Detach(ctx context.Context, blockID string,
 	if err != nil {
 		return err
 	}
-
-	return b.client.DoWithContext(ctx, req, nil)
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
 }

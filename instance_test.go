@@ -17,7 +17,7 @@ func TestServerServiceHandler_GetBackupSchedule(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	backup, err := client.Instance.GetBackupSchedule(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
+	backup, _, err := client.Instance.GetBackupSchedule(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
 	if err != nil {
 		t.Errorf("Instance.GetBackupSchedule returned %+v, ", err)
 	}
@@ -52,7 +52,7 @@ func TestServerServiceHandler_SetBackupSchedule(t *testing.T) {
 		Dom:  3,
 	}
 
-	if err := client.Instance.SetBackupSchedule(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", bs); err != nil {
+	if _, err := client.Instance.SetBackupSchedule(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", bs); err != nil {
 		t.Errorf("Instance.SetBackupSchedule returned %+v, ", err)
 	}
 }
@@ -69,7 +69,7 @@ func TestServerServiceHandler_RestoreBackup(t *testing.T) {
 		BackupID: "14b3e7d6-ffb5-4994-8502-57fcd9db3b33",
 	}
 
-	if err := client.Instance.Restore(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", restoreReq); err != nil {
+	if _, err := client.Instance.Restore(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", restoreReq); err != nil {
 		t.Errorf("Instance.Restore returned %+v, ", err)
 	}
 }
@@ -91,7 +91,7 @@ func TestServerServiceHandler_RestoreSnapshot(t *testing.T) {
 		SnapshotID: "14b3e7d6-ffb5-4994-8502-57fcd9db3b33",
 	}
 
-	if err := client.Instance.Restore(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", restoreReq); err != nil {
+	if _, err := client.Instance.Restore(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", restoreReq); err != nil {
 		t.Errorf("Instance.Restore returned %+v, ", err)
 	}
 }
@@ -105,7 +105,7 @@ func TestServerServiceHandler_Neighbors(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	neighbors, err := client.Instance.GetNeighbors(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
+	neighbors, _, err := client.Instance.GetNeighbors(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
 	if err != nil {
 		t.Errorf("Instance.Neighbors returned %+v, ", err)
 	}
@@ -132,7 +132,7 @@ func TestServerServiceHandler_ListPrivateNetworks(t *testing.T) {
 		PerPage: 1,
 		Cursor:  "",
 	}
-	privateNetwork, meta, err := client.Instance.ListPrivateNetworks(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", options)
+	privateNetwork, meta, _, err := client.Instance.ListPrivateNetworks(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", options)
 	if err != nil {
 		t.Errorf("Instance.ListPrivateNetworks return %+v, ", err)
 	}
@@ -175,7 +175,7 @@ func TestServerServiceHandler_ListVPCInfo(t *testing.T) {
 		PerPage: 1,
 		Cursor:  "",
 	}
-	vpc, meta, err := client.Instance.ListVPCInfo(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", options)
+	vpc, meta, _, err := client.Instance.ListVPCInfo(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", options)
 	if err != nil {
 		t.Errorf("Instance.ListVPCInfo returned %+v, ", err)
 	}
@@ -214,7 +214,7 @@ func TestServerServiceHandler_GetUserData(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	userData, err := client.Instance.GetUserData(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
+	userData, _, err := client.Instance.GetUserData(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
 	if err != nil {
 		t.Errorf("Instance.GetUserData return %+v ", err)
 	}
@@ -235,7 +235,7 @@ func TestServerServiceHandler_ListIPv4(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	ipv4, meta, err := client.Instance.ListIPv4(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", nil)
+	ipv4, meta, _, err := client.Instance.ListIPv4(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", nil)
 
 	if err != nil {
 		t.Errorf("Instance.ListIPv4 returned %+v", err)
@@ -277,7 +277,7 @@ func TestServerServiceHandler_ListIPv6(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	ipv6, meta, err := client.Instance.ListIPv6(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", nil)
+	ipv6, meta, _, err := client.Instance.ListIPv6(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", nil)
 	if err != nil {
 		t.Errorf("Instance.ListIPv6 returned %+v", err)
 	}
@@ -317,7 +317,7 @@ func TestServerServiceHandler_CreateIPv4(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	ipv4, err := client.Instance.CreateIPv4(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", BoolToBoolPtr(false))
+	ipv4, _, err := client.Instance.CreateIPv4(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", BoolToBoolPtr(false))
 	if err != nil {
 		t.Errorf("Instance.CreateIPv4 returned %+v", err)
 	}
@@ -368,7 +368,7 @@ func TestServerServiceHandler_GetBandwidth(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	bandwidth, err := client.Instance.GetBandwidth(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
+	bandwidth, _, err := client.Instance.GetBandwidth(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
 	if err != nil {
 		t.Errorf("Instance.GetBandwidth returned %+v", err)
 	}
@@ -399,7 +399,7 @@ func TestServerServiceHandler_ListReverseIPv6(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	reverseIPV6, err := client.Instance.ListReverseIPv6(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
+	reverseIPV6, _, err := client.Instance.ListReverseIPv6(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
 
 	if err != nil {
 		t.Errorf("Instance.ListReverseIPv6 returned error: %v", err)
@@ -558,7 +558,7 @@ func TestServerServiceHandler_Reinstall(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	instanceRes, err := client.Instance.Reinstall(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", nil)
+	instanceRes, _, err := client.Instance.Reinstall(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", nil)
 	if err != nil {
 		t.Errorf("Instance.Reinstall returned %+v", err)
 	}
@@ -673,7 +673,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 		AppID:           1,
 	}
 
-	server, err := client.Instance.Create(ctx, options)
+	server, _, err := client.Instance.Create(ctx, options)
 	if err != nil {
 		t.Errorf("Instance.Create returned %+v", err)
 	}
@@ -763,7 +763,7 @@ func TestServerServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	server, meta, err := client.Instance.List(ctx, nil)
+	server, meta, _, err := client.Instance.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Instance.List returned %+v", err)
 	}
@@ -860,7 +860,7 @@ func TestServerServiceHandler_GetServer(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	server, err := client.Instance.Get(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
+	server, _, err := client.Instance.Get(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
 	if err != nil {
 		t.Errorf("Instance.GetServer returned %+v", err)
 	}
@@ -933,7 +933,7 @@ func TestInstanceServiceHandler_GetUpgrades(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	server, err := client.Instance.GetUpgrades(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
+	server, _, err := client.Instance.GetUpgrades(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
 	if err != nil {
 		t.Errorf("Instance.GetUpgrades returned %+v", err)
 	}
@@ -1064,7 +1064,7 @@ func TestServerServiceHandler_ISOAttach(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	if err := client.Instance.AttachISO(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", "14b3e7d6-ffb5-4994-8502-57fcd9db3b33"); err != nil {
+	if _, err := client.Instance.AttachISO(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", "14b3e7d6-ffb5-4994-8502-57fcd9db3b33"); err != nil {
 		t.Errorf("Instance.AttachISO returned %+v", err)
 	}
 }
@@ -1077,7 +1077,7 @@ func TestServerServiceHandler_ISODetach(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	if err := client.Instance.DetachISO(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33"); err != nil {
+	if _, err := client.Instance.DetachISO(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33"); err != nil {
 		t.Errorf("Instance.DetachISO returned %+v", err)
 	}
 }
@@ -1090,7 +1090,7 @@ func TestServerServiceHandler_ISO(t *testing.T) {
 		fmt.Fprint(writer, ret)
 	})
 
-	iso, err := client.Instance.ISOStatus(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
+	iso, _, err := client.Instance.ISOStatus(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
 	if err != nil {
 		t.Errorf("Instance.ISOStatus returned %+v", err)
 	}
@@ -1157,7 +1157,7 @@ func TestServerServiceHandler_Update(t *testing.T) {
 		AppID:           1,
 	}
 
-	server, err := client.Instance.Update(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", options)
+	server, _, err := client.Instance.Update(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", options)
 	if err != nil {
 		t.Errorf("Instance.Update returned %+v", err)
 	}
@@ -1258,7 +1258,7 @@ func TestServerServiceHandler_CreateMarketplace(t *testing.T) {
 		ImageID:         "test",
 	}
 
-	server, err := client.Instance.Create(ctx, options)
+	server, _, err := client.Instance.Create(ctx, options)
 	if err != nil {
 		t.Errorf("Instance.Create returned %+v", err)
 	}

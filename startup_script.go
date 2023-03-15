@@ -13,11 +13,11 @@ const scriptPath = "/v2/startup-scripts"
 // StartupScriptService is the interface to interact with the startup script endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/startup
 type StartupScriptService interface {
-	Create(ctx context.Context, req *StartupScriptReq) (*StartupScript, error)
-	Get(ctx context.Context, scriptID string) (*StartupScript, error)
+	Create(ctx context.Context, req *StartupScriptReq) (*StartupScript, *http.Response, error)
+	Get(ctx context.Context, scriptID string) (*StartupScript, *http.Response, error)
 	Update(ctx context.Context, scriptID string, scriptReq *StartupScriptReq) error
 	Delete(ctx context.Context, scriptID string) error
-	List(ctx context.Context, options *ListOptions) ([]StartupScript, *Meta, error)
+	List(ctx context.Context, options *ListOptions) ([]StartupScript, *Meta, *http.Response, error)
 }
 
 // StartupScriptServiceHandler handles interaction with the startup script methods for the Vultr API
@@ -54,35 +54,37 @@ type startupScriptBase struct {
 var _ StartupScriptService = &StartupScriptServiceHandler{}
 
 // Create a startup script
-func (s *StartupScriptServiceHandler) Create(ctx context.Context, scriptReq *StartupScriptReq) (*StartupScript, error) {
+func (s *StartupScriptServiceHandler) Create(ctx context.Context, scriptReq *StartupScriptReq) (*StartupScript, *http.Response, error) {
 	req, err := s.client.NewRequest(ctx, http.MethodPost, scriptPath, scriptReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	script := new(startupScriptBase)
-	if err = s.client.DoWithContext(ctx, req, script); err != nil {
-		return nil, err
+	resp, err := s.client.DoWithContext(ctx, req, script)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return script.StartupScript, nil
+	return script.StartupScript, resp, nil
 }
 
 // Get a single startup script
-func (s *StartupScriptServiceHandler) Get(ctx context.Context, scriptID string) (*StartupScript, error) {
+func (s *StartupScriptServiceHandler) Get(ctx context.Context, scriptID string) (*StartupScript, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s", scriptPath, scriptID)
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	script := new(startupScriptBase)
-	if err = s.client.DoWithContext(ctx, req, script); err != nil {
-		return nil, err
+	resp, err := s.client.DoWithContext(ctx, req, script)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return script.StartupScript, nil
+	return script.StartupScript, resp, nil
 }
 
 // Update will update the given startup script. Empty strings will be ignored.
@@ -94,7 +96,8 @@ func (s *StartupScriptServiceHandler) Update(ctx context.Context, scriptID strin
 		return err
 	}
 
-	return s.client.DoWithContext(ctx, req, nil)
+	_, err = s.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Delete the specified startup script from your account.
@@ -106,26 +109,28 @@ func (s *StartupScriptServiceHandler) Delete(ctx context.Context, scriptID strin
 		return err
 	}
 
-	return s.client.DoWithContext(ctx, req, nil)
+	_, err = s.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // List all the startup scripts associated with your Vultr account
-func (s *StartupScriptServiceHandler) List(ctx context.Context, options *ListOptions) ([]StartupScript, *Meta, error) {
+func (s *StartupScriptServiceHandler) List(ctx context.Context, options *ListOptions) ([]StartupScript, *Meta, *http.Response, error) {
 	req, err := s.client.NewRequest(ctx, http.MethodGet, scriptPath, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	req.URL.RawQuery = newValues.Encode()
 
 	scripts := new(startupScriptsBase)
-	if err = s.client.DoWithContext(ctx, req, scripts); err != nil {
-		return nil, nil, err
+	resp, err := s.client.DoWithContext(ctx, req, scripts)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return scripts.StartupScripts, scripts.Meta, nil
+	return scripts.StartupScripts, scripts.Meta, resp, nil
 }

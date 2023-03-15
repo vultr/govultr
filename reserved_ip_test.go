@@ -47,7 +47,7 @@ func TestReservedIPServiceHandler_Convert(t *testing.T) {
 		IPAddress: "111.111.111.111",
 		Label:     "my first reserved ip",
 	}
-	ip, err := client.ReservedIP.Convert(ctx, options)
+	ip, _, err := client.ReservedIP.Convert(ctx, options)
 
 	if err != nil {
 		t.Errorf("ReservedIP.Convert returned %+v, expected %+v", err, nil)
@@ -95,7 +95,7 @@ func TestReservedIPServiceHandler_Create(t *testing.T) {
 		Region: "ewr",
 	}
 
-	ip, err := client.ReservedIP.Create(ctx, options)
+	ip, _, err := client.ReservedIP.Create(ctx, options)
 	if err != nil {
 		t.Errorf("ReservedIP.Create returned %+v, expected %+v", err, nil)
 	}
@@ -140,7 +140,7 @@ func TestReservedIPServiceHandler_Update(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	ip, err := client.ReservedIP.Update(ctx, "12345", options)
+	ip, _, err := client.ReservedIP.Update(ctx, "12345", options)
 
 	expected := &ReservedIP{
 		ID:         "12345",
@@ -212,7 +212,7 @@ func TestReservedIPServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	ip, err := client.ReservedIP.Get(ctx, "1313044")
+	ip, _, err := client.ReservedIP.Get(ctx, "1313044")
 
 	if err != nil {
 		t.Errorf("ReservedIP.Get returned error: %v", err)
@@ -254,7 +254,7 @@ func TestReservedIPServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	ips, _, err := client.ReservedIP.List(ctx, nil)
+	ips, _, _, err := client.ReservedIP.List(ctx, nil)
 
 	if err != nil {
 		t.Errorf("ReservedIP.List returned error: %v", err)

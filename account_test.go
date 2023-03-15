@@ -35,7 +35,7 @@ func TestAccountServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	account, err := client.Account.Get(ctx)
+	account, _, err := client.Account.Get(ctx)
 	if err != nil {
 		t.Errorf("Account.Get returned error: %v", err)
 	}

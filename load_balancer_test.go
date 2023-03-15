@@ -77,7 +77,7 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	list, meta, err := client.LoadBalancer.List(ctx, nil)
+	list, meta, _, err := client.LoadBalancer.List(ctx, nil)
 
 	if err != nil {
 		t.Errorf("LoadBalancer.List returned %+v", err)
@@ -224,7 +224,7 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	info, err := client.LoadBalancer.Get(ctx, "1317575")
+	info, _, err := client.LoadBalancer.Get(ctx, "1317575")
 
 	if err != nil {
 		t.Errorf("LoadBalancer.Get returned %+v", err)
@@ -310,7 +310,7 @@ func TestLoadBalancerHandler_ListForwardingRules(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	list, meta, err := client.LoadBalancer.ListForwardingRules(ctx, "12345", nil)
+	list, meta, _, err := client.LoadBalancer.ListForwardingRules(ctx, "12345", nil)
 
 	if err != nil {
 		t.Errorf("LoadBalancer.ListForwardingRules returned %+v", err)
@@ -382,7 +382,7 @@ func TestLoadBalancerHandler_CreateForwardingRule(t *testing.T) {
 		BackendPort:      80,
 	}
 
-	ruleID, err := client.LoadBalancer.CreateForwardingRule(ctx, "1317575", rule)
+	ruleID, _, err := client.LoadBalancer.CreateForwardingRule(ctx, "1317575", rule)
 	if err != nil {
 		t.Errorf("LoadBalancer.CreateForwardingRule returned %+v", err)
 	}
@@ -490,7 +490,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		},
 	}
 
-	lb, err := client.LoadBalancer.Create(ctx, lbCreate)
+	lb, _, err := client.LoadBalancer.Create(ctx, lbCreate)
 	if err != nil {
 		t.Errorf("LoadBalancer.Create returned %+v", err)
 	}
@@ -608,7 +608,7 @@ func TestLoadBalancerHandler_GetFowardingRule(t *testing.T) {
 		fmt.Fprint(writer, req)
 	})
 
-	rule, err := client.LoadBalancer.GetForwardingRule(ctx, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", "d42585eb85b1f69d")
+	rule, _, err := client.LoadBalancer.GetForwardingRule(ctx, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", "d42585eb85b1f69d")
 	if err != nil {
 		t.Errorf("LoadBalancer.GetForwardingRule returned %+v", err)
 	}
@@ -643,7 +643,7 @@ func TestLoadBalancerHandler_GetFirewallRule(t *testing.T) {
 		fmt.Fprint(writer, req)
 	})
 
-	rule, err := client.LoadBalancer.GetFirewallRule(ctx, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", "d42585eb85b1f69d")
+	rule, _, err := client.LoadBalancer.GetFirewallRule(ctx, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", "d42585eb85b1f69d")
 	if err != nil {
 		t.Errorf("LoadBalancer.GetFirewallRule returned %+v", err)
 	}

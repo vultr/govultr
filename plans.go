@@ -10,8 +10,8 @@ import (
 // PlanService is the interface to interact with the Plans endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/plans
 type PlanService interface {
-	List(ctx context.Context, planType string, options *ListOptions) ([]Plan, *Meta, error)
-	ListBareMetal(ctx context.Context, options *ListOptions) ([]BareMetalPlan, *Meta, error)
+	List(ctx context.Context, planType string, options *ListOptions) ([]Plan, *Meta, *http.Response, error)
+	ListBareMetal(ctx context.Context, options *ListOptions) ([]BareMetalPlan, *Meta, *http.Response, error)
 }
 
 // PlanServiceHandler handles interaction with the Plans methods for the Vultr API
@@ -61,17 +61,17 @@ type bareMetalPlansBase struct {
 
 // List retrieves a list of all active plans.
 // planType is optional - pass an empty string to get all plans
-func (p *PlanServiceHandler) List(ctx context.Context, planType string, options *ListOptions) ([]Plan, *Meta, error) {
+func (p *PlanServiceHandler) List(ctx context.Context, planType string, options *ListOptions) ([]Plan, *Meta, *http.Response, error) {
 	uri := "/v2/plans"
 
 	req, err := p.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	if planType != "" {
@@ -81,33 +81,35 @@ func (p *PlanServiceHandler) List(ctx context.Context, planType string, options 
 	req.URL.RawQuery = newValues.Encode()
 
 	plans := new(plansBase)
-	if err = p.client.DoWithContext(ctx, req, plans); err != nil {
-		return nil, nil, err
+	resp, err := p.client.DoWithContext(ctx, req, plans)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return plans.Plans, plans.Meta, nil
+	return plans.Plans, plans.Meta, resp, nil
 }
 
 // ListBareMetal all active bare metal plans.
-func (p *PlanServiceHandler) ListBareMetal(ctx context.Context, options *ListOptions) ([]BareMetalPlan, *Meta, error) {
+func (p *PlanServiceHandler) ListBareMetal(ctx context.Context, options *ListOptions) ([]BareMetalPlan, *Meta, *http.Response, error) {
 	uri := "/v2/plans-metal"
 
 	req, err := p.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	bmPlans := new(bareMetalPlansBase)
-	if err = p.client.DoWithContext(ctx, req, bmPlans); err != nil {
-		return nil, nil, err
+	resp, err := p.client.DoWithContext(ctx, req, bmPlans)
+	if err != nil {
+		return nil, nil, nil, err
 	}
 
-	return bmPlans.Plans, bmPlans.Meta, nil
+	return bmPlans.Plans, bmPlans.Meta, resp, nil
 }

@@ -13,59 +13,59 @@ const instancePath = "/v2/instances"
 // InstanceService is the interface to interact with the instance endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#tag/instances
 type InstanceService interface {
-	Create(ctx context.Context, instanceReq *InstanceCreateReq) (*Instance, error)
-	Get(ctx context.Context, instanceID string) (*Instance, error)
-	Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) (*Instance, error)
+	Create(ctx context.Context, instanceReq *InstanceCreateReq) (*Instance, *http.Response, error)
+	Get(ctx context.Context, instanceID string) (*Instance, *http.Response, error)
+	Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) (*Instance, *http.Response, error)
 	Delete(ctx context.Context, instanceID string) error
-	List(ctx context.Context, options *ListOptions) ([]Instance, *Meta, error)
+	List(ctx context.Context, options *ListOptions) ([]Instance, *Meta, *http.Response, error)
 
 	Start(ctx context.Context, instanceID string) error
 	Halt(ctx context.Context, instanceID string) error
 	Reboot(ctx context.Context, instanceID string) error
-	Reinstall(ctx context.Context, instanceID string, reinstallReq *ReinstallReq) (*Instance, error)
+	Reinstall(ctx context.Context, instanceID string, reinstallReq *ReinstallReq) (*Instance, *http.Response, error)
 
 	MassStart(ctx context.Context, instanceList []string) error
 	MassHalt(ctx context.Context, instanceList []string) error
 	MassReboot(ctx context.Context, instanceList []string) error
 
-	Restore(ctx context.Context, instanceID string, restoreReq *RestoreReq) error
+	Restore(ctx context.Context, instanceID string, restoreReq *RestoreReq) (*http.Response, error)
 
-	GetBandwidth(ctx context.Context, instanceID string) (*Bandwidth, error)
-	GetNeighbors(ctx context.Context, instanceID string) (*Neighbors, error)
+	GetBandwidth(ctx context.Context, instanceID string) (*Bandwidth, *http.Response, error)
+	GetNeighbors(ctx context.Context, instanceID string) (*Neighbors, *http.Response, error)
 
 	// Deprecated: ListPrivateNetworks should no longer be used. Instead, use ListVPCInfo.
-	ListPrivateNetworks(ctx context.Context, instanceID string, options *ListOptions) ([]PrivateNetwork, *Meta, error)
+	ListPrivateNetworks(ctx context.Context, instanceID string, options *ListOptions) ([]PrivateNetwork, *Meta, *http.Response, error)
 	// Deprecated: AttachPrivateNetwork should no longer be used. Instead, use AttachVPC.
 	AttachPrivateNetwork(ctx context.Context, instanceID, networkID string) error
 	// Deprecated: DetachPrivateNetwork should no longer be used. Instead, use DetachVPC.
 	DetachPrivateNetwork(ctx context.Context, instanceID, networkID string) error
 
-	ListVPCInfo(ctx context.Context, instanceID string, options *ListOptions) ([]VPCInfo, *Meta, error)
+	ListVPCInfo(ctx context.Context, instanceID string, options *ListOptions) ([]VPCInfo, *Meta, *http.Response, error)
 	AttachVPC(ctx context.Context, instanceID, vpcID string) error
 	DetachVPC(ctx context.Context, instanceID, vpcID string) error
 
-	ISOStatus(ctx context.Context, instanceID string) (*Iso, error)
-	AttachISO(ctx context.Context, instanceID, isoID string) error
-	DetachISO(ctx context.Context, instanceID string) error
+	ISOStatus(ctx context.Context, instanceID string) (*Iso, *http.Response, error)
+	AttachISO(ctx context.Context, instanceID, isoID string) (*http.Response, error)
+	DetachISO(ctx context.Context, instanceID string) (*http.Response, error)
 
-	GetBackupSchedule(ctx context.Context, instanceID string) (*BackupSchedule, error)
-	SetBackupSchedule(ctx context.Context, instanceID string, backup *BackupScheduleReq) error
+	GetBackupSchedule(ctx context.Context, instanceID string) (*BackupSchedule, *http.Response, error)
+	SetBackupSchedule(ctx context.Context, instanceID string, backup *BackupScheduleReq) (*http.Response, error)
 
-	CreateIPv4(ctx context.Context, instanceID string, reboot *bool) (*IPv4, error)
-	ListIPv4(ctx context.Context, instanceID string, option *ListOptions) ([]IPv4, *Meta, error)
+	CreateIPv4(ctx context.Context, instanceID string, reboot *bool) (*IPv4, *http.Response, error)
+	ListIPv4(ctx context.Context, instanceID string, option *ListOptions) ([]IPv4, *Meta, *http.Response, error)
 	DeleteIPv4(ctx context.Context, instanceID, ip string) error
-	ListIPv6(ctx context.Context, instanceID string, option *ListOptions) ([]IPv6, *Meta, error)
+	ListIPv6(ctx context.Context, instanceID string, option *ListOptions) ([]IPv6, *Meta, *http.Response, error)
 
 	CreateReverseIPv6(ctx context.Context, instanceID string, reverseReq *ReverseIP) error
-	ListReverseIPv6(ctx context.Context, instanceID string) ([]ReverseIP, error)
+	ListReverseIPv6(ctx context.Context, instanceID string) ([]ReverseIP, *http.Response, error)
 	DeleteReverseIPv6(ctx context.Context, instanceID, ip string) error
 
 	CreateReverseIPv4(ctx context.Context, instanceID string, reverseReq *ReverseIP) error
 	DefaultReverseIPv4(ctx context.Context, instanceID, ip string) error
 
-	GetUserData(ctx context.Context, instanceID string) (*UserData, error)
+	GetUserData(ctx context.Context, instanceID string) (*UserData, *http.Response, error)
 
-	GetUpgrades(ctx context.Context, instanceID string) (*Upgrades, error)
+	GetUpgrades(ctx context.Context, instanceID string) (*Upgrades, *http.Response, error)
 }
 
 // InstanceServiceHandler handles interaction with the server methods for the Vultr API
@@ -293,52 +293,55 @@ type ReinstallReq struct {
 }
 
 // Create will create the server with the given parameters
-func (i *InstanceServiceHandler) Create(ctx context.Context, instanceReq *InstanceCreateReq) (*Instance, error) {
+func (i *InstanceServiceHandler) Create(ctx context.Context, instanceReq *InstanceCreateReq) (*Instance, *http.Response, error) {
 	req, err := i.client.NewRequest(ctx, http.MethodPost, instancePath, instanceReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	instance := new(instanceBase)
-	if err = i.client.DoWithContext(ctx, req, instance); err != nil {
-		return nil, err
+	resp, err := i.client.DoWithContext(ctx, req, instance)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return instance.Instance, nil
+	return instance.Instance, resp, nil
 }
 
 // Get will get the server with the given instanceID
-func (i *InstanceServiceHandler) Get(ctx context.Context, instanceID string) (*Instance, error) {
+func (i *InstanceServiceHandler) Get(ctx context.Context, instanceID string) (*Instance, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s", instancePath, instanceID)
 
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	instance := new(instanceBase)
-	if err = i.client.DoWithContext(ctx, req, instance); err != nil {
-		return nil, err
+	resp, err := i.client.DoWithContext(ctx, req, instance)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return instance.Instance, nil
+	return instance.Instance, resp, nil
 }
 
 // Update will update the server with the given parameters
-func (i *InstanceServiceHandler) Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) (*Instance, error) {
+func (i *InstanceServiceHandler) Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) (*Instance, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s", instancePath, instanceID)
 
 	req, err := i.client.NewRequest(ctx, http.MethodPatch, uri, instanceReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	instance := new(instanceBase)
-	if err := i.client.DoWithContext(ctx, req, instance); err != nil {
-		return nil, err
+	resp, err := i.client.DoWithContext(ctx, req, instance)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return instance.Instance, nil
+	return instance.Instance, resp, nil
 }
 
 // Delete an instance. All data will be permanently lost, and the IP address will be released
@@ -350,29 +353,31 @@ func (i *InstanceServiceHandler) Delete(ctx context.Context, instanceID string) 
 		return err
 	}
 
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // List all instances on your account.
-func (i *InstanceServiceHandler) List(ctx context.Context, options *ListOptions) ([]Instance, *Meta, error) {
+func (i *InstanceServiceHandler) List(ctx context.Context, options *ListOptions) ([]Instance, *Meta, *http.Response, error) {
 	req, err := i.client.NewRequest(ctx, http.MethodGet, instancePath, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	instances := new(instancesBase)
-	if err = i.client.DoWithContext(ctx, req, instances); err != nil {
-		return nil, nil, err
+	resp, err := i.client.DoWithContext(ctx, req, instances)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return instances.Instances, instances.Meta, nil
+	return instances.Instances, instances.Meta, resp, nil
 }
 
 // Start will start a vps instance the machine is already running, it will be restarted.
@@ -383,8 +388,8 @@ func (i *InstanceServiceHandler) Start(ctx context.Context, instanceID string) e
 	if err != nil {
 		return err
 	}
-
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Halt will pause an instance.
@@ -395,8 +400,8 @@ func (i *InstanceServiceHandler) Halt(ctx context.Context, instanceID string) er
 	if err != nil {
 		return err
 	}
-
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Reboot an instance.
@@ -407,24 +412,25 @@ func (i *InstanceServiceHandler) Reboot(ctx context.Context, instanceID string) 
 	if err != nil {
 		return err
 	}
-
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Reinstall an instance.
-func (i *InstanceServiceHandler) Reinstall(ctx context.Context, instanceID string, reinstallReq *ReinstallReq) (*Instance, error) {
+func (i *InstanceServiceHandler) Reinstall(ctx context.Context, instanceID string, reinstallReq *ReinstallReq) (*Instance, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/reinstall", instancePath, instanceID)
 
 	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, reinstallReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	instance := new(instanceBase)
-	if err := i.client.DoWithContext(ctx, req, instance); err != nil {
-		return nil, err
+	resp, err := i.client.DoWithContext(ctx, req, instance)
+	if err != nil {
+		return nil, resp, err
 	}
-	return instance.Instance, nil
+	return instance.Instance, resp, nil
 }
 
 // MassStart will start a list of instances the machine is already running, it will be restarted.
@@ -436,8 +442,8 @@ func (i *InstanceServiceHandler) MassStart(ctx context.Context, instanceList []s
 	if err != nil {
 		return err
 	}
-
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // MassHalt will pause a list of instances.
@@ -449,8 +455,8 @@ func (i *InstanceServiceHandler) MassHalt(ctx context.Context, instanceList []st
 	if err != nil {
 		return err
 	}
-
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // MassReboot reboots a list of instances.
@@ -462,76 +468,79 @@ func (i *InstanceServiceHandler) MassReboot(ctx context.Context, instanceList []
 	if err != nil {
 		return err
 	}
-
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Restore an instance.
-func (i *InstanceServiceHandler) Restore(ctx context.Context, instanceID string, restoreReq *RestoreReq) error {
+func (i *InstanceServiceHandler) Restore(ctx context.Context, instanceID string, restoreReq *RestoreReq) (*http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/restore", instancePath, instanceID)
 
 	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, restoreReq)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	return i.client.DoWithContext(ctx, req, nil)
 }
 
 // GetBandwidth for a given instance.
-func (i *InstanceServiceHandler) GetBandwidth(ctx context.Context, instanceID string) (*Bandwidth, error) {
+func (i *InstanceServiceHandler) GetBandwidth(ctx context.Context, instanceID string) (*Bandwidth, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/bandwidth", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	bandwidth := new(Bandwidth)
-	if err = i.client.DoWithContext(ctx, req, bandwidth); err != nil {
-		return nil, err
+	resp, err := i.client.DoWithContext(ctx, req, bandwidth)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return bandwidth, nil
+	return bandwidth, resp, nil
 }
 
 // GetNeighbors gets a list of other instances in the same location as this Instance.
-func (i *InstanceServiceHandler) GetNeighbors(ctx context.Context, instanceID string) (*Neighbors, error) {
+func (i *InstanceServiceHandler) GetNeighbors(ctx context.Context, instanceID string) (*Neighbors, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/neighbors", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	neighbors := new(Neighbors)
-	if err = i.client.DoWithContext(ctx, req, neighbors); err != nil {
-		return nil, err
+	resp, err := i.client.DoWithContext(ctx, req, neighbors)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return neighbors, nil
+	return neighbors, resp, nil
 }
 
 // ListPrivateNetworks currently attached to an instance.
 // Deprecated: ListPrivateNetworks should no longer be used. Instead, use ListVPCInfo
-func (i *InstanceServiceHandler) ListPrivateNetworks(ctx context.Context, instanceID string, options *ListOptions) ([]PrivateNetwork, *Meta, error) {
+func (i *InstanceServiceHandler) ListPrivateNetworks(ctx context.Context, instanceID string, options *ListOptions) ([]PrivateNetwork, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/private-networks", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	networks := new(privateNetworksBase)
-	if err = i.client.DoWithContext(ctx, req, networks); err != nil {
-		return nil, nil, err
+	resp, err := i.client.DoWithContext(ctx, req, networks)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return networks.PrivateNetworks, networks.Meta, nil
+	return networks.PrivateNetworks, networks.Meta, resp, nil
 }
 
 // AttachPrivateNetwork to an instance
@@ -545,7 +554,8 @@ func (i *InstanceServiceHandler) AttachPrivateNetwork(ctx context.Context, insta
 		return err
 	}
 
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // DetachPrivateNetwork from an instance.
@@ -559,30 +569,32 @@ func (i *InstanceServiceHandler) DetachPrivateNetwork(ctx context.Context, insta
 		return err
 	}
 
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // ListVPCInfo currently attached to an instance.
-func (i *InstanceServiceHandler) ListVPCInfo(ctx context.Context, instanceID string, options *ListOptions) ([]VPCInfo, *Meta, error) {
+func (i *InstanceServiceHandler) ListVPCInfo(ctx context.Context, instanceID string, options *ListOptions) ([]VPCInfo, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/vpcs", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	vpcs := new(vpcInfoBase)
-	if err = i.client.DoWithContext(ctx, req, vpcs); err != nil {
-		return nil, nil, err
+	resp, err := i.client.DoWithContext(ctx, req, vpcs)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return vpcs.VPCs, vpcs.Meta, nil
+	return vpcs.VPCs, vpcs.Meta, resp, nil
 }
 
 // AttachVPC to an instance
@@ -595,7 +607,8 @@ func (i *InstanceServiceHandler) AttachVPC(ctx context.Context, instanceID, vpcI
 		return err
 	}
 
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // DetachVPC from an instance.
@@ -607,117 +620,121 @@ func (i *InstanceServiceHandler) DetachVPC(ctx context.Context, instanceID, vpcI
 	if err != nil {
 		return err
 	}
-
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // ISOStatus retrieves the current ISO state for a given VPS.
 // The returned state may be one of: ready | isomounting | isomounted.
-func (i *InstanceServiceHandler) ISOStatus(ctx context.Context, instanceID string) (*Iso, error) {
+func (i *InstanceServiceHandler) ISOStatus(ctx context.Context, instanceID string) (*Iso, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/iso", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	iso := new(isoStatusBase)
-	if err = i.client.DoWithContext(ctx, req, iso); err != nil {
-		return nil, err
+	resp, err := i.client.DoWithContext(ctx, req, iso)
+	if err != nil {
+		return nil, resp, err
 	}
-	return iso.IsoStatus, nil
+	return iso.IsoStatus, resp, nil
 }
 
 // AttachISO will attach an ISO to the given instance and reboot it
-func (i *InstanceServiceHandler) AttachISO(ctx context.Context, instanceID, isoID string) error {
+func (i *InstanceServiceHandler) AttachISO(ctx context.Context, instanceID, isoID string) (*http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/iso/attach", instancePath, instanceID)
 	body := RequestBody{"iso_id": isoID}
 
 	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	return i.client.DoWithContext(ctx, req, nil)
 }
 
 // DetachISO will detach the currently mounted ISO and reboot the instance.
-func (i *InstanceServiceHandler) DetachISO(ctx context.Context, instanceID string) error {
+func (i *InstanceServiceHandler) DetachISO(ctx context.Context, instanceID string) (*http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/iso/detach", instancePath, instanceID)
 
 	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	return i.client.DoWithContext(ctx, req, nil)
 }
 
 // GetBackupSchedule retrieves the backup schedule for a given instance - all time values are in UTC
-func (i *InstanceServiceHandler) GetBackupSchedule(ctx context.Context, instanceID string) (*BackupSchedule, error) {
+func (i *InstanceServiceHandler) GetBackupSchedule(ctx context.Context, instanceID string) (*BackupSchedule, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/backup-schedule", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	backup := new(backupScheduleBase)
-	if err = i.client.DoWithContext(ctx, req, backup); err != nil {
-		return nil, err
+	resp, err := i.client.DoWithContext(ctx, req, backup)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return backup.BackupSchedule, nil
+	return backup.BackupSchedule, resp, nil
 }
 
 // SetBackupSchedule sets the backup schedule for a given instance - all time values are in UTC.
-func (i *InstanceServiceHandler) SetBackupSchedule(ctx context.Context, instanceID string, backup *BackupScheduleReq) error {
+func (i *InstanceServiceHandler) SetBackupSchedule(ctx context.Context, instanceID string, backup *BackupScheduleReq) (*http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/backup-schedule", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, backup)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	return i.client.DoWithContext(ctx, req, nil)
 }
 
 // CreateIPv4 an additional IPv4 address for given instance.
-func (i *InstanceServiceHandler) CreateIPv4(ctx context.Context, instanceID string, reboot *bool) (*IPv4, error) {
+func (i *InstanceServiceHandler) CreateIPv4(ctx context.Context, instanceID string, reboot *bool) (*IPv4, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/ipv4", instancePath, instanceID)
 
 	body := RequestBody{"reboot": reboot}
 
 	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	ip := new(ipv4Base)
-	if err = i.client.DoWithContext(ctx, req, ip); err != nil {
-		return nil, err
+	resp, err := i.client.DoWithContext(ctx, req, ip)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return ip.IPv4, nil
+	return ip.IPv4, resp, nil
 }
 
 // ListIPv4 addresses that are currently assigned to a given instance.
-func (i *InstanceServiceHandler) ListIPv4(ctx context.Context, instanceID string, options *ListOptions) ([]IPv4, *Meta, error) {
+func (i *InstanceServiceHandler) ListIPv4(ctx context.Context, instanceID string, options *ListOptions) ([]IPv4, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/ipv4", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 	ips := new(ipBase)
-	if err = i.client.DoWithContext(ctx, req, ips); err != nil {
-		return nil, nil, err
+	resp, err := i.client.DoWithContext(ctx, req, ips)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return ips.IPv4s, ips.Meta, nil
+	return ips.IPv4s, ips.Meta, resp, nil
 }
 
 // DeleteIPv4 address from a given instance.
@@ -728,29 +745,31 @@ func (i *InstanceServiceHandler) DeleteIPv4(ctx context.Context, instanceID, ip 
 		return err
 	}
 
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // ListIPv6 addresses that are currently assigned to a given instance.
-func (i *InstanceServiceHandler) ListIPv6(ctx context.Context, instanceID string, options *ListOptions) ([]IPv6, *Meta, error) {
+func (i *InstanceServiceHandler) ListIPv6(ctx context.Context, instanceID string, options *ListOptions) ([]IPv6, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/ipv6", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 	ips := new(ipBase)
-	if err = i.client.DoWithContext(ctx, req, ips); err != nil {
-		return nil, nil, err
+	resp, err := i.client.DoWithContext(ctx, req, ips)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return ips.IPv6s, ips.Meta, nil
+	return ips.IPv6s, ips.Meta, resp, nil
 }
 
 // CreateReverseIPv6 for a given instance.
@@ -760,24 +779,25 @@ func (i *InstanceServiceHandler) CreateReverseIPv6(ctx context.Context, instance
 	if err != nil {
 		return err
 	}
-
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // ListReverseIPv6 currently assigned to a given instance.
-func (i *InstanceServiceHandler) ListReverseIPv6(ctx context.Context, instanceID string) ([]ReverseIP, error) {
+func (i *InstanceServiceHandler) ListReverseIPv6(ctx context.Context, instanceID string) ([]ReverseIP, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/ipv6/reverse", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	reverse := new(reverseIPv6sBase)
-	if err = i.client.DoWithContext(ctx, req, reverse); err != nil {
-		return nil, err
+	resp, err := i.client.DoWithContext(ctx, req, reverse)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return reverse.ReverseIPv6s, nil
+	return reverse.ReverseIPv6s, resp, nil
 }
 
 // DeleteReverseIPv6 a given reverse IPv6.
@@ -787,8 +807,8 @@ func (i *InstanceServiceHandler) DeleteReverseIPv6(ctx context.Context, instance
 	if err != nil {
 		return err
 	}
-
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // CreateReverseIPv4 for a given IP on a given instance.
@@ -798,8 +818,8 @@ func (i *InstanceServiceHandler) CreateReverseIPv4(ctx context.Context, instance
 	if err != nil {
 		return err
 	}
-
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // DefaultReverseIPv4 will set the IPs reverse setting back to the original one supplied by Vultr.
@@ -811,38 +831,40 @@ func (i *InstanceServiceHandler) DefaultReverseIPv4(ctx context.Context, instanc
 	if err != nil {
 		return err
 	}
-
-	return i.client.DoWithContext(ctx, req, nil)
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // GetUserData from given instance. The userdata returned will be in base64 encoding.
-func (i *InstanceServiceHandler) GetUserData(ctx context.Context, instanceID string) (*UserData, error) {
+func (i *InstanceServiceHandler) GetUserData(ctx context.Context, instanceID string) (*UserData, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/user-data", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	userData := new(userDataBase)
-	if err = i.client.DoWithContext(ctx, req, userData); err != nil {
-		return nil, err
+	resp, err := i.client.DoWithContext(ctx, req, userData)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return userData.UserData, nil
+	return userData.UserData, resp, nil
 }
 
 // GetUpgrades that are available for a given instance.
-func (i *InstanceServiceHandler) GetUpgrades(ctx context.Context, instanceID string) (*Upgrades, error) {
+func (i *InstanceServiceHandler) GetUpgrades(ctx context.Context, instanceID string) (*Upgrades, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/upgrades", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	upgrades := new(upgradeBase)
-	if err = i.client.DoWithContext(ctx, req, upgrades); err != nil {
-		return nil, err
+	resp, err := i.client.DoWithContext(ctx, req, upgrades)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return upgrades.Upgrades, nil
+	return upgrades.Upgrades, resp, nil
 }

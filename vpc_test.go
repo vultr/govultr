@@ -33,7 +33,7 @@ func TestVPCServiceHandler_Create(t *testing.T) {
 		Description: "test1",
 	}
 
-	net, err := client.VPC.Create(ctx, options)
+	net, _, err := client.VPC.Create(ctx, options)
 
 	if err != nil {
 		t.Errorf("VPC.Create returned %+v, expected %+v", err, nil)
@@ -88,7 +88,7 @@ func TestVPCServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	vpcs, _, err := client.VPC.List(ctx, nil)
+	vpcs, _, _, err := client.VPC.List(ctx, nil)
 
 	if err != nil {
 		t.Errorf("VPC.List returned error: %v", err)
@@ -134,7 +134,7 @@ func TestVPCServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, req)
 	})
 
-	vpc, err := client.VPC.Get(ctx, "net539626f0798d7")
+	vpc, _, err := client.VPC.Get(ctx, "net539626f0798d7")
 	if err != nil {
 		t.Errorf("VPC.Get returned %+v, expected %+v", err, nil)
 	}

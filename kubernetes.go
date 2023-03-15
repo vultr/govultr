@@ -13,26 +13,26 @@ const vkePath = "/v2/kubernetes/clusters"
 // KubernetesService is the interface to interact with kubernetes endpoint on the Vultr API
 // Link : https://www.vultr.com/api/#tag/kubernetes
 type KubernetesService interface {
-	CreateCluster(ctx context.Context, createReq *ClusterReq) (*Cluster, error)
-	GetCluster(ctx context.Context, id string) (*Cluster, error)
-	ListClusters(ctx context.Context, options *ListOptions) ([]Cluster, *Meta, error)
+	CreateCluster(ctx context.Context, createReq *ClusterReq) (*Cluster, *http.Response, error)
+	GetCluster(ctx context.Context, id string) (*Cluster, *http.Response, error)
+	ListClusters(ctx context.Context, options *ListOptions) ([]Cluster, *Meta, *http.Response, error)
 	UpdateCluster(ctx context.Context, vkeID string, updateReq *ClusterReqUpdate) error
 	DeleteCluster(ctx context.Context, id string) error
 	DeleteClusterWithResources(ctx context.Context, id string) error
 
-	CreateNodePool(ctx context.Context, vkeID string, nodePoolReq *NodePoolReq) (*NodePool, error)
-	ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, error)
-	GetNodePool(ctx context.Context, vkeID, nodePoolID string) (*NodePool, error)
-	UpdateNodePool(ctx context.Context, vkeID, nodePoolID string, updateReq *NodePoolReqUpdate) (*NodePool, error)
+	CreateNodePool(ctx context.Context, vkeID string, nodePoolReq *NodePoolReq) (*NodePool, *http.Response, error)
+	ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, *http.Response, error)
+	GetNodePool(ctx context.Context, vkeID, nodePoolID string) (*NodePool, *http.Response, error)
+	UpdateNodePool(ctx context.Context, vkeID, nodePoolID string, updateReq *NodePoolReqUpdate) (*NodePool, *http.Response, error)
 	DeleteNodePool(ctx context.Context, vkeID, nodePoolID string) error
 
 	DeleteNodePoolInstance(ctx context.Context, vkeID, nodePoolID, nodeID string) error
 	RecycleNodePoolInstance(ctx context.Context, vkeID, nodePoolID, nodeID string) error
 
-	GetKubeConfig(ctx context.Context, vkeID string) (*KubeConfig, error)
-	GetVersions(ctx context.Context) (*Versions, error)
+	GetKubeConfig(ctx context.Context, vkeID string) (*KubeConfig, *http.Response, error)
+	GetVersions(ctx context.Context) (*Versions, *http.Response, error)
 
-	GetUpgrades(ctx context.Context, vkeID string) ([]string, error)
+	GetUpgrades(ctx context.Context, vkeID string) ([]string, *http.Response, error)
 	Upgrade(ctx context.Context, vkeID string, body *ClusterUpgradeReq) error
 }
 
@@ -152,55 +152,58 @@ type ClusterUpgradeReq struct {
 }
 
 // CreateCluster will create a Kubernetes cluster.
-func (k *KubernetesHandler) CreateCluster(ctx context.Context, createReq *ClusterReq) (*Cluster, error) {
+func (k *KubernetesHandler) CreateCluster(ctx context.Context, createReq *ClusterReq) (*Cluster, *http.Response, error) {
 	req, err := k.client.NewRequest(ctx, http.MethodPost, vkePath, createReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	var k8 = new(vkeClusterBase)
-	if err = k.client.DoWithContext(ctx, req, &k8); err != nil {
-		return nil, err
+	resp, err := k.client.DoWithContext(ctx, req, &k8)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return k8.VKECluster, nil
+	return k8.VKECluster, resp, nil
 }
 
 // GetCluster will return a Kubernetes cluster.
-func (k *KubernetesHandler) GetCluster(ctx context.Context, id string) (*Cluster, error) {
+func (k *KubernetesHandler) GetCluster(ctx context.Context, id string) (*Cluster, *http.Response, error) {
 	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s", vkePath, id), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	k8 := new(vkeClusterBase)
-	if err = k.client.DoWithContext(ctx, req, &k8); err != nil {
-		return nil, err
+	resp, err := k.client.DoWithContext(ctx, req, &k8)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return k8.VKECluster, nil
+	return k8.VKECluster, resp, nil
 }
 
 // ListClusters will return all kubernetes clusters.
-func (k *KubernetesHandler) ListClusters(ctx context.Context, options *ListOptions) ([]Cluster, *Meta, error) {
+func (k *KubernetesHandler) ListClusters(ctx context.Context, options *ListOptions) ([]Cluster, *Meta, *http.Response, error) {
 	req, err := k.client.NewRequest(ctx, http.MethodGet, vkePath, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	k8s := new(vkeClustersBase)
-	if err = k.client.DoWithContext(ctx, req, &k8s); err != nil {
-		return nil, nil, err
+	resp, err := k.client.DoWithContext(ctx, req, &k8s)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return k8s.VKEClusters, k8s.Meta, nil
+	return k8s.VKEClusters, k8s.Meta, resp, nil
 }
 
 // UpdateCluster updates label on VKE cluster
@@ -210,7 +213,8 @@ func (k *KubernetesHandler) UpdateCluster(ctx context.Context, vkeID string, upd
 		return err
 	}
 
-	return k.client.DoWithContext(ctx, req, nil)
+	_, err = k.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // DeleteCluster will delete a Kubernetes cluster.
@@ -219,8 +223,8 @@ func (k *KubernetesHandler) DeleteCluster(ctx context.Context, id string) error 
 	if err != nil {
 		return err
 	}
-
-	return k.client.DoWithContext(ctx, req, nil)
+	_, err = k.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // DeleteClusterWithResources will delete a Kubernetes cluster and all related resources.
@@ -229,76 +233,79 @@ func (k *KubernetesHandler) DeleteClusterWithResources(ctx context.Context, id s
 	if err != nil {
 		return err
 	}
-
-	return k.client.DoWithContext(ctx, req, nil)
+	_, err = k.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // CreateNodePool creates a nodepool on a VKE cluster
-func (k *KubernetesHandler) CreateNodePool(ctx context.Context, vkeID string, nodePoolReq *NodePoolReq) (*NodePool, error) {
+func (k *KubernetesHandler) CreateNodePool(ctx context.Context, vkeID string, nodePoolReq *NodePoolReq) (*NodePool, *http.Response, error) {
 	req, err := k.client.NewRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/node-pools", vkePath, vkeID), nodePoolReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	n := new(vkeNodePoolBase)
-	err = k.client.DoWithContext(ctx, req, n)
+	resp, err := k.client.DoWithContext(ctx, req, n)
 	if err != nil {
-		return nil, err
+		return nil, resp, err
 	}
 
-	return n.NodePool, nil
+	return n.NodePool, resp, nil
 }
 
 // ListNodePools will return all nodepools for a given VKE cluster
-func (k *KubernetesHandler) ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, error) {
+func (k *KubernetesHandler) ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, *http.Response, error) {
 	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/node-pools", vkePath, vkeID), nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	n := new(vkeNodePoolsBase)
-	if err = k.client.DoWithContext(ctx, req, &n); err != nil {
-		return nil, nil, err
+	resp, err := k.client.DoWithContext(ctx, req, &n)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return n.NodePools, n.Meta, nil
+	return n.NodePools, n.Meta, resp, nil
 }
 
 // GetNodePool will return a single nodepool
-func (k *KubernetesHandler) GetNodePool(ctx context.Context, vkeID, nodePoolID string) (*NodePool, error) {
+func (k *KubernetesHandler) GetNodePool(ctx context.Context, vkeID, nodePoolID string) (*NodePool, *http.Response, error) {
 	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/node-pools/%s", vkePath, vkeID, nodePoolID), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	n := new(vkeNodePoolBase)
-	if err = k.client.DoWithContext(ctx, req, &n); err != nil {
-		return nil, err
+	resp, err := k.client.DoWithContext(ctx, req, &n)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return n.NodePool, nil
+	return n.NodePool, resp, nil
 }
 
 // UpdateNodePool will allow you change the quantity of nodes within a nodepool
-func (k *KubernetesHandler) UpdateNodePool(ctx context.Context, vkeID, nodePoolID string, updateReq *NodePoolReqUpdate) (*NodePool, error) {
+func (k *KubernetesHandler) UpdateNodePool(ctx context.Context, vkeID, nodePoolID string, updateReq *NodePoolReqUpdate) (*NodePool, *http.Response, error) {
 	req, err := k.client.NewRequest(ctx, http.MethodPatch, fmt.Sprintf("%s/%s/node-pools/%s", vkePath, vkeID, nodePoolID), updateReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	np := new(vkeNodePoolBase)
-	if err = k.client.DoWithContext(ctx, req, np); err != nil {
-		return nil, err
+	resp, err := k.client.DoWithContext(ctx, req, np)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return np.NodePool, nil
+	return np.NodePool, resp, nil
 }
 
 // DeleteNodePool will remove a nodepool from a VKE cluster
@@ -308,7 +315,8 @@ func (k *KubernetesHandler) DeleteNodePool(ctx context.Context, vkeID, nodePoolI
 		return err
 	}
 
-	return k.client.DoWithContext(ctx, req, nil)
+	_, err = k.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // DeleteNodePoolInstance will remove a specified node from a nodepool
@@ -318,7 +326,8 @@ func (k *KubernetesHandler) DeleteNodePoolInstance(ctx context.Context, vkeID, n
 		return err
 	}
 
-	return k.client.DoWithContext(ctx, req, nil)
+	_, err = k.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // RecycleNodePoolInstance will recycle (destroy + redeploy) a given node on a nodepool
@@ -328,53 +337,57 @@ func (k *KubernetesHandler) RecycleNodePoolInstance(ctx context.Context, vkeID, 
 		return err
 	}
 
-	return k.client.DoWithContext(ctx, req, nil)
+	_, err = k.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // GetKubeConfig returns the kubeconfig for the specified VKE cluster
-func (k *KubernetesHandler) GetKubeConfig(ctx context.Context, vkeID string) (*KubeConfig, error) {
+func (k *KubernetesHandler) GetKubeConfig(ctx context.Context, vkeID string) (*KubeConfig, *http.Response, error) {
 	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/config", vkePath, vkeID), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	kc := new(KubeConfig)
-	if err = k.client.DoWithContext(ctx, req, &kc); err != nil {
-		return nil, err
+	resp, err := k.client.DoWithContext(ctx, req, &kc)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return kc, nil
+	return kc, resp, nil
 }
 
 // GetVersions returns the supported kubernetes versions
-func (k *KubernetesHandler) GetVersions(ctx context.Context) (*Versions, error) {
+func (k *KubernetesHandler) GetVersions(ctx context.Context) (*Versions, *http.Response, error) {
 	uri := "/v2/kubernetes/versions"
 	req, err := k.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	versions := new(Versions)
-	if err = k.client.DoWithContext(ctx, req, &versions); err != nil {
-		return nil, err
+	resp, err := k.client.DoWithContext(ctx, req, &versions)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return versions, nil
+	return versions, resp, nil
 }
 
 // GetUpgrades returns all version a VKE cluster can upgrade to
-func (k *KubernetesHandler) GetUpgrades(ctx context.Context, vkeID string) ([]string, error) {
+func (k *KubernetesHandler) GetUpgrades(ctx context.Context, vkeID string) ([]string, *http.Response, error) {
 	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/available-upgrades", vkePath, vkeID), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	upgrades := new(availableUpgrades)
-	if err = k.client.DoWithContext(ctx, req, &upgrades); err != nil {
-		return nil, err
+	resp, err := k.client.DoWithContext(ctx, req, &upgrades)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return upgrades.AvailableUpgrades, nil
+	return upgrades.AvailableUpgrades, resp, nil
 }
 
 // Upgrade beings a VKE cluster upgrade
@@ -385,5 +398,6 @@ func (k *KubernetesHandler) Upgrade(ctx context.Context, vkeID string, body *Clu
 		return err
 	}
 
-	return k.client.DoWithContext(ctx, req, nil)
+	_, err = k.client.DoWithContext(ctx, req, nil)
+	return err
 }

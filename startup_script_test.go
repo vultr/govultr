@@ -22,7 +22,7 @@ func TestStartupScriptServiceHandler_Create(t *testing.T) {
 		Type:   "boot",
 		Script: "dGVzdGFwaXVwZGF0ZQ==",
 	}
-	s, err := client.StartupScript.Create(context.Background(), script)
+	s, _, err := client.StartupScript.Create(context.Background(), script)
 
 	if err != nil {
 		t.Errorf("StartupScript.Create returned %+v, expected %+v", err, nil)
@@ -51,7 +51,7 @@ func TestStartupScriptServiceHandler_GET(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	scripts, err := client.StartupScript.Get(ctx, "14350")
+	scripts, _, err := client.StartupScript.Get(ctx, "14350")
 
 	if err != nil {
 		t.Errorf("StartupScript.Get returned error: %v", err)
@@ -116,7 +116,7 @@ func TestStartupScriptServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	scripts, meta, err := client.StartupScript.List(ctx, nil)
+	scripts, meta, _, err := client.StartupScript.List(ctx, nil)
 
 	if err != nil {
 		t.Errorf("StartupScript.List returned error: %v", err)

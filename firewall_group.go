@@ -11,11 +11,11 @@ import (
 // FirewallGroupService is the interface to interact with the firewall group endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/firewall
 type FirewallGroupService interface {
-	Create(ctx context.Context, fwGroupReq *FirewallGroupReq) (*FirewallGroup, error)
-	Get(ctx context.Context, groupID string) (*FirewallGroup, error)
+	Create(ctx context.Context, fwGroupReq *FirewallGroupReq) (*FirewallGroup, *http.Response, error)
+	Get(ctx context.Context, groupID string) (*FirewallGroup, *http.Response, error)
 	Update(ctx context.Context, fwGroupID string, fwGroupReq *FirewallGroupReq) error
 	Delete(ctx context.Context, fwGroupID string) error
-	List(ctx context.Context, options *ListOptions) ([]FirewallGroup, *Meta, error)
+	List(ctx context.Context, options *ListOptions) ([]FirewallGroup, *Meta, *http.Response, error)
 }
 
 // FireWallGroupServiceHandler handles interaction with the firewall group methods for the Vultr API
@@ -49,37 +49,39 @@ type firewallGroupBase struct {
 }
 
 // Create will create a new firewall group on your Vultr account
-func (f *FireWallGroupServiceHandler) Create(ctx context.Context, fwGroupReq *FirewallGroupReq) (*FirewallGroup, error) {
+func (f *FireWallGroupServiceHandler) Create(ctx context.Context, fwGroupReq *FirewallGroupReq) (*FirewallGroup, *http.Response, error) {
 	uri := "/v2/firewalls"
 
 	req, err := f.client.NewRequest(ctx, http.MethodPost, uri, fwGroupReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	firewall := new(firewallGroupBase)
-	if err = f.client.DoWithContext(ctx, req, firewall); err != nil {
-		return nil, err
+	resp, err := f.client.DoWithContext(ctx, req, firewall)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return firewall.FirewallGroup, nil
+	return firewall.FirewallGroup, resp, nil
 }
 
 // Get will return a firewall group based on provided groupID from your Vultr account
-func (f *FireWallGroupServiceHandler) Get(ctx context.Context, fwGroupID string) (*FirewallGroup, error) {
+func (f *FireWallGroupServiceHandler) Get(ctx context.Context, fwGroupID string) (*FirewallGroup, *http.Response, error) {
 	uri := fmt.Sprintf("/v2/firewalls/%s", fwGroupID)
 
 	req, err := f.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	firewall := new(firewallGroupBase)
-	if err = f.client.DoWithContext(ctx, req, firewall); err != nil {
-		return nil, err
+	resp, err := f.client.DoWithContext(ctx, req, firewall)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return firewall.FirewallGroup, nil
+	return firewall.FirewallGroup, resp, nil
 }
 
 // Update will change the description of a firewall group
@@ -91,7 +93,8 @@ func (f *FireWallGroupServiceHandler) Update(ctx context.Context, fwGroupID stri
 		return err
 	}
 
-	return f.client.DoWithContext(ctx, req, nil)
+	_, err = f.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Delete will delete a firewall group from your Vultr account
@@ -102,30 +105,31 @@ func (f *FireWallGroupServiceHandler) Delete(ctx context.Context, fwGroupID stri
 	if err != nil {
 		return err
 	}
-
-	return f.client.DoWithContext(ctx, req, nil)
+	_, err = f.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // List will return a list of  all firewall groups on your Vultr account
-func (f *FireWallGroupServiceHandler) List(ctx context.Context, options *ListOptions) ([]FirewallGroup, *Meta, error) {
+func (f *FireWallGroupServiceHandler) List(ctx context.Context, options *ListOptions) ([]FirewallGroup, *Meta, *http.Response, error) {
 	uri := "/v2/firewalls"
 
 	req, err := f.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	firewalls := new(firewallGroupsBase)
-	if err = f.client.DoWithContext(ctx, req, firewalls); err != nil {
-		return nil, nil, err
+	resp, err := f.client.DoWithContext(ctx, req, firewalls)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return firewalls.FirewallGroups, firewalls.Meta, nil
+	return firewalls.FirewallGroups, firewalls.Meta, resp, nil
 }
