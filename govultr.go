@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -177,6 +178,8 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 	if err != nil {
 		return nil, err
 	}
+
+	res.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 
 	if res.StatusCode >= http.StatusOK && res.StatusCode <= http.StatusNoContent {
 		if data != nil {
