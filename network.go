@@ -15,15 +15,15 @@ const netPath = "/v2/private-networks"
 // Deprecated: NetworkService should no longer be used. Instead, use VPCService.
 type NetworkService interface {
 	// Deprecated: NetworkService Create should no longer be used. Instead, use VPCService Create.
-	Create(ctx context.Context, createReq *NetworkReq) (*Network, error)
+	Create(ctx context.Context, createReq *NetworkReq) (*Network, *http.Response, error)
 	// Deprecated: NetworkService Get should no longer be used. Instead, use VPCService Get.
-	Get(ctx context.Context, networkID string) (*Network, error)
+	Get(ctx context.Context, networkID string) (*Network, *http.Response, error)
 	// Deprecated: NetworkService Update should no longer be used. Instead, use VPCService Update.
 	Update(ctx context.Context, networkID string, description string) error
 	// Deprecated: NetworkService Delete should no longer be used. Instead, use VPCService Delete.
 	Delete(ctx context.Context, networkID string) error
 	// Deprecated: NetworkService List should no longer be used. Instead, use VPCService List.
-	List(ctx context.Context, options *ListOptions) ([]Network, *Meta, error)
+	List(ctx context.Context, options *ListOptions) ([]Network, *Meta, *http.Response, error)
 }
 
 // NetworkServiceHandler handles interaction with the network methods for the Vultr API
@@ -63,35 +63,37 @@ type networkBase struct {
 
 // Create a new private network. A private network can only be used at the location for which it was created.
 // Deprecated: NetworkServiceHandler Create should no longer be used. Instead, use VPCServiceHandler Create.
-func (n *NetworkServiceHandler) Create(ctx context.Context, createReq *NetworkReq) (*Network, error) {
+func (n *NetworkServiceHandler) Create(ctx context.Context, createReq *NetworkReq) (*Network, *http.Response, error) {
 	req, err := n.client.NewRequest(ctx, http.MethodPost, netPath, createReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	network := new(networkBase)
-	if err = n.client.DoWithContext(ctx, req, network); err != nil {
-		return nil, err
+	resp, err := n.client.DoWithContext(ctx, req, network)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return network.Network, nil
+	return network.Network, resp, nil
 }
 
 // Get gets the private networks of the requested ID
 // Deprecated: NetworkServiceHandler Get should no longer be used.  Instead use VPCServiceHandler Create.
-func (n *NetworkServiceHandler) Get(ctx context.Context, networkID string) (*Network, error) {
+func (n *NetworkServiceHandler) Get(ctx context.Context, networkID string) (*Network, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s", netPath, networkID)
 	req, err := n.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	network := new(networkBase)
-	if err = n.client.DoWithContext(ctx, req, network); err != nil {
-		return nil, err
+	resp, err := n.client.DoWithContext(ctx, req, network)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return network.Network, nil
+	return network.Network, resp, nil
 }
 
 // Update updates a private network
@@ -104,8 +106,8 @@ func (n *NetworkServiceHandler) Update(ctx context.Context, networkID string, de
 	if err != nil {
 		return err
 	}
-
-	return n.client.DoWithContext(ctx, req, nil)
+	_, err = n.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Delete a private network. Before deleting, a network must be disabled from all instances
@@ -117,28 +119,30 @@ func (n *NetworkServiceHandler) Delete(ctx context.Context, networkID string) er
 		return err
 	}
 
-	return n.client.DoWithContext(ctx, req, nil)
+	_, err = n.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // List lists all private networks on the current account
 // Deprecated: NetworkServiceHandler List should no longer be used. Instead, use VPCServiceHandler List.
-func (n *NetworkServiceHandler) List(ctx context.Context, options *ListOptions) ([]Network, *Meta, error) {
+func (n *NetworkServiceHandler) List(ctx context.Context, options *ListOptions) ([]Network, *Meta, *http.Response, error) {
 	req, err := n.client.NewRequest(ctx, http.MethodGet, netPath, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	networks := new(networksBase)
-	if err = n.client.DoWithContext(ctx, req, networks); err != nil {
-		return nil, nil, err
+	resp, err := n.client.DoWithContext(ctx, req, networks)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return networks.Networks, networks.Meta, nil
+	return networks.Networks, networks.Meta, resp, nil
 }

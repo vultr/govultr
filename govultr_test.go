@@ -85,7 +85,7 @@ func TestClient_DoWithContext(t *testing.T) {
 
 	data := new(vultr)
 
-	err := client.DoWithContext(context.Background(), req, data)
+	_, err := client.DoWithContext(context.Background(), req, data)
 
 	if err != nil {
 		t.Fatalf("DoWithContext(): %v", err)
@@ -111,7 +111,7 @@ func TestClient_DoWithContextFailure(t *testing.T) {
 
 	req, _ := client.NewRequest(ctx, http.MethodGet, "/", nil)
 
-	err := client.DoWithContext(context.Background(), req, nil)
+	_, err := client.DoWithContext(context.Background(), req, nil)
 
 	if !strings.Contains(err.Error(), "gave up after") || !strings.Contains(err.Error(), "last error") {
 		t.Fatalf("DoWithContext(): %v: expected 'gave up after ..., last error ...'", err)
@@ -252,7 +252,7 @@ func TestClient_OnRequestCompleted(t *testing.T) {
 		completedRes = string(dump)
 	})
 
-	err := client.DoWithContext(context.Background(), req, data)
+	_, err := client.DoWithContext(context.Background(), req, data)
 	if err != nil {
 		t.Fatalf("Do(): %v", err)
 	}
@@ -304,7 +304,7 @@ func TestRequest_InvalidCall(t *testing.T) {
 	})
 
 	req, _ := client.NewRequest(ctx, http.MethodGet, "/wrong", nil)
-	if err := client.DoWithContext(ctx, req, nil); err == nil {
+	if _, err := client.DoWithContext(ctx, req, nil); err == nil {
 		t.Error("Expected invalid status code to bad request")
 	}
 }
@@ -319,7 +319,7 @@ func TestRequest_InvalidResponseBody(t *testing.T) {
 	})
 
 	req, _ := client.NewRequest(ctx, http.MethodGet, "/wrong", nil)
-	if err := client.DoWithContext(ctx, req, struct{}{}); err == nil {
+	if _, err := client.DoWithContext(ctx, req, struct{}{}); err == nil {
 		t.Error("Expected response body to be invalid")
 	}
 }

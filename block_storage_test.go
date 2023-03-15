@@ -21,7 +21,7 @@ func TestBlockStorageServiceHandler_Create(t *testing.T) {
 		Label:     "mylabel",
 		BlockType: "test",
 	}
-	blockStorage, err := client.BlockStorage.Create(ctx, blockReq)
+	blockStorage, _, err := client.BlockStorage.Create(ctx, blockReq)
 	if err != nil {
 		t.Errorf("BlockStorage.Create returned error: %v", err)
 	}
@@ -53,7 +53,7 @@ func TestBlockStorageServiceHandler_Get(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	blockStorage, err := client.BlockStorage.Get(ctx, "123456")
+	blockStorage, _, err := client.BlockStorage.Get(ctx, "123456")
 	if err != nil {
 		t.Errorf("BlockStorage.Create returned error: %v", err)
 	}
@@ -116,7 +116,7 @@ func TestBlockStorageServiceHandler_List(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	blockStorage, meta, err := client.BlockStorage.List(ctx, nil)
+	blockStorage, meta, _, err := client.BlockStorage.List(ctx, nil)
 	if err != nil {
 		t.Errorf("BlockStorage.Create returned error: %v", err)
 	}

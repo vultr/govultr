@@ -11,10 +11,10 @@ import (
 // FireWallRuleService is the interface to interact with the firewall rule endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/firewall
 type FireWallRuleService interface {
-	Create(ctx context.Context, fwGroupID string, fwRuleReq *FirewallRuleReq) (*FirewallRule, error)
-	Get(ctx context.Context, fwGroupID string, fwRuleID int) (*FirewallRule, error)
+	Create(ctx context.Context, fwGroupID string, fwRuleReq *FirewallRuleReq) (*FirewallRule, *http.Response, error)
+	Get(ctx context.Context, fwGroupID string, fwRuleID int) (*FirewallRule, *http.Response, error)
 	Delete(ctx context.Context, fwGroupID string, fwRuleID int) error
-	List(ctx context.Context, fwGroupID string, options *ListOptions) ([]FirewallRule, *Meta, error)
+	List(ctx context.Context, fwGroupID string, options *ListOptions) ([]FirewallRule, *Meta, *http.Response, error)
 }
 
 // FireWallRuleServiceHandler handles interaction with the firewall rule methods for the Vultr API
@@ -58,37 +58,39 @@ type firewallRuleBase struct {
 }
 
 // Create will create a rule in a firewall group.
-func (f *FireWallRuleServiceHandler) Create(ctx context.Context, fwGroupID string, fwRuleReq *FirewallRuleReq) (*FirewallRule, error) {
+func (f *FireWallRuleServiceHandler) Create(ctx context.Context, fwGroupID string, fwRuleReq *FirewallRuleReq) (*FirewallRule, *http.Response, error) {
 	uri := fmt.Sprintf("/v2/firewalls/%s/rules", fwGroupID)
 
 	req, err := f.client.NewRequest(ctx, http.MethodPost, uri, fwRuleReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	firewallRule := new(firewallRuleBase)
-	if err = f.client.DoWithContext(ctx, req, firewallRule); err != nil {
-		return nil, err
+	resp, err := f.client.DoWithContext(ctx, req, firewallRule)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return firewallRule.FirewallRule, nil
+	return firewallRule.FirewallRule, resp, nil
 }
 
 // Get will get a rule in a firewall group.
-func (f *FireWallRuleServiceHandler) Get(ctx context.Context, fwGroupID string, fwRuleID int) (*FirewallRule, error) {
+func (f *FireWallRuleServiceHandler) Get(ctx context.Context, fwGroupID string, fwRuleID int) (*FirewallRule, *http.Response, error) {
 	uri := fmt.Sprintf("/v2/firewalls/%s/rules/%d", fwGroupID, fwRuleID)
 
 	req, err := f.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	firewallRule := new(firewallRuleBase)
-	if err = f.client.DoWithContext(ctx, req, firewallRule); err != nil {
-		return nil, err
+	resp, err := f.client.DoWithContext(ctx, req, firewallRule)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return firewallRule.FirewallRule, nil
+	return firewallRule.FirewallRule, resp, nil
 }
 
 // Delete will delete a firewall rule on your Vultr account
@@ -99,30 +101,31 @@ func (f *FireWallRuleServiceHandler) Delete(ctx context.Context, fwGroupID strin
 	if err != nil {
 		return err
 	}
-
-	return f.client.DoWithContext(ctx, req, nil)
+	_, err = f.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // List will return both ipv4 an ipv6 firewall rules that are defined within a firewall group
-func (f *FireWallRuleServiceHandler) List(ctx context.Context, fwGroupID string, options *ListOptions) ([]FirewallRule, *Meta, error) {
+func (f *FireWallRuleServiceHandler) List(ctx context.Context, fwGroupID string, options *ListOptions) ([]FirewallRule, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("/v2/firewalls/%s/rules", fwGroupID)
 
 	req, err := f.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	firewallRule := new(firewallRulesBase)
-	if err = f.client.DoWithContext(ctx, req, firewallRule); err != nil {
-		return nil, nil, err
+	resp, err := f.client.DoWithContext(ctx, req, firewallRule)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return firewallRule.FirewallRules, firewallRule.Meta, nil
+	return firewallRule.FirewallRules, firewallRule.Meta, resp, nil
 }

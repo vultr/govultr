@@ -38,7 +38,7 @@ func TestBillingServiceHandler_ListHistory(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	history, meta, err := client.Billing.ListHistory(ctx, nil)
+	history, meta, _, err := client.Billing.ListHistory(ctx, nil)
 	if err != nil {
 		t.Errorf("Billing.ListHistory returned error: %v", err)
 	}
@@ -98,7 +98,7 @@ func TestBillingServiceHandler_ListInvoices(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	invoices, meta, err := client.Billing.ListInvoices(ctx, nil)
+	invoices, meta, _, err := client.Billing.ListInvoices(ctx, nil)
 	if err != nil {
 		t.Errorf("Billing.ListInvoices returned error: %v", err)
 	}
@@ -149,7 +149,7 @@ func TestBillingServiceHandler_ListHistoryEmpty(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	history, meta, err := client.Billing.ListHistory(ctx, nil)
+	history, meta, _, err := client.Billing.ListHistory(ctx, nil)
 	if err != nil {
 		t.Errorf("Billing.ListHistory returned error: %v", err)
 	}
@@ -195,7 +195,7 @@ func TestBillingServiceHandler_ListInvoicesEmpty(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	invoices, meta, err := client.Billing.ListInvoices(ctx, nil)
+	invoices, meta, _, err := client.Billing.ListInvoices(ctx, nil)
 	if err != nil {
 		t.Errorf("Billing.ListInvoices returned error: %v", err)
 	}
@@ -240,7 +240,7 @@ func TestBillingServiceHandler_GetInvoice(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	invoice, err := client.Billing.GetInvoice(ctx, "123456")
+	invoice, _, err := client.Billing.GetInvoice(ctx, "123456")
 	if err != nil {
 		t.Errorf("Billing.GetInvoice returned error: %v", err)
 	}
@@ -290,7 +290,7 @@ func TestBillingServiceHandler_ListInvoiceItems(t *testing.T) {
 
 		fmt.Fprint(w, response)
 	})
-	invoices, meta, err := client.Billing.ListInvoiceItems(ctx, 123456, nil)
+	invoices, meta, _, err := client.Billing.ListInvoiceItems(ctx, 123456, nil)
 	if err != nil {
 		t.Errorf("Billing.ListInvoiceItems returned error: %v", err)
 	}

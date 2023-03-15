@@ -11,11 +11,11 @@ import (
 // DomainRecordService is the interface to interact with the DNS Records endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#tag/dns
 type DomainRecordService interface {
-	Create(ctx context.Context, domain string, domainRecordReq *DomainRecordReq) (*DomainRecord, error)
-	Get(ctx context.Context, domain, recordID string) (*DomainRecord, error)
+	Create(ctx context.Context, domain string, domainRecordReq *DomainRecordReq) (*DomainRecord, *http.Response, error)
+	Get(ctx context.Context, domain, recordID string) (*DomainRecord, *http.Response, error)
 	Update(ctx context.Context, domain, recordID string, domainRecordReq *DomainRecordReq) error
 	Delete(ctx context.Context, domain, recordID string) error
-	List(ctx context.Context, domain string, options *ListOptions) ([]DomainRecord, *Meta, error)
+	List(ctx context.Context, domain string, options *ListOptions) ([]DomainRecord, *Meta, *http.Response, error)
 }
 
 // DomainRecordsServiceHandler handles interaction with the DNS Records methods for the Vultr API
@@ -52,33 +52,35 @@ type domainRecordBase struct {
 }
 
 // Create will add a DNS record.
-func (d *DomainRecordsServiceHandler) Create(ctx context.Context, domain string, domainRecordReq *DomainRecordReq) (*DomainRecord, error) {
+func (d *DomainRecordsServiceHandler) Create(ctx context.Context, domain string, domainRecordReq *DomainRecordReq) (*DomainRecord, *http.Response, error) {
 	req, err := d.client.NewRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/records", domainPath, domain), domainRecordReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	record := new(domainRecordBase)
-	if err = d.client.DoWithContext(ctx, req, record); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, record)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return record.Record, nil
+	return record.Record, resp, nil
 }
 
 // Get record from a domain
-func (d *DomainRecordsServiceHandler) Get(ctx context.Context, domain, recordID string) (*DomainRecord, error) {
+func (d *DomainRecordsServiceHandler) Get(ctx context.Context, domain, recordID string) (*DomainRecord, *http.Response, error) {
 	req, err := d.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/records/%s", domainPath, domain, recordID), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	record := new(domainRecordBase)
-	if err = d.client.DoWithContext(ctx, req, record); err != nil {
-		return nil, err
+	resp, err := d.client.DoWithContext(ctx, req, record)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return record.Record, nil
+	return record.Record, resp, nil
 }
 
 // Update will update a Domain record
@@ -88,7 +90,8 @@ func (d *DomainRecordsServiceHandler) Update(ctx context.Context, domain, record
 		return err
 	}
 
-	return d.client.DoWithContext(ctx, req, nil)
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Delete will delete a domain name and all associated records.
@@ -97,27 +100,28 @@ func (d *DomainRecordsServiceHandler) Delete(ctx context.Context, domain, record
 	if err != nil {
 		return err
 	}
-
-	return d.client.DoWithContext(ctx, req, nil)
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // List will list all the records associated with a particular domain on Vultr.
-func (d *DomainRecordsServiceHandler) List(ctx context.Context, domain string, options *ListOptions) ([]DomainRecord, *Meta, error) {
+func (d *DomainRecordsServiceHandler) List(ctx context.Context, domain string, options *ListOptions) ([]DomainRecord, *Meta, *http.Response, error) {
 	req, err := d.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/records", domainPath, domain), nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	req.URL.RawQuery = newValues.Encode()
 
 	records := new(domainRecordsBase)
-	if err = d.client.DoWithContext(ctx, req, records); err != nil {
-		return nil, nil, err
+	resp, err := d.client.DoWithContext(ctx, req, records)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return records.Records, records.Meta, nil
+	return records.Records, records.Meta, resp, nil
 }

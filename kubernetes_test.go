@@ -58,7 +58,7 @@ func TestKubernetesHandler_CreateCluster(t *testing.T) {
 		Version:   "1.20",
 		NodePools: nil,
 	}
-	vke, err := client.Kubernetes.CreateCluster(ctx, createReq)
+	vke, _, err := client.Kubernetes.CreateCluster(ctx, createReq)
 	if err != nil {
 		t.Errorf("Kubernetes.CreateCluster returned %v", err)
 	}
@@ -103,7 +103,7 @@ func TestKubernetesHandler_CreateCluster(t *testing.T) {
 
 	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
 	defer can()
-	_, err = client.Kubernetes.CreateCluster(c, createReq)
+	_, _, err = client.Kubernetes.CreateCluster(c, createReq)
 	if err == nil {
 		t.Error("Kubernetes.CreateCluster returned nil")
 	}
@@ -152,7 +152,7 @@ func TestKubernetesHandler_GetCluster(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	vke, err := client.Kubernetes.GetCluster(ctx, "014da059-21e3-47eb-acb5-91bf697c31aa")
+	vke, _, err := client.Kubernetes.GetCluster(ctx, "014da059-21e3-47eb-acb5-91bf697c31aa")
 	if err != nil {
 		t.Errorf("Kubernetes.GetCluster returned %v", err)
 	}
@@ -197,7 +197,7 @@ func TestKubernetesHandler_GetCluster(t *testing.T) {
 
 	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
 	defer can()
-	_, err = client.Kubernetes.GetCluster(c, "014da059-21e3-47eb-acb5-91bf697c31aa")
+	_, _, err = client.Kubernetes.GetCluster(c, "014da059-21e3-47eb-acb5-91bf697c31aa")
 	if err == nil {
 		t.Error("Kubernetes.GetCluster returned nil")
 	}
@@ -255,7 +255,7 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	vke, meta, err := client.Kubernetes.ListClusters(ctx, nil)
+	vke, meta, _, err := client.Kubernetes.ListClusters(ctx, nil)
 	if err != nil {
 		t.Errorf("Kubernetes.ListClusters returned %v", err)
 	}
@@ -313,7 +313,7 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
 
 	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
 	defer can()
-	_, _, err = client.Kubernetes.ListClusters(c, nil)
+	_, _, _, err = client.Kubernetes.ListClusters(c, nil)
 	if err == nil {
 		t.Error("Kubernetes.ListClusters returned nil")
 	}
@@ -398,7 +398,7 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 		Plan:         "vc2-1c-2gb",
 		Tag:          "mytag",
 	}
-	np, err := client.Kubernetes.CreateNodePool(ctx, "1", createReq)
+	np, _, err := client.Kubernetes.CreateNodePool(ctx, "1", createReq)
 	if err != nil {
 		t.Errorf("Kubernetes.CreateNodePool returned %v", err)
 	}
@@ -430,7 +430,7 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 
 	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
 	defer can()
-	_, err = client.Kubernetes.CreateNodePool(c, "1", createReq)
+	_, _, err = client.Kubernetes.CreateNodePool(c, "1", createReq)
 	if err == nil {
 		t.Error("Kubernetes.CreateNodePool returned nil")
 	}
@@ -466,7 +466,7 @@ func TestKubernetesHandler_GetNodePool(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	np, err := client.Kubernetes.GetNodePool(ctx, "1", "2")
+	np, _, err := client.Kubernetes.GetNodePool(ctx, "1", "2")
 	if err != nil {
 		t.Errorf("Kubernetes.GetNodePool returned %v", err)
 	}
@@ -498,7 +498,7 @@ func TestKubernetesHandler_GetNodePool(t *testing.T) {
 
 	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
 	defer can()
-	_, err = client.Kubernetes.GetNodePool(c, "1", "2")
+	_, _, err = client.Kubernetes.GetNodePool(c, "1", "2")
 	if err == nil {
 		t.Error("Kubernetes.GetNodePool returned nil")
 	}
@@ -541,7 +541,7 @@ func TestKubernetesHandler_ListNodePools(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	np, meta, err := client.Kubernetes.ListNodePools(ctx, "1", nil)
+	np, meta, _, err := client.Kubernetes.ListNodePools(ctx, "1", nil)
 	if err != nil {
 		t.Errorf("Kubernetes.ListNodePools returned %v", err)
 	}
@@ -587,7 +587,7 @@ func TestKubernetesHandler_ListNodePools(t *testing.T) {
 
 	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
 	defer can()
-	_, _, err = client.Kubernetes.ListNodePools(c, "1", nil)
+	_, _, _, err = client.Kubernetes.ListNodePools(c, "1", nil)
 	if err == nil {
 		t.Error("Kubernetes.ListNodePools returned nil")
 	}
@@ -624,7 +624,7 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 	update := NodePoolReqUpdate{NodeQuantity: 1}
-	response, err := client.Kubernetes.UpdateNodePool(ctx, "1", "2", &update)
+	response, _, err := client.Kubernetes.UpdateNodePool(ctx, "1", "2", &update)
 	if err != nil {
 		t.Errorf("Kubernetes.UpdateNodePool returned %+v", err)
 	}
@@ -657,7 +657,7 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
 
 	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
 	defer can()
-	_, err = client.Kubernetes.UpdateNodePool(c, "1", "2", &update)
+	_, _, err = client.Kubernetes.UpdateNodePool(c, "1", "2", &update)
 	if err == nil {
 		t.Error("Kubernetes.UpdateNodePool returned nil")
 	}
@@ -714,7 +714,7 @@ func TestKubernetesHandler_GetKubeConfig(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	config, err := client.Kubernetes.GetKubeConfig(ctx, "1")
+	config, _, err := client.Kubernetes.GetKubeConfig(ctx, "1")
 	if err != nil {
 		t.Errorf("Kubernetes.GetKubeConfig returned %+v", err)
 	}
@@ -726,7 +726,7 @@ func TestKubernetesHandler_GetKubeConfig(t *testing.T) {
 
 	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
 	defer can()
-	_, err = client.Kubernetes.GetKubeConfig(c, "1")
+	_, _, err = client.Kubernetes.GetKubeConfig(c, "1")
 	if err == nil {
 		t.Error("Kubernetes.GetKubeConfig returned nil")
 	}
@@ -741,7 +741,7 @@ func TestKubernetesHandler_GetVersions(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	config, err := client.Kubernetes.GetVersions(ctx)
+	config, _, err := client.Kubernetes.GetVersions(ctx)
 	if err != nil {
 		t.Errorf("Kubernetes.GetVersions returned %+v", err)
 	}
@@ -753,7 +753,7 @@ func TestKubernetesHandler_GetVersions(t *testing.T) {
 
 	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
 	defer can()
-	_, err = client.Kubernetes.GetVersions(c)
+	_, _, err = client.Kubernetes.GetVersions(c)
 	if err == nil {
 		t.Error("Kubernetes.GetVersions returned nil")
 	}
@@ -768,7 +768,7 @@ func TestKubernetesHandler_GetUpgrades(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	config, err := client.Kubernetes.GetUpgrades(ctx, "1")
+	config, _, err := client.Kubernetes.GetUpgrades(ctx, "1")
 	if err != nil {
 		t.Errorf("Kubernetes.GetVersions returned %+v", err)
 	}
@@ -780,7 +780,7 @@ func TestKubernetesHandler_GetUpgrades(t *testing.T) {
 
 	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
 	defer can()
-	_, err = client.Kubernetes.GetUpgrades(c, "1")
+	_, _, err = client.Kubernetes.GetUpgrades(c, "1")
 	if err == nil {
 		t.Error("Kubernetes.GetUpgradeVersions returned nil")
 	}

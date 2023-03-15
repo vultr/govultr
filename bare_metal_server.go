@@ -13,29 +13,29 @@ const bmPath = "/v2/bare-metals"
 // BareMetalServerService is the interface to interact with the Bare Metal endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/baremetal
 type BareMetalServerService interface {
-	Create(ctx context.Context, bmCreate *BareMetalCreate) (*BareMetalServer, error)
-	Get(ctx context.Context, serverID string) (*BareMetalServer, error)
-	Update(ctx context.Context, serverID string, bmReq *BareMetalUpdate) (*BareMetalServer, error)
+	Create(ctx context.Context, bmCreate *BareMetalCreate) (*BareMetalServer, *http.Response, error)
+	Get(ctx context.Context, serverID string) (*BareMetalServer, *http.Response, error)
+	Update(ctx context.Context, serverID string, bmReq *BareMetalUpdate) (*BareMetalServer, *http.Response, error)
 	Delete(ctx context.Context, serverID string) error
-	List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, error)
+	List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, *http.Response, error)
 
-	GetBandwidth(ctx context.Context, serverID string) (*Bandwidth, error)
-	GetUserData(ctx context.Context, serverID string) (*UserData, error)
-	GetVNCUrl(ctx context.Context, serverID string) (*VNCUrl, error)
+	GetBandwidth(ctx context.Context, serverID string) (*Bandwidth, *http.Response, error)
+	GetUserData(ctx context.Context, serverID string) (*UserData, *http.Response, error)
+	GetVNCUrl(ctx context.Context, serverID string) (*VNCUrl, *http.Response, error)
 
-	ListIPv4s(ctx context.Context, serverID string, options *ListOptions) ([]IPv4, *Meta, error)
-	ListIPv6s(ctx context.Context, serverID string, options *ListOptions) ([]IPv6, *Meta, error)
+	ListIPv4s(ctx context.Context, serverID string, options *ListOptions) ([]IPv4, *Meta, *http.Response, error)
+	ListIPv6s(ctx context.Context, serverID string, options *ListOptions) ([]IPv6, *Meta, *http.Response, error)
 
 	Halt(ctx context.Context, serverID string) error
 	Reboot(ctx context.Context, serverID string) error
 	Start(ctx context.Context, serverID string) error
-	Reinstall(ctx context.Context, serverID string) (*BareMetalServer, error)
+	Reinstall(ctx context.Context, serverID string) (*BareMetalServer, *http.Response, error)
 
 	MassStart(ctx context.Context, serverList []string) error
 	MassHalt(ctx context.Context, serverList []string) error
 	MassReboot(ctx context.Context, serverList []string) error
 
-	GetUpgrades(ctx context.Context, serverID string) (*Upgrades, error)
+	GetUpgrades(ctx context.Context, serverID string) (*Upgrades, *http.Response, error)
 }
 
 // BareMetalServerServiceHandler handles interaction with the Bare Metal methods for the Vultr API
@@ -137,50 +137,53 @@ type VNCUrl struct {
 }
 
 // Create a new Bare Metal server.
-func (b *BareMetalServerServiceHandler) Create(ctx context.Context, bmCreate *BareMetalCreate) (*BareMetalServer, error) {
+func (b *BareMetalServerServiceHandler) Create(ctx context.Context, bmCreate *BareMetalCreate) (*BareMetalServer, *http.Response, error) {
 	req, err := b.client.NewRequest(ctx, http.MethodPost, bmPath, bmCreate)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	bm := new(bareMetalBase)
-	if err = b.client.DoWithContext(ctx, req, bm); err != nil {
-		return nil, err
+	resp, err := b.client.DoWithContext(ctx, req, bm)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return bm.BareMetal, nil
+	return bm.BareMetal, resp, nil
 }
 
 // Get information for a Bare Metal instance.
-func (b *BareMetalServerServiceHandler) Get(ctx context.Context, serverID string) (*BareMetalServer, error) {
+func (b *BareMetalServerServiceHandler) Get(ctx context.Context, serverID string) (*BareMetalServer, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	bms := new(bareMetalBase)
-	if err = b.client.DoWithContext(ctx, req, bms); err != nil {
-		return nil, err
+	resp, err := b.client.DoWithContext(ctx, req, bms)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return bms.BareMetal, nil
+	return bms.BareMetal, resp, nil
 }
 
 // Update a Bare Metal server
-func (b *BareMetalServerServiceHandler) Update(ctx context.Context, serverID string, bmReq *BareMetalUpdate) (*BareMetalServer, error) {
+func (b *BareMetalServerServiceHandler) Update(ctx context.Context, serverID string, bmReq *BareMetalUpdate) (*BareMetalServer, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPatch, uri, bmReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	bms := new(bareMetalBase)
-	if err = b.client.DoWithContext(ctx, req, bms); err != nil {
-		return nil, err
+	resp, err := b.client.DoWithContext(ctx, req, bms)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return bms.BareMetal, nil
+	return bms.BareMetal, resp, nil
 }
 
 // Delete a Bare Metal server.
@@ -188,129 +191,135 @@ func (b *BareMetalServerServiceHandler) Delete(ctx context.Context, serverID str
 	uri := fmt.Sprintf("%s/%s", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
-		return err
+		return nil
 	}
-
-	return b.client.DoWithContext(ctx, req, nil)
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // List all Bare Metal instances in your account.
-func (b *BareMetalServerServiceHandler) List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, error) {
+func (b *BareMetalServerServiceHandler) List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, *http.Response, error) {
 	req, err := b.client.NewRequest(ctx, http.MethodGet, bmPath, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	bms := new(bareMetalsBase)
-	if err = b.client.DoWithContext(ctx, req, bms); err != nil {
-		return nil, nil, err
+	resp, err := b.client.DoWithContext(ctx, req, bms)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return bms.BareMetals, bms.Meta, nil
+	return bms.BareMetals, bms.Meta, resp, nil
 }
 
 // GetBandwidth  used by a Bare Metal server.
-func (b *BareMetalServerServiceHandler) GetBandwidth(ctx context.Context, serverID string) (*Bandwidth, error) {
+func (b *BareMetalServerServiceHandler) GetBandwidth(ctx context.Context, serverID string) (*Bandwidth, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/bandwidth", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	bms := new(Bandwidth)
-	if err = b.client.DoWithContext(ctx, req, &bms); err != nil {
-		return nil, err
+	resp, err := b.client.DoWithContext(ctx, req, &bms)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return bms, nil
+	return bms, resp, nil
 }
 
 // GetUserData for a Bare Metal server. The userdata returned will be in base64 encoding.
-func (b *BareMetalServerServiceHandler) GetUserData(ctx context.Context, serverID string) (*UserData, error) {
+func (b *BareMetalServerServiceHandler) GetUserData(ctx context.Context, serverID string) (*UserData, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/user-data", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	userData := new(userDataBase)
-	if err = b.client.DoWithContext(ctx, req, userData); err != nil {
-		return nil, err
+	resp, err := b.client.DoWithContext(ctx, req, userData)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return userData.UserData, nil
+	return userData.UserData, resp, nil
 }
 
 // GetVNCUrl gets the vnc url for a given Bare Metal server.
-func (b *BareMetalServerServiceHandler) GetVNCUrl(ctx context.Context, serverID string) (*VNCUrl, error) {
+func (b *BareMetalServerServiceHandler) GetVNCUrl(ctx context.Context, serverID string) (*VNCUrl, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/vnc", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	vnc := new(vncBase)
-	if err = b.client.DoWithContext(ctx, req, vnc); err != nil {
-		return nil, err
+	resp, err := b.client.DoWithContext(ctx, req, vnc)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return vnc.VNCUrl, nil
+	return vnc.VNCUrl, resp, nil
 }
 
 // ListIPv4s information of a Bare Metal server.
 // IP information is only available for Bare Metal servers in the "active" state.
-func (b *BareMetalServerServiceHandler) ListIPv4s(ctx context.Context, serverID string, options *ListOptions) ([]IPv4, *Meta, error) {
+func (b *BareMetalServerServiceHandler) ListIPv4s(ctx context.Context, serverID string, options *ListOptions) ([]IPv4, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/ipv4", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	ipv4 := new(ipBase)
-	if err = b.client.DoWithContext(ctx, req, ipv4); err != nil {
-		return nil, nil, err
+	resp, err := b.client.DoWithContext(ctx, req, ipv4)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return ipv4.IPv4s, ipv4.Meta, nil
+	return ipv4.IPv4s, ipv4.Meta, resp, nil
 }
 
 // ListIPv6s information of a Bare Metal server.
 // IP information is only available for Bare Metal servers in the "active" state.
 // If the Bare Metal server does not have IPv6 enabled, then an empty array is returned.
-func (b *BareMetalServerServiceHandler) ListIPv6s(ctx context.Context, serverID string, options *ListOptions) ([]IPv6, *Meta, error) {
+func (b *BareMetalServerServiceHandler) ListIPv6s(ctx context.Context, serverID string, options *ListOptions) ([]IPv6, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/ipv6", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	ipv6 := new(ipBase)
-	if err = b.client.DoWithContext(ctx, req, ipv6); err != nil {
-		return nil, nil, err
+	resp, err := b.client.DoWithContext(ctx, req, ipv6)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return ipv6.IPv6s, ipv6.Meta, nil
+	return ipv6.IPv6s, ipv6.Meta, resp, nil
 }
 
 // Halt a Bare Metal server.
@@ -323,7 +332,8 @@ func (b *BareMetalServerServiceHandler) Halt(ctx context.Context, serverID strin
 		return err
 	}
 
-	return b.client.DoWithContext(ctx, req, nil)
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Reboot a Bare Metal server. This is a hard reboot, which means that the server is powered off, then back on.
@@ -335,7 +345,8 @@ func (b *BareMetalServerServiceHandler) Reboot(ctx context.Context, serverID str
 		return err
 	}
 
-	return b.client.DoWithContext(ctx, req, nil)
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Start a Bare Metal server.
@@ -346,24 +357,26 @@ func (b *BareMetalServerServiceHandler) Start(ctx context.Context, serverID stri
 		return err
 	}
 
-	return b.client.DoWithContext(ctx, req, nil)
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Reinstall the operating system on a Bare Metal server.
 // All data will be permanently lost, but the IP address will remain the same.
-func (b *BareMetalServerServiceHandler) Reinstall(ctx context.Context, serverID string) (*BareMetalServer, error) {
+func (b *BareMetalServerServiceHandler) Reinstall(ctx context.Context, serverID string) (*BareMetalServer, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/reinstall", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	bms := new(bareMetalBase)
-	if err = b.client.DoWithContext(ctx, req, bms); err != nil {
-		return nil, err
+	resp, err := b.client.DoWithContext(ctx, req, bms)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return bms.BareMetal, nil
+	return bms.BareMetal, resp, nil
 }
 
 // MassStart will start a list of Bare Metal servers the machine is already running, it will be restarted.
@@ -375,8 +388,8 @@ func (b *BareMetalServerServiceHandler) MassStart(ctx context.Context, serverLis
 	if err != nil {
 		return err
 	}
-
-	return b.client.DoWithContext(ctx, req, nil)
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // MassHalt a list of Bare Metal servers.
@@ -388,8 +401,8 @@ func (b *BareMetalServerServiceHandler) MassHalt(ctx context.Context, serverList
 	if err != nil {
 		return err
 	}
-
-	return b.client.DoWithContext(ctx, req, nil)
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // MassReboot a list of Bare Metal servers.
@@ -401,22 +414,23 @@ func (b *BareMetalServerServiceHandler) MassReboot(ctx context.Context, serverLi
 	if err != nil {
 		return err
 	}
-
-	return b.client.DoWithContext(ctx, req, nil)
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // GetUpgrades that are available for a Bare Metal server.
-func (b *BareMetalServerServiceHandler) GetUpgrades(ctx context.Context, serverID string) (*Upgrades, error) {
+func (b *BareMetalServerServiceHandler) GetUpgrades(ctx context.Context, serverID string) (*Upgrades, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/upgrades", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	upgrades := new(upgradeBase)
-	if err = b.client.DoWithContext(ctx, req, upgrades); err != nil {
-		return nil, err
+	resp, err := b.client.DoWithContext(ctx, req, upgrades)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return upgrades.Upgrades, nil
+	return upgrades.Upgrades, resp, nil
 }

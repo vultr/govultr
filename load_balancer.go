@@ -13,17 +13,17 @@ const lbPath = "/v2/load-balancers"
 // LoadBalancerService is the interface to interact with the server endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/load-balancer
 type LoadBalancerService interface {
-	Create(ctx context.Context, createReq *LoadBalancerReq) (*LoadBalancer, error)
-	Get(ctx context.Context, ID string) (*LoadBalancer, error)
+	Create(ctx context.Context, createReq *LoadBalancerReq) (*LoadBalancer, *http.Response, error)
+	Get(ctx context.Context, ID string) (*LoadBalancer, *http.Response, error)
 	Update(ctx context.Context, ID string, updateReq *LoadBalancerReq) error
 	Delete(ctx context.Context, ID string) error
-	List(ctx context.Context, options *ListOptions) ([]LoadBalancer, *Meta, error)
-	CreateForwardingRule(ctx context.Context, ID string, rule *ForwardingRule) (*ForwardingRule, error)
-	GetForwardingRule(ctx context.Context, ID string, ruleID string) (*ForwardingRule, error)
+	List(ctx context.Context, options *ListOptions) ([]LoadBalancer, *Meta, *http.Response, error)
+	CreateForwardingRule(ctx context.Context, ID string, rule *ForwardingRule) (*ForwardingRule, *http.Response, error)
+	GetForwardingRule(ctx context.Context, ID string, ruleID string) (*ForwardingRule, *http.Response, error)
 	DeleteForwardingRule(ctx context.Context, ID string, RuleID string) error
-	ListForwardingRules(ctx context.Context, ID string, options *ListOptions) ([]ForwardingRule, *Meta, error)
-	ListFirewallRules(ctx context.Context, ID string, options *ListOptions) ([]LBFirewallRule, *Meta, error)
-	GetFirewallRule(ctx context.Context, ID string, ruleID string) (*LBFirewallRule, error)
+	ListForwardingRules(ctx context.Context, ID string, options *ListOptions) ([]ForwardingRule, *Meta, *http.Response, error)
+	ListFirewallRules(ctx context.Context, ID string, options *ListOptions) ([]LBFirewallRule, *Meta, *http.Response, error)
+	GetFirewallRule(ctx context.Context, ID string, ruleID string) (*LBFirewallRule, *http.Response, error)
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -155,34 +155,36 @@ type lbFWRuleBase struct {
 }
 
 // Create a load balancer
-func (l *LoadBalancerHandler) Create(ctx context.Context, createReq *LoadBalancerReq) (*LoadBalancer, error) {
+func (l *LoadBalancerHandler) Create(ctx context.Context, createReq *LoadBalancerReq) (*LoadBalancer, *http.Response, error) {
 	req, err := l.client.NewRequest(ctx, http.MethodPost, lbPath, createReq)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	var lb = new(lbBase)
-	if err = l.client.DoWithContext(ctx, req, &lb); err != nil {
-		return nil, err
+	resp, err := l.client.DoWithContext(ctx, req, &lb)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return lb.LoadBalancer, nil
+	return lb.LoadBalancer, resp, nil
 }
 
 // Get a load balancer
-func (l *LoadBalancerHandler) Get(ctx context.Context, ID string) (*LoadBalancer, error) {
+func (l *LoadBalancerHandler) Get(ctx context.Context, ID string) (*LoadBalancer, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s", lbPath, ID)
 	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	var lb = new(lbBase)
-	if err = l.client.DoWithContext(ctx, req, lb); err != nil {
-		return nil, err
+	resp, err := l.client.DoWithContext(ctx, req, lb)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return lb.LoadBalancer, nil
+	return lb.LoadBalancer, resp, nil
 }
 
 // Update updates your your load balancer
@@ -193,7 +195,8 @@ func (l *LoadBalancerHandler) Update(ctx context.Context, ID string, updateReq *
 		return err
 	}
 
-	return l.client.DoWithContext(ctx, req, nil)
+	_, err = l.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Delete a load balancer subscription.
@@ -203,86 +206,90 @@ func (l *LoadBalancerHandler) Delete(ctx context.Context, ID string) error {
 	if err != nil {
 		return err
 	}
-
-	return l.client.DoWithContext(ctx, req, nil)
+	_, err = l.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // List all load balancer subscriptions on the current account.
-func (l *LoadBalancerHandler) List(ctx context.Context, options *ListOptions) ([]LoadBalancer, *Meta, error) {
+func (l *LoadBalancerHandler) List(ctx context.Context, options *ListOptions) ([]LoadBalancer, *Meta, *http.Response, error) {
 	req, err := l.client.NewRequest(ctx, http.MethodGet, lbPath, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	lbs := new(lbsBase)
-	if err = l.client.DoWithContext(ctx, req, &lbs); err != nil {
-		return nil, nil, err
+	resp, err := l.client.DoWithContext(ctx, req, &lbs)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return lbs.LoadBalancers, lbs.Meta, nil
+	return lbs.LoadBalancers, lbs.Meta, resp, nil
 }
 
 // CreateForwardingRule will create a new forwarding rule for your load balancer subscription.
 // Note the RuleID will be returned in the ForwardingRule struct
-func (l *LoadBalancerHandler) CreateForwardingRule(ctx context.Context, ID string, rule *ForwardingRule) (*ForwardingRule, error) {
+func (l *LoadBalancerHandler) CreateForwardingRule(ctx context.Context, ID string, rule *ForwardingRule) (*ForwardingRule, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/forwarding-rules", lbPath, ID)
 	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, rule)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	fwRule := new(lbRuleBase)
-	if err = l.client.DoWithContext(ctx, req, fwRule); err != nil {
-		return nil, err
+	resp, err := l.client.DoWithContext(ctx, req, fwRule)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return fwRule.ForwardingRule, nil
+	return fwRule.ForwardingRule, resp, nil
 }
 
 // GetForwardingRule will get a forwarding rule from your load balancer subscription.
-func (l *LoadBalancerHandler) GetForwardingRule(ctx context.Context, ID string, ruleID string) (*ForwardingRule, error) {
+func (l *LoadBalancerHandler) GetForwardingRule(ctx context.Context, ID string, ruleID string) (*ForwardingRule, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/forwarding-rules/%s", lbPath, ID, ruleID)
 	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	fwRule := new(lbRuleBase)
-	if err = l.client.DoWithContext(ctx, req, fwRule); err != nil {
-		return nil, err
+	resp, err := l.client.DoWithContext(ctx, req, fwRule)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return fwRule.ForwardingRule, nil
+	return fwRule.ForwardingRule, resp, nil
 }
 
 // ListForwardingRules lists all forwarding rules for a load balancer subscription
-func (l *LoadBalancerHandler) ListForwardingRules(ctx context.Context, ID string, options *ListOptions) ([]ForwardingRule, *Meta, error) {
+func (l *LoadBalancerHandler) ListForwardingRules(ctx context.Context, ID string, options *ListOptions) ([]ForwardingRule, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/forwarding-rules", lbPath, ID)
 	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	fwRules := new(lbRulesBase)
-	if err = l.client.DoWithContext(ctx, req, &fwRules); err != nil {
-		return nil, nil, err
+	resp, err := l.client.DoWithContext(ctx, req, &fwRules)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return fwRules.ForwardingRules, fwRules.Meta, nil
+	return fwRules.ForwardingRules, fwRules.Meta, resp, nil
 }
 
 // DeleteForwardingRule removes a forwarding rule from a load balancer subscription
@@ -293,44 +300,47 @@ func (l *LoadBalancerHandler) DeleteForwardingRule(ctx context.Context, ID strin
 		return err
 	}
 
-	return l.client.DoWithContext(ctx, req, nil)
+	_, err = l.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // GetFirewallRule will get a firewall rule from your load balancer subscription.
-func (l *LoadBalancerHandler) GetFirewallRule(ctx context.Context, ID string, ruleID string) (*LBFirewallRule, error) {
+func (l *LoadBalancerHandler) GetFirewallRule(ctx context.Context, ID string, ruleID string) (*LBFirewallRule, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/firewall-rules/%s", lbPath, ID, ruleID)
 	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	fwRule := new(lbFWRuleBase)
-	if err = l.client.DoWithContext(ctx, req, fwRule); err != nil {
-		return nil, err
+	resp, err := l.client.DoWithContext(ctx, req, fwRule)
+	if err != nil {
+		return nil, resp, err
 	}
 
-	return fwRule.FirewallRule, nil
+	return fwRule.FirewallRule, resp, nil
 }
 
 // ListFirewallRules lists all firewall rules for a load balancer subscription
-func (l *LoadBalancerHandler) ListFirewallRules(ctx context.Context, ID string, options *ListOptions) ([]LBFirewallRule, *Meta, error) {
+func (l *LoadBalancerHandler) ListFirewallRules(ctx context.Context, ID string, options *ListOptions) ([]LBFirewallRule, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/firewall-rules", lbPath, ID)
 	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	req.URL.RawQuery = newValues.Encode()
 
 	fwRules := new(lbFWRulesBase)
-	if err = l.client.DoWithContext(ctx, req, &fwRules); err != nil {
-		return nil, nil, err
+	resp, err := l.client.DoWithContext(ctx, req, &fwRules)
+	if err != nil {
+		return nil, nil, resp, err
 	}
 
-	return fwRules.FirewallRules, fwRules.Meta, nil
+	return fwRules.FirewallRules, fwRules.Meta, resp, nil
 }

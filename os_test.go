@@ -16,7 +16,7 @@ func TestOSServiceHandler_List(t *testing.T) {
 		fmt.Fprint(w, response)
 	})
 
-	os, meta, err := client.OS.List(ctx, nil)
+	os, meta, _, err := client.OS.List(ctx, nil)
 	if err != nil {
 		t.Errorf("OS.List returned error: %v", err)
 	}
