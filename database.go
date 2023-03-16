@@ -473,7 +473,7 @@ type DatabaseVersionUpgradeReq struct {
 	Version string `json:"version,omitempty"`
 }
 
-// List all database plans
+// ListPlans retrieves all database plans
 func (d *DatabaseServiceHandler) ListPlans(ctx context.Context, options *DBPlanListOptions) ([]DatabasePlan, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/plans", databasePath)
 
@@ -498,7 +498,7 @@ func (d *DatabaseServiceHandler) ListPlans(ctx context.Context, options *DBPlanL
 	return databasePlans.DatabasePlans, databasePlans.Meta, resp, nil
 }
 
-// List all databases on your account.
+// List retrieves all databases on your account
 func (d *DatabaseServiceHandler) List(ctx context.Context, options *DBListOptions) ([]Database, *Meta, *http.Response, error) {
 	req, err := d.client.NewRequest(ctx, http.MethodGet, databasePath, nil)
 	if err != nil {
@@ -537,7 +537,7 @@ func (d *DatabaseServiceHandler) Create(ctx context.Context, databaseReq *Databa
 	return database.Database, resp, nil
 }
 
-// Get will get the server with the given databaseID
+// Get will get the Managed Database with the given databaseID
 func (d *DatabaseServiceHandler) Get(ctx context.Context, databaseID string) (*Database, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s", databasePath, databaseID)
 
@@ -586,7 +586,7 @@ func (d *DatabaseServiceHandler) Delete(ctx context.Context, databaseID string) 
 	return err
 }
 
-// List all database users on your Managed Database.
+// ListUsers retrieves all database users on your Managed Database.
 func (d *DatabaseServiceHandler) ListUsers(ctx context.Context, databaseID string) ([]DatabaseUser, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/users", databasePath, databaseID)
 
@@ -604,7 +604,7 @@ func (d *DatabaseServiceHandler) ListUsers(ctx context.Context, databaseID strin
 	return databaseUsers.DatabaseUsers, databaseUsers.Meta, resp, nil
 }
 
-// Create a user within the Managed Database with the given parameters
+// CreateUser will create a user within the Managed Database with the given parameters
 func (d *DatabaseServiceHandler) CreateUser(ctx context.Context, databaseID string, databaseUserReq *DatabaseUserCreateReq) (*DatabaseUser, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/users", databasePath, databaseID)
 
@@ -622,8 +622,8 @@ func (d *DatabaseServiceHandler) CreateUser(ctx context.Context, databaseID stri
 	return databaseUser.DatabaseUser, resp, nil
 }
 
-// Get information on an individual user within a Managed Database based on a username and databaseID
-func (d *DatabaseServiceHandler) GetUser(ctx context.Context, databaseID string, username string) (*DatabaseUser, *http.Response, error) {
+// GetUser retrieves information on an individual user within a Managed Database based on a username and databaseID
+func (d *DatabaseServiceHandler) GetUser(ctx context.Context, databaseID, username string) (*DatabaseUser, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/users/%s", databasePath, databaseID, username)
 
 	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -640,8 +640,8 @@ func (d *DatabaseServiceHandler) GetUser(ctx context.Context, databaseID string,
 	return databaseUser.DatabaseUser, resp, nil
 }
 
-// Update a user within the Managed Database with the given parameters
-func (d *DatabaseServiceHandler) UpdateUser(ctx context.Context, databaseID string, username string, databaseUserReq *DatabaseUserUpdateReq) (*DatabaseUser, *http.Response, error) {
+// UpdateUser will update a user within the Managed Database with the given parameters
+func (d *DatabaseServiceHandler) UpdateUser(ctx context.Context, databaseID, username string, databaseUserReq *DatabaseUserUpdateReq) (*DatabaseUser, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/users/%s", databasePath, databaseID, username)
 
 	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseUserReq)
@@ -658,8 +658,8 @@ func (d *DatabaseServiceHandler) UpdateUser(ctx context.Context, databaseID stri
 	return databaseUser.DatabaseUser, resp, nil
 }
 
-// Delete a user within the Managed database. All data will be permanently lost.
-func (d *DatabaseServiceHandler) DeleteUser(ctx context.Context, databaseID string, username string) error {
+// DeleteUser will delete a user within the Managed database. All data will be permanently lost.
+func (d *DatabaseServiceHandler) DeleteUser(ctx context.Context, databaseID, username string) error {
 	uri := fmt.Sprintf("%s/%s/users/%s", databasePath, databaseID, username)
 
 	req, err := d.client.NewRequest(ctx, http.MethodDelete, uri, nil)
@@ -671,7 +671,7 @@ func (d *DatabaseServiceHandler) DeleteUser(ctx context.Context, databaseID stri
 	return err
 }
 
-// List all logical databases on your Managed Database.
+// ListDBs retrieves all logical databases on your Managed Database.
 func (d *DatabaseServiceHandler) ListDBs(ctx context.Context, databaseID string) ([]DatabaseDB, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/dbs", databasePath, databaseID)
 
@@ -689,7 +689,7 @@ func (d *DatabaseServiceHandler) ListDBs(ctx context.Context, databaseID string)
 	return databaseDBs.DatabaseDBs, databaseDBs.Meta, resp, nil
 }
 
-// Create a logical database within the Managed Database with the given parameters
+// CreateDB will create a logical database within the Managed Database with the given parameters
 func (d *DatabaseServiceHandler) CreateDB(ctx context.Context, databaseID string, databaseDBReq *DatabaseDBCreateReq) (*DatabaseDB, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/dbs", databasePath, databaseID)
 
@@ -707,8 +707,8 @@ func (d *DatabaseServiceHandler) CreateDB(ctx context.Context, databaseID string
 	return databaseDB.DatabaseDB, resp, nil
 }
 
-// Get information on an individual logical database within a Managed Database based on a dbname and databaseID
-func (d *DatabaseServiceHandler) GetDB(ctx context.Context, databaseID string, dbname string) (*DatabaseDB, *http.Response, error) {
+// GetDB retrieves information on an individual logical database within a Managed Database based on a dbname and databaseID
+func (d *DatabaseServiceHandler) GetDB(ctx context.Context, databaseID, dbname string) (*DatabaseDB, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/dbs/%s", databasePath, databaseID, dbname)
 
 	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -725,8 +725,8 @@ func (d *DatabaseServiceHandler) GetDB(ctx context.Context, databaseID string, d
 	return databaseDB.DatabaseDB, resp, nil
 }
 
-// Delete a user within the Managed database. All data will be permanently lost.
-func (d *DatabaseServiceHandler) DeleteDB(ctx context.Context, databaseID string, dbname string) error {
+// DeleteDB will delete a user within the Managed database
+func (d *DatabaseServiceHandler) DeleteDB(ctx context.Context, databaseID, dbname string) error {
 	uri := fmt.Sprintf("%s/%s/dbs/%s", databasePath, databaseID, dbname)
 
 	req, err := d.client.NewRequest(ctx, http.MethodDelete, uri, nil)
@@ -738,7 +738,7 @@ func (d *DatabaseServiceHandler) DeleteDB(ctx context.Context, databaseID string
 	return err
 }
 
-// List all available maintenance updates for your Managed Database.
+// ListMaintenanceUpdates retrieves all available maintenance updates for your Managed Database.
 func (d *DatabaseServiceHandler) ListMaintenanceUpdates(ctx context.Context, databaseID string) ([]string, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/maintenance", databasePath, databaseID)
 
@@ -756,7 +756,7 @@ func (d *DatabaseServiceHandler) ListMaintenanceUpdates(ctx context.Context, dat
 	return databaseUpdates.AvailableUpdates, resp, nil
 }
 
-// Start the maintenance update process for your Managed Database
+// StartMaintenance will start the maintenance update process for your Managed Database
 func (d *DatabaseServiceHandler) StartMaintenance(ctx context.Context, databaseID string) (string, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/maintenance", databasePath, databaseID)
 
@@ -774,7 +774,7 @@ func (d *DatabaseServiceHandler) StartMaintenance(ctx context.Context, databaseI
 	return databaseUpdates.Message, resp, nil
 }
 
-// Query for service alerts for the Managed Database using the given parameters
+// ListServiceAlerts queries for service alerts for the Managed Database using the given parameters
 func (d *DatabaseServiceHandler) ListServiceAlerts(ctx context.Context, databaseID string, databaseAlertsReq *DatabaseListAlertsReq) ([]DatabaseAlert, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/alerts", databasePath, databaseID)
 
@@ -792,7 +792,7 @@ func (d *DatabaseServiceHandler) ListServiceAlerts(ctx context.Context, database
 	return databaseAlerts.DatabaseAlerts, resp, nil
 }
 
-// View the migration status for your Managed Database.
+// GetMigrationStatus retrieves the migration status for your Managed Database.
 func (d *DatabaseServiceHandler) GetMigrationStatus(ctx context.Context, databaseID string) (*DatabaseMigration, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/migration", databasePath, databaseID)
 
@@ -810,7 +810,7 @@ func (d *DatabaseServiceHandler) GetMigrationStatus(ctx context.Context, databas
 	return databaseMigration.Migration, resp, nil
 }
 
-// Start a migration for the Managed Database using the given credentials.
+// StartMigration will start a migration for the Managed Database using the given credentials.
 func (d *DatabaseServiceHandler) StartMigration(ctx context.Context, databaseID string, databaseMigrationReq *DatabaseMigrationStartReq) (*DatabaseMigration, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/migration", databasePath, databaseID)
 
@@ -828,7 +828,7 @@ func (d *DatabaseServiceHandler) StartMigration(ctx context.Context, databaseID 
 	return databaseMigration.Migration, resp, nil
 }
 
-// Detach a migration from the Managed database.
+// DetachMigration will detach a migration from the Managed database.
 func (d *DatabaseServiceHandler) DetachMigration(ctx context.Context, databaseID string) error {
 	uri := fmt.Sprintf("%s/%s/migration", databasePath, databaseID)
 
@@ -859,7 +859,7 @@ func (d *DatabaseServiceHandler) AddReadOnlyReplica(ctx context.Context, databas
 	return database.Database, resp, nil
 }
 
-// Get backup information for your Managed Database.
+// GetBackupInformation retrieves backup information for your Managed Database.
 func (d *DatabaseServiceHandler) GetBackupInformation(ctx context.Context, databaseID string) (*DatabaseBackups, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/backups", databasePath, databaseID)
 
@@ -913,7 +913,7 @@ func (d *DatabaseServiceHandler) Fork(ctx context.Context, databaseID string, da
 	return database.Database, resp, nil
 }
 
-// List all connection pools within your PostgreSQL Managed Database.
+// ListConnectionPools retrieves all connection pools within your PostgreSQL Managed Database.
 func (d *DatabaseServiceHandler) ListConnectionPools(ctx context.Context, databaseID string) (*DatabaseConnections, []DatabaseConnectionPool, *Meta, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/connection-pools", databasePath, databaseID)
 
@@ -931,7 +931,7 @@ func (d *DatabaseServiceHandler) ListConnectionPools(ctx context.Context, databa
 	return databaseConnectionPools.Connections, databaseConnectionPools.ConnectionPools, databaseConnectionPools.Meta, resp, nil
 }
 
-// Create a connection pool within the PostgreSQL Managed Database with the given parameters
+// CreateConnectionPool will create a connection pool within the PostgreSQL Managed Database with the given parameters
 func (d *DatabaseServiceHandler) CreateConnectionPool(ctx context.Context, databaseID string, databaseConnectionPoolReq *DatabaseConnectionPoolCreateReq) (*DatabaseConnectionPool, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/connection-pools", databasePath, databaseID)
 
@@ -949,8 +949,8 @@ func (d *DatabaseServiceHandler) CreateConnectionPool(ctx context.Context, datab
 	return databaseConnectionPool.ConnectionPool, resp, nil
 }
 
-// Get information on an individual connection pool within a PostgreSQL Managed Database based on a poolName and databaseID
-func (d *DatabaseServiceHandler) GetConnectionPool(ctx context.Context, databaseID string, poolName string) (*DatabaseConnectionPool, *http.Response, error) {
+// GetConnectionPool retrieves information on an individual connection pool within a PostgreSQL Managed Database based on a poolName and databaseID
+func (d *DatabaseServiceHandler) GetConnectionPool(ctx context.Context, databaseID, poolName string) (*DatabaseConnectionPool, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/connection-pools/%s", databasePath, databaseID, poolName)
 
 	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -967,8 +967,8 @@ func (d *DatabaseServiceHandler) GetConnectionPool(ctx context.Context, database
 	return databaseConnectionPool.ConnectionPool, resp, nil
 }
 
-// Update a connection pool within the PostgreSQL Managed Database with the given parameters
-func (d *DatabaseServiceHandler) UpdateConnectionPool(ctx context.Context, databaseID string, poolName string, databaseConnectionPoolReq *DatabaseConnectionPoolUpdateReq) (*DatabaseConnectionPool, *http.Response, error) {
+// UpdateConnectionPool will update a connection pool within the PostgreSQL Managed Database with the given parameters
+func (d *DatabaseServiceHandler) UpdateConnectionPool(ctx context.Context, databaseID, poolName string, databaseConnectionPoolReq *DatabaseConnectionPoolUpdateReq) (*DatabaseConnectionPool, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/connection-pools/%s", databasePath, databaseID, poolName)
 
 	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseConnectionPoolReq)
@@ -985,8 +985,8 @@ func (d *DatabaseServiceHandler) UpdateConnectionPool(ctx context.Context, datab
 	return databaseConnectionPool.ConnectionPool, resp, nil
 }
 
-// Delete a user within the Managed database. All data will be permanently lost.
-func (d *DatabaseServiceHandler) DeleteConnectionPool(ctx context.Context, databaseID string, poolName string) error {
+// DeleteConnectionPool will delete a user within the Managed database. All data will be permanently lost.
+func (d *DatabaseServiceHandler) DeleteConnectionPool(ctx context.Context, databaseID, poolName string) error {
 	uri := fmt.Sprintf("%s/%s/connection-pools/%s", databasePath, databaseID, poolName)
 
 	req, err := d.client.NewRequest(ctx, http.MethodDelete, uri, nil)
@@ -998,7 +998,7 @@ func (d *DatabaseServiceHandler) DeleteConnectionPool(ctx context.Context, datab
 	return err
 }
 
-// List all connection pools within your PostgreSQL Managed Database.
+// ListAdvancedOptions retrieves all connection pools within your PostgreSQL Managed Database.
 func (d *DatabaseServiceHandler) ListAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseAdvancedOptions, []AvailableOption, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/advanced-options", databasePath, databaseID)
 
@@ -1016,7 +1016,7 @@ func (d *DatabaseServiceHandler) ListAdvancedOptions(ctx context.Context, databa
 	return databaseAdvancedOptions.ConfiguredOptions, databaseAdvancedOptions.AvailableOptions, resp, nil
 }
 
-// Update a connection pool within the PostgreSQL Managed Database with the given parameters
+// UpdateAdvancedOptions will update a connection pool within the PostgreSQL Managed Database with the given parameters
 func (d *DatabaseServiceHandler) UpdateAdvancedOptions(ctx context.Context, databaseID string, databaseAdvancedOptionsReq *DatabaseAdvancedOptions) (*DatabaseAdvancedOptions, []AvailableOption, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/advanced-options", databasePath, databaseID)
 
@@ -1034,7 +1034,7 @@ func (d *DatabaseServiceHandler) UpdateAdvancedOptions(ctx context.Context, data
 	return databaseAdvancedOptions.ConfiguredOptions, databaseAdvancedOptions.AvailableOptions, resp, nil
 }
 
-// List all available version upgrades for your Managed Database.
+// ListAvailableVersions retrieves all available version upgrades for your Managed Database.
 func (d *DatabaseServiceHandler) ListAvailableVersions(ctx context.Context, databaseID string) ([]string, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/version-upgrade", databasePath, databaseID)
 
@@ -1052,7 +1052,7 @@ func (d *DatabaseServiceHandler) ListAvailableVersions(ctx context.Context, data
 	return databaseVersions.AvailableVersions, resp, nil
 }
 
-// Start a migration for the Managed Database using the given credentials.
+// StartVersionUpgrade will start a migration for the Managed Database using the given credentials.
 func (d *DatabaseServiceHandler) StartVersionUpgrade(ctx context.Context, databaseID string, databaseVersionUpgradeReq *DatabaseVersionUpgradeReq) (string, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/version-upgrade", databasePath, databaseID)
 

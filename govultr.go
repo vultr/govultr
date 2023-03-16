@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -76,9 +76,23 @@ type RequestCompletionCallback func(*http.Request, *http.Response)
 
 // NewClient returns a Vultr API Client
 func NewClient(httpClient *http.Client) *Client {
-
 	if httpClient == nil {
-		httpClient = http.DefaultClient
+		httpClient = &http.Client{
+			Transport: &http.Transport{
+				DialContext: (&net.Dialer{
+					Timeout:   30 * time.Second,
+					KeepAlive: 30 * time.Second,
+					DualStack: true,
+				}).DialContext,
+				MaxIdleConns:          100,
+				IdleConnTimeout:       90 * time.Second,
+				TLSHandshakeTimeout:   10 * time.Second,
+				ExpectContinueTimeout: 1 * time.Second,
+				MaxIdleConnsPerHost:   -1,
+				DisableKeepAlives:     true,
+			},
+			Timeout: 5 * time.Second,
+		}
 	}
 
 	baseURL, _ := url.Parse(defaultBase)
@@ -134,8 +148,8 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 
 	buf := new(bytes.Buffer)
 	if body != nil {
-		if err = json.NewEncoder(buf).Encode(body); err != nil {
-			return nil, err
+		if err2 := json.NewEncoder(buf).Encode(body); err2 != nil {
+			return nil, err2
 		}
 	}
 
@@ -172,14 +186,18 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 		return nil, err
 	}
 
-	defer res.Body.Close()
+	defer func() {
+		if rerr := res.Body.Close(); err == nil {
+			err = rerr
+		}
+	}()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	res.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	res.Body = io.NopCloser(bytes.NewBuffer(body))
 
 	if res.StatusCode >= http.StatusOK && res.StatusCode <= http.StatusNoContent {
 		if data != nil {
@@ -207,9 +225,9 @@ func (c *Client) SetBaseURL(baseURL string) error {
 
 // SetRateLimit Overrides the default rateLimit. For performance, exponential
 // backoff is used with the minimum wait being 2/3rds the time provided.
-func (c *Client) SetRateLimit(time time.Duration) {
-	c.client.RetryWaitMin = time / 3 * 2
-	c.client.RetryWaitMax = time
+func (c *Client) SetRateLimit(t time.Duration) {
+	c.client.RetryWaitMin = t / 3 * 2
+	c.client.RetryWaitMax = t
 }
 
 // SetUserAgent Overrides the default UserAgent

@@ -99,7 +99,7 @@ func TestDatabaseServiceHandler_List(t *testing.T) {
 		t.Errorf("Database.List returned %+v", err)
 	}
 
-	mysql_sql_modes := []string{
+	mysqlSQLModes := []string{
 		"ANSI",
 		"ERROR_FOR_DIVISION_BY_ZERO",
 		"NO_ENGINE_SUBSTITUTION",
@@ -132,7 +132,7 @@ func TestDatabaseServiceHandler_List(t *testing.T) {
 			MaintenanceTime:        "02:00:00",
 			LatestBackup:           "2023-03-12 22:07:06",
 			TrustedIPs:             []string{},
-			MySQLSQLModes:          mysql_sql_modes,
+			MySQLSQLModes:          mysqlSQLModes,
 			MySQLRequirePrimaryKey: BoolToBoolPtr(true),
 			MySQLSlowQueryLog:      BoolToBoolPtr(false),
 			ClusterTimeZone:        "America/New_York",
@@ -163,7 +163,7 @@ func TestDatabaseServiceHandler_List(t *testing.T) {
 			MaintenanceTime:        "02:00:00",
 			LatestBackup:           "2023-03-13 00:59:07",
 			TrustedIPs:             []string{},
-			MySQLSQLModes:          mysql_sql_modes,
+			MySQLSQLModes:          mysqlSQLModes,
 			MySQLRequirePrimaryKey: BoolToBoolPtr(true),
 			MySQLSlowQueryLog:      BoolToBoolPtr(false),
 			ClusterTimeZone:        "America/New_York",
@@ -243,7 +243,7 @@ func TestDatabaseServiceHandler_Create(t *testing.T) {
 		t.Errorf("Database.Create returned %+v", err)
 	}
 
-	mysql_sql_modes := []string{
+	mysqlSQLModes := []string{
 		"ANSI",
 		"ERROR_FOR_DIVISION_BY_ZERO",
 		"NO_ENGINE_SUBSTITUTION",
@@ -275,7 +275,7 @@ func TestDatabaseServiceHandler_Create(t *testing.T) {
 		MaintenanceTime:        "02:00:00",
 		LatestBackup:           "2023-03-13 00:59:07",
 		TrustedIPs:             []string{},
-		MySQLSQLModes:          mysql_sql_modes,
+		MySQLSQLModes:          mysqlSQLModes,
 		MySQLRequirePrimaryKey: BoolToBoolPtr(true),
 		MySQLSlowQueryLog:      BoolToBoolPtr(false),
 		ClusterTimeZone:        "America/New_York",
@@ -374,7 +374,7 @@ func TestDatabaseServiceHandler_Get(t *testing.T) {
 		t.Errorf("Database.Get returned %+v", err)
 	}
 
-	mysql_sql_modes := []string{
+	mysqlSQLModes := []string{
 		"ANSI",
 		"ERROR_FOR_DIVISION_BY_ZERO",
 		"NO_ENGINE_SUBSTITUTION",
@@ -407,7 +407,7 @@ func TestDatabaseServiceHandler_Get(t *testing.T) {
 			MaintenanceTime:        "02:00:00",
 			LatestBackup:           "2023-03-12 22:07:06",
 			TrustedIPs:             []string{},
-			MySQLSQLModes:          mysql_sql_modes,
+			MySQLSQLModes:          mysqlSQLModes,
 			MySQLRequirePrimaryKey: BoolToBoolPtr(true),
 			MySQLSlowQueryLog:      BoolToBoolPtr(false),
 			ClusterTimeZone:        "America/New_York",
@@ -437,7 +437,7 @@ func TestDatabaseServiceHandler_Get(t *testing.T) {
 		MaintenanceTime:        "02:00:00",
 		LatestBackup:           "2023-03-13 00:59:07",
 		TrustedIPs:             []string{},
-		MySQLSQLModes:          mysql_sql_modes,
+		MySQLSQLModes:          mysqlSQLModes,
 		MySQLRequirePrimaryKey: BoolToBoolPtr(true),
 		MySQLSlowQueryLog:      BoolToBoolPtr(false),
 		ClusterTimeZone:        "America/New_York",
@@ -545,7 +545,7 @@ func TestDatabaseServiceHandler_Update(t *testing.T) {
 		t.Errorf("Database.Update returned %+v", err)
 	}
 
-	mysql_sql_modes := []string{
+	mysqlSQLModes := []string{
 		"ANSI",
 		"ERROR_FOR_DIVISION_BY_ZERO",
 		"NO_ENGINE_SUBSTITUTION",
@@ -578,7 +578,7 @@ func TestDatabaseServiceHandler_Update(t *testing.T) {
 			MaintenanceTime:        "02:00:00",
 			LatestBackup:           "2023-03-12 22:07:06",
 			TrustedIPs:             []string{},
-			MySQLSQLModes:          mysql_sql_modes,
+			MySQLSQLModes:          mysqlSQLModes,
 			MySQLRequirePrimaryKey: BoolToBoolPtr(true),
 			MySQLSlowQueryLog:      BoolToBoolPtr(true),
 			MySQLLongQueryTime:     2,
@@ -609,7 +609,7 @@ func TestDatabaseServiceHandler_Update(t *testing.T) {
 		MaintenanceTime:        "02:00:00",
 		LatestBackup:           "2023-03-13 00:59:07",
 		TrustedIPs:             []string{},
-		MySQLSQLModes:          mysql_sql_modes,
+		MySQLSQLModes:          mysqlSQLModes,
 		MySQLRequirePrimaryKey: BoolToBoolPtr(true),
 		MySQLSlowQueryLog:      BoolToBoolPtr(true),
 		MySQLLongQueryTime:     2,
