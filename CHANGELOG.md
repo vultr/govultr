@@ -2,7 +2,7 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
-## [v3.0.0](https://github.com/vultr/govultr/compare/v2.17.2...v3.0.0) (2023-03-20)
+## [v3.0.1](https://github.com/vultr/govultr/compare/v2.17.2...v3.0.1) (2023-03-20)
 
 ### Enhancements
 * Add golangci and update go version in workflows[235](https://github.com/vultr/govultr/pull/235)
