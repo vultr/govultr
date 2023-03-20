@@ -2,6 +2,23 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v3.0.0](https://github.com/vultr/govultr/compare/v2.17.2...v3.0.0) (2023-03-20)
+
+### Enhancements
+* Add golangci and update go version in workflows[235](https://github.com/vultr/govultr/pull/235)
+* Fix context error in govultr test [239](https://github.com/vultr/govultr/pull/239)
+* Add resource response functionality [240](https://github.com/vultr/govultr/pull/240)
+* Add support for Vultr Managed Databases [238](https://github.com/vultr/govultr/pull/238)
+
+### Dependencies
+* Bump github.com/hashicorp/go-retryablehttp from 0.7.1 to 0.7.2 [236](https://github.com/vultr/govultr/pull/236)
+* Update Go to v1.20 [241](https://github.com/vultr/govultr/pull/241)
+* Update go to v1.19 [234](https://github.com/vultr/govultr/pull/234)
+
+### New Contributors
+* @mondragonfx made their first contribution in [240](https://github.com/vultr/govultr/pull/240)
+* @christhemorse made their first contribution in [238](https://github.com/vultr/govultr/pull/238)
+
 ## [v2.17.2](https://github.com/vultr/govultr/compare/v2.17.1...v2.17.2) (2022-06-13)
 
 ### Enhancement
@@ -33,7 +50,7 @@
 * Kubernetes: added auto scaler options to node pools [215](https://github.com/vultr/govultr/pull/215)
 * Firewall rules: added new field `ip_type` in get/list responses to be consistent with the create calls [216](https://github.com/vultr/govultr/pull/216)
 * Kubernetes: Upgrade support [217](https://github.com/vultr/govultr/pull/217)
-* Baremetal: Added support for new `tags` field. This field allows multiple string tags to be associated with an instance [218](https://github.com/vultr/govultr/pull/218) 
+* Baremetal: Added support for new `tags` field. This field allows multiple string tags to be associated with an instance [218](https://github.com/vultr/govultr/pull/218)
 * Instance: Added support for new `tags` field. This field allows multiple string tags to be associated with an instance [218](https://github.com/vultr/govultr/pull/218)
 
 ### Deprecations
@@ -49,7 +66,7 @@
 * Block : add `omityempty` to `block_type` to prevent deploy issues [212](https://github.com/vultr/govultr/pull/212)
 
 ## [v2.15.0](https://github.com/vultr/govultr/compare/v2.14.2..v2.15.0) (2022-04-12)
-### Enhancement 
+### Enhancement
 * Block : New optional field `block_type`. This new field is currently optional but may become required at a later release [209](https://github.com/vultr/govultr/pull/209)
 * VPC : New API endpoints that will be replacing `network` [210](https://github.com/vultr/govultr/pull/210)
 * Updated Go version from 1.16 to 1.17 [208](https://github.com/vultr/govultr/pull/208)
@@ -151,7 +168,7 @@
   * Ability to attach private networks
   * Ability to set firewalls
   * Get Firewall Rules
-  * List Firewall Rules 
+  * List Firewall Rules
 
 ## [v2.4.2](https://github.com/vultr/govultr/compare/v2.4.1..v2.4.2) (2021-05-03)
 ### Bug fix
