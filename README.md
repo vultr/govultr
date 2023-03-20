@@ -1,7 +1,7 @@
 # GoVultr
 
 [![Automatic Releaser](https://github.com/vultr/govultr/actions/workflows/releaser.yml/badge.svg)](https://github.com/vultr/govultr/actions/workflows/releaser.yml)
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/vultr/govultr/v2)](https://pkg.go.dev/github.com/vultr/govultr/v2)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/vultr/govultr/v3)](https://pkg.go.dev/github.com/vultr/govultr/v3)
 [![Unit/Coverage Tests](https://github.com/vultr/govultr/actions/workflows/coverage.yml/badge.svg)](https://github.com/vultr/govultr/actions/workflows/coverage.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/vultr/govultr)](https://goreportcard.com/report/github.com/vultr/govultr)
 
@@ -12,7 +12,7 @@ GoVultr V1 that interacts with Vultr V1 API is now on the [v1 branch](https://gi
 ## Installation
 
 ```sh
-go get -u github.com/vultr/govultr/v2
+go get -u github.com/vultr/govultr/v3
 ```
 
 ## Usage
@@ -36,7 +36,7 @@ import (
   "context"
   "os"
 
-  "github.com/vultr/govultr/v2"
+  "github.com/vultr/govultr/v3"
   "golang.org/x/oauth2"
 )
 
@@ -66,7 +66,7 @@ instanceOptions := &govultr.InstanceCreateReq{
   Backups:              "enabled",
   EnableIPv6:           BoolToBoolPtr(false),
   OsID:                 362,
-  Plan:                 "vc2-1c-2gb",   
+  Plan:                 "vc2-1c-2gb",
   Region:               "ewr",
 }
 
@@ -95,7 +95,7 @@ type Links struct {
 }
 
 ```
-Pass a `per_page` value to the `list_options` struct to adjust the number of items returned per call. The default is 100 items per page and max is 500 items per page. 
+Pass a `per_page` value to the `list_options` struct to adjust the number of items returned per call. The default is 100 items per page and max is 500 items per page.
 
 This example demonstrates how to retrieve all of your instances, with one instance per page.
 
@@ -116,7 +116,7 @@ for {
         listOptions.Cursor = meta.Links.Next
         continue
     }
-}    
+}
 ```
 ## Versioning
 
@@ -126,7 +126,7 @@ This project follows [SemVer](http://semver.org/) for versioning. For the versio
 
 See our documentation for [detailed information about API v2](https://www.vultr.com/api/).
 
-See our [GoDoc](https://pkg.go.dev/github.com/vultr/govultr/v2) documentation for more details about this client's functionality.
+See our [GoDoc](https://pkg.go.dev/github.com/vultr/govultr/v3) documentation for more details about this client's functionality.
 
 ## Contributing
 
