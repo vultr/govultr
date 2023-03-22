@@ -227,7 +227,7 @@ type DatabaseUserCreateReq struct {
 
 // DatabaseUserUpdateReq struct used to update a user within a Managed Database.
 type DatabaseUserUpdateReq struct {
-	Password string `json:"password,omitempty"`
+	Password string `json:"password"`
 }
 
 // DatabaseDB represents a logical database within a Managed Database cluster
