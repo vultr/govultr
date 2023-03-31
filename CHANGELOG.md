@@ -2,6 +2,10 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v3.0.2](https://github.com/vultr/govultr/compare/v3.0.1...v3.0.2) (2023-03-31)
+### Bug fixes
+* Allow empty password parameter on DBaaS user update [PR 244](https://github.com/vultr/govultr/pull/244)
+
 ## [v3.0.1](https://github.com/vultr/govultr/compare/v2.17.2...v3.0.1) (2023-03-20)
 
 ### Enhancements
