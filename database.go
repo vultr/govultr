@@ -183,8 +183,6 @@ type DatabaseCreateReq struct {
 
 // DatabaseUpdateReq struct used to update a dataase.
 type DatabaseUpdateReq struct {
-	DatabaseEngine         string   `json:"database_engine,omitempty"`
-	DatabaseEngineVersion  string   `json:"database_engine_version,omitempty"`
 	Region                 string   `json:"region,omitempty"`
 	Plan                   string   `json:"plan,omitempty"`
 	Label                  string   `json:"label,omitempty"`
