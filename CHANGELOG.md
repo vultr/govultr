@@ -2,14 +2,21 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v3.0.3](https://github.com/vultr/govultr/compare/v3.0.2...v3.0.3) (2023-06-07)
+### Enhancements
+* Remove unused parameters from database update request [247](https://github.com/vultr/govultr/pull/247)
+
+### Dependencies
+* Bump github.com/hashicorp/go-retryablehttp from 0.7.2 to 0.7.4 [248](https://github.com/vultr/govultr/pull/248)
+
 ## [v3.0.2](https://github.com/vultr/govultr/compare/v3.0.1...v3.0.2) (2023-03-31)
 ### Bug fixes
-* Allow empty password parameter on DBaaS user update [PR 244](https://github.com/vultr/govultr/pull/244)
+* Allow empty password parameter on DBaaS user update [244](https://github.com/vultr/govultr/pull/244)
 
 ## [v3.0.1](https://github.com/vultr/govultr/compare/v2.17.2...v3.0.1) (2023-03-20)
 
 ### Enhancements
-* Add golangci and update go version in workflows[235](https://github.com/vultr/govultr/pull/235)
+* Add golangci and update go version in workflows [235](https://github.com/vultr/govultr/pull/235)
 * Fix context error in govultr test [239](https://github.com/vultr/govultr/pull/239)
 * Add resource response functionality [240](https://github.com/vultr/govultr/pull/240)
 * Add support for Vultr Managed Databases [238](https://github.com/vultr/govultr/pull/238)
