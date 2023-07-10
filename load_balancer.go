@@ -41,6 +41,7 @@ type LoadBalancer struct {
 	IPV4            string           `json:"ipv4,omitempty"`
 	IPV6            string           `json:"ipv6,omitempty"`
 	Instances       []string         `json:"instances,omitempty"`
+	Nodes           int              `json:"nodes,omitempty"`
 	HealthCheck     *HealthCheck     `json:"health_check,omitempty"`
 	GenericInfo     *GenericInfo     `json:"generic_info,omitempty"`
 	SSLInfo         *bool            `json:"has_ssl,omitempty"`
@@ -52,7 +53,8 @@ type LoadBalancer struct {
 type LoadBalancerReq struct {
 	Region             string           `json:"region,omitempty"`
 	Label              string           `json:"label,omitempty"`
-	Instances          []string         `json:"instances"`
+	Instances          []string         `json:"instances,omitempty"`
+	Nodes              int              `json:"nodes,omitempty"`
 	HealthCheck        *HealthCheck     `json:"health_check,omitempty"`
 	StickySessions     *StickySessions  `json:"sticky_session,omitempty"`
 	ForwardingRules    []ForwardingRule `json:"forwarding_rules,omitempty"`
