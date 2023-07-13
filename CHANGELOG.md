@@ -2,6 +2,13 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v3.1.0](https://github.com/vultr/govultr/compare/v3.0.3...v3.1.0) (2023-07-13)
+### Enhancements
+* Loadbalancers: add support for multi-nodes in [PR 250](https://github.com/vultr/govultr/pull/250)
+
+### New Contributors
+* @happytreees made their first contribution in [PR 250](https://github.com/vultr/govultr/pull/250)
+
 ## [v3.0.3](https://github.com/vultr/govultr/compare/v3.0.2...v3.0.3) (2023-06-07)
 ### Enhancements
 * Remove unused parameters from database update request [247](https://github.com/vultr/govultr/pull/247)
