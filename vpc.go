@@ -1,4 +1,4 @@
-package govultr
+package govultr //nolint:dupl
 
 import (
 	"context"

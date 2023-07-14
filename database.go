@@ -585,7 +585,7 @@ func (d *DatabaseServiceHandler) Delete(ctx context.Context, databaseID string) 
 }
 
 // ListUsers retrieves all database users on your Managed Database.
-func (d *DatabaseServiceHandler) ListUsers(ctx context.Context, databaseID string) ([]DatabaseUser, *Meta, *http.Response, error) {
+func (d *DatabaseServiceHandler) ListUsers(ctx context.Context, databaseID string) ([]DatabaseUser, *Meta, *http.Response, error) { //nolint:dupl
 	uri := fmt.Sprintf("%s/%s/users", databasePath, databaseID)
 
 	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -670,7 +670,7 @@ func (d *DatabaseServiceHandler) DeleteUser(ctx context.Context, databaseID, use
 }
 
 // ListDBs retrieves all logical databases on your Managed Database.
-func (d *DatabaseServiceHandler) ListDBs(ctx context.Context, databaseID string) ([]DatabaseDB, *Meta, *http.Response, error) {
+func (d *DatabaseServiceHandler) ListDBs(ctx context.Context, databaseID string) ([]DatabaseDB, *Meta, *http.Response, error) { // nolint:dupl
 	uri := fmt.Sprintf("%s/%s/dbs", databasePath, databaseID)
 
 	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)

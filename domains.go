@@ -164,7 +164,6 @@ func (d *DomainServiceHandler) GetSoa(ctx context.Context, domain string) (*Soa,
 
 // UpdateSoa will update the SOA record information for a domain.
 func (d *DomainServiceHandler) UpdateSoa(ctx context.Context, domain string, soaReq *Soa) error {
-
 	req, err := d.client.NewRequest(ctx, http.MethodPatch, fmt.Sprintf("%s/%s/soa", domainPath, domain), soaReq)
 	if err != nil {
 		return err

@@ -12,9 +12,8 @@ func TestAccountServiceHandler_Get(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/account", func(w http.ResponseWriter, r *http.Request) {
-
 		response := `
-		{		
+		{
 		"account" : {
 			"balance": -5519.11,
 			"pending_charges": 57.03,

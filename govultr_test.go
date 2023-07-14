@@ -78,7 +78,6 @@ func TestClient_DoWithContext(t *testing.T) {
 			t.Errorf("Request method = %v, expecting %v", request.Method, method)
 		}
 		fmt.Fprint(writer, `{"Bird":"vultr"}`)
-
 	})
 
 	req, _ := client.NewRequest(ctx, http.MethodGet, "/", nil)
@@ -177,7 +176,6 @@ func TestClient_NewRequest(t *testing.T) {
 	if contentType != "application/json" {
 		t.Errorf("NewRequest() Header Content Type = %v, expected %v", contentType, "application/x-www-form-urlencoded")
 	}
-
 }
 
 func TestClient_SetBaseUrl(t *testing.T) {

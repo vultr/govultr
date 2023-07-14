@@ -271,7 +271,7 @@ func (l *LoadBalancerHandler) GetForwardingRule(ctx context.Context, ID string, 
 }
 
 // ListForwardingRules lists all forwarding rules for a load balancer subscription
-func (l *LoadBalancerHandler) ListForwardingRules(ctx context.Context, ID string, options *ListOptions) ([]ForwardingRule, *Meta, *http.Response, error) {
+func (l *LoadBalancerHandler) ListForwardingRules(ctx context.Context, ID string, options *ListOptions) ([]ForwardingRule, *Meta, *http.Response, error) { //nolint:dupl
 	uri := fmt.Sprintf("%s/%s/forwarding-rules", lbPath, ID)
 	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -324,7 +324,7 @@ func (l *LoadBalancerHandler) GetFirewallRule(ctx context.Context, ID string, ru
 }
 
 // ListFirewallRules lists all firewall rules for a load balancer subscription
-func (l *LoadBalancerHandler) ListFirewallRules(ctx context.Context, ID string, options *ListOptions) ([]LBFirewallRule, *Meta, *http.Response, error) {
+func (l *LoadBalancerHandler) ListFirewallRules(ctx context.Context, ID string, options *ListOptions) ([]LBFirewallRule, *Meta, *http.Response, error) { //nolint:dupl
 	uri := fmt.Sprintf("%s/%s/firewall-rules", lbPath, ID)
 	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {

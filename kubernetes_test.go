@@ -313,8 +313,7 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
 
 	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
 	defer can()
-	_, _, _, err = client.Kubernetes.ListClusters(c, nil)
-	if err == nil {
+	if _, _, _, err = client.Kubernetes.ListClusters(c, nil); err == nil {
 		t.Error("Kubernetes.ListClusters returned nil")
 	}
 }
@@ -587,8 +586,7 @@ func TestKubernetesHandler_ListNodePools(t *testing.T) {
 
 	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
 	defer can()
-	_, _, _, err = client.Kubernetes.ListNodePools(c, "1", nil)
-	if err == nil {
+	if _, _, _, err = client.Kubernetes.ListNodePools(c, "1", nil); err == nil {
 		t.Error("Kubernetes.ListNodePools returned nil")
 	}
 }

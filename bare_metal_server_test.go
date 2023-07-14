@@ -642,7 +642,6 @@ func TestBareMetalServerServiceHandler_GetUpgrades(t *testing.T) {
 
 	if !reflect.DeepEqual(server, expected) {
 		t.Errorf("BareMetalServer.GetUpgrades returned %+v, expected %+v", server, expected)
-
 	}
 }
 func TestBareMetalServerServiceHandler_GetVNCUrl(t *testing.T) {

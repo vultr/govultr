@@ -392,7 +392,6 @@ func (k *KubernetesHandler) GetUpgrades(ctx context.Context, vkeID string) ([]st
 
 // Upgrade beings a VKE cluster upgrade
 func (k *KubernetesHandler) Upgrade(ctx context.Context, vkeID string, body *ClusterUpgradeReq) error {
-
 	req, err := k.client.NewRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/upgrades", vkePath, vkeID), body)
 	if err != nil {
 		return err

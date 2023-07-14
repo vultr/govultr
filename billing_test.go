@@ -12,7 +12,6 @@ func TestBillingServiceHandler_ListHistory(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/billing/history", func(w http.ResponseWriter, r *http.Request) {
-
 		response := `
 		{
 			"billing_history": [
@@ -73,7 +72,6 @@ func TestBillingServiceHandler_ListInvoices(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/billing/invoices", func(w http.ResponseWriter, r *http.Request) {
-
 		response := `
 		{
 			"billing_invoices": [
@@ -132,7 +130,6 @@ func TestBillingServiceHandler_ListHistoryEmpty(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/billing/history", func(w http.ResponseWriter, r *http.Request) {
-
 		response := `
 		{
 			"billing_history": [],
@@ -178,7 +175,6 @@ func TestBillingServiceHandler_ListInvoicesEmpty(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/billing/invoices", func(w http.ResponseWriter, r *http.Request) {
-
 		response := `
 		{
 			"billing_invoices": [],
@@ -224,7 +220,6 @@ func TestBillingServiceHandler_GetInvoice(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/billing/invoices/123456", func(w http.ResponseWriter, r *http.Request) {
-
 		response := `
 		{
 			"billing_invoice": {
@@ -263,7 +258,6 @@ func TestBillingServiceHandler_ListInvoiceItems(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/billing/invoices/123456/items", func(w http.ResponseWriter, r *http.Request) {
-
 		response := `
 		{
 			"invoice_items": [
