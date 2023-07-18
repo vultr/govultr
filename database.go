@@ -122,11 +122,12 @@ type Database struct {
 	PlanVCPUs              int           `json:"plan_vcpus"`
 	PlanReplicas           int           `json:"plan_replicas"`
 	Region                 string        `json:"region"`
+	DatabaseEngine         string        `json:"database_engine"`
+	DatabaseEngineVersion  string        `json:"database_engine_version"`
+	VPCID                  string        `json:"vpc_id"`
 	Status                 string        `json:"status"`
 	Label                  string        `json:"label"`
 	Tag                    string        `json:"tag"`
-	DatabaseEngine         string        `json:"database_engine"`
-	DatabaseEngineVersion  string        `json:"database_engine_version"`
 	DBName                 string        `json:"dbname,omitempty"`
 	Host                   string        `json:"host"`
 	User                   string        `json:"user"`
@@ -171,6 +172,7 @@ type DatabaseCreateReq struct {
 	Plan                   string   `json:"plan,omitempty"`
 	Label                  string   `json:"label,omitempty"`
 	Tag                    string   `json:"tag,omitempty"`
+	VPCID                  string   `json:"vpc_id,omitempty"`
 	MaintenanceDOW         string   `json:"maintenance_dow,omitempty"`
 	MaintenanceTime        string   `json:"maintenance_time,omitempty"`
 	TrustedIPs             []string `json:"trusted_ips,omitempty"`
@@ -187,6 +189,7 @@ type DatabaseUpdateReq struct {
 	Plan                   string   `json:"plan,omitempty"`
 	Label                  string   `json:"label,omitempty"`
 	Tag                    string   `json:"tag,omitempty"`
+	VPCID                  string   `json:"vpc_id,omitempty"`
 	MaintenanceDOW         string   `json:"maintenance_dow,omitempty"`
 	MaintenanceTime        string   `json:"maintenance_time,omitempty"`
 	ClusterTimeZone        string   `json:"cluster_time_zone,omitempty"`
