@@ -2,6 +2,11 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v3.2.0](https://github.com/vultr/govultr/compare/v3.1.0...v3.2.0) (2023-07-24)
+### Enhancements
+* Database: add support for DBaaS VPC networks [PR 255](https://github.com/vultr/govultr/pull/255)
+* Implement stricter golangci-lint configurations [PR 259](https://github.com/vultr/govultr/pull/259)
+
 ## [v3.1.0](https://github.com/vultr/govultr/compare/v3.0.3...v3.1.0) (2023-07-13)
 ### Enhancements
 * Loadbalancers: add support for multi-nodes in [PR 250](https://github.com/vultr/govultr/pull/250)
