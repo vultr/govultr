@@ -67,7 +67,7 @@ func (r *RegionServiceHandler) List(ctx context.Context, options *ListOptions) (
 }
 
 // Availability retrieves a list of the plan IDs currently available for a given location.
-func (r *RegionServiceHandler) Availability(ctx context.Context, regionID string, planType string) (*PlanAvailability, *http.Response, error) {
+func (r *RegionServiceHandler) Availability(ctx context.Context, regionID, planType string) (*PlanAvailability, *http.Response, error) {
 	uri := fmt.Sprintf("/v2/regions/%s/availability", regionID)
 
 	req, err := r.client.NewRequest(ctx, http.MethodGet, uri, nil)

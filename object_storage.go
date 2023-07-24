@@ -71,12 +71,6 @@ type s3KeysBase struct {
 	S3Credentials *S3Keys `json:"s3_credentials"`
 }
 
-//// ObjectListOptions are your optional params you have available to list data.
-//type ObjectListOptions struct {
-//	IncludeS3 bool
-//	Label     string
-//}
-
 // Create an object storage subscription
 func (o *ObjectStorageServiceHandler) Create(ctx context.Context, clusterID int, label string) (*ObjectStorage, *http.Response, error) {
 	uri := "/v2/object-storage"

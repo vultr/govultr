@@ -86,7 +86,7 @@ func (n *VPCServiceHandler) Get(ctx context.Context, vpcID string) (*VPC, *http.
 }
 
 // Update updates a VPC
-func (n *VPCServiceHandler) Update(ctx context.Context, vpcID string, description string) error {
+func (n *VPCServiceHandler) Update(ctx context.Context, vpcID, description string) error {
 	uri := fmt.Sprintf("%s/%s", vpcPath, vpcID)
 
 	vpcReq := RequestBody{"description": description}

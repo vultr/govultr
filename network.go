@@ -98,7 +98,7 @@ func (n *NetworkServiceHandler) Get(ctx context.Context, networkID string) (*Net
 
 // Update updates a private network
 // Deprecated: NetworkServiceHandler Update should no longer be used. Instead, use VPCServiceHandler Update.
-func (n *NetworkServiceHandler) Update(ctx context.Context, networkID string, description string) error {
+func (n *NetworkServiceHandler) Update(ctx context.Context, networkID, description string) error {
 	uri := fmt.Sprintf("%s/%s", netPath, networkID)
 
 	netReq := RequestBody{"description": description}

@@ -122,7 +122,7 @@ type bareMetalBase struct {
 	BareMetal *BareMetalServer `json:"bare_metal"`
 }
 
-// BMBareMetalBase ...
+// BMBareMetalBase represents the base struct for a Bare Metal server
 type BMBareMetalBase struct {
 	BareMetalBandwidth map[string]BareMetalServerBandwidth `json:"bandwidth"`
 }

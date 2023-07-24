@@ -27,8 +27,8 @@ func setup() {
 	server = httptest.NewServer(mux)
 
 	client = NewClient(nil)
-	url, _ := url.Parse(server.URL)
-	client.BaseURL = url
+	thisURL, _ := url.Parse(server.URL)
+	client.BaseURL = thisURL
 }
 
 func teardown() {
@@ -42,10 +42,6 @@ func TestNewClient(t *testing.T) {
 	if client.BaseURL == nil || client.BaseURL.String() != server.URL {
 		t.Errorf("NewClient BaseURL = %v, expected %v", client.BaseURL, server.URL)
 	}
-
-	//if client != "dummy-key" {
-	//	t.Errorf("NewClient ApiKey = %v, expected %v", client.APIKey.key, "dummy-key")
-	//}
 
 	if client.UserAgent != userAgent {
 		t.Errorf("NewClient UserAgent = %v, expected %v", client.UserAgent, userAgent)
@@ -214,11 +210,11 @@ func TestClient_SetRateLimit(t *testing.T) {
 	setup()
 	defer teardown()
 
-	time := 600 * time.Millisecond
-	client.SetRateLimit(time)
+	tTime := 600 * time.Millisecond
+	client.SetRateLimit(tTime)
 
-	if client.client.RetryWaitMax != time {
-		t.Errorf("NewClient max RateLimit = %v, expected %v", client.client.RetryWaitMax, time)
+	if client.client.RetryWaitMax != tTime {
+		t.Errorf("NewClient max RateLimit = %v, expected %v", client.client.RetryWaitMax, tTime)
 	}
 }
 
