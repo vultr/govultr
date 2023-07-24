@@ -86,7 +86,7 @@ func (r *ReservedIPServiceHandler) Create(ctx context.Context, ripCreate *Reserv
 }
 
 // Update updates label on the Reserved IP
-func (r *ReservedIPServiceHandler) Update(ctx context.Context, id string, ripUpdate *ReservedIPUpdateReq) (*ReservedIP, *http.Response, error) {
+func (r *ReservedIPServiceHandler) Update(ctx context.Context, id string, ripUpdate *ReservedIPUpdateReq) (*ReservedIP, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s", ripPath, id)
 	req, err := r.client.NewRequest(ctx, http.MethodPatch, uri, ripUpdate)
 	if err != nil {

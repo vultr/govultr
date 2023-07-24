@@ -140,7 +140,7 @@ func TestClient_DoWithContextError(t *testing.T) {
 				panicked = fmt.Sprint(err)
 			}
 		}()
-		client.DoWithContext(context.Background(), req, nil) //nolint:all
+		client.DoWithContext(context.Background(), req, nil)
 	}()
 	if panicked != "" {
 		t.Errorf("unexpected panic: %s", panicked)
