@@ -110,7 +110,7 @@ func (i *ISOServiceHandler) Delete(ctx context.Context, isoID string) error {
 }
 
 // List will list all ISOs currently available on your account
-func (i *ISOServiceHandler) List(ctx context.Context, options *ListOptions) ([]ISO, *Meta, *http.Response, error) {
+func (i *ISOServiceHandler) List(ctx context.Context, options *ListOptions) ([]ISO, *Meta, *http.Response, error) { //nolint:dupl
 	uri := "/v2/iso"
 
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -135,7 +135,7 @@ func (i *ISOServiceHandler) List(ctx context.Context, options *ListOptions) ([]I
 }
 
 // ListPublic will list public ISOs offered in the Vultr ISO library.
-func (i *ISOServiceHandler) ListPublic(ctx context.Context, options *ListOptions) ([]PublicISO, *Meta, *http.Response, error) {
+func (i *ISOServiceHandler) ListPublic(ctx context.Context, options *ListOptions) ([]PublicISO, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := "/v2/iso-public"
 
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)

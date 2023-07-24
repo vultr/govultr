@@ -132,7 +132,7 @@ func (r *ReservedIPServiceHandler) Delete(ctx context.Context, id string) error 
 }
 
 // List lists all the reserved IPs associated with your Vultr account
-func (r *ReservedIPServiceHandler) List(ctx context.Context, options *ListOptions) ([]ReservedIP, *Meta, *http.Response, error) {
+func (r *ReservedIPServiceHandler) List(ctx context.Context, options *ListOptions) ([]ReservedIP, *Meta, *http.Response, error) { //nolint:dupl,lll
 	req, err := r.client.NewRequest(ctx, http.MethodGet, ripPath, nil)
 	if err != nil {
 		return nil, nil, nil, err

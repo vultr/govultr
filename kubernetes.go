@@ -184,7 +184,7 @@ func (k *KubernetesHandler) GetCluster(ctx context.Context, id string) (*Cluster
 }
 
 // ListClusters will return all kubernetes clusters.
-func (k *KubernetesHandler) ListClusters(ctx context.Context, options *ListOptions) ([]Cluster, *Meta, *http.Response, error) {
+func (k *KubernetesHandler) ListClusters(ctx context.Context, options *ListOptions) ([]Cluster, *Meta, *http.Response, error) { //nolint:dupl,lll
 	req, err := k.client.NewRequest(ctx, http.MethodGet, vkePath, nil)
 	if err != nil {
 		return nil, nil, nil, err

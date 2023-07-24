@@ -213,7 +213,7 @@ func (l *LoadBalancerHandler) Delete(ctx context.Context, lbID string) error {
 }
 
 // List all load balancer subscriptions on the current account.
-func (l *LoadBalancerHandler) List(ctx context.Context, options *ListOptions) ([]LoadBalancer, *Meta, *http.Response, error) {
+func (l *LoadBalancerHandler) List(ctx context.Context, options *ListOptions) ([]LoadBalancer, *Meta, *http.Response, error) { //nolint:dupl
 	req, err := l.client.NewRequest(ctx, http.MethodGet, lbPath, nil)
 	if err != nil {
 		return nil, nil, nil, err

@@ -497,7 +497,7 @@ func (d *DatabaseServiceHandler) ListPlans(ctx context.Context, options *DBPlanL
 }
 
 // List retrieves all databases on your account
-func (d *DatabaseServiceHandler) List(ctx context.Context, options *DBListOptions) ([]Database, *Meta, *http.Response, error) {
+func (d *DatabaseServiceHandler) List(ctx context.Context, options *DBListOptions) ([]Database, *Meta, *http.Response, error) { //nolint:dupl,lll
 	req, err := d.client.NewRequest(ctx, http.MethodGet, databasePath, nil)
 	if err != nil {
 		return nil, nil, nil, err
@@ -639,7 +639,7 @@ func (d *DatabaseServiceHandler) GetUser(ctx context.Context, databaseID, userna
 }
 
 // UpdateUser will update a user within the Managed Database with the given parameters
-func (d *DatabaseServiceHandler) UpdateUser(ctx context.Context, databaseID, username string, databaseUserReq *DatabaseUserUpdateReq) (*DatabaseUser, *http.Response, error) { //nolint:lll
+func (d *DatabaseServiceHandler) UpdateUser(ctx context.Context, databaseID, username string, databaseUserReq *DatabaseUserUpdateReq) (*DatabaseUser, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/users/%s", databasePath, databaseID, username)
 
 	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseUserReq)
@@ -967,7 +967,7 @@ func (d *DatabaseServiceHandler) GetConnectionPool(ctx context.Context, database
 }
 
 // UpdateConnectionPool will update a connection pool within the PostgreSQL Managed Database with the given parameters
-func (d *DatabaseServiceHandler) UpdateConnectionPool(ctx context.Context, databaseID, poolName string, databaseConnectionPoolReq *DatabaseConnectionPoolUpdateReq) (*DatabaseConnectionPool, *http.Response, error) { //nolint:lll
+func (d *DatabaseServiceHandler) UpdateConnectionPool(ctx context.Context, databaseID, poolName string, databaseConnectionPoolReq *DatabaseConnectionPoolUpdateReq) (*DatabaseConnectionPool, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/connection-pools/%s", databasePath, databaseID, poolName)
 
 	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseConnectionPoolReq)

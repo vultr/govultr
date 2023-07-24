@@ -10,7 +10,7 @@ import (
 
 // FirewallGroupService is the interface to interact with the firewall group endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/firewall
-type FirewallGroupService interface {
+type FirewallGroupService interface { //nolint:dupl
 	Create(ctx context.Context, fwGroupReq *FirewallGroupReq) (*FirewallGroup, *http.Response, error)
 	Get(ctx context.Context, groupID string) (*FirewallGroup, *http.Response, error)
 	Update(ctx context.Context, fwGroupID string, fwGroupReq *FirewallGroupReq) error
@@ -110,7 +110,7 @@ func (f *FireWallGroupServiceHandler) Delete(ctx context.Context, fwGroupID stri
 }
 
 // List will return a list of  all firewall groups on your Vultr account
-func (f *FireWallGroupServiceHandler) List(ctx context.Context, options *ListOptions) ([]FirewallGroup, *Meta, *http.Response, error) {
+func (f *FireWallGroupServiceHandler) List(ctx context.Context, options *ListOptions) ([]FirewallGroup, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := "/v2/firewalls"
 
 	req, err := f.client.NewRequest(ctx, http.MethodGet, uri, nil)

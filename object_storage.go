@@ -136,7 +136,7 @@ func (o *ObjectStorageServiceHandler) Delete(ctx context.Context, id string) err
 }
 
 // List all object storage subscriptions on the current account. This includes both pending and active subscriptions.
-func (o *ObjectStorageServiceHandler) List(ctx context.Context, options *ListOptions) ([]ObjectStorage, *Meta, *http.Response, error) {
+func (o *ObjectStorageServiceHandler) List(ctx context.Context, options *ListOptions) ([]ObjectStorage, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := "/v2/object-storage"
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)

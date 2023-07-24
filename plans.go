@@ -90,7 +90,7 @@ func (p *PlanServiceHandler) List(ctx context.Context, planType string, options 
 }
 
 // ListBareMetal all active bare metal plans.
-func (p *PlanServiceHandler) ListBareMetal(ctx context.Context, options *ListOptions) ([]BareMetalPlan, *Meta, *http.Response, error) {
+func (p *PlanServiceHandler) ListBareMetal(ctx context.Context, options *ListOptions) ([]BareMetalPlan, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := "/v2/plans-metal"
 
 	req, err := p.client.NewRequest(ctx, http.MethodGet, uri, nil)

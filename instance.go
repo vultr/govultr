@@ -358,7 +358,7 @@ func (i *InstanceServiceHandler) Delete(ctx context.Context, instanceID string) 
 }
 
 // List all instances on your account.
-func (i *InstanceServiceHandler) List(ctx context.Context, options *ListOptions) ([]Instance, *Meta, *http.Response, error) {
+func (i *InstanceServiceHandler) List(ctx context.Context, options *ListOptions) ([]Instance, *Meta, *http.Response, error) { //nolint:dupl
 	req, err := i.client.NewRequest(ctx, http.MethodGet, instancePath, nil)
 	if err != nil {
 		return nil, nil, nil, err
@@ -520,7 +520,7 @@ func (i *InstanceServiceHandler) GetNeighbors(ctx context.Context, instanceID st
 
 // ListPrivateNetworks currently attached to an instance.
 // Deprecated: ListPrivateNetworks should no longer be used. Instead, use ListVPCInfo
-func (i *InstanceServiceHandler) ListPrivateNetworks(ctx context.Context, instanceID string, options *ListOptions) ([]PrivateNetwork, *Meta, *http.Response, error) { //nolint:lll
+func (i *InstanceServiceHandler) ListPrivateNetworks(ctx context.Context, instanceID string, options *ListOptions) ([]PrivateNetwork, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/private-networks", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -574,7 +574,7 @@ func (i *InstanceServiceHandler) DetachPrivateNetwork(ctx context.Context, insta
 }
 
 // ListVPCInfo currently attached to an instance.
-func (i *InstanceServiceHandler) ListVPCInfo(ctx context.Context, instanceID string, options *ListOptions) ([]VPCInfo, *Meta, *http.Response, error) { //nolint:lll
+func (i *InstanceServiceHandler) ListVPCInfo(ctx context.Context, instanceID string, options *ListOptions) ([]VPCInfo, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/vpcs", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -715,7 +715,7 @@ func (i *InstanceServiceHandler) CreateIPv4(ctx context.Context, instanceID stri
 }
 
 // ListIPv4 addresses that are currently assigned to a given instance.
-func (i *InstanceServiceHandler) ListIPv4(ctx context.Context, instanceID string, options *ListOptions) ([]IPv4, *Meta, *http.Response, error) { //nolint:lll
+func (i *InstanceServiceHandler) ListIPv4(ctx context.Context, instanceID string, options *ListOptions) ([]IPv4, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/ipv4", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -750,7 +750,7 @@ func (i *InstanceServiceHandler) DeleteIPv4(ctx context.Context, instanceID, ip 
 }
 
 // ListIPv6 addresses that are currently assigned to a given instance.
-func (i *InstanceServiceHandler) ListIPv6(ctx context.Context, instanceID string, options *ListOptions) ([]IPv6, *Meta, *http.Response, error) { //nolint:lll
+func (i *InstanceServiceHandler) ListIPv6(ctx context.Context, instanceID string, options *ListOptions) ([]IPv6, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/ipv6", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {

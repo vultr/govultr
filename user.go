@@ -12,7 +12,7 @@ const path = "/v2/users"
 
 // UserService is the interface to interact with the user management endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/users
-type UserService interface {
+type UserService interface { //nolint:dupl
 	Create(ctx context.Context, userCreate *UserReq) (*User, *http.Response, error)
 	Get(ctx context.Context, userID string) (*User, *http.Response, error)
 	Update(ctx context.Context, userID string, userReq *UserReq) error
@@ -115,7 +115,7 @@ func (u *UserServiceHandler) Delete(ctx context.Context, userID string) error {
 }
 
 // List will list all the users associated with your Vultr account
-func (u *UserServiceHandler) List(ctx context.Context, options *ListOptions) ([]User, *Meta, *http.Response, error) {
+func (u *UserServiceHandler) List(ctx context.Context, options *ListOptions) ([]User, *Meta, *http.Response, error) { //nolint:dupl
 	req, err := u.client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
 		return nil, nil, nil, err
