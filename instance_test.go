@@ -8,6 +8,42 @@ import (
 	"testing"
 )
 
+const (
+	defaultInstanceListResponse string = `{
+		"instance": {
+			"id": "14b3e7d6-ffb5-4994-8502-57fcd9db3b33",
+			"os": "CentOS SELinux 8 x64",
+			"ram": 2048,
+			"disk": 60,
+			"main_ip": "123.123.123.123",
+			"vcpu_count": 2,
+			"region": "ewr",
+			"plan": "vc2-1c-2gb",
+			"date_created": "2013-12-19 14:45:41",
+			"status": "active",
+			"allowed_bandwidth": 2000,
+			"netmask_v4": "255.255.255.248",
+			"gateway_v4": "123.123.123.1",
+			"power_status": "running",
+			"server_status": "ok",
+			"v6_network": "2001:DB8:1000::",
+			"v6_main_ip": "fd11:1111:1112:1c02:0200:00ff:fe00:0000",
+			"v6_network_size": 64,
+			"label": "my new server",
+			"internal_ip": "10.99.0.10",
+			"kvm": "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
+			"default_password" : "nreqnusibni",
+			"tags": ["my tag"],
+			"os_id": 362,
+			"app_id": 0,
+			"firewall_group_id": "1234",
+			"features": [
+				"auto_backups", "ipv6"
+			]
+		}
+	}`
+)
+
 func TestServerServiceHandler_GetBackupSchedule(t *testing.T) {
 	setup()
 	defer teardown()
@@ -522,40 +558,7 @@ func TestServerServiceHandler_Reinstall(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/instances/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/reinstall", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
-			"instance": {
-				"id": "14b3e7d6-ffb5-4994-8502-57fcd9db3b33",
-				"os": "CentOS SELinux 8 x64",
-				"ram": 2048,
-				"disk": 60,
-				"main_ip": "123.123.123.123",
-				"vcpu_count": 2,
-				"region": "ewr",
-				"plan": "vc2-1c-2gb",
-				"date_created": "2013-12-19 14:45:41",
-				"status": "active",
-				"allowed_bandwidth": 2000,
-				"netmask_v4": "255.255.255.248",
-				"gateway_v4": "123.123.123.1",
-				"power_status": "running",
-				"server_status": "ok",
-				"v6_network": "2001:DB8:1000::",
-				"v6_main_ip": "fd11:1111:1112:1c02:0200:00ff:fe00:0000",
-				"v6_network_size": 64,
-				"label": "my new server",
-				"internal_ip": "10.99.0.10",
-				"kvm": "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
-				"default_password" : "nreqnusibni",
-				"tags": ["my tag"],
-				"os_id": 362,
-				"app_id": 0,
-				"firewall_group_id": "1234",
-				"features": [
-					"auto_backups", "ipv6"
-				]
-			}
-		}`
-		fmt.Fprint(writer, response)
+		fmt.Fprint(writer, defaultInstanceListResponse)
 	})
 
 	instanceRes, _, err := client.Instance.Reinstall(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", nil)
@@ -618,40 +621,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/instances", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
-			"instance": {
-				"id": "14b3e7d6-ffb5-4994-8502-57fcd9db3b33",
-				"os": "CentOS SELinux 8 x64",
-				"ram": 2048,
-				"disk": 60,
-				"main_ip": "123.123.123.123",
-				"vcpu_count": 2,
-				"region": "ewr",
-				"plan": "vc2-1c-2gb",
-				"date_created": "2013-12-19 14:45:41",
-				"status": "active",
-				"allowed_bandwidth": 2000,
-				"netmask_v4": "255.255.255.248",
-				"gateway_v4": "123.123.123.1",
-				"power_status": "running",
-				"server_status": "ok",
-				"v6_network": "2001:DB8:1000::",
-				"v6_main_ip": "fd11:1111:1112:1c02:0200:00ff:fe00:0000",
-				"v6_network_size": 64,
-				"label": "my new server",
-				"internal_ip": "10.99.0.10",
-				"kvm": "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
-				"default_password" : "nreqnusibni",
-				"tags": ["my tag"],
-				"os_id": 362,
-				"app_id": 0,
-				"firewall_group_id": "1234",
-				"features": [
-					"auto_backups", "ipv6"
-				]
-			}
-		}`
-		fmt.Fprint(writer, response)
+		fmt.Fprint(writer, defaultInstanceListResponse)
 	})
 
 	options := &InstanceCreateReq{
@@ -677,8 +647,6 @@ func TestServerServiceHandler_Create(t *testing.T) {
 	if err != nil {
 		t.Errorf("Instance.Create returned %+v", err)
 	}
-
-	features := []string{"auto_backups", "ipv6"}
 
 	expected := &Instance{
 		ID:               "14b3e7d6-ffb5-4994-8502-57fcd9db3b33",
@@ -707,7 +675,7 @@ func TestServerServiceHandler_Create(t *testing.T) {
 		Tags:             []string{"my tag"},
 		AppID:            0,
 		FirewallGroupID:  "1234",
-		Features:         features,
+		Features:         []string{"auto_backups", "ipv6"},
 	}
 
 	if !reflect.DeepEqual(server, expected) {
@@ -824,48 +792,13 @@ func TestServerServiceHandler_GetServer(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/instances/14b3e7d6-ffb5-4994-8502-57fcd9db3b33", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
-			"instance": {
-				"id": "14b3e7d6-ffb5-4994-8502-57fcd9db3b33",
-				"os": "CentOS SELinux 8 x64",
-				"ram": 2048,
-				"disk": 60,
-				"main_ip": "123.123.123.123",
-				"vcpu_count": 2,
-				"region": "ewr",
-				"plan": "vc2-1c-2gb",
-				"date_created": "2013-12-19 14:45:41",
-				"status": "active",
-				"allowed_bandwidth": 2000,
-				"netmask_v4": "255.255.255.248",
-				"gateway_v4": "123.123.123.1",
-				"power_status": "running",
-				"server_status": "ok",
-				"v6_network": "2001:DB8:1000::",
-				"v6_main_ip": "fd11:1111:1112:1c02:0200:00ff:fe00:0000",
-				"v6_network_size": 64,
-				"label": "my new server",
-				"internal_ip": "10.99.0.10",
-				"kvm": "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
-				"default_password" : "nreqnusibni",
-				"tags": ["my tag"],
-				"os_id": 362,
-				"app_id": 0,
-				"firewall_group_id": "",
-				"features": [
-					"auto_backups"
-				]
-			}
-		}`
-		fmt.Fprint(writer, response)
+		fmt.Fprint(writer, defaultInstanceListResponse)
 	})
 
 	server, _, err := client.Instance.Get(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33")
 	if err != nil {
 		t.Errorf("Instance.GetServer returned %+v", err)
 	}
-
-	features := []string{"auto_backups"}
 
 	expected := &Instance{
 		ID:               "14b3e7d6-ffb5-4994-8502-57fcd9db3b33",
@@ -893,8 +826,8 @@ func TestServerServiceHandler_GetServer(t *testing.T) {
 		KVM:              "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
 		Tags:             []string{"my tag"},
 		AppID:            0,
-		FirewallGroupID:  "",
-		Features:         features,
+		FirewallGroupID:  "1234",
+		Features:         []string{"auto_backups", "ipv6"},
 	}
 
 	if !reflect.DeepEqual(server, expected) {
@@ -1110,40 +1043,7 @@ func TestServerServiceHandler_Update(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/instances/14b3e7d6-ffb5-4994-8502-57fcd9db3b33", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
-			"instance": {
-				"id": "14b3e7d6-ffb5-4994-8502-57fcd9db3b33",
-				"os": "CentOS SELinux 8 x64",
-				"ram": 2048,
-				"disk": 60,
-				"main_ip": "123.123.123.123",
-				"vcpu_count": 2,
-				"region": "ewr",
-				"plan": "vc2-1c-2gb",
-				"date_created": "2013-12-19 14:45:41",
-				"status": "active",
-				"allowed_bandwidth": 2000,
-				"netmask_v4": "255.255.255.248",
-				"gateway_v4": "123.123.123.1",
-				"power_status": "running",
-				"server_status": "ok",
-				"v6_network": "2001:DB8:1000::",
-				"v6_main_ip": "fd11:1111:1112:1c02:0200:00ff:fe00:0000",
-				"v6_network_size": 64,
-				"label": "my new server",
-				"internal_ip": "10.99.0.10",
-				"kvm": "https://my.vultr.com/subs/novnc/api.php?data=eawxFVZw2mXnhGUV",
-				"default_password" : "nreqnusibni",
-				"tags": ["my tag"],
-				"os_id": 362,
-				"app_id": 0,
-				"firewall_group_id": "1234",
-				"features": [
-					"auto_backups", "ipv6"
-				]
-			}
-		}`
-		fmt.Fprint(writer, response)
+		fmt.Fprint(writer, defaultInstanceListResponse)
 	})
 
 	options := &InstanceUpdateReq{
