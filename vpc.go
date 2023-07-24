@@ -1,4 +1,4 @@
-package govultr
+package govultr //nolint:dupl
 
 import (
 	"context"
@@ -86,7 +86,7 @@ func (n *VPCServiceHandler) Get(ctx context.Context, vpcID string) (*VPC, *http.
 }
 
 // Update updates a VPC
-func (n *VPCServiceHandler) Update(ctx context.Context, vpcID string, description string) error {
+func (n *VPCServiceHandler) Update(ctx context.Context, vpcID, description string) error {
 	uri := fmt.Sprintf("%s/%s", vpcPath, vpcID)
 
 	vpcReq := RequestBody{"description": description}
@@ -111,7 +111,7 @@ func (n *VPCServiceHandler) Delete(ctx context.Context, vpcID string) error {
 }
 
 // List lists all VPCs on the current account
-func (n *VPCServiceHandler) List(ctx context.Context, options *ListOptions) ([]VPC, *Meta, *http.Response, error) {
+func (n *VPCServiceHandler) List(ctx context.Context, options *ListOptions) ([]VPC, *Meta, *http.Response, error) { //nolint:dupl
 	req, err := n.client.NewRequest(ctx, http.MethodGet, vpcPath, nil)
 	if err != nil {
 		return nil, nil, nil, err

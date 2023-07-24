@@ -124,7 +124,7 @@ func (s *SnapshotServiceHandler) Delete(ctx context.Context, snapshotID string) 
 }
 
 // List all available snapshots.
-func (s *SnapshotServiceHandler) List(ctx context.Context, options *ListOptions) ([]Snapshot, *Meta, *http.Response, error) {
+func (s *SnapshotServiceHandler) List(ctx context.Context, options *ListOptions) ([]Snapshot, *Meta, *http.Response, error) { //nolint:dupl
 	uri := "/v2/snapshots"
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)

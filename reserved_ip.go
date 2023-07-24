@@ -86,7 +86,7 @@ func (r *ReservedIPServiceHandler) Create(ctx context.Context, ripCreate *Reserv
 }
 
 // Update updates label on the Reserved IP
-func (r *ReservedIPServiceHandler) Update(ctx context.Context, id string, ripUpdate *ReservedIPUpdateReq) (*ReservedIP, *http.Response, error) {
+func (r *ReservedIPServiceHandler) Update(ctx context.Context, id string, ripUpdate *ReservedIPUpdateReq) (*ReservedIP, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s", ripPath, id)
 	req, err := r.client.NewRequest(ctx, http.MethodPatch, uri, ripUpdate)
 	if err != nil {
@@ -132,7 +132,7 @@ func (r *ReservedIPServiceHandler) Delete(ctx context.Context, id string) error 
 }
 
 // List lists all the reserved IPs associated with your Vultr account
-func (r *ReservedIPServiceHandler) List(ctx context.Context, options *ListOptions) ([]ReservedIP, *Meta, *http.Response, error) {
+func (r *ReservedIPServiceHandler) List(ctx context.Context, options *ListOptions) ([]ReservedIP, *Meta, *http.Response, error) { //nolint:dupl,lll
 	req, err := r.client.NewRequest(ctx, http.MethodGet, ripPath, nil)
 	if err != nil {
 		return nil, nil, nil, err

@@ -52,7 +52,7 @@ type domainRecordBase struct {
 }
 
 // Create will add a DNS record.
-func (d *DomainRecordsServiceHandler) Create(ctx context.Context, domain string, domainRecordReq *DomainRecordReq) (*DomainRecord, *http.Response, error) {
+func (d *DomainRecordsServiceHandler) Create(ctx context.Context, domain string, domainRecordReq *DomainRecordReq) (*DomainRecord, *http.Response, error) { //nolint:lll
 	req, err := d.client.NewRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/records", domainPath, domain), domainRecordReq)
 	if err != nil {
 		return nil, nil, err
@@ -105,7 +105,7 @@ func (d *DomainRecordsServiceHandler) Delete(ctx context.Context, domain, record
 }
 
 // List will list all the records associated with a particular domain on Vultr.
-func (d *DomainRecordsServiceHandler) List(ctx context.Context, domain string, options *ListOptions) ([]DomainRecord, *Meta, *http.Response, error) {
+func (d *DomainRecordsServiceHandler) List(ctx context.Context, domain string, options *ListOptions) ([]DomainRecord, *Meta, *http.Response, error) { //nolint:lll
 	req, err := d.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/records", domainPath, domain), nil)
 	if err != nil {
 		return nil, nil, nil, err

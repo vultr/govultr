@@ -153,7 +153,7 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 		}
 	}
 
-	req, err := http.NewRequest(method, resolvedURL.String(), buf)
+	req, err := http.NewRequestWithContext(ctx, method, resolvedURL.String(), buf)
 	if err != nil {
 		return nil, err
 	}

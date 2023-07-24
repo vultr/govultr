@@ -1,4 +1,4 @@
-package govultr
+package govultr //nolint:dupl
 
 import (
 	"context"
@@ -98,7 +98,7 @@ func (n *NetworkServiceHandler) Get(ctx context.Context, networkID string) (*Net
 
 // Update updates a private network
 // Deprecated: NetworkServiceHandler Update should no longer be used. Instead, use VPCServiceHandler Update.
-func (n *NetworkServiceHandler) Update(ctx context.Context, networkID string, description string) error {
+func (n *NetworkServiceHandler) Update(ctx context.Context, networkID, description string) error {
 	uri := fmt.Sprintf("%s/%s", netPath, networkID)
 
 	netReq := RequestBody{"description": description}
@@ -125,7 +125,7 @@ func (n *NetworkServiceHandler) Delete(ctx context.Context, networkID string) er
 
 // List lists all private networks on the current account
 // Deprecated: NetworkServiceHandler List should no longer be used. Instead, use VPCServiceHandler List.
-func (n *NetworkServiceHandler) List(ctx context.Context, options *ListOptions) ([]Network, *Meta, *http.Response, error) {
+func (n *NetworkServiceHandler) List(ctx context.Context, options *ListOptions) ([]Network, *Meta, *http.Response, error) { //nolint:dupl
 	req, err := n.client.NewRequest(ctx, http.MethodGet, netPath, nil)
 	if err != nil {
 		return nil, nil, nil, err

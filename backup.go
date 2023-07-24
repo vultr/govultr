@@ -57,7 +57,7 @@ func (b *BackupServiceHandler) Get(ctx context.Context, backupID string) (*Backu
 }
 
 // List retrieves a list of all backups on the current account
-func (b *BackupServiceHandler) List(ctx context.Context, options *ListOptions) ([]Backup, *Meta, *http.Response, error) {
+func (b *BackupServiceHandler) List(ctx context.Context, options *ListOptions) ([]Backup, *Meta, *http.Response, error) { //nolint:dupl
 	uri := "/v2/backups"
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 

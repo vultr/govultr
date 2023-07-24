@@ -135,7 +135,7 @@ func (b *BlockStorageServiceHandler) Delete(ctx context.Context, blockID string)
 }
 
 // List returns a list of all block storage instances on your Vultr Account
-func (b *BlockStorageServiceHandler) List(ctx context.Context, options *ListOptions) ([]BlockStorage, *Meta, *http.Response, error) {
+func (b *BlockStorageServiceHandler) List(ctx context.Context, options *ListOptions) ([]BlockStorage, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := "/v2/blocks"
 
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)

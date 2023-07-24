@@ -184,7 +184,7 @@ func (k *KubernetesHandler) GetCluster(ctx context.Context, id string) (*Cluster
 }
 
 // ListClusters will return all kubernetes clusters.
-func (k *KubernetesHandler) ListClusters(ctx context.Context, options *ListOptions) ([]Cluster, *Meta, *http.Response, error) {
+func (k *KubernetesHandler) ListClusters(ctx context.Context, options *ListOptions) ([]Cluster, *Meta, *http.Response, error) { //nolint:dupl,lll
 	req, err := k.client.NewRequest(ctx, http.MethodGet, vkePath, nil)
 	if err != nil {
 		return nil, nil, nil, err
@@ -254,7 +254,7 @@ func (k *KubernetesHandler) CreateNodePool(ctx context.Context, vkeID string, no
 }
 
 // ListNodePools will return all nodepools for a given VKE cluster
-func (k *KubernetesHandler) ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, *http.Response, error) {
+func (k *KubernetesHandler) ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, *http.Response, error) { //nolint:lll
 	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/node-pools", vkePath, vkeID), nil)
 	if err != nil {
 		return nil, nil, nil, err
@@ -293,7 +293,7 @@ func (k *KubernetesHandler) GetNodePool(ctx context.Context, vkeID, nodePoolID s
 }
 
 // UpdateNodePool will allow you change the quantity of nodes within a nodepool
-func (k *KubernetesHandler) UpdateNodePool(ctx context.Context, vkeID, nodePoolID string, updateReq *NodePoolReqUpdate) (*NodePool, *http.Response, error) {
+func (k *KubernetesHandler) UpdateNodePool(ctx context.Context, vkeID, nodePoolID string, updateReq *NodePoolReqUpdate) (*NodePool, *http.Response, error) { //nolint:lll
 	req, err := k.client.NewRequest(ctx, http.MethodPatch, fmt.Sprintf("%s/%s/node-pools/%s", vkePath, vkeID, nodePoolID), updateReq)
 	if err != nil {
 		return nil, nil, err
@@ -321,7 +321,12 @@ func (k *KubernetesHandler) DeleteNodePool(ctx context.Context, vkeID, nodePoolI
 
 // DeleteNodePoolInstance will remove a specified node from a nodepool
 func (k *KubernetesHandler) DeleteNodePoolInstance(ctx context.Context, vkeID, nodePoolID, nodeID string) error {
-	req, err := k.client.NewRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s/node-pools/%s/nodes/%s", vkePath, vkeID, nodePoolID, nodeID), nil)
+	req, err := k.client.NewRequest(
+		ctx,
+		http.MethodDelete,
+		fmt.Sprintf("%s/%s/node-pools/%s/nodes/%s", vkePath, vkeID, nodePoolID, nodeID),
+		nil,
+	)
 	if err != nil {
 		return err
 	}
@@ -332,7 +337,12 @@ func (k *KubernetesHandler) DeleteNodePoolInstance(ctx context.Context, vkeID, n
 
 // RecycleNodePoolInstance will recycle (destroy + redeploy) a given node on a nodepool
 func (k *KubernetesHandler) RecycleNodePoolInstance(ctx context.Context, vkeID, nodePoolID, nodeID string) error {
-	req, err := k.client.NewRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/node-pools/%s/nodes/%s/recycle", vkePath, vkeID, nodePoolID, nodeID), nil)
+	req, err := k.client.NewRequest(
+		ctx,
+		http.MethodPost,
+		fmt.Sprintf("%s/%s/node-pools/%s/nodes/%s/recycle", vkePath, vkeID, nodePoolID, nodeID),
+		nil,
+	)
 	if err != nil {
 		return err
 	}
@@ -392,7 +402,6 @@ func (k *KubernetesHandler) GetUpgrades(ctx context.Context, vkeID string) ([]st
 
 // Upgrade beings a VKE cluster upgrade
 func (k *KubernetesHandler) Upgrade(ctx context.Context, vkeID string, body *ClusterUpgradeReq) error {
-
 	req, err := k.client.NewRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/upgrades", vkePath, vkeID), body)
 	if err != nil {
 		return err

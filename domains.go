@@ -124,7 +124,7 @@ func (d *DomainServiceHandler) Delete(ctx context.Context, domain string) error 
 }
 
 // List gets all domains associated with the current Vultr account.
-func (d *DomainServiceHandler) List(ctx context.Context, options *ListOptions) ([]Domain, *Meta, *http.Response, error) {
+func (d *DomainServiceHandler) List(ctx context.Context, options *ListOptions) ([]Domain, *Meta, *http.Response, error) { //nolint:dupl
 	req, err := d.client.NewRequest(ctx, http.MethodGet, domainPath, nil)
 	if err != nil {
 		return nil, nil, nil, err
@@ -164,7 +164,6 @@ func (d *DomainServiceHandler) GetSoa(ctx context.Context, domain string) (*Soa,
 
 // UpdateSoa will update the SOA record information for a domain.
 func (d *DomainServiceHandler) UpdateSoa(ctx context.Context, domain string, soaReq *Soa) error {
-
 	req, err := d.client.NewRequest(ctx, http.MethodPatch, fmt.Sprintf("%s/%s/soa", domainPath, domain), soaReq)
 	if err != nil {
 		return err

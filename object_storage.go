@@ -71,12 +71,6 @@ type s3KeysBase struct {
 	S3Credentials *S3Keys `json:"s3_credentials"`
 }
 
-//// ObjectListOptions are your optional params you have available to list data.
-//type ObjectListOptions struct {
-//	IncludeS3 bool
-//	Label     string
-//}
-
 // Create an object storage subscription
 func (o *ObjectStorageServiceHandler) Create(ctx context.Context, clusterID int, label string) (*ObjectStorage, *http.Response, error) {
 	uri := "/v2/object-storage"
@@ -142,7 +136,7 @@ func (o *ObjectStorageServiceHandler) Delete(ctx context.Context, id string) err
 }
 
 // List all object storage subscriptions on the current account. This includes both pending and active subscriptions.
-func (o *ObjectStorageServiceHandler) List(ctx context.Context, options *ListOptions) ([]ObjectStorage, *Meta, *http.Response, error) {
+func (o *ObjectStorageServiceHandler) List(ctx context.Context, options *ListOptions) ([]ObjectStorage, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := "/v2/object-storage"
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -168,7 +162,7 @@ func (o *ObjectStorageServiceHandler) List(ctx context.Context, options *ListOpt
 
 // ListCluster returns back your object storage clusters.
 // Clusters may be removed over time. The "deploy" field can be used to determine whether or not new deployments are allowed in the cluster.
-func (o *ObjectStorageServiceHandler) ListCluster(ctx context.Context, options *ListOptions) ([]ObjectStorageCluster, *Meta, *http.Response, error) {
+func (o *ObjectStorageServiceHandler) ListCluster(ctx context.Context, options *ListOptions) ([]ObjectStorageCluster, *Meta, *http.Response, error) { //nolint:lll
 	uri := "/v2/object-storage/clusters"
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {

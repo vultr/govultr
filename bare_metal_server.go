@@ -122,7 +122,7 @@ type bareMetalBase struct {
 	BareMetal *BareMetalServer `json:"bare_metal"`
 }
 
-// BMBareMetalBase ...
+// BMBareMetalBase represents the base struct for a Bare Metal server
 type BMBareMetalBase struct {
 	BareMetalBandwidth map[string]BareMetalServerBandwidth `json:"bandwidth"`
 }
@@ -170,7 +170,7 @@ func (b *BareMetalServerServiceHandler) Get(ctx context.Context, serverID string
 }
 
 // Update a Bare Metal server
-func (b *BareMetalServerServiceHandler) Update(ctx context.Context, serverID string, bmReq *BareMetalUpdate) (*BareMetalServer, *http.Response, error) {
+func (b *BareMetalServerServiceHandler) Update(ctx context.Context, serverID string, bmReq *BareMetalUpdate) (*BareMetalServer, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPatch, uri, bmReq)
 	if err != nil {
@@ -198,7 +198,7 @@ func (b *BareMetalServerServiceHandler) Delete(ctx context.Context, serverID str
 }
 
 // List all Bare Metal instances in your account.
-func (b *BareMetalServerServiceHandler) List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, *http.Response, error) {
+func (b *BareMetalServerServiceHandler) List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, *http.Response, error) { //nolint:dupl,lll
 	req, err := b.client.NewRequest(ctx, http.MethodGet, bmPath, nil)
 	if err != nil {
 		return nil, nil, nil, err
@@ -273,7 +273,7 @@ func (b *BareMetalServerServiceHandler) GetVNCUrl(ctx context.Context, serverID 
 
 // ListIPv4s information of a Bare Metal server.
 // IP information is only available for Bare Metal servers in the "active" state.
-func (b *BareMetalServerServiceHandler) ListIPv4s(ctx context.Context, serverID string, options *ListOptions) ([]IPv4, *Meta, *http.Response, error) {
+func (b *BareMetalServerServiceHandler) ListIPv4s(ctx context.Context, serverID string, options *ListOptions) ([]IPv4, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/ipv4", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -299,7 +299,7 @@ func (b *BareMetalServerServiceHandler) ListIPv4s(ctx context.Context, serverID 
 // ListIPv6s information of a Bare Metal server.
 // IP information is only available for Bare Metal servers in the "active" state.
 // If the Bare Metal server does not have IPv6 enabled, then an empty array is returned.
-func (b *BareMetalServerServiceHandler) ListIPv6s(ctx context.Context, serverID string, options *ListOptions) ([]IPv6, *Meta, *http.Response, error) {
+func (b *BareMetalServerServiceHandler) ListIPv6s(ctx context.Context, serverID string, options *ListOptions) ([]IPv6, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/ipv6", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {

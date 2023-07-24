@@ -327,7 +327,7 @@ func (i *InstanceServiceHandler) Get(ctx context.Context, instanceID string) (*I
 }
 
 // Update will update the server with the given parameters
-func (i *InstanceServiceHandler) Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) (*Instance, *http.Response, error) {
+func (i *InstanceServiceHandler) Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) (*Instance, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s", instancePath, instanceID)
 
 	req, err := i.client.NewRequest(ctx, http.MethodPatch, uri, instanceReq)
@@ -358,7 +358,7 @@ func (i *InstanceServiceHandler) Delete(ctx context.Context, instanceID string) 
 }
 
 // List all instances on your account.
-func (i *InstanceServiceHandler) List(ctx context.Context, options *ListOptions) ([]Instance, *Meta, *http.Response, error) {
+func (i *InstanceServiceHandler) List(ctx context.Context, options *ListOptions) ([]Instance, *Meta, *http.Response, error) { //nolint:dupl
 	req, err := i.client.NewRequest(ctx, http.MethodGet, instancePath, nil)
 	if err != nil {
 		return nil, nil, nil, err
@@ -417,7 +417,7 @@ func (i *InstanceServiceHandler) Reboot(ctx context.Context, instanceID string) 
 }
 
 // Reinstall an instance.
-func (i *InstanceServiceHandler) Reinstall(ctx context.Context, instanceID string, reinstallReq *ReinstallReq) (*Instance, *http.Response, error) {
+func (i *InstanceServiceHandler) Reinstall(ctx context.Context, instanceID string, reinstallReq *ReinstallReq) (*Instance, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/reinstall", instancePath, instanceID)
 
 	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, reinstallReq)
@@ -520,7 +520,7 @@ func (i *InstanceServiceHandler) GetNeighbors(ctx context.Context, instanceID st
 
 // ListPrivateNetworks currently attached to an instance.
 // Deprecated: ListPrivateNetworks should no longer be used. Instead, use ListVPCInfo
-func (i *InstanceServiceHandler) ListPrivateNetworks(ctx context.Context, instanceID string, options *ListOptions) ([]PrivateNetwork, *Meta, *http.Response, error) {
+func (i *InstanceServiceHandler) ListPrivateNetworks(ctx context.Context, instanceID string, options *ListOptions) ([]PrivateNetwork, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/private-networks", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -574,7 +574,7 @@ func (i *InstanceServiceHandler) DetachPrivateNetwork(ctx context.Context, insta
 }
 
 // ListVPCInfo currently attached to an instance.
-func (i *InstanceServiceHandler) ListVPCInfo(ctx context.Context, instanceID string, options *ListOptions) ([]VPCInfo, *Meta, *http.Response, error) {
+func (i *InstanceServiceHandler) ListVPCInfo(ctx context.Context, instanceID string, options *ListOptions) ([]VPCInfo, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/vpcs", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -684,7 +684,7 @@ func (i *InstanceServiceHandler) GetBackupSchedule(ctx context.Context, instance
 }
 
 // SetBackupSchedule sets the backup schedule for a given instance - all time values are in UTC.
-func (i *InstanceServiceHandler) SetBackupSchedule(ctx context.Context, instanceID string, backup *BackupScheduleReq) (*http.Response, error) {
+func (i *InstanceServiceHandler) SetBackupSchedule(ctx context.Context, instanceID string, backup *BackupScheduleReq) (*http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/backup-schedule", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, backup)
 	if err != nil {
@@ -715,7 +715,7 @@ func (i *InstanceServiceHandler) CreateIPv4(ctx context.Context, instanceID stri
 }
 
 // ListIPv4 addresses that are currently assigned to a given instance.
-func (i *InstanceServiceHandler) ListIPv4(ctx context.Context, instanceID string, options *ListOptions) ([]IPv4, *Meta, *http.Response, error) {
+func (i *InstanceServiceHandler) ListIPv4(ctx context.Context, instanceID string, options *ListOptions) ([]IPv4, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/ipv4", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -750,7 +750,7 @@ func (i *InstanceServiceHandler) DeleteIPv4(ctx context.Context, instanceID, ip 
 }
 
 // ListIPv6 addresses that are currently assigned to a given instance.
-func (i *InstanceServiceHandler) ListIPv6(ctx context.Context, instanceID string, options *ListOptions) ([]IPv6, *Meta, *http.Response, error) {
+func (i *InstanceServiceHandler) ListIPv6(ctx context.Context, instanceID string, options *ListOptions) ([]IPv6, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/ipv6", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {

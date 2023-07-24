@@ -10,7 +10,7 @@ import (
 
 // SSHKeyService is the interface to interact with the SSH Key endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/ssh
-type SSHKeyService interface {
+type SSHKeyService interface { //nolint:dupl
 	Create(ctx context.Context, sshKeyReq *SSHKeyReq) (*SSHKey, *http.Response, error)
 	Get(ctx context.Context, sshKeyID string) (*SSHKey, *http.Response, error)
 	Update(ctx context.Context, sshKeyID string, sshKeyReq *SSHKeyReq) error
@@ -108,7 +108,7 @@ func (s *SSHKeyServiceHandler) Delete(ctx context.Context, sshKeyID string) erro
 }
 
 // List all available SSH Keys.
-func (s *SSHKeyServiceHandler) List(ctx context.Context, options *ListOptions) ([]SSHKey, *Meta, *http.Response, error) {
+func (s *SSHKeyServiceHandler) List(ctx context.Context, options *ListOptions) ([]SSHKey, *Meta, *http.Response, error) { //nolint:dupl
 	uri := "/v2/ssh-keys"
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, uri, nil)

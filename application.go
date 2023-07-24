@@ -35,7 +35,7 @@ type applicationBase struct {
 }
 
 // List retrieves a list of available applications that can be launched when creating a Vultr instance
-func (a *ApplicationServiceHandler) List(ctx context.Context, options *ListOptions) ([]Application, *Meta, *http.Response, error) {
+func (a *ApplicationServiceHandler) List(ctx context.Context, options *ListOptions) ([]Application, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := "/v2/applications"
 
 	req, err := a.client.NewRequest(ctx, http.MethodGet, uri, nil)

@@ -12,7 +12,6 @@ func TestBackupServiceHandler_List(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/backups", func(w http.ResponseWriter, r *http.Request) {
-
 		response := `
 		{
 			"backups": [
@@ -71,7 +70,6 @@ func TestBackupServiceHandler_ListEmpty(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/backups", func(w http.ResponseWriter, r *http.Request) {
-
 		response := `
 		{
 			"backups": [],
@@ -117,7 +115,6 @@ func TestBackupServiceHandler_Get(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/backups/543d34149403a", func(w http.ResponseWriter, r *http.Request) {
-
 		response := `
 		{
 			"backup": {
@@ -156,7 +153,7 @@ func TestBackupServiceHandler_GetEmpty(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/backups/543d34149403a", func(w http.ResponseWriter, r *http.Request) {
-		response := `			
+		response := `
 			{
 				"backup": {}
 			}

@@ -73,7 +73,7 @@ type invoiceItemsBase struct {
 }
 
 // ListHistory retrieves a list of all billing history on the current account
-func (b *BillingServiceHandler) ListHistory(ctx context.Context, options *ListOptions) ([]History, *Meta, *http.Response, error) {
+func (b *BillingServiceHandler) ListHistory(ctx context.Context, options *ListOptions) ([]History, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := "/v2/billing/history"
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -97,7 +97,7 @@ func (b *BillingServiceHandler) ListHistory(ctx context.Context, options *ListOp
 }
 
 // ListInvoices retrieves a list of all billing invoices on the current account
-func (b *BillingServiceHandler) ListInvoices(ctx context.Context, options *ListOptions) ([]Invoice, *Meta, *http.Response, error) {
+func (b *BillingServiceHandler) ListInvoices(ctx context.Context, options *ListOptions) ([]Invoice, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := "/v2/billing/invoices"
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -139,7 +139,7 @@ func (b *BillingServiceHandler) GetInvoice(ctx context.Context, invoiceID string
 }
 
 // ListInvoiceItems retrieves items in an invoice that matches the given invoiceID
-func (b *BillingServiceHandler) ListInvoiceItems(ctx context.Context, invoiceID int, options *ListOptions) ([]InvoiceItem, *Meta, *http.Response, error) {
+func (b *BillingServiceHandler) ListInvoiceItems(ctx context.Context, invoiceID int, options *ListOptions) ([]InvoiceItem, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := fmt.Sprintf("/v2/billing/invoices/%d/items", invoiceID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {

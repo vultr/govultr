@@ -12,7 +12,7 @@ const scriptPath = "/v2/startup-scripts"
 
 // StartupScriptService is the interface to interact with the startup script endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/startup
-type StartupScriptService interface {
+type StartupScriptService interface { //nolint:dupl
 	Create(ctx context.Context, req *StartupScriptReq) (*StartupScript, *http.Response, error)
 	Get(ctx context.Context, scriptID string) (*StartupScript, *http.Response, error)
 	Update(ctx context.Context, scriptID string, scriptReq *StartupScriptReq) error
@@ -114,7 +114,7 @@ func (s *StartupScriptServiceHandler) Delete(ctx context.Context, scriptID strin
 }
 
 // List all the startup scripts associated with your Vultr account
-func (s *StartupScriptServiceHandler) List(ctx context.Context, options *ListOptions) ([]StartupScript, *Meta, *http.Response, error) {
+func (s *StartupScriptServiceHandler) List(ctx context.Context, options *ListOptions) ([]StartupScript, *Meta, *http.Response, error) { //nolint:dupl,lll
 	req, err := s.client.NewRequest(ctx, http.MethodGet, scriptPath, nil)
 	if err != nil {
 		return nil, nil, nil, err

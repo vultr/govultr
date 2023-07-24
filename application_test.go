@@ -12,7 +12,6 @@ func TestApplicationServiceHandler_List(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/applications", func(w http.ResponseWriter, r *http.Request) {
-
 		response := `
 		{
 		"applications": [

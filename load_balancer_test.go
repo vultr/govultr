@@ -147,7 +147,6 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 	if !reflect.DeepEqual(meta, expectedMeta) {
 		t.Errorf("LoadBalancer.List returned %+v, expected %+v", meta, expectedMeta)
 	}
-
 }
 
 func TestLoadBalancerHandler_Delete(t *testing.T) {
