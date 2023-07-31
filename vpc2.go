@@ -8,58 +8,59 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
-const vpcPath = "/v2/vpcs"
+const vpc2Path = "/v2/vpc2"
 
-// VPCService is the interface to interact with the VPC endpoints on the Vultr API
-// Link : https://www.vultr.com/api/#tag/vpcs
-type VPCService interface {
-	Create(ctx context.Context, createReq *VPCReq) (*VPC, *http.Response, error)
-	Get(ctx context.Context, vpcID string) (*VPC, *http.Response, error)
+// VPC2Service is the interface to interact with the VPC 2.0 endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/vpc2
+type VPC2Service interface {
+	Create(ctx context.Context, createReq *VPC2Req) (*VPC2, *http.Response, error)
+	Get(ctx context.Context, vpcID string) (*VPC2, *http.Response, error)
 	Update(ctx context.Context, vpcID string, description string) error
 	Delete(ctx context.Context, vpcID string) error
-	List(ctx context.Context, options *ListOptions) ([]VPC, *Meta, *http.Response, error)
+	List(ctx context.Context, options *ListOptions) ([]VPC2, *Meta, *http.Response, error)
 }
 
-// VPCServiceHandler handles interaction with the VPC methods for the Vultr API
-type VPCServiceHandler struct {
+// VPC2ServiceHandler handles interaction with the VPC 2.0 methods for the Vultr API
+type VPC2ServiceHandler struct {
 	client *Client
 }
 
-// VPC represents a Vultr VPC
-type VPC struct {
+// VPC2 represents a Vultr VPC 2.0
+type VPC2 struct {
 	ID           string `json:"id"`
 	Region       string `json:"region"`
 	Description  string `json:"description"`
-	V4Subnet     string `json:"v4_subnet"`
-	V4SubnetMask int    `json:"v4_subnet_mask"`
+	IPBlock      string `json:"ip_block"`
+	PrefixLength int    `json:"prefix_length"`
 	DateCreated  string `json:"date_created"`
 }
 
-// VPCReq represents parameters to create or update a VPC resource
-type VPCReq struct {
+// VPC2Req represents parameters to create or update a VPC 2.0 resource
+type VPC2Req struct {
 	Region       string `json:"region"`
 	Description  string `json:"description"`
-	V4Subnet     string `json:"v4_subnet"`
-	V4SubnetMask int    `json:"v4_subnet_mask"`
+	IPType       string `json:"ip_type"`
+	IPBlock      string `json:"ip_block"`
+	PrefixLength int    `json:"prefix_length"`
 }
 
-type vpcsBase struct {
-	VPCs []VPC `json:"vpcs"`
-	Meta *Meta `json:"meta"`
+type vpcs2Base struct {
+	VPCs []VPC2 `json:"vpcs"`
+	Meta *Meta  `json:"meta"`
 }
 
-type vpcBase struct {
-	VPC *VPC `json:"vpc"`
+type vpc2Base struct {
+	VPC *VPC2 `json:"vpc"`
 }
 
-// Create creates a new VPC. A VPC can only be used at the location for which it was created.
-func (n *VPCServiceHandler) Create(ctx context.Context, createReq *VPCReq) (*VPC, *http.Response, error) {
-	req, err := n.client.NewRequest(ctx, http.MethodPost, vpcPath, createReq)
+// Create creates a new VPC 2.0. A VPC 2.0 can only be used at the location for which it was created.
+func (n *VPC2ServiceHandler) Create(ctx context.Context, createReq *VPC2Req) (*VPC2, *http.Response, error) {
+	req, err := n.client.NewRequest(ctx, http.MethodPost, vpc2Path, createReq)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	vpc := new(vpcBase)
+	vpc := new(vpc2Base)
 	resp, err := n.client.DoWithContext(ctx, req, vpc)
 	if err != nil {
 		return nil, resp, err
@@ -68,15 +69,15 @@ func (n *VPCServiceHandler) Create(ctx context.Context, createReq *VPCReq) (*VPC
 	return vpc.VPC, resp, nil
 }
 
-// Get gets the VPC of the requested ID
-func (n *VPCServiceHandler) Get(ctx context.Context, vpcID string) (*VPC, *http.Response, error) {
-	uri := fmt.Sprintf("%s/%s", vpcPath, vpcID)
+// Get gets the VPC 2.0 of the requested ID
+func (n *VPC2ServiceHandler) Get(ctx context.Context, vpcID string) (*VPC2, *http.Response, error) {
+	uri := fmt.Sprintf("%s/%s", vpc2Path, vpcID)
 	req, err := n.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	vpc := new(vpcBase)
+	vpc := new(vpc2Base)
 	resp, err := n.client.DoWithContext(ctx, req, vpc)
 	if err != nil {
 		return nil, resp, err
@@ -85,9 +86,9 @@ func (n *VPCServiceHandler) Get(ctx context.Context, vpcID string) (*VPC, *http.
 	return vpc.VPC, resp, nil
 }
 
-// Update updates a VPC
-func (n *VPCServiceHandler) Update(ctx context.Context, vpcID, description string) error {
-	uri := fmt.Sprintf("%s/%s", vpcPath, vpcID)
+// Update updates a VPC 2.0
+func (n *VPC2ServiceHandler) Update(ctx context.Context, vpcID, description string) error {
+	uri := fmt.Sprintf("%s/%s", vpc2Path, vpcID)
 
 	vpcReq := RequestBody{"description": description}
 	req, err := n.client.NewRequest(ctx, http.MethodPut, uri, vpcReq)
@@ -99,9 +100,9 @@ func (n *VPCServiceHandler) Update(ctx context.Context, vpcID, description strin
 	return err
 }
 
-// Delete deletes a VPC. Before deleting, a VPC must be disabled from all instances
-func (n *VPCServiceHandler) Delete(ctx context.Context, vpcID string) error {
-	uri := fmt.Sprintf("%s/%s", vpcPath, vpcID)
+// Delete deletes a VPC 2.0. Before deleting, a VPC 2.0 must be disabled from all instances
+func (n *VPC2ServiceHandler) Delete(ctx context.Context, vpcID string) error {
+	uri := fmt.Sprintf("%s/%s", vpc2Path, vpcID)
 	req, err := n.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return err
@@ -110,9 +111,9 @@ func (n *VPCServiceHandler) Delete(ctx context.Context, vpcID string) error {
 	return err
 }
 
-// List lists all VPCs on the current account
-func (n *VPCServiceHandler) List(ctx context.Context, options *ListOptions) ([]VPC, *Meta, *http.Response, error) { //nolint:dupl
-	req, err := n.client.NewRequest(ctx, http.MethodGet, vpcPath, nil)
+// List lists all VPC 2.0 on the current account
+func (n *VPC2ServiceHandler) List(ctx context.Context, options *ListOptions) ([]VPC2, *Meta, *http.Response, error) { //nolint:dupl
+	req, err := n.client.NewRequest(ctx, http.MethodGet, vpc2Path, nil)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -124,7 +125,7 @@ func (n *VPCServiceHandler) List(ctx context.Context, options *ListOptions) ([]V
 
 	req.URL.RawQuery = newValues.Encode()
 
-	vpcs := new(vpcsBase)
+	vpcs := new(vpcs2Base)
 	resp, err := n.client.DoWithContext(ctx, req, vpcs)
 	if err != nil {
 		return nil, nil, resp, err
