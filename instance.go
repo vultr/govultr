@@ -44,6 +44,10 @@ type InstanceService interface {
 	AttachVPC(ctx context.Context, instanceID, vpcID string) error
 	DetachVPC(ctx context.Context, instanceID, vpcID string) error
 
+	ListVPC2Info(ctx context.Context, instanceID string, options *ListOptions) ([]VPC2Info, *Meta, *http.Response, error)
+	AttachVPC2(ctx context.Context, instanceID string, vpc2Req *AttachVPC2Req) error
+	DetachVPC2(ctx context.Context, instanceID, vpcID string) error
+
 	ISOStatus(ctx context.Context, instanceID string) (*Iso, *http.Response, error)
 	AttachISO(ctx context.Context, instanceID, isoID string) (*http.Response, error)
 	DetachISO(ctx context.Context, instanceID string) (*http.Response, error)
@@ -159,6 +163,23 @@ type VPCInfo struct {
 	IPAddress  string `json:"ip_address"`
 }
 
+type vpc2InfoBase struct {
+	VPCs []VPC2Info `json:"vpcs"`
+	Meta *Meta      `json:"meta"`
+}
+
+// VPC2Info information for a given instance.
+type VPC2Info struct {
+	ID         string `json:"id"`
+	MacAddress string `json:"mac_address"`
+	IPAddress  string `json:"ip_address"`
+}
+
+type AttachVPC2Req struct {
+	VPCID     string  `json:"vpc_id,omitempty"`
+	IPAddress *string `json:"ip_address,omitempty"`
+}
+
 type isoStatusBase struct {
 	IsoStatus *Iso `json:"iso_status"`
 }
@@ -253,6 +274,8 @@ type InstanceCreateReq struct {
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
 	EnableVPC            *bool    `json:"enable_vpc,omitempty"`
 	AttachVPC            []string `json:"attach_vpc,omitempty"`
+	EnableVPC2           *bool    `json:"enable_vpc2,omitempty"`
+	AttachVPC2           []string `json:"attach_vpc2,omitempty"`
 	SSHKeys              []string `json:"sshkey_id,omitempty"`
 	Backups              string   `json:"backups,omitempty"`
 	DDOSProtection       *bool    `json:"ddos_protection,omitempty"`
@@ -281,6 +304,9 @@ type InstanceUpdateReq struct {
 	EnableVPC            *bool    `json:"enable_vpc,omitempty"`
 	AttachVPC            []string `json:"attach_vpc,omitempty"`
 	DetachVPC            []string `json:"detach_vpc,omitempty"`
+	EnableVPC2           *bool    `json:"enable_vpc2,omitempty"`
+	AttachVPC2           []string `json:"attach_vpc2,omitempty"`
+	DetachVPC2           []string `json:"detach_vpc2,omitempty"`
 	Backups              string   `json:"backups,omitempty"`
 	DDOSProtection       *bool    `json:"ddos_protection"`
 	UserData             string   `json:"user_data,omitempty"`
@@ -620,6 +646,57 @@ func (i *InstanceServiceHandler) DetachVPC(ctx context.Context, instanceID, vpcI
 	if err != nil {
 		return err
 	}
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// ListVPC2Info currently attached to an instance.
+func (i *InstanceServiceHandler) ListVPC2Info(ctx context.Context, instanceID string, options *ListOptions) ([]VPC2Info, *Meta, *http.Response, error) { //nolint:lll,dupl
+	uri := fmt.Sprintf("%s/%s/vpc2", instancePath, instanceID)
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	newValues, err := query.Values(options)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	req.URL.RawQuery = newValues.Encode()
+
+	vpcs := new(vpc2InfoBase)
+	resp, err := i.client.DoWithContext(ctx, req, vpcs)
+	if err != nil {
+		return nil, nil, resp, err
+	}
+
+	return vpcs.VPCs, vpcs.Meta, resp, nil
+}
+
+// AttachVPC2 to an instance
+func (i *InstanceServiceHandler) AttachVPC2(ctx context.Context, instanceID string, vpc2Req *AttachVPC2Req) error {
+	uri := fmt.Sprintf("%s/%s/vpc2/attach", instancePath, instanceID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, vpc2Req)
+	if err != nil {
+		return err
+	}
+
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// DetachVPC2 from an instance.
+func (i *InstanceServiceHandler) DetachVPC2(ctx context.Context, instanceID, vpcID string) error {
+	uri := fmt.Sprintf("%s/%s/vpc2/detach", instancePath, instanceID)
+	body := RequestBody{"vpc_id": vpcID}
+
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, body)
+	if err != nil {
+		return err
+	}
+
 	_, err = i.client.DoWithContext(ctx, req, nil)
 	return err
 }

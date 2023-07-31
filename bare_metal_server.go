@@ -36,6 +36,10 @@ type BareMetalServerService interface {
 	MassReboot(ctx context.Context, serverList []string) error
 
 	GetUpgrades(ctx context.Context, serverID string) (*Upgrades, *http.Response, error)
+
+	ListVPC2Info(ctx context.Context, serverID string) ([]VPC2Info, *http.Response, error)
+	AttachVPC2(ctx context.Context, serverID string, vpc2Req *AttachVPC2Req) error
+	DetachVPC2(ctx context.Context, serverID, vpcID string) error
 }
 
 // BareMetalServerServiceHandler handles interaction with the Bare Metal methods for the Vultr API
@@ -92,6 +96,9 @@ type BareMetalCreate struct {
 	ReservedIPv4  string   `json:"reserved_ipv4,omitempty"`
 	PersistentPxe *bool    `json:"persistent_pxe,omitempty"`
 	Tags          []string `json:"tags"`
+	AttachVPC2    []string `json:"attach_vpc2,omitempty"`
+	DetachVPC2    []string `json:"detach_vpc2,omitempty"`
+	EnableVPC2    *bool    `json:"enable_vpc2,omitempty"`
 }
 
 // BareMetalUpdate represents the optional parameters that can be set when updating a Bare Metal server
@@ -103,8 +110,11 @@ type BareMetalUpdate struct {
 	ImageID    string `json:"image_id,omitempty"`
 	UserData   string `json:"user_data,omitempty"`
 	// Deprecated: Tag should no longer be used. Instead, use Tags.
-	Tag  *string  `json:"tag,omitempty"`
-	Tags []string `json:"tags"`
+	Tag        *string  `json:"tag,omitempty"`
+	Tags       []string `json:"tags"`
+	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
+	DetachVPC2 []string `json:"detach_vpc2,omitempty"`
+	EnableVPC2 *bool    `json:"enable_vpc2,omitempty"`
 }
 
 // BareMetalServerBandwidth represents bandwidth information for a Bare Metal server
@@ -433,4 +443,48 @@ func (b *BareMetalServerServiceHandler) GetUpgrades(ctx context.Context, serverI
 	}
 
 	return upgrades.Upgrades, resp, nil
+}
+
+// ListVPC2Info currently attached to a Bare Metal server.
+func (b *BareMetalServerServiceHandler) ListVPC2Info(ctx context.Context, serverID string) ([]VPC2Info, *http.Response, error) {
+	uri := fmt.Sprintf("%s/%s/vpc2", bmPath, serverID)
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	vpcs := new(vpc2InfoBase)
+	resp, err := b.client.DoWithContext(ctx, req, vpcs)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return vpcs.VPCs, resp, nil
+}
+
+// AttachVPC2 to a Bare Metal server.
+func (b *BareMetalServerServiceHandler) AttachVPC2(ctx context.Context, serverID string, vpc2Req *AttachVPC2Req) error {
+	uri := fmt.Sprintf("%s/%s/vpc2/attach", bmPath, serverID)
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, vpc2Req)
+	if err != nil {
+		return err
+	}
+
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// DetachVPC2 from a Bare Metal server.
+func (b *BareMetalServerServiceHandler) DetachVPC2(ctx context.Context, serverID string, vpcID string) error {
+	uri := fmt.Sprintf("%s/%s/vpc2/detach", bmPath, serverID)
+	body := RequestBody{"vpc_id": vpcID}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
 }
