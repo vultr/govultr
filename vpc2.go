@@ -111,7 +111,7 @@ func (n *VPC2ServiceHandler) Delete(ctx context.Context, vpcID string) error {
 	return err
 }
 
-// List lists all VPC 2.0 on the current account
+// List lists all VPCs 2.0 on the current account
 func (n *VPC2ServiceHandler) List(ctx context.Context, options *ListOptions) ([]VPC2, *Meta, *http.Response, error) { //nolint:dupl
 	req, err := n.client.NewRequest(ctx, http.MethodGet, vpc2Path, nil)
 	if err != nil {
