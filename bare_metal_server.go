@@ -476,7 +476,7 @@ func (b *BareMetalServerServiceHandler) AttachVPC2(ctx context.Context, serverID
 }
 
 // DetachVPC2 from a Bare Metal server.
-func (b *BareMetalServerServiceHandler) DetachVPC2(ctx context.Context, serverID string, vpcID string) error {
+func (b *BareMetalServerServiceHandler) DetachVPC2(ctx context.Context, serverID, vpcID string) error {
 	uri := fmt.Sprintf("%s/%s/vpc2/detach", bmPath, serverID)
 	body := RequestBody{"vpc_id": vpcID}
 

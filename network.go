@@ -13,7 +13,7 @@ const netPath = "/v2/private-networks"
 // NetworkService is the interface to interact with the network endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/private-Networks
 // Deprecated: NetworkService should no longer be used. Instead, use VPCService.
-type NetworkService interface {
+type NetworkService interface { //nolint:dupl
 	// Deprecated: NetworkService Create should no longer be used. Instead, use VPCService Create.
 	Create(ctx context.Context, createReq *NetworkReq) (*Network, *http.Response, error)
 	// Deprecated: NetworkService Get should no longer be used. Instead, use VPCService Get.
