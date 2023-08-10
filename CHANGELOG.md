@@ -8,7 +8,7 @@
 * Bare Metal/Instances: Add support for VPC 2.0 [PR 261](https://github.com/vultr/govultr/pull/261)
 
 ### New Contributors
-* @ogawa0071 made their first contribution in https://github.com/vultr/govultr/pull/261
+* @ogawa0071 made their first contribution in [PR 261](https://github.com/vultr/govultr/pull/261)
 
 ## [v3.2.0](https://github.com/vultr/govultr/compare/v3.1.0...v3.2.0) (2023-07-24)
 ### Enhancements
