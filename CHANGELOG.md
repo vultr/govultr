@@ -2,6 +2,14 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v3.3.0](https://github.com/vultr/govultr/compare/v3.2.0...v3.3.0) (2023-08-10)
+### Enhancements
+* Add VPC2 [PR 261](https://github.com/vultr/govultr/pull/261)
+* Bare Metal/Instances: Add support for VPC 2.0 [PR 261](https://github.com/vultr/govultr/pull/261)
+
+### New Contributors
+* @ogawa0071 made their first contribution in [PR 261](https://github.com/vultr/govultr/pull/261)
+
 ## [v3.2.0](https://github.com/vultr/govultr/compare/v3.1.0...v3.2.0) (2023-07-24)
 ### Enhancements
 * Database: add support for DBaaS VPC networks [PR 255](https://github.com/vultr/govultr/pull/255)
