@@ -158,7 +158,7 @@ func (n *VPC2ServiceHandler) List(ctx context.Context, options *ListOptions) ([]
 }
 
 // ListNodes lists all nodes attached to a VPC 2.0 network
-func (n *VPC2ServiceHandler) ListNodes(ctx context.Context, vpc2ID string, options *ListOptions) ([]VPC2Node, *Meta, *http.Response, error) { //nolint:dupl
+func (n *VPC2ServiceHandler) ListNodes(ctx context.Context, vpc2ID string, options *ListOptions) ([]VPC2Node, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := fmt.Sprintf("%s/%s/nodes", vpc2Path, vpc2ID)
 
 	req, err := n.client.NewRequest(ctx, http.MethodGet, uri, nil)
