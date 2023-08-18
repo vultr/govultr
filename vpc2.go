@@ -12,7 +12,7 @@ const vpc2Path = "/v2/vpc2"
 
 // VPC2Service is the interface to interact with the VPC 2.0 endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/vpc2
-type VPC2Service interface {
+type VPC2Service interface { //nolint:dupl
 	Create(ctx context.Context, createReq *VPC2Req) (*VPC2, *http.Response, error)
 	Get(ctx context.Context, vpcID string) (*VPC2, *http.Response, error)
 	Update(ctx context.Context, vpcID string, description string) error
