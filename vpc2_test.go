@@ -152,3 +152,110 @@ func TestVPC2ServiceHandler_Get(t *testing.T) {
 		t.Errorf("VPC2.Get returned %+v, expected %+v", vpc, expected)
 	}
 }
+
+func TestVPC2ServiceHandler_ListNodes(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/vpc2/84fee086-6691-417a-b2db-e2a71061fa17/nodes", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+		{
+			"nodes": [
+				{
+					"id": "35dbcffe-58bf-46fe-bd68-964d95488dd8",
+					"ip_address": "10.1.112.5",
+					"mac_address": 98956121034033,
+					"description": "bbbbbb-8ac448299844",
+					"type": "vps",
+					"node_status": "active"
+				},
+				{
+					"id": "1f5d784a-1011-430c-a2e2-39ba045abe3c",
+					"ip_address": "10.1.112.6",
+					"mac_address": 98956121034034,
+					"description": "bbbbbb-c76d8fc029d6",
+					"type": "vps",
+					"node_status": "active"
+				}
+			],
+			"meta": {
+				"total": 2,
+				"links": {
+					"next": "",
+					"prev": ""
+				}
+			}
+		}
+		`
+		fmt.Fprint(writer, response)
+	})
+
+	nodes, _, _, err := client.VPC2.ListNodes(ctx, "84fee086-6691-417a-b2db-e2a71061fa17", nil)
+
+	if err != nil {
+		t.Errorf("VPC2.ListNodes returned error: %v", err)
+	}
+
+	expected := []VPC2Node{
+		{
+			ID:          "35dbcffe-58bf-46fe-bd68-964d95488dd8",
+			IPAddress:   "10.1.112.5",
+			MACAddress:  98956121034033,
+			Description: "bbbbbb-8ac448299844",
+			Type:        "vps",
+			NodeStatus:  "active",
+		},
+		{
+			ID:          "1f5d784a-1011-430c-a2e2-39ba045abe3c",
+			IPAddress:   "10.1.112.6",
+			MACAddress:  98956121034034,
+			Description: "bbbbbb-c76d8fc029d6",
+			Type:        "vps",
+			NodeStatus:  "active",
+		},
+	}
+
+	if !reflect.DeepEqual(nodes, expected) {
+		t.Errorf("VPC2.ListNode returned %+v, expected %+v", nodes, expected)
+	}
+}
+
+func TestVPC2ServiceHandler_Attach(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/vpc2/84fee086-6691-417a-b2db-e2a71061fa17/nodes/attach", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	nodes := []string{"ce44b37a-bbe7-4e30-bfae-695c2e633bff", "45b794b7-4dd1-48b1-beb7-0b7bf3a16941"}
+	options := &VPC2AttachDetachReq{
+		Nodes: nodes,
+	}
+
+	err := client.VPC2.Attach(ctx, "84fee086-6691-417a-b2db-e2a71061fa17", options)
+
+	if err != nil {
+		t.Errorf("VPC2.Attach returned %+v, expected %+v", err, nil)
+	}
+}
+
+func TestVPC2ServiceHandler_Detach(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/vpc2/84fee086-6691-417a-b2db-e2a71061fa17/nodes/detach", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	nodes := []string{"ce44b37a-bbe7-4e30-bfae-695c2e633bff", "45b794b7-4dd1-48b1-beb7-0b7bf3a16941"}
+	options := &VPC2AttachDetachReq{
+		Nodes: nodes,
+	}
+
+	err := client.VPC2.Detach(ctx, "84fee086-6691-417a-b2db-e2a71061fa17", options)
+
+	if err != nil {
+		t.Errorf("VPC2.Detach returned %+v, expected %+v", err, nil)
+	}
+}
