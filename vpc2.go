@@ -12,7 +12,7 @@ const vpc2Path = "/v2/vpc2"
 
 // VPC2Service is the interface to interact with the VPC 2.0 endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/vpc2
-type VPC2Service interface { //nolint:dupl
+type VPC2Service interface {
 	Create(ctx context.Context, createReq *VPC2Req) (*VPC2, *http.Response, error)
 	Get(ctx context.Context, vpcID string) (*VPC2, *http.Response, error)
 	Update(ctx context.Context, vpcID string, description string) error
@@ -158,7 +158,7 @@ func (n *VPC2ServiceHandler) List(ctx context.Context, options *ListOptions) ([]
 }
 
 // ListNodes lists all nodes attached to a VPC 2.0 network
-func (n *VPC2ServiceHandler) ListNodes(ctx context.Context, vpc2ID string, options *ListOptions) ([]VPC2Node, *Meta, *http.Response, error) {
+func (n *VPC2ServiceHandler) ListNodes(ctx context.Context, vpc2ID string, options *ListOptions) ([]VPC2Node, *Meta, *http.Response, error) { //nolint:dupl
 	uri := fmt.Sprintf("%s/%s/nodes", vpc2Path, vpc2ID)
 
 	req, err := n.client.NewRequest(ctx, http.MethodGet, uri, nil)
