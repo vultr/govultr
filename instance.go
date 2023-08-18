@@ -175,6 +175,7 @@ type VPC2Info struct {
 	IPAddress  string `json:"ip_address"`
 }
 
+// AttachVPC2Req parameters for attaching a VPC 2.0 network
 type AttachVPC2Req struct {
 	VPCID     string  `json:"vpc_id,omitempty"`
 	IPAddress *string `json:"ip_address,omitempty"`

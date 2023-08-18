@@ -12,7 +12,7 @@ const vpcPath = "/v2/vpcs"
 
 // VPCService is the interface to interact with the VPC endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/vpcs
-type VPCService interface { //nolint:dupl
+type VPCService interface {
 	Create(ctx context.Context, createReq *VPCReq) (*VPC, *http.Response, error)
 	Get(ctx context.Context, vpcID string) (*VPC, *http.Response, error)
 	Update(ctx context.Context, vpcID string, description string) error
