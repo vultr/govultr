@@ -1,7 +1,5 @@
 # Change Log
 
-## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
-
 ## [v3.3.1](https://github.com/vultr/govultr/compare/v3.3.0...v3.3.1) (2023-08-18)
 ### Enhancements
 * VPC2: Add nodes endpoints [PR 263](https://github.com/vultr/govultr/pull/263)

@@ -7,8 +7,6 @@
 
 The official Vultr Go client - GoVultr allows you to interact with the Vultr V2 API.
 
-GoVultr V1 that interacts with Vultr V1 API is now on the [v1 branch](https://github.com/vultr/govultr/tree/v1)
-
 ## Installation
 
 ```sh
