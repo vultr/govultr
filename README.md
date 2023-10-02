@@ -1,5 +1,9 @@
 # GoVultr
 
+**NOTICE**: Vultr no longer accepts requests against the v1 version of the API
+and this branch of govultr is now obsolete.  Please refer to the [v2 govultr client](https://github.com/vultr/govultr) 
+or the [documentation](https://www.vultr.com/api) for continued API access.
+
 [![Build Status](https://travis-ci.org/vultr/govultr.svg?branch=master)](https://travis-ci.org/vultr/govultr)
 [![GoDoc](https://godoc.org/github.com/vultr/govultr?status.svg)](https://godoc.org/github.com/vultr/govultr)
 [![codecov](https://codecov.io/gh/vultr/govultr/branch/master/graph/badge.svg?token=PDJXBc7Rci)](https://codecov.io/gh/vultr/govultr)
