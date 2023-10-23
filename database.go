@@ -130,6 +130,7 @@ type Database struct {
 	Tag                    string        `json:"tag"`
 	DBName                 string        `json:"dbname,omitempty"`
 	Host                   string        `json:"host"`
+	PublicHost             string        `json:"public_host,omitempty"`
 	User                   string        `json:"user"`
 	Password               string        `json:"password"`
 	Port                   string        `json:"port"`
