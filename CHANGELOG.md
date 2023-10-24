@@ -1,5 +1,8 @@
 # Change Log
 
+## [v3.3.3](https://github.com/vultr/govultr/compare/v3.3.2...v3.3.3) (2023-10-24)
+* Database: Change VPCID to pointer for empty & nil values in updates [PR 270](https://github.com/vultr/govultr/pull/270)
+
 ## [v3.3.2](https://github.com/vultr/govultr/compare/v3.3.1...v3.3.2) (2023-10-23)
 ### Enhancements
 * General: Remove references to deprecated V1 API [PR 266](https://github.com/vultr/govultr/pull/266)
