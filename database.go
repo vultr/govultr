@@ -190,7 +190,7 @@ type DatabaseUpdateReq struct {
 	Plan                   string   `json:"plan,omitempty"`
 	Label                  string   `json:"label,omitempty"`
 	Tag                    string   `json:"tag,omitempty"`
-	VPCID                  string   `json:"vpc_id,omitempty"`
+	VPCID                  *string  `json:"vpc_id,omitempty"`
 	MaintenanceDOW         string   `json:"maintenance_dow,omitempty"`
 	MaintenanceTime        string   `json:"maintenance_time,omitempty"`
 	ClusterTimeZone        string   `json:"cluster_time_zone,omitempty"`
