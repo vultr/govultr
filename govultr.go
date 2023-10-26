@@ -180,14 +180,14 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 
 	rreq = rreq.WithContext(ctx)
 
-	res, err := c.client.Do(rreq)
+	res, errDo := c.client.Do(rreq)
 
 	if c.onRequestCompleted != nil {
 		c.onRequestCompleted(r, res)
 	}
 
-	if err != nil {
-		return nil, err
+	if errDo != nil {
+		return nil, errDo
 	}
 
 	defer func() {
