@@ -39,21 +39,22 @@ type Client struct {
 	UserAgent string
 
 	// Services used to interact with the API
-	Account         AccountService
-	Application     ApplicationService
-	Backup          BackupService
-	BareMetalServer BareMetalServerService
-	Billing         BillingService
-	BlockStorage    BlockStorageService
-	Database        DatabaseService
-	Domain          DomainService
-	DomainRecord    DomainRecordService
-	FirewallGroup   FirewallGroupService
-	FirewallRule    FireWallRuleService
-	Instance        InstanceService
-	ISO             ISOService
-	Kubernetes      KubernetesService
-	LoadBalancer    LoadBalancerService
+	Account           AccountService
+	Application       ApplicationService
+	Backup            BackupService
+	BareMetalServer   BareMetalServerService
+	Billing           BillingService
+	BlockStorage      BlockStorageService
+	ContainerRegistry ContainerRegistryService
+	Database          DatabaseService
+	Domain            DomainService
+	DomainRecord      DomainRecordService
+	FirewallGroup     FirewallGroupService
+	FirewallRule      FireWallRuleService
+	Instance          InstanceService
+	ISO               ISOService
+	Kubernetes        KubernetesService
+	LoadBalancer      LoadBalancerService
 	// Deprecated: Network should no longer be used. Instead, use VPC.
 	Network       NetworkService
 	ObjectStorage ObjectStorageService
@@ -116,6 +117,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.BareMetalServer = &BareMetalServerServiceHandler{client}
 	client.Billing = &BillingServiceHandler{client}
 	client.BlockStorage = &BlockStorageServiceHandler{client}
+	client.ContainerRegistry = &ContainerRegistryServiceHandler{client}
 	client.Database = &DatabaseServiceHandler{client}
 	client.Domain = &DomainServiceHandler{client}
 	client.DomainRecord = &DomainRecordsServiceHandler{client}
