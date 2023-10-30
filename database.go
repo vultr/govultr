@@ -114,38 +114,49 @@ type DBListOptions struct {
 
 // Database represents a Managed Database subscription
 type Database struct {
-	ID                     string        `json:"id"`
-	DateCreated            string        `json:"date_created"`
-	Plan                   string        `json:"plan"`
-	PlanDisk               int           `json:"plan_disk"`
-	PlanRAM                int           `json:"plan_ram"`
-	PlanVCPUs              int           `json:"plan_vcpus"`
-	PlanReplicas           int           `json:"plan_replicas"`
-	Region                 string        `json:"region"`
-	DatabaseEngine         string        `json:"database_engine"`
-	DatabaseEngineVersion  string        `json:"database_engine_version"`
-	VPCID                  string        `json:"vpc_id"`
-	Status                 string        `json:"status"`
-	Label                  string        `json:"label"`
-	Tag                    string        `json:"tag"`
-	DBName                 string        `json:"dbname,omitempty"`
-	Host                   string        `json:"host"`
-	PublicHost             string        `json:"public_host,omitempty"`
-	User                   string        `json:"user"`
-	Password               string        `json:"password"`
-	Port                   string        `json:"port"`
-	MaintenanceDOW         string        `json:"maintenance_dow"`
-	MaintenanceTime        string        `json:"maintenance_time"`
-	LatestBackup           string        `json:"latest_backup"`
-	TrustedIPs             []string      `json:"trusted_ips"`
-	MySQLSQLModes          []string      `json:"mysql_sql_modes,omitempty"`
-	MySQLRequirePrimaryKey *bool         `json:"mysql_require_primary_key,omitempty"`
-	MySQLSlowQueryLog      *bool         `json:"mysql_slow_query_log,omitempty"`
-	MySQLLongQueryTime     int           `json:"mysql_long_query_time,omitempty"`
-	PGAvailableExtensions  []PGExtension `json:"pg_available_extensions,omitempty"`
-	RedisEvictionPolicy    string        `json:"redis_eviction_policy,omitempty"`
-	ClusterTimeZone        string        `json:"cluster_time_zone,omitempty"`
-	ReadReplicas           []Database    `json:"read_replicas,omitempty"`
+	ID                     string               `json:"id"`
+	DateCreated            string               `json:"date_created"`
+	Plan                   string               `json:"plan"`
+	PlanDisk               int                  `json:"plan_disk"`
+	PlanRAM                int                  `json:"plan_ram"`
+	PlanVCPUs              int                  `json:"plan_vcpus"`
+	PlanReplicas           int                  `json:"plan_replicas"`
+	Region                 string               `json:"region"`
+	DatabaseEngine         string               `json:"database_engine"`
+	DatabaseEngineVersion  string               `json:"database_engine_version"`
+	VPCID                  string               `json:"vpc_id"`
+	Status                 string               `json:"status"`
+	Label                  string               `json:"label"`
+	Tag                    string               `json:"tag"`
+	DBName                 string               `json:"dbname,omitempty"`
+	FerretDBCredentials    *FerretDBCredentials `json:"ferretdb_credentials,omitempty"`
+	Host                   string               `json:"host"`
+	PublicHost             string               `json:"public_host,omitempty"`
+	User                   string               `json:"user"`
+	Password               string               `json:"password"`
+	Port                   string               `json:"port"`
+	MaintenanceDOW         string               `json:"maintenance_dow"`
+	MaintenanceTime        string               `json:"maintenance_time"`
+	LatestBackup           string               `json:"latest_backup"`
+	TrustedIPs             []string             `json:"trusted_ips"`
+	MySQLSQLModes          []string             `json:"mysql_sql_modes,omitempty"`
+	MySQLRequirePrimaryKey *bool                `json:"mysql_require_primary_key,omitempty"`
+	MySQLSlowQueryLog      *bool                `json:"mysql_slow_query_log,omitempty"`
+	MySQLLongQueryTime     int                  `json:"mysql_long_query_time,omitempty"`
+	PGAvailableExtensions  []PGExtension        `json:"pg_available_extensions,omitempty"`
+	RedisEvictionPolicy    string               `json:"redis_eviction_policy,omitempty"`
+	ClusterTimeZone        string               `json:"cluster_time_zone,omitempty"`
+	ReadReplicas           []Database           `json:"read_replicas,omitempty"`
+}
+
+// FerretDBCredentials represents connection details and IP address information for FerretDB engine type subscriptions
+type FerretDBCredentials struct {
+	Host      string `json:"host"`
+	Port      int    `json:"port"`
+	User      string `json:"user"`
+	Password  string `json:"password"`
+	PublicIP  string `json:"public_ip"`
+	PrivateIP string `json:"private_ip,omitempty"`
 }
 
 // PGExtension represents an object containing extension name and version information
