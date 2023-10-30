@@ -1,4 +1,8 @@
 # Change Log
+## [v3.3.4](https://github.com/vultr/govultr/compare/v3.3.3...v3.3.4) (2023-10-30)
+### Enhancements
+* Database: Add support for FerretDB [PR 272](https://github.com/vultr/govultr/pull/272)
+* Kubernetes: Add HA control planes support [PR 273](https://github.com/vultr/govultr/pull/273)
 
 ## [v3.3.3](https://github.com/vultr/govultr/compare/v3.3.2...v3.3.3) (2023-10-24)
 * Database: Change VPCID to pointer for empty & nil values in updates [PR 270](https://github.com/vultr/govultr/pull/270)
