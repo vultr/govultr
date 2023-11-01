@@ -21,7 +21,7 @@ type ObjectStorageService interface {
 	RegenerateKeys(ctx context.Context, id string) (*S3Keys, *http.Response, error)
 }
 
-// ObjectStorageServiceHandler handles interaction with the firewall rule methods for the Vultr API.
+// ObjectStorageServiceHandler handles interaction between the object storage service and the Vultr API.
 type ObjectStorageServiceHandler struct {
 	client *Client
 }
