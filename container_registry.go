@@ -23,7 +23,9 @@ type ContainerRegistryService interface {
 	GetRepository(ctx context.Context, vcrID, imageName string) (*ContainerRegistryRepo, *http.Response, error)
 	UpdateRepository(ctx context.Context, vcrID, imageName string, updateReq *ContainerRegistryRepoReqUpdate) (*ContainerRegistryRepo, *http.Response, error)
 	DeleteRepository(ctx context.Context, vcrID, imageName string) error
-	CreateDockerCredentials(ctx context.Context, vcrID string, createOptions *DockerCredentialsOpt) (*ContainerRegistryDockerCredentials, *http.Response, error) //nolint: lll
+	// CreateDockerCredentials(ctx context.Context, vcrID string, createOptions *DockerCredentialsOpt) (*ContainerRegistryDockerCredentials, *http.Response, error) //nolint: lll
+	ListRegions(ctx context.Context, options *ListOptions) ([]ContainerRegistryRegion, *Meta, *http.Response, error)
+	ListPlans(ctx context.Context) (*ContainerRegistryPlans, *http.Response, error)
 }
 
 // ContainerRegistryServiceHandler handles interaction between the container registry service and the Vultr API.
@@ -114,9 +116,42 @@ type ContainerRegistryDockerCredentials struct {
 }
 
 // DockerCredentialsOpt contains the options used to create Docker credentials
-type DockerCredentialsOpt struct {
-	ExpirySeconds *int
-	WriteAccess   *bool
+// type DockerCredentialsOpt struct {
+// 	ExpirySeconds *int
+// 	WriteAccess   *bool
+// }
+
+// ContainerRegistryRegion represents the region data
+type ContainerRegistryRegion struct {
+	ID           int    `json:"id"`
+	Name         string `json:"name"`
+	URN          string `json:"urn"`
+	BaseURL      string `json:"base_url"`
+	Public       bool   `json:"public"`
+	DateCreated  string `json:"added_at"`
+	DateModified string `json:"updated_at"`
+}
+
+type containerRegistryRegions struct {
+	Regions []ContainerRegistryRegion `json:"regions"`
+	Meta    *Meta                     `json:"meta"`
+}
+
+// ContainerRegistryPlans represent the different plan types
+type ContainerRegistryPlans struct {
+	Plans struct {
+		StartUp    ContainerRegistryPlan `json:"start_up"`
+		Business   ContainerRegistryPlan `json:"business"`
+		Premium    ContainerRegistryPlan `json:"premium"`
+		Enterprise ContainerRegistryPlan `json:"enterprise"`
+	} `json:"plans"`
+}
+
+// ContainerRegistryPlan represent the plan data
+type ContainerRegistryPlan struct {
+	VanityName   string `json:"vanity_name"`
+	MaxStorageMB int    `json:"max_storage_mb"`
+	MonthlyPrice int    `json:"monthly_price"`
 }
 
 // Get retrieves a contrainer registry by ID
@@ -276,29 +311,61 @@ func (h *ContainerRegistryServiceHandler) DeleteRepository(ctx context.Context, 
 }
 
 // CreateDockerCredentials will create new Docker credentials used by the Docker CLI
-func (h *ContainerRegistryServiceHandler) CreateDockerCredentials(ctx context.Context, vcrID string, createOptions *DockerCredentialsOpt) (*ContainerRegistryDockerCredentials, *http.Response, error) { //nolint: lll
-	url := fmt.Sprintf("%s/%s/docker-credentials", vcrPath, vcrID)
-	req, errReq := h.client.NewRequest(ctx, http.MethodOptions, url, nil)
+// func (h *ContainerRegistryServiceHandler) CreateDockerCredentials(ctx context.Context, vcrID string, createOptions *DockerCredentialsOpt) (*ContainerRegistryDockerCredentials, *http.Response, error) { //nolint: lll
+// 	url := fmt.Sprintf("%s/%s/docker-credentials", vcrPath, vcrID)
+// 	req, errReq := h.client.NewRequest(ctx, http.MethodOptions, url, nil)
+// 	if errReq != nil {
+// 		return nil, nil, errReq
+// 	}
+
+// 	if createOptions.ExpirySeconds != nil {
+// 		req.URL.Query().Add("expiry_seconds", fmt.Sprintf("%d", createOptions.ExpirySeconds))
+// 	}
+
+// 	if createOptions.WriteAccess != nil {
+// 		req.URL.Query().Add("read_write", fmt.Sprintf("%t", *createOptions.WriteAccess))
+// 	}
+
+// 	// TODO return *http.Response to maintain API
+// 	resp, errResp := h.client.DoWithContext(ctx, req, nil)
+// 	if errResp != nil {
+// 		return nil, nil, errResp
+// 	}
+
+// 	auth := &ContainerRegistryDockerCredentials{AuthJSON: resp.BodyBytes}
+
+// 	// TODO return *http.Response to maintain API
+// 	return auth, nil, nil
+// }
+
+// ListRegions(ctx context.Context, options *ListOptions) ([]ContainerRegistryRegion, *Meta, *http.Response, error)
+func (h *ContainerRegistryServiceHandler) ListRegions(ctx context.Context, options *ListOptions) ([]ContainerRegistryRegion, *Meta, *http.Response, error) {
+	req, errReq := h.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/region/list", vcrPath), nil)
+	if errReq != nil {
+		return nil, nil, nil, errReq
+	}
+
+	vcrRegions := new(containerRegistryRegions)
+	resp, errResp := h.client.DoWithContext(ctx, req, &vcrRegions)
+	if errResp != nil {
+		return nil, nil, resp, errResp
+	}
+
+	return vcrRegions.Regions, vcrRegions.Meta, resp, nil
+}
+
+// ListPlans(ctx context.Context, options *ListOptions) (ContainerRegistryPlans, *http.Response, error)
+func (h *ContainerRegistryServiceHandler) ListPlans(ctx context.Context) (*ContainerRegistryPlans, *http.Response, error) {
+	req, errReq := h.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/plan/list", vcrPath), nil)
 	if errReq != nil {
 		return nil, nil, errReq
 	}
 
-	if createOptions.ExpirySeconds != nil {
-		req.URL.Query().Add("expiry_seconds", fmt.Sprintf("%d", createOptions.ExpirySeconds))
-	}
-
-	if createOptions.WriteAccess != nil {
-		req.URL.Query().Add("read_write", fmt.Sprintf("%t", *createOptions.WriteAccess))
-	}
-
-	// TODO return *http.Response to maintain API
-	resp, errResp := h.client.APIRequest(ctx, req)
+	vcrPlans := new(ContainerRegistryPlans)
+	resp, errResp := h.client.DoWithContext(ctx, req, &vcrPlans)
 	if errResp != nil {
-		return nil, nil, errResp
+		return nil, resp, errResp
 	}
 
-	auth := &ContainerRegistryDockerCredentials{AuthJSON: resp.BodyBytes}
-
-	// TODO return *http.Response to maintain API
-	return auth, nil, nil
+	return vcrPlans, resp, nil
 }
