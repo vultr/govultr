@@ -42,6 +42,7 @@ type DatabaseService interface {
 	DetachMigration(ctx context.Context, databaseID string) error
 
 	AddReadOnlyReplica(ctx context.Context, databaseID string, databaseReplicaReq *DatabaseAddReplicaReq) (*Database, *http.Response, error)
+	PromoteReadReplica(ctx context.Context, databaseID string) error
 
 	GetBackupInformation(ctx context.Context, databaseID string) (*DatabaseBackups, *http.Response, error)
 	RestoreFromBackup(ctx context.Context, databaseID string, databaseRestoreReq *DatabaseBackupRestoreReq) (*Database, *http.Response, error)
@@ -870,6 +871,19 @@ func (d *DatabaseServiceHandler) AddReadOnlyReplica(ctx context.Context, databas
 	}
 
 	return database.Database, resp, nil
+}
+
+// PromoteReadReplica will promote a read-only replica to its own standalone Managed Database subscription.
+func (d *DatabaseServiceHandler) PromoteReadReplica(ctx context.Context, databaseID string) error {
+	uri := fmt.Sprintf("%s/%s/promote-read-replica", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // GetBackupInformation retrieves backup information for your Managed Database.
