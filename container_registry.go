@@ -112,6 +112,12 @@ type ContainerRegistryRepoReqUpdate struct {
 	Description string `json:"description"`
 }
 
+// DockerCredentialsOpt contains the options used to create Docker credentials
+type DockerCredentialsOpt struct {
+	ExpirySeconds *int
+	WriteAccess   *bool
+}
+
 // ContainerRegistryDockerCredentials represents the byte array of character
 // data returned after creating a Docker credential
 type ContainerRegistryDockerCredentials []byte
@@ -126,12 +132,6 @@ func (c *ContainerRegistryDockerCredentials) UnmarshalJSON(b []byte) error {
 // String converts the ContainerRegistryDockerCredentials to a string
 func (c *ContainerRegistryDockerCredentials) String() string {
 	return string(*c)
-}
-
-// DockerCredentialsOpt contains the options used to create Docker credentials
-type DockerCredentialsOpt struct {
-	ExpirySeconds *int
-	WriteAccess   *bool
 }
 
 // ContainerRegistryRegion represents the region data
