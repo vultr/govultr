@@ -347,7 +347,6 @@ func (h *ContainerRegistryServiceHandler) CreateDockerCredentials(ctx context.Co
 	req.URL.RawQuery = queryParam.Encode()
 
 	creds := new(ContainerRegistryDockerCredentials)
-	// TODO return *http.Response to maintain API
 	resp, errResp := h.client.DoWithContext(ctx, req, &creds)
 	if errResp != nil {
 		return nil, nil, errResp
