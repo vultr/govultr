@@ -11,8 +11,9 @@ import (
 const vcrPath = "/v2/registry"
 const vcrListPath = "/v2/registries"
 
-// ContainerRegistryService is the interface to interact with the container registry endpoints on the Vultr API.
-// Link : https://www.vultr.com/api/#tag/Container-Registry
+// ContainerRegistryService is the interface to interact with the container
+// registry endpoints on the Vultr API.  Link :
+// https://www.vultr.com/api/#tag/Container-Registry
 type ContainerRegistryService interface {
 	Create(ctx context.Context, createReq *ContainerRegistryReq) (*ContainerRegistry, *http.Response, error)
 	Get(ctx context.Context, vcrID string) (*ContainerRegistry, *http.Response, error)
@@ -21,14 +22,15 @@ type ContainerRegistryService interface {
 	List(ctx context.Context, options *ListOptions) ([]ContainerRegistry, *Meta, *http.Response, error)
 	ListRepositories(ctx context.Context, vcrID string, options *ListOptions) ([]ContainerRegistryRepo, *Meta, *http.Response, error)
 	GetRepository(ctx context.Context, vcrID, imageName string) (*ContainerRegistryRepo, *http.Response, error)
-	UpdateRepository(ctx context.Context, vcrID, imageName string, updateReq *ContainerRegistryRepoReqUpdate) (*ContainerRegistryRepo, *http.Response, error)
+	UpdateRepository(ctx context.Context, vcrID, imageName string, updateReq *ContainerRegistryRepoReqUpdate) (*ContainerRegistryRepo, *http.Response, error) //nolint:lll
 	DeleteRepository(ctx context.Context, vcrID, imageName string) error
-	// CreateDockerCredentials(ctx context.Context, vcrID string, createOptions *DockerCredentialsOpt) (*ContainerRegistryDockerCredentials, *http.Response, error) //nolint: lll
+	CreateDockerCredentials(ctx context.Context, vcrID string, createOptions *DockerCredentialsOpt) (*ContainerRegistryDockerCredentials, *http.Response, error) //nolint:lll
 	ListRegions(ctx context.Context, options *ListOptions) ([]ContainerRegistryRegion, *Meta, *http.Response, error)
 	ListPlans(ctx context.Context) (*ContainerRegistryPlans, *http.Response, error)
 }
 
-// ContainerRegistryServiceHandler handles interaction between the container registry service and the Vultr API.
+// ContainerRegistryServiceHandler handles interaction between the container
+// registry service and the Vultr API.
 type ContainerRegistryServiceHandler struct {
 	client *Client
 }
@@ -110,16 +112,27 @@ type ContainerRegistryRepoReqUpdate struct {
 	Description string `json:"description"`
 }
 
-// ContainerRegistryDockerCredential represents the data used to create a Docker credential
-type ContainerRegistryDockerCredentials struct {
-	AuthJSON []byte
+// ContainerRegistryDockerCredentials represents the byte array of character
+// data returned after creating a Docker credential
+type ContainerRegistryDockerCredentials []byte
+
+// UnmarshalJSON is a custom unmarshal function for
+// ContainerRegistryDockerCredentials
+func (c *ContainerRegistryDockerCredentials) UnmarshalJSON(b []byte) error {
+	*c = b
+	return nil
+}
+
+// String converts the ContainerRegistryDockerCredentials to a string
+func (c *ContainerRegistryDockerCredentials) String() string {
+	return string(*c)
 }
 
 // DockerCredentialsOpt contains the options used to create Docker credentials
-// type DockerCredentialsOpt struct {
-// 	ExpirySeconds *int
-// 	WriteAccess   *bool
-// }
+type DockerCredentialsOpt struct {
+	ExpirySeconds *int
+	WriteAccess   *bool
+}
 
 // ContainerRegistryRegion represents the region data
 type ContainerRegistryRegion struct {
@@ -171,7 +184,7 @@ func (h *ContainerRegistryServiceHandler) Get(ctx context.Context, id string) (*
 }
 
 // List retrieves the list of all container registries
-func (h *ContainerRegistryServiceHandler) List(ctx context.Context, options *ListOptions) ([]ContainerRegistry, *Meta, *http.Response, error) {
+func (h *ContainerRegistryServiceHandler) List(ctx context.Context, options *ListOptions) ([]ContainerRegistry, *Meta, *http.Response, error) { //nolint:lll,dupl
 	req, errReq := h.client.NewRequest(ctx, http.MethodGet, vcrListPath, nil)
 	if errReq != nil {
 		return nil, nil, nil, errReq
@@ -194,7 +207,7 @@ func (h *ContainerRegistryServiceHandler) List(ctx context.Context, options *Lis
 }
 
 // Create creates a container registry
-func (h *ContainerRegistryServiceHandler) Create(ctx context.Context, createReq *ContainerRegistryReq) (*ContainerRegistry, *http.Response, error) { //nolint: lll
+func (h *ContainerRegistryServiceHandler) Create(ctx context.Context, createReq *ContainerRegistryReq) (*ContainerRegistry, *http.Response, error) { //nolint:lll
 	req, errReq := h.client.NewRequest(ctx, http.MethodPost, vcrPath, createReq)
 	if errReq != nil {
 		return nil, nil, errReq
@@ -210,7 +223,7 @@ func (h *ContainerRegistryServiceHandler) Create(ctx context.Context, createReq 
 }
 
 // Update will update an existing container registry
-func (h *ContainerRegistryServiceHandler) Update(ctx context.Context, vcrID string, updateReq *ContainerRegistryReqUpdate) (*ContainerRegistry, *http.Response, error) { //nolint: lll
+func (h *ContainerRegistryServiceHandler) Update(ctx context.Context, vcrID string, updateReq *ContainerRegistryReqUpdate) (*ContainerRegistry, *http.Response, error) { //nolint:lll
 	req, errReq := h.client.NewRequest(ctx, http.MethodPut, fmt.Sprintf("%s/%s", vcrPath, vcrID), updateReq)
 	if errReq != nil {
 		return nil, nil, errReq
@@ -240,8 +253,9 @@ func (h *ContainerRegistryServiceHandler) Delete(ctx context.Context, vcrID stri
 	return nil
 }
 
-// ListRepositories will get a list of the repositories for a existing container registry
-func (h *ContainerRegistryServiceHandler) ListRepositories(ctx context.Context, vcrID string, options *ListOptions) ([]ContainerRegistryRepo, *Meta, *http.Response, error) {
+// ListRepositories will get a list of the repositories for a existing
+// container registry
+func (h *ContainerRegistryServiceHandler) ListRepositories(ctx context.Context, vcrID string, options *ListOptions) ([]ContainerRegistryRepo, *Meta, *http.Response, error) { //nolint:lll,dupl
 	req, errReq := h.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/repositories", vcrPath, vcrID), nil)
 	if errReq != nil {
 		return nil, nil, nil, errReq
@@ -263,8 +277,9 @@ func (h *ContainerRegistryServiceHandler) ListRepositories(ctx context.Context, 
 	return vcrRepos.Repositories, vcrRepos.Meta, resp, nil
 }
 
-// GetRepository will return an existing repository of the requested registry ID and image name
-func (h *ContainerRegistryServiceHandler) GetRepository(ctx context.Context, vcrID, imageName string) (*ContainerRegistryRepo, *http.Response, error) {
+// GetRepository will return an existing repository of the requested registry
+// ID and image name
+func (h *ContainerRegistryServiceHandler) GetRepository(ctx context.Context, vcrID, imageName string) (*ContainerRegistryRepo, *http.Response, error) { //nolint:lll
 	req, errReq := h.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/repository/%s", vcrPath, vcrID, imageName), nil)
 	if errReq != nil {
 		return nil, nil, errReq
@@ -279,7 +294,8 @@ func (h *ContainerRegistryServiceHandler) GetRepository(ctx context.Context, vcr
 	return vcrRepo, resp, nil
 }
 
-// UpdateRepository allows updating the repository with the specified registry ID and image name
+// UpdateRepository allows updating the repository with the specified registry
+// ID and image name
 func (h *ContainerRegistryServiceHandler) UpdateRepository(ctx context.Context, vcrID, imageName string, updateReq *ContainerRegistryRepoReqUpdate) (*ContainerRegistryRepo, *http.Response, error) { //nolint: lll
 	req, errReq := h.client.NewRequest(ctx, http.MethodPut, fmt.Sprintf("%s/%s/repository/%s", vcrPath, vcrID, imageName), updateReq)
 	if errReq != nil {
@@ -310,36 +326,39 @@ func (h *ContainerRegistryServiceHandler) DeleteRepository(ctx context.Context, 
 	return nil
 }
 
-// CreateDockerCredentials will create new Docker credentials used by the Docker CLI
-// func (h *ContainerRegistryServiceHandler) CreateDockerCredentials(ctx context.Context, vcrID string, createOptions *DockerCredentialsOpt) (*ContainerRegistryDockerCredentials, *http.Response, error) { //nolint: lll
-// 	url := fmt.Sprintf("%s/%s/docker-credentials", vcrPath, vcrID)
-// 	req, errReq := h.client.NewRequest(ctx, http.MethodOptions, url, nil)
-// 	if errReq != nil {
-// 		return nil, nil, errReq
-// 	}
+// CreateDockerCredentials will create new Docker credentials used by the
+// Docker CLI
+func (h *ContainerRegistryServiceHandler) CreateDockerCredentials(ctx context.Context, vcrID string, createOptions *DockerCredentialsOpt) (*ContainerRegistryDockerCredentials, *http.Response, error) { //nolint:lll
+	url := fmt.Sprintf("%s/%s/docker-credentials", vcrPath, vcrID)
+	req, errReq := h.client.NewRequest(ctx, http.MethodOptions, url, nil)
+	if errReq != nil {
+		return nil, nil, errReq
+	}
 
-// 	if createOptions.ExpirySeconds != nil {
-// 		req.URL.Query().Add("expiry_seconds", fmt.Sprintf("%d", createOptions.ExpirySeconds))
-// 	}
+	queryParam := req.URL.Query()
+	if createOptions.ExpirySeconds != nil {
+		queryParam.Add("expiry_seconds", fmt.Sprintf("%d", createOptions.ExpirySeconds))
+	}
 
-// 	if createOptions.WriteAccess != nil {
-// 		req.URL.Query().Add("read_write", fmt.Sprintf("%t", *createOptions.WriteAccess))
-// 	}
+	if createOptions.WriteAccess != nil {
+		queryParam.Add("read_write", fmt.Sprintf("%t", *createOptions.WriteAccess))
+	}
 
-// 	// TODO return *http.Response to maintain API
-// 	resp, errResp := h.client.DoWithContext(ctx, req, nil)
-// 	if errResp != nil {
-// 		return nil, nil, errResp
-// 	}
+	req.URL.RawQuery = queryParam.Encode()
 
-// 	auth := &ContainerRegistryDockerCredentials{AuthJSON: resp.BodyBytes}
+	creds := new(ContainerRegistryDockerCredentials)
+	// TODO return *http.Response to maintain API
+	resp, errResp := h.client.DoWithContext(ctx, req, &creds)
+	if errResp != nil {
+		return nil, nil, errResp
+	}
 
-// 	// TODO return *http.Response to maintain API
-// 	return auth, nil, nil
-// }
+	return creds, resp, nil
+}
 
-// ListRegions(ctx context.Context, options *ListOptions) ([]ContainerRegistryRegion, *Meta, *http.Response, error)
-func (h *ContainerRegistryServiceHandler) ListRegions(ctx context.Context, options *ListOptions) ([]ContainerRegistryRegion, *Meta, *http.Response, error) {
+// ListRegions will return a list of regions relevant to the container registry
+// API operations
+func (h *ContainerRegistryServiceHandler) ListRegions(ctx context.Context, options *ListOptions) ([]ContainerRegistryRegion, *Meta, *http.Response, error) { //nolint:lll
 	req, errReq := h.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/region/list", vcrPath), nil)
 	if errReq != nil {
 		return nil, nil, nil, errReq
@@ -354,7 +373,8 @@ func (h *ContainerRegistryServiceHandler) ListRegions(ctx context.Context, optio
 	return vcrRegions.Regions, vcrRegions.Meta, resp, nil
 }
 
-// ListPlans(ctx context.Context, options *ListOptions) (ContainerRegistryPlans, *http.Response, error)
+// ListPlans returns a list of plans relevant to the container registry
+// offerings
 func (h *ContainerRegistryServiceHandler) ListPlans(ctx context.Context) (*ContainerRegistryPlans, *http.Response, error) {
 	req, errReq := h.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/plan/list", vcrPath), nil)
 	if errReq != nil {
