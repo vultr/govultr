@@ -1,3 +1,5 @@
+// Package govultr contains the functionality to interact with the Vultr public
+// HTTP REST API.
 package govultr
 
 import (
