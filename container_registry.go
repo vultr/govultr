@@ -156,13 +156,26 @@ func (c *ContainerRegistryDockerCredentials) String() string {
 
 // ContainerRegistryRegion represents the region data
 type ContainerRegistryRegion struct {
-	ID           int    `json:"id"`
-	Name         string `json:"name"`
-	URN          string `json:"urn"`
-	BaseURL      string `json:"base_url"`
-	Public       bool   `json:"public"`
-	DateCreated  string `json:"added_at"`
-	DateModified string `json:"updated_at"`
+	ID           int                               `json:"id"`
+	Name         string                            `json:"name"`
+	URN          string                            `json:"urn"`
+	BaseURL      string                            `json:"base_url"`
+	Public       bool                              `json:"public"`
+	DateCreated  string                            `json:"added_at"`
+	DateModified string                            `json:"updated_at"`
+	DataCenter   ContainerRegistryRegionDataCenter `json:"data_center"`
+}
+
+// ContainerRegistryRegionDataCenter is the datacenter info for a given region
+type ContainerRegistryRegionDataCenter struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	SiteCode    string `json:"site_code"`
+	Region      string `json:"region"`
+	Country     string `json:"country"`
+	Continent   string `json:"continent"`
+	Description string `json:"description"`
+	Airport     string `json:"airport"`
 }
 
 type containerRegistryRegions struct {
