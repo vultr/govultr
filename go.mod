@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/google/go-querystring v1.1.0
-	github.com/hashicorp/go-retryablehttp v0.7.4
+	github.com/hashicorp/go-retryablehttp v0.7.5
 )
 
 require (
