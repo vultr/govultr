@@ -54,6 +54,7 @@ type Cluster struct {
 	Region          string     `json:"region"`
 	Status          string     `json:"status"`
 	HAControlPlanes bool       `json:"ha_controlplanes"`
+	FirewallGroupID string     `json:"firewall_group_id"`
 	NodePools       []NodePool `json:"node_pools"`
 }
 
@@ -92,6 +93,7 @@ type ClusterReq struct {
 	Region          string        `json:"region"`
 	Version         string        `json:"version"`
 	HAControlPlanes bool          `json:"ha_controlplanes,omitempty"`
+	EnableFirewall  bool          `json:"enable_firewall,omitempty"`
 	NodePools       []NodePoolReq `json:"node_pools"`
 }
 
