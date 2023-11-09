@@ -17,7 +17,7 @@ const vcrListPath = "/v2/registries"
 type ContainerRegistryService interface {
 	Create(ctx context.Context, createReq *ContainerRegistryReq) (*ContainerRegistry, *http.Response, error)
 	Get(ctx context.Context, vcrID string) (*ContainerRegistry, *http.Response, error)
-	Update(ctx context.Context, vcrID string, updateReq *ContainerRegistryReqUpdate) (*ContainerRegistry, *http.Response, error)
+	Update(ctx context.Context, vcrID string, updateReq *ContainerRegistryUpdateReq) (*ContainerRegistry, *http.Response, error)
 	Delete(ctx context.Context, vcrID string) error
 	List(ctx context.Context, options *ListOptions) ([]ContainerRegistry, *Meta, *http.Response, error)
 	ListRepositories(ctx context.Context, vcrID string, options *ListOptions) ([]ContainerRegistryRepo, *Meta, *http.Response, error)
@@ -104,8 +104,8 @@ type ContainerRegistryReq struct {
 	Plan   string `json:"plan"`
 }
 
-// ContainerRegistryReqUpdate represents the data used to update a registry
-type ContainerRegistryReqUpdate struct {
+// ContainerRegistryUpdateReq represents the data used to update a registry
+type ContainerRegistryUpdateReq struct {
 	Public *bool   `json:"public"`
 	Plan   *string `json:"plan"`
 }
@@ -256,7 +256,7 @@ func (h *ContainerRegistryServiceHandler) Create(ctx context.Context, createReq 
 }
 
 // Update will update an existing container registry
-func (h *ContainerRegistryServiceHandler) Update(ctx context.Context, vcrID string, updateReq *ContainerRegistryReqUpdate) (*ContainerRegistry, *http.Response, error) { //nolint:lll
+func (h *ContainerRegistryServiceHandler) Update(ctx context.Context, vcrID string, updateReq *ContainerRegistryUpdateReq) (*ContainerRegistry, *http.Response, error) { //nolint:lll
 	req, errReq := h.client.NewRequest(ctx, http.MethodPut, fmt.Sprintf("%s/%s", vcrPath, vcrID), updateReq)
 	if errReq != nil {
 		return nil, nil, errReq
