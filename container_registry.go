@@ -37,13 +37,14 @@ type ContainerRegistryServiceHandler struct {
 
 // ContainerRegistry represents a Vultr container registry subscription.
 type ContainerRegistry struct {
-	ID          string                   `json:"id"`
-	Name        string                   `json:"name"`
-	URN         string                   `json:"urn"`
-	Storage     ContainerRegistryStorage `json:"storage"`
-	DateCreated string                   `json:"date_created"`
-	Public      bool                     `json:"public"`
-	RootUser    ContainerRegistryUser    `json:"root_user"`
+	ID          string                    `json:"id"`
+	Name        string                    `json:"name"`
+	URN         string                    `json:"urn"`
+	Storage     ContainerRegistryStorage  `json:"storage"`
+	DateCreated string                    `json:"date_created"`
+	Public      bool                      `json:"public"`
+	RootUser    ContainerRegistryUser     `json:"root_user"`
+	Metadata    ContainerRegistryMetadata `json:"metadata"`
 }
 
 type containerRegistries struct {
@@ -74,6 +75,25 @@ type ContainerRegistryUser struct {
 	Root         bool   `json:"root"`
 	DateCreated  string `json:"added_at"`
 	DateModified string `json:"updated_at"`
+}
+
+// ContainerRegistryMetadata contains the meta data for the registry
+type ContainerRegistryMetadata struct {
+	Region       ContainerRegistryRegion       `json:"region"`
+	Subscription ContainerRegistrySubscription `json:"subscription"`
+}
+
+// ContainerRegistrySubscription contains the subscription information for the
+// registry
+type ContainerRegistrySubscription struct {
+	Billing ContainerRegistrySubscriptionBilling `json:"billing"`
+}
+
+// ContainerRegistrySubscriptionBilling represents the subscription billing
+// data on the registry
+type ContainerRegistrySubscriptionBilling struct {
+	MonthlyPrice   float32 `json:"monthly_price"`
+	PendingCharges float32 `json:"pending_charges"`
 }
 
 // ContainerRegistryReq represents the data used to create a registry
