@@ -182,14 +182,17 @@ type containerRegistryRegions struct {
 	Meta    *Meta                     `json:"meta"`
 }
 
-// ContainerRegistryPlans represent the different plan types
+// ContainerRegistryPlans contains all plan types
 type ContainerRegistryPlans struct {
-	Plans struct {
-		StartUp    ContainerRegistryPlan `json:"start_up"`
-		Business   ContainerRegistryPlan `json:"business"`
-		Premium    ContainerRegistryPlan `json:"premium"`
-		Enterprise ContainerRegistryPlan `json:"enterprise"`
-	} `json:"plans"`
+	Plans ContainerRegistryPlanTypes `json:"plans"`
+}
+
+// ContainerRegistryPlanTypes represent the different plan types
+type ContainerRegistryPlanTypes struct {
+	StartUp    ContainerRegistryPlan `json:"start_up"`
+	Business   ContainerRegistryPlan `json:"business"`
+	Premium    ContainerRegistryPlan `json:"premium"`
+	Enterprise ContainerRegistryPlan `json:"enterprise"`
 }
 
 // ContainerRegistryPlan represent the plan data
