@@ -22,7 +22,7 @@ type ContainerRegistryService interface {
 	List(ctx context.Context, options *ListOptions) ([]ContainerRegistry, *Meta, *http.Response, error)
 	ListRepositories(ctx context.Context, vcrID string, options *ListOptions) ([]ContainerRegistryRepo, *Meta, *http.Response, error)
 	GetRepository(ctx context.Context, vcrID, imageName string) (*ContainerRegistryRepo, *http.Response, error)
-	UpdateRepository(ctx context.Context, vcrID, imageName string, updateReq *ContainerRegistryRepoReqUpdate) (*ContainerRegistryRepo, *http.Response, error) //nolint:lll
+	UpdateRepository(ctx context.Context, vcrID, imageName string, updateReq *ContainerRegistryRepoUpdateReq) (*ContainerRegistryRepo, *http.Response, error) //nolint:lll
 	DeleteRepository(ctx context.Context, vcrID, imageName string) error
 	CreateDockerCredentials(ctx context.Context, vcrID string, createOptions *DockerCredentialsOpt) (*ContainerRegistryDockerCredentials, *http.Response, error) //nolint:lll
 	ListRegions(ctx context.Context, options *ListOptions) ([]ContainerRegistryRegion, *Meta, *http.Response, error)
@@ -126,8 +126,8 @@ type containerRegistryRepos struct {
 	Meta         *Meta                   `json:"meta"`
 }
 
-// ContainerRegistryRepoReqUpdate is the data to update a registry repository
-type ContainerRegistryRepoReqUpdate struct {
+// ContainerRegistryRepoUpdateReq is the data to update a registry repository
+type ContainerRegistryRepoUpdateReq struct {
 	Description string `json:"description"`
 }
 
@@ -328,7 +328,7 @@ func (h *ContainerRegistryServiceHandler) GetRepository(ctx context.Context, vcr
 
 // UpdateRepository allows updating the repository with the specified registry
 // ID and image name
-func (h *ContainerRegistryServiceHandler) UpdateRepository(ctx context.Context, vcrID, imageName string, updateReq *ContainerRegistryRepoReqUpdate) (*ContainerRegistryRepo, *http.Response, error) { //nolint: lll
+func (h *ContainerRegistryServiceHandler) UpdateRepository(ctx context.Context, vcrID, imageName string, updateReq *ContainerRegistryRepoUpdateReq) (*ContainerRegistryRepo, *http.Response, error) { //nolint: lll
 	req, errReq := h.client.NewRequest(ctx, http.MethodPut, fmt.Sprintf("%s/%s/repository/%s", vcrPath, vcrID, imageName), updateReq)
 	if errReq != nil {
 		return nil, nil, errReq
