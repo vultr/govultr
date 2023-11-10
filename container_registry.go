@@ -121,8 +121,7 @@ type ContainerRegistryRepo struct {
 	ArtifactCount int    `json:"artifact_count"`
 }
 
-// ContainerRegistryRepos contains all repos
-type ContainerRegistryRepos struct {
+type containerRegistryRepos struct {
 	Repositories []ContainerRegistryRepo `json:"repositories"`
 	Meta         *Meta                   `json:"meta"`
 }
@@ -301,7 +300,7 @@ func (h *ContainerRegistryServiceHandler) ListRepositories(ctx context.Context, 
 
 	req.URL.RawQuery = qStrings.Encode()
 
-	vcrRepos := new(ContainerRegistryRepos)
+	vcrRepos := new(containerRegistryRepos)
 	resp, errResp := h.client.DoWithContext(ctx, req, &vcrRepos)
 	if errResp != nil {
 		return nil, nil, resp, errResp
