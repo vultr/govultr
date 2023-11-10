@@ -130,6 +130,8 @@ issues:
         - dupl
         - gosec
         - lll
+        - goconst
+        - dogsled
 
 run:
   timeout: 5m

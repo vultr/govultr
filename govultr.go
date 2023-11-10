@@ -1,3 +1,5 @@
+// Package govultr contains the functionality to interact with the Vultr public
+// HTTP REST API.
 package govultr
 
 import (
@@ -39,21 +41,22 @@ type Client struct {
 	UserAgent string
 
 	// Services used to interact with the API
-	Account         AccountService
-	Application     ApplicationService
-	Backup          BackupService
-	BareMetalServer BareMetalServerService
-	Billing         BillingService
-	BlockStorage    BlockStorageService
-	Database        DatabaseService
-	Domain          DomainService
-	DomainRecord    DomainRecordService
-	FirewallGroup   FirewallGroupService
-	FirewallRule    FireWallRuleService
-	Instance        InstanceService
-	ISO             ISOService
-	Kubernetes      KubernetesService
-	LoadBalancer    LoadBalancerService
+	Account           AccountService
+	Application       ApplicationService
+	Backup            BackupService
+	BareMetalServer   BareMetalServerService
+	Billing           BillingService
+	BlockStorage      BlockStorageService
+	ContainerRegistry ContainerRegistryService
+	Database          DatabaseService
+	Domain            DomainService
+	DomainRecord      DomainRecordService
+	FirewallGroup     FirewallGroupService
+	FirewallRule      FireWallRuleService
+	Instance          InstanceService
+	ISO               ISOService
+	Kubernetes        KubernetesService
+	LoadBalancer      LoadBalancerService
 	// Deprecated: Network should no longer be used. Instead, use VPC.
 	Network       NetworkService
 	ObjectStorage ObjectStorageService
@@ -116,6 +119,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.BareMetalServer = &BareMetalServerServiceHandler{client}
 	client.Billing = &BillingServiceHandler{client}
 	client.BlockStorage = &BlockStorageServiceHandler{client}
+	client.ContainerRegistry = &ContainerRegistryServiceHandler{client}
 	client.Database = &DatabaseServiceHandler{client}
 	client.Domain = &DomainServiceHandler{client}
 	client.DomainRecord = &DomainRecordsServiceHandler{client}
@@ -178,14 +182,14 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 
 	rreq = rreq.WithContext(ctx)
 
-	res, err := c.client.Do(rreq)
+	res, errDo := c.client.Do(rreq)
 
 	if c.onRequestCompleted != nil {
 		c.onRequestCompleted(r, res)
 	}
 
-	if err != nil {
-		return nil, err
+	if errDo != nil {
+		return nil, errDo
 	}
 
 	defer func() {

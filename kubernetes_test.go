@@ -308,7 +308,7 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(meta, expectedMeta) {
-		t.Errorf("Kubernetes.List meta returned %+v, expected %+v", vke, expected)
+		t.Errorf("Kubernetes.List meta returned %+v, expected %+v", meta, expectedMeta)
 	}
 
 	c, can := context.WithTimeout(ctx, 1*time.Microsecond)

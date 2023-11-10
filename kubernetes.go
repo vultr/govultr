@@ -258,7 +258,7 @@ func (k *KubernetesHandler) CreateNodePool(ctx context.Context, vkeID string, no
 }
 
 // ListNodePools will return all nodepools for a given VKE cluster
-func (k *KubernetesHandler) ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, *http.Response, error) { //nolint:lll
+func (k *KubernetesHandler) ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, *http.Response, error) { //nolint:lll,dupl
 	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/node-pools", vkePath, vkeID), nil)
 	if err != nil {
 		return nil, nil, nil, err
