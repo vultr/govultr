@@ -8,7 +8,7 @@
 ### Dependencies
 * Bump github.com/hashicorp/go-retryablehttp from 0.7.4 to 0.7.5 [PR 280](https://github.com/vultr/govultr/pull/280)
 
-## New Contributors
+### New Contributors
 * @Byteflux made their first contribution in [PR 277](https://github.com/vultr/govultr/pull/277)
 
 ## [v3.3.4](https://github.com/vultr/govultr/compare/v3.3.3...v3.3.4) (2023-10-30)
