@@ -21,6 +21,8 @@ type DatabaseService interface {
 	Update(ctx context.Context, databaseID string, databaseReq *DatabaseUpdateReq) (*Database, *http.Response, error)
 	Delete(ctx context.Context, databaseID string) error
 
+	GetUsage(ctx context.Context, databaseID string) (*DatabaseUsage, *http.Response, error)
+
 	ListUsers(ctx context.Context, databaseID string) ([]DatabaseUser, *Meta, *http.Response, error)
 	CreateUser(ctx context.Context, databaseID string, databaseUserReq *DatabaseUserCreateReq) (*DatabaseUser, *http.Response, error)
 	GetUser(ctx context.Context, databaseID string, username string) (*DatabaseUser, *http.Response, error)
@@ -212,6 +214,37 @@ type DatabaseUpdateReq struct {
 	MySQLSlowQueryLog      *bool    `json:"mysql_slow_query_log,omitempty"`
 	MySQLLongQueryTime     int      `json:"mysql_long_query_time,omitempty"`
 	RedisEvictionPolicy    string   `json:"redis_eviction_policy,omitempty"`
+}
+
+// DatabaseUsage represents disk, memory, and CPU usage for a Managed Database
+type DatabaseUsage struct {
+	Disk   DatabaseDiskUsage   `json:"disk"`
+	Memory DatabaseMemoryUsage `json:"memory"`
+	CPU    DatabaseCPUUsage    `json:"cpu"`
+}
+
+// DatabaseDiskUsage represents disk usage details for a Managed Database
+type DatabaseDiskUsage struct {
+	CurrentGB  float32 `json:"current_gb"`
+	MaxGB      int     `json:"max_gb"`
+	Percentage float32 `json:"percentage"`
+}
+
+// DatabaseMemoryUsage represents memory usage details for a Managed Database
+type DatabaseMemoryUsage struct {
+	CurrentMB  float32 `json:"current_mb"`
+	MaxMB      int     `json:"max_mb"`
+	Percentage float32 `json:"percentage"`
+}
+
+// DatabaseCPUUsage represents average CPU usage for a Managed Database
+type DatabaseCPUUsage struct {
+	Percentage float32 `json:"percentage"`
+}
+
+// databaseUsageBase represents a migration status object API response for a Managed Database
+type databaseUsageBase struct {
+	Usage *DatabaseUsage `json:"usage"`
 }
 
 // DatabaseUser represents a user within a Managed Database cluster
@@ -598,6 +631,24 @@ func (d *DatabaseServiceHandler) Delete(ctx context.Context, databaseID string) 
 
 	_, err = d.client.DoWithContext(ctx, req, nil)
 	return err
+}
+
+// GetUsage retrieves disk, memory, and CPU usage information for your Managed Database.
+func (d *DatabaseServiceHandler) GetUsage(ctx context.Context, databaseID string) (*DatabaseUsage, *http.Response, error) {
+	uri := fmt.Sprintf("%s/%s/usage", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseUsage := new(databaseUsageBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseUsage)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseUsage.Usage, resp, nil
 }
 
 // ListUsers retrieves all database users on your Managed Database.
