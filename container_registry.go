@@ -106,8 +106,8 @@ type ContainerRegistryReq struct {
 
 // ContainerRegistryUpdateReq represents the data used to update a registry
 type ContainerRegistryUpdateReq struct {
-	Public *bool   `json:"public"`
-	Plan   *string `json:"plan"`
+	Public *bool   `json:"public,omitempty"`
+	Plan   *string `json:"plan,omitempty"`
 }
 
 // ContainerRegistryRepo represents the data of a registry repository
