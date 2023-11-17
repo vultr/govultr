@@ -1,9 +1,16 @@
 # Change Log
+## [v3.4.1](https://github.com/vultr/govultr/compare/v3.4.0...v3.4.1) (2023-11-17)
+### Enhancement
+* Database: Add support for usage endpoint [PR 282](https://github.com/vultr/govultr/pull/282)
+
+### Bug Fix
+* Container Registry: minor API fixes [PR 284](https://github.com/vultr/govultr/pull/284)
+
 ## [v3.4.0](https://github.com/vultr/govultr/compare/v3.3.4...v3.4.0) (2023-11-10)
 ### Enhancements
-* database: Support read replica promotion [PR 276](https://github.com/vultr/govultr/pull/276)
-* kubernetes: Add managed firewall support [PR 277](https://github.com/vultr/govultr/pull/277)
-* container-registry: Add support for container registry operations [PR 278](https://github.com/vultr/govultr/pull/278)
+* Database: Support read replica promotion [PR 276](https://github.com/vultr/govultr/pull/276)
+* Kubernetes: Add managed firewall support [PR 277](https://github.com/vultr/govultr/pull/277)
+* Container Registry: Add support for container registry operations [PR 278](https://github.com/vultr/govultr/pull/278)
 
 ### Dependencies
 * Bump github.com/hashicorp/go-retryablehttp from 0.7.4 to 0.7.5 [PR 280](https://github.com/vultr/govultr/pull/280)
