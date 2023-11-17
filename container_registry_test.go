@@ -969,7 +969,7 @@ func TestVCRServiceHandler_ListRegions(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	vcrRegions, meta, _, err := client.ContainerRegistry.ListRegions(ctx, nil)
+	vcrRegions, meta, _, err := client.ContainerRegistry.ListRegions(ctx)
 	if err != nil {
 		t.Errorf("ContainerRegistry.ListRegions returned %v", err)
 	}
@@ -1014,7 +1014,7 @@ func TestVCRServiceHandler_ListRegions(t *testing.T) {
 
 	c, can := context.WithTimeout(ctx, 1*time.Microsecond)
 	defer can()
-	_, _, _, err = client.ContainerRegistry.ListRegions(c, nil)
+	_, _, _, err = client.ContainerRegistry.ListRegions(c)
 	if err == nil {
 		t.Error("ContainerRegistry.ListRegions returned nil")
 	}
