@@ -25,7 +25,7 @@ type ContainerRegistryService interface {
 	UpdateRepository(ctx context.Context, vcrID, imageName string, updateReq *ContainerRegistryRepoUpdateReq) (*ContainerRegistryRepo, *http.Response, error) //nolint:lll
 	DeleteRepository(ctx context.Context, vcrID, imageName string) error
 	CreateDockerCredentials(ctx context.Context, vcrID string, createOptions *DockerCredentialsOpt) (*ContainerRegistryDockerCredentials, *http.Response, error) //nolint:lll
-	ListRegions(ctx context.Context, options *ListOptions) ([]ContainerRegistryRegion, *Meta, *http.Response, error)
+	ListRegions(ctx context.Context) ([]ContainerRegistryRegion, *Meta, *http.Response, error)
 	ListPlans(ctx context.Context) (*ContainerRegistryPlans, *http.Response, error)
 }
 
@@ -392,7 +392,7 @@ func (h *ContainerRegistryServiceHandler) CreateDockerCredentials(ctx context.Co
 
 // ListRegions will return a list of regions relevant to the container registry
 // API operations
-func (h *ContainerRegistryServiceHandler) ListRegions(ctx context.Context, options *ListOptions) ([]ContainerRegistryRegion, *Meta, *http.Response, error) { //nolint:lll
+func (h *ContainerRegistryServiceHandler) ListRegions(ctx context.Context) ([]ContainerRegistryRegion, *Meta, *http.Response, error) {
 	req, errReq := h.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/region/list", vcrPath), nil)
 	if errReq != nil {
 		return nil, nil, nil, errReq
