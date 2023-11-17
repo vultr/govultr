@@ -133,8 +133,8 @@ type ContainerRegistryRepoUpdateReq struct {
 
 // DockerCredentialsOpt contains the options used to create Docker credentials
 type DockerCredentialsOpt struct {
-	ExpirySeconds int
-	WriteAccess   bool
+	ExpirySeconds *int
+	WriteAccess   *bool
 }
 
 // ContainerRegistryDockerCredentials represents the byte array of character
