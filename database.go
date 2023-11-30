@@ -28,6 +28,7 @@ type DatabaseService interface {
 	GetUser(ctx context.Context, databaseID string, username string) (*DatabaseUser, *http.Response, error)
 	UpdateUser(ctx context.Context, databaseID string, username string, databaseUserReq *DatabaseUserUpdateReq) (*DatabaseUser, *http.Response, error) //nolint:lll
 	DeleteUser(ctx context.Context, databaseID string, username string) error
+	UpdateUserACL(ctx context.Context, databaseID string, username string, databaseUserACLReq *DatabaseUserACLReq) (*DatabaseUser, *http.Response, error) //nolint:lll
 
 	ListDBs(ctx context.Context, databaseID string) ([]DatabaseDB, *Meta, *http.Response, error)
 	CreateDB(ctx context.Context, databaseID string, databaseDBReq *DatabaseDBCreateReq) (*DatabaseDB, *http.Response, error)
@@ -249,9 +250,26 @@ type databaseUsageBase struct {
 
 // DatabaseUser represents a user within a Managed Database cluster
 type DatabaseUser struct {
-	Username   string `json:"username"`
-	Password   string `json:"password"`
-	Encryption string `json:"encryption,omitempty"`
+	Username      string           `json:"username"`
+	Password      string           `json:"password"`
+	Encryption    string           `json:"encryption,omitempty"`
+	AccessControl *DatabaseUserACL `json:"access_control,omitempty"`
+}
+
+// DatabaseUserACL represents an access control configuration for a user within a Redis Managed Database cluster
+type DatabaseUserACL struct {
+	RedisACLCategories []string `json:"redis_acl_categories"`
+	RedisACLChannels   []string `json:"redis_acl_channels"`
+	RedisACLCommands   []string `json:"redis_acl_commands"`
+	RedisACLKeys       []string `json:"redis_acl_keys"`
+}
+
+// DatabaseUserACLReq represents input for updating a user's access control within a Redis Managed Database cluster
+type DatabaseUserACLReq struct {
+	RedisACLCategories *[]string `json:"redis_acl_categories,omitempty"`
+	RedisACLChannels   *[]string `json:"redis_acl_channels,omitempty"`
+	RedisACLCommands   *[]string `json:"redis_acl_commands,omitempty"`
+	RedisACLKeys       *[]string `json:"redis_acl_keys,omitempty"`
 }
 
 // databaseUserBase holds the API response for retrieving a single database user within a Managed Database
@@ -734,6 +752,24 @@ func (d *DatabaseServiceHandler) DeleteUser(ctx context.Context, databaseID, use
 
 	_, err = d.client.DoWithContext(ctx, req, nil)
 	return err
+}
+
+// UpdateUserACL will update a user's access control within the Redis Managed Database
+func (d *DatabaseServiceHandler) UpdateUserACL(ctx context.Context, databaseID, username string, databaseUserACLReq *DatabaseUserACLReq) (*DatabaseUser, *http.Response, error) { //nolint:lll,dupl
+	uri := fmt.Sprintf("%s/%s/users/%s/access-control", databasePath, databaseID, username)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseUserACLReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseUser := new(databaseUserBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseUser)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseUser.DatabaseUser, resp, nil
 }
 
 // ListDBs retrieves all logical databases on your Managed Database.
