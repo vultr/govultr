@@ -1,4 +1,9 @@
 # Change Log
+## [v3.5.0](https://github.com/vultr/govultr/compare/v3.4.1...v3.5.0) (2023-12-01)
+### Enhancement
+* Instance: Add disable IPv4 option create request [PR 287](https://github.com/vultr/govultr/pull/287)
+* Database: Add user access control for Redis [PR 288](https://github.com/vultr/govultr/pull/288)
+
 ## [v3.4.1](https://github.com/vultr/govultr/compare/v3.4.0...v3.4.1) (2023-11-17)
 ### Enhancement
 * Database: Add support for usage endpoint [PR 282](https://github.com/vultr/govultr/pull/282)
