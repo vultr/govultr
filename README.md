@@ -15,9 +15,15 @@ go get -u github.com/vultr/govultr/v3
 
 ## Usage
 
-Vultr uses a PAT (Personal Access token) to interact/authenticate with the APIs. Generate an API Key from the [API menu](https://my.vultr.com/settings/#settingsapi) in the Vultr Customer Portal.
+Vultr uses a personal access token (PAT) to interact/authenticate with the
+APIs. Generate an API Key from the [API menu](https://my.vultr.com/settings/#settingsapi) 
+in the Vultr Customer Portal.
 
-To instantiate a GoVultr client, invoke `NewClient()`. You must pass your `PAT` to an `oauth2` library to create the `*http.Client`, which configures the `Authorization` header with your PAT as the `bearer api-key`.
+To instantiate a GoVultr client, invoke `NewClient()`. Most operations require
+that you pass a PAT to an `oauth2` library to create the `*http.Client`, which
+configures the `Authorization` header with your PAT as the `bearer api-key`. If 
+a PAT is not provided, public operations like listing plans or applications
+will still work.
 
 The client has three optional parameters:
 
@@ -53,6 +59,19 @@ func main() {
 }
 ```
 
+Passing `nil` to `NewClient` will work for routes that do not require
+authentication.
+
+```go
+  ... 
+
+  vultrClient := govultr.NewClient(nil)
+  ctx := context.Background()
+  plans, _, _, err := vultrClient.Plan.List(ctx, "", nil)
+
+  ...
+```
+
 ### Example Usage
 
 Create a VPS
@@ -77,7 +96,9 @@ if err != nil {
 
 ## Pagination
 
-GoVultr v2 introduces pagination for all list calls. Each list call returns a `meta` struct containing the total amount of items in the list and next/previous links to navigate the paging.
+GoVultr v2 introduces pagination for all list calls. Each list call returns a
+`meta` struct containing the total amount of items in the list and
+next/previous links to navigate the paging.
 
 ```go
 // Meta represents the available pagination information
@@ -93,9 +114,12 @@ type Links struct {
 }
 
 ```
-Pass a `per_page` value to the `list_options` struct to adjust the number of items returned per call. The default is 100 items per page and max is 500 items per page.
+Pass a `per_page` value to the `list_options` struct to adjust the number of
+items returned per call. The default is 100 items per page and max is 500 items
+per page.
 
-This example demonstrates how to retrieve all of your instances, with one instance per page.
+This example demonstrates how to retrieve all of your instances, with one
+instance per page.
 
 ```go
 listOptions := &govultr.ListOptions{PerPage: 1}
@@ -118,7 +142,9 @@ for {
 ```
 ## Versioning
 
-This project follows [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/vultr/govultr/tags).
+This project follows [SemVer](http://semver.org/) for versioning. For the
+versions available, see the [tags on this
+repository](https://github.com/vultr/govultr/tags).
 
 ## Documentation
 
