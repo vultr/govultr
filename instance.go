@@ -273,17 +273,18 @@ type InstanceCreateReq struct {
 	// Deprecated:  EnablePrivateNetwork should no longer be used. Instead, use EnableVPC.
 	EnablePrivateNetwork *bool `json:"enable_private_network,omitempty"`
 	// Deprecated:  AttachPrivateNetwork should no longer be used. Instead, use AttachVPC.
-	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
-	EnableVPC            *bool    `json:"enable_vpc,omitempty"`
-	AttachVPC            []string `json:"attach_vpc,omitempty"`
-	EnableVPC2           *bool    `json:"enable_vpc2,omitempty"`
-	AttachVPC2           []string `json:"attach_vpc2,omitempty"`
-	SSHKeys              []string `json:"sshkey_id,omitempty"`
-	Backups              string   `json:"backups,omitempty"`
-	DDOSProtection       *bool    `json:"ddos_protection,omitempty"`
-	UserData             string   `json:"user_data,omitempty"`
-	ReservedIPv4         string   `json:"reserved_ipv4,omitempty"`
-	ActivationEmail      *bool    `json:"activation_email,omitempty"`
+	AttachPrivateNetwork []string          `json:"attach_private_network,omitempty"`
+	EnableVPC            *bool             `json:"enable_vpc,omitempty"`
+	AttachVPC            []string          `json:"attach_vpc,omitempty"`
+	EnableVPC2           *bool             `json:"enable_vpc2,omitempty"`
+	AttachVPC2           []string          `json:"attach_vpc2,omitempty"`
+	SSHKeys              []string          `json:"sshkey_id,omitempty"`
+	Backups              string            `json:"backups,omitempty"`
+	DDOSProtection       *bool             `json:"ddos_protection,omitempty"`
+	UserData             string            `json:"user_data,omitempty"`
+	ReservedIPv4         string            `json:"reserved_ipv4,omitempty"`
+	ActivationEmail      *bool             `json:"activation_email,omitempty"`
+	AppVariables         map[string]string `json:"app_variables,omitempty"`
 }
 
 // InstanceUpdateReq struct used to update an instance.

@@ -92,13 +92,14 @@ type BareMetalCreate struct {
 	ActivationEmail *bool    `json:"activation_email,omitempty"`
 	Hostname        string   `json:"hostname,omitempty"`
 	// Deprecated: Tag should no longer be used. Instead, use Tags.
-	Tag           string   `json:"tag,omitempty"`
-	ReservedIPv4  string   `json:"reserved_ipv4,omitempty"`
-	PersistentPxe *bool    `json:"persistent_pxe,omitempty"`
-	Tags          []string `json:"tags"`
-	AttachVPC2    []string `json:"attach_vpc2,omitempty"`
-	DetachVPC2    []string `json:"detach_vpc2,omitempty"`
-	EnableVPC2    *bool    `json:"enable_vpc2,omitempty"`
+	Tag           string            `json:"tag,omitempty"`
+	ReservedIPv4  string            `json:"reserved_ipv4,omitempty"`
+	PersistentPxe *bool             `json:"persistent_pxe,omitempty"`
+	Tags          []string          `json:"tags"`
+	AttachVPC2    []string          `json:"attach_vpc2,omitempty"`
+	DetachVPC2    []string          `json:"detach_vpc2,omitempty"`
+	EnableVPC2    *bool             `json:"enable_vpc2,omitempty"`
+	AppVariables  map[string]string `json:"app_variables,omitempty"`
 }
 
 // BareMetalUpdate represents the optional parameters that can be set when updating a Bare Metal server
