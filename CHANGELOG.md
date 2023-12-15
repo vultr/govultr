@@ -1,4 +1,11 @@
 # Change Log
+## [v3.6.0](https://github.com/vultr/govultr/compare/v3.5.0...v3.6.0) (2023-12-15)
+### Enhancement
+* Support Marketplace App Variables [PR 291](https://github.com/vultr/govultr/pull/291)
+
+### Documentation
+* Update the README with non-auth client examples [PR 290](https://github.com/vultr/govultr/pull/290)
+
 ## [v3.5.0](https://github.com/vultr/govultr/compare/v3.4.1...v3.5.0) (2023-12-01)
 ### Enhancement
 * Instance: Add disable IPv4 option create request [PR 287](https://github.com/vultr/govultr/pull/287)
