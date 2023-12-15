@@ -1,7 +1,9 @@
 # Change Log
 ## [v3.6.0](https://github.com/vultr/govultr/compare/v3.5.0...v3.6.0) (2023-12-15)
 ### Enhancement
-* Support Marketplace App Variables [PR 291](https://github.com/vultr/govultr/pull/291)
+* Marketplace: add support for new API route [PR 291](https://github.com/vultr/govultr/pull/291)
+* Bare Metal: add marketplace app variables [PR 291](https://github.com/vultr/govultr/pull/291)
+* Instance: add marketplace app variables [PR 291](https://github.com/vultr/govultr/pull/291)
 
 ### Documentation
 * Update the README with non-auth client examples [PR 290](https://github.com/vultr/govultr/pull/290)
