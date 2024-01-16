@@ -37,6 +37,10 @@ type BareMetalServerService interface {
 
 	GetUpgrades(ctx context.Context, serverID string) (*Upgrades, *http.Response, error)
 
+	ListVPCInfo(ctx context.Context, serverID string) ([]VPCInfo, *http.Response, error)
+	AttachVPC(ctx context.Context, serverID, vpcID string) error
+	DetachVPC(ctx context.Context, serverID, vpcID string) error
+
 	ListVPC2Info(ctx context.Context, serverID string) ([]VPC2Info, *http.Response, error)
 	AttachVPC2(ctx context.Context, serverID string, vpc2Req *AttachVPC2Req) error
 	DetachVPC2(ctx context.Context, serverID, vpcID string) error
@@ -444,6 +448,52 @@ func (b *BareMetalServerServiceHandler) GetUpgrades(ctx context.Context, serverI
 	}
 
 	return upgrades.Upgrades, resp, nil
+}
+
+// ListVPCInfo will list all currently attached VPC IP information for the
+// given bare metal server.
+func (b *BareMetalServerServiceHandler) ListVPCInfo(ctx context.Context, serverID string) ([]VPCInfo, *http.Response, error) {
+	uri := fmt.Sprintf("%s/%s/vpcs", bmPath, serverID)
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	vpcs := new(vpcInfoBase)
+	resp, err := b.client.DoWithContext(ctx, req, vpcs)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return vpcs.VPCs, resp, nil
+}
+
+// AttachVPC serves to attach a VPC to a bare metal server.
+func (b *BareMetalServerServiceHandler) AttachVPC(ctx context.Context, serverID, vpcID string) error {
+	uri := fmt.Sprintf("%s/%s/vpcs/attach", bmPath, serverID)
+	body := RequestBody{"vpc_id": vpcID}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// DetachVPC will detach a VPC from a bare metal server.
+func (b *BareMetalServerServiceHandler) DetachVPC(ctx context.Context, serverID, vpcID string) error {
+	uri := fmt.Sprintf("%s/%s/vpc2/detach", bmPath, serverID)
+	body := RequestBody{"vpc_id": vpcID}
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // ListVPC2Info currently attached to a Bare Metal server.
