@@ -1,8 +1,11 @@
 # Change Log
-## What's Changed
+## [v3.6.2](https://github.com/vultr/govultr/compare/v3.6.1...v3.6.2) (2024-02-20)
+### Enhancement
+* Kubernetes: add support for nodepool labels [PR 296](https://github.com/vultr/govultr/pull/296)
+
 ## [v3.6.1](https://github.com/vultr/govultr/compare/v3.6.0...v3.6.1) (2024-01-16)
 ### Enhancement
-* Bare Metal: Add functions to allow VPC [PR 293](https://github.com/vultr/govultr/pull/293)
+* Bare Metal: add functions to allow VPC [PR 293](https://github.com/vultr/govultr/pull/293)
 
 ## [v3.6.0](https://github.com/vultr/govultr/compare/v3.5.0...v3.6.0) (2023-12-15)
 ### Enhancement
