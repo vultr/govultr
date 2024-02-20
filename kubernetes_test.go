@@ -378,6 +378,10 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 		"max_nodes": 2,
 		"auto_scaler": true,
 		"tag": "mytag",
+		"labels": {
+			"vultr.com/label1": "value1",
+			"vultr.com/label2": "value2"
+		},
         "nodes": [
             {
                 "id": "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -396,6 +400,10 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 		Label:        "nodepool-48959140",
 		Plan:         "vc2-1c-2gb",
 		Tag:          "mytag",
+		Labels: map[string]string{
+			"vultr.com/label1": "value1",
+			"vultr.com/label2": "value2",
+		},
 	}
 	np, _, err := client.Kubernetes.CreateNodePool(ctx, "1", createReq)
 	if err != nil {
@@ -413,6 +421,10 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 		MaxNodes:     2,
 		AutoScaler:   true,
 		Tag:          "mytag",
+		Labels: map[string]string{
+			"vultr.com/label1": "value1",
+			"vultr.com/label2": "value2",
+		},
 		Nodes: []Node{
 			{
 				ID:          "3e1ca1e0-25be-4977-907a-3dee42b9bb15",

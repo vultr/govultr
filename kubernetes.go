@@ -60,18 +60,19 @@ type Cluster struct {
 
 // NodePool represents a pool of nodes that are grouped by their label and plan type
 type NodePool struct {
-	ID           string `json:"id"`
-	DateCreated  string `json:"date_created"`
-	DateUpdated  string `json:"date_updated"`
-	Label        string `json:"label"`
-	Plan         string `json:"plan"`
-	Status       string `json:"status"`
-	NodeQuantity int    `json:"node_quantity"`
-	MinNodes     int    `json:"min_nodes"`
-	MaxNodes     int    `json:"max_nodes"`
-	AutoScaler   bool   `json:"auto_scaler"`
-	Tag          string `json:"tag"`
-	Nodes        []Node `json:"nodes"`
+	ID           string            `json:"id"`
+	DateCreated  string            `json:"date_created"`
+	DateUpdated  string            `json:"date_updated"`
+	Label        string            `json:"label"`
+	Plan         string            `json:"plan"`
+	Status       string            `json:"status"`
+	NodeQuantity int               `json:"node_quantity"`
+	MinNodes     int               `json:"min_nodes"`
+	MaxNodes     int               `json:"max_nodes"`
+	AutoScaler   bool              `json:"auto_scaler"`
+	Tag          string            `json:"tag"`
+	Labels       map[string]string `json:"labels"`
+	Nodes        []Node            `json:"nodes"`
 }
 
 // Node represents a node that will live within a nodepool
@@ -104,13 +105,14 @@ type ClusterReqUpdate struct {
 
 // NodePoolReq struct used to create a node pool
 type NodePoolReq struct {
-	NodeQuantity int    `json:"node_quantity"`
-	Label        string `json:"label"`
-	Plan         string `json:"plan"`
-	Tag          string `json:"tag"`
-	MinNodes     int    `json:"min_nodes,omitempty"`
-	MaxNodes     int    `json:"max_nodes,omitempty"`
-	AutoScaler   *bool  `json:"auto_scaler"`
+	NodeQuantity int               `json:"node_quantity"`
+	Label        string            `json:"label"`
+	Plan         string            `json:"plan"`
+	Tag          string            `json:"tag"`
+	MinNodes     int               `json:"min_nodes,omitempty"`
+	MaxNodes     int               `json:"max_nodes,omitempty"`
+	AutoScaler   *bool             `json:"auto_scaler"`
+	Labels       map[string]string `json:"labels,omitempty"`
 }
 
 // NodePoolReqUpdate struct used to update a node pool
