@@ -37,9 +37,9 @@ type StartupScript struct {
 
 // StartupScriptReq is the user struct for create and update calls
 type StartupScriptReq struct {
-	Name   string `json:"name"`
-	Type   string `json:"type"`
-	Script string `json:"script"`
+	Name   string `json:"name,omitempty"`
+	Type   string `json:"type,omitempty"`
+	Script string `json:"script,omitempty"`
 }
 
 type startupScriptsBase struct {
