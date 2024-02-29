@@ -1,4 +1,12 @@
 # Change Log
+## [3.6.3]( https://github.com/vultr/govultr/compare/v3.6.2...v3.6.3) (2024-02-29)
+### Bug Fixes
+* All: add a json struct tag for the meta links field [PR 298](https://github.com/vultr/govultr/pull/298)
+* Startup Scripts: allow empty values in create/update request struct [PR 299](https://github.com/vultr/govultr/pull/299)
+
+### Automation
+* Update codeql runner from v1 to v2 [PR 300](https://github.com/vultr/govultr/pull/300)
+
 ## [v3.6.2](https://github.com/vultr/govultr/compare/v3.6.1...v3.6.2) (2024-02-20)
 ### Enhancement
 * Kubernetes: add support for nodepool labels [PR 296](https://github.com/vultr/govultr/pull/296)
