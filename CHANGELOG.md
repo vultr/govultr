@@ -1,5 +1,9 @@
 # Change Log
-## [3.6.3]( https://github.com/vultr/govultr/compare/v3.6.2...v3.6.3) (2024-02-29)
+## [3.6.4](https://github.com/vultr/govultr/compare/v3.6.3...v3.6.4) (2024-03-07)
+### Enhancement
+* Kubernetes: add labels to the node pool update request struct [PR 302](https://github.com/vultr/govultr/pull/302)
+
+## [3.6.3](https://github.com/vultr/govultr/compare/v3.6.2...v3.6.3) (2024-02-29)
 ### Bug Fixes
 * All: add a json struct tag for the meta links field [PR 298](https://github.com/vultr/govultr/pull/298)
 * Startup Scripts: allow empty values in create/update request struct [PR 299](https://github.com/vultr/govultr/pull/299)
