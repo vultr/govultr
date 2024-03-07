@@ -117,11 +117,12 @@ type NodePoolReq struct {
 
 // NodePoolReqUpdate struct used to update a node pool
 type NodePoolReqUpdate struct {
-	NodeQuantity int     `json:"node_quantity,omitempty"`
-	Tag          *string `json:"tag,omitempty"`
-	MinNodes     int     `json:"min_nodes,omitempty"`
-	MaxNodes     int     `json:"max_nodes,omitempty"`
-	AutoScaler   *bool   `json:"auto_scaler,omitempty"`
+	NodeQuantity int               `json:"node_quantity,omitempty"`
+	Tag          *string           `json:"tag,omitempty"`
+	MinNodes     int               `json:"min_nodes,omitempty"`
+	MaxNodes     int               `json:"max_nodes,omitempty"`
+	AutoScaler   *bool             `json:"auto_scaler,omitempty"`
+	Labels       map[string]string `json:"labels,omitempty"`
 }
 
 type vkeClustersBase struct {
