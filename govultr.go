@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	version     = "3.6.4"
+	version     = "3.7.0"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 500 * time.Millisecond

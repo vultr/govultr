@@ -1,4 +1,19 @@
 # Change Log
+## [3.7.0](https://github.com/vultr/govultr/compare/v3.6.4...v3.7.0) (2024-05-28)
+### Enhancements
+* Bare Metal: Add MdiskMode to BareMetalCreate and BareMetalUpdate structs [PR 310](https://github.com/vultr/govultr/pull/310)
+
+### Dependencies
+* Bump github.com/hashicorp/go-retryablehttp from 0.7.5 to 0.7.6 [PR 308](https://github.com/vultr/govultr/pull/308)
+* Update Go from v1.20 to v1.21 [PR 309](https://github.com/vultr/govultr/pull/309)
+
+### Automation
+* Update and fix mattermost notifications [PR 305](https://github.com/vultr/govultr/pull/305)
+* Fix mattermost notifications [PR 307](https://github.com/vultr/govultr/pull/307)
+
+### New Contributors
+* @fjoenichols made their first contribution in [PR 310](https://github.com/vultr/govultr/pull/310)
+
 ## [3.6.4](https://github.com/vultr/govultr/compare/v3.6.3...v3.6.4) (2024-03-07)
 ### Enhancement
 * Kubernetes: add labels to the node pool update request struct [PR 302](https://github.com/vultr/govultr/pull/302)
