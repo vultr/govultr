@@ -95,6 +95,7 @@ type BareMetalCreate struct {
 	UserData        string   `json:"user_data,omitempty"`
 	ActivationEmail *bool    `json:"activation_email,omitempty"`
 	Hostname        string   `json:"hostname,omitempty"`
+	MdiskMode       string   `json:"mdisk_mode,omitempty"`
 	// Deprecated: Tag should no longer be used. Instead, use Tags.
 	Tag           string            `json:"tag,omitempty"`
 	ReservedIPv4  string            `json:"reserved_ipv4,omitempty"`
@@ -114,6 +115,7 @@ type BareMetalUpdate struct {
 	AppID      int    `json:"app_id,omitempty"`
 	ImageID    string `json:"image_id,omitempty"`
 	UserData   string `json:"user_data,omitempty"`
+	MdiskMode  string `json:"mdisk_mode,omitempty"`
 	// Deprecated: Tag should no longer be used. Instead, use Tags.
 	Tag        *string  `json:"tag,omitempty"`
 	Tags       []string `json:"tags"`
