@@ -243,7 +243,7 @@ type DatabaseCPUUsage struct {
 	Percentage float32 `json:"percentage"`
 }
 
-// databaseUsageBase represents a migration status object API response for a Managed Database
+// databaseUsageBase represents a usage details API response for a Managed Database
 type databaseUsageBase struct {
 	Usage *DatabaseUsage `json:"usage"`
 }
