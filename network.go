@@ -39,8 +39,8 @@ type Network struct {
 	Region       string `json:"region"`
 	Description  string `json:"description"`
 	V4Subnet     string `json:"v4_subnet"`
-	V4SubnetMask int    `json:"v4_subnet_mask"`
 	DateCreated  string `json:"date_created"`
+	V4SubnetMask int    `json:"v4_subnet_mask"`
 }
 
 // NetworkReq represents parameters to create or update Network resource
@@ -53,8 +53,8 @@ type NetworkReq struct {
 }
 
 type networksBase struct {
-	Networks []Network `json:"networks"`
 	Meta     *Meta     `json:"meta"`
+	Networks []Network `json:"networks"`
 }
 
 type networkBase struct {

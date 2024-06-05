@@ -31,8 +31,8 @@ type VPC struct {
 	Region       string `json:"region"`
 	Description  string `json:"description"`
 	V4Subnet     string `json:"v4_subnet"`
-	V4SubnetMask int    `json:"v4_subnet_mask"`
 	DateCreated  string `json:"date_created"`
+	V4SubnetMask int    `json:"v4_subnet_mask"`
 }
 
 // VPCReq represents parameters to create or update a VPC resource
@@ -44,8 +44,8 @@ type VPCReq struct {
 }
 
 type vpcsBase struct {
-	VPCs []VPC `json:"vpcs"`
 	Meta *Meta `json:"meta"`
+	VPCs []VPC `json:"vpcs"`
 }
 
 type vpcBase struct {

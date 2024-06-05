@@ -21,9 +21,9 @@ type MarketplaceServiceHandler struct {
 
 // MarketplaceAppVariable represents a user-supplied variable for a Marketplace app
 type MarketplaceAppVariable struct {
+	Required    *bool  `json:"required"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Required    *bool  `json:"required"`
 }
 
 // marketplaceAppVariablesBase holds the API response for retrieving a list of user-supplied variables for a Marketplace app

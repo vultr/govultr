@@ -34,18 +34,18 @@ type VPC2 struct {
 	Region       string `json:"region"`
 	Description  string `json:"description"`
 	IPBlock      string `json:"ip_block"`
-	PrefixLength int    `json:"prefix_length"`
 	DateCreated  string `json:"date_created"`
+	PrefixLength int    `json:"prefix_length"`
 }
 
 // VPC2Node represents a node attached to a VPC 2.0 network
 type VPC2Node struct {
 	ID          string `json:"id"`
 	IPAddress   string `json:"ip_address"`
-	MACAddress  int    `json:"mac_address"`
 	Description string `json:"description"`
 	Type        string `json:"type"`
 	NodeStatus  string `json:"node_status"`
+	MACAddress  int    `json:"mac_address"`
 }
 
 // VPC2Req represents parameters to create or update a VPC 2.0 resource
@@ -63,8 +63,8 @@ type VPC2AttachDetachReq struct {
 }
 
 type vpcs2Base struct {
-	VPCs []VPC2 `json:"vpcs"`
 	Meta *Meta  `json:"meta"`
+	VPCs []VPC2 `json:"vpcs"`
 }
 
 type vpc2Base struct {
@@ -72,8 +72,8 @@ type vpc2Base struct {
 }
 
 type vpc2NodesBase struct {
-	Nodes []VPC2Node `json:"nodes"`
 	Meta  *Meta      `json:"meta"`
+	Nodes []VPC2Node `json:"nodes"`
 }
 
 // Create creates a new VPC 2.0. A VPC 2.0 can only be used at the location for which it was created.

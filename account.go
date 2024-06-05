@@ -22,13 +22,13 @@ type accountBase struct {
 
 // Account represents a Vultr account
 type Account struct {
-	Balance           float32  `json:"balance"`
-	PendingCharges    float32  `json:"pending_charges"`
 	LastPaymentDate   string   `json:"last_payment_date"`
-	LastPaymentAmount float32  `json:"last_payment_amount"`
 	Name              string   `json:"name"`
 	Email             string   `json:"email"`
 	ACL               []string `json:"acls"`
+	Balance           float32  `json:"balance"`
+	PendingCharges    float32  `json:"pending_charges"`
+	LastPaymentAmount float32  `json:"last_payment_amount"`
 }
 
 // Get Vultr account info

@@ -43,8 +43,8 @@ type StartupScriptReq struct {
 }
 
 type startupScriptsBase struct {
-	StartupScripts []StartupScript `json:"startup_scripts"`
 	Meta           *Meta           `json:"meta"`
+	StartupScripts []StartupScript `json:"startup_scripts"`
 }
 
 type startupScriptBase struct {

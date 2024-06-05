@@ -43,36 +43,36 @@ type KubernetesHandler struct {
 
 // Cluster represents a full VKE cluster
 type Cluster struct {
-	ID              string     `json:"id"`
+	Endpoint        string     `json:"endpoint"`
 	Label           string     `json:"label"`
 	DateCreated     string     `json:"date_created"`
 	ClusterSubnet   string     `json:"cluster_subnet"`
 	ServiceSubnet   string     `json:"service_subnet"`
 	IP              string     `json:"ip"`
-	Endpoint        string     `json:"endpoint"`
+	ID              string     `json:"id"`
 	Version         string     `json:"version"`
 	Region          string     `json:"region"`
 	Status          string     `json:"status"`
-	HAControlPlanes bool       `json:"ha_controlplanes"`
 	FirewallGroupID string     `json:"firewall_group_id"`
 	NodePools       []NodePool `json:"node_pools"`
+	HAControlPlanes bool       `json:"ha_controlplanes"`
 }
 
 // NodePool represents a pool of nodes that are grouped by their label and plan type
 type NodePool struct {
-	ID           string            `json:"id"`
+	Labels       map[string]string `json:"labels"`
+	Tag          string            `json:"tag"`
 	DateCreated  string            `json:"date_created"`
 	DateUpdated  string            `json:"date_updated"`
 	Label        string            `json:"label"`
 	Plan         string            `json:"plan"`
 	Status       string            `json:"status"`
-	NodeQuantity int               `json:"node_quantity"`
-	MinNodes     int               `json:"min_nodes"`
-	MaxNodes     int               `json:"max_nodes"`
-	AutoScaler   bool              `json:"auto_scaler"`
-	Tag          string            `json:"tag"`
-	Labels       map[string]string `json:"labels"`
+	ID           string            `json:"id"`
 	Nodes        []Node            `json:"nodes"`
+	NodeQuantity int               `json:"node_quantity"`
+	MaxNodes     int               `json:"max_nodes"`
+	MinNodes     int               `json:"min_nodes"`
+	AutoScaler   bool              `json:"auto_scaler"`
 }
 
 // Node represents a node that will live within a nodepool
@@ -93,9 +93,9 @@ type ClusterReq struct {
 	Label           string        `json:"label"`
 	Region          string        `json:"region"`
 	Version         string        `json:"version"`
+	NodePools       []NodePoolReq `json:"node_pools"`
 	HAControlPlanes bool          `json:"ha_controlplanes,omitempty"`
 	EnableFirewall  bool          `json:"enable_firewall,omitempty"`
-	NodePools       []NodePoolReq `json:"node_pools"`
 }
 
 // ClusterReqUpdate struct used to update update a cluster
@@ -105,29 +105,29 @@ type ClusterReqUpdate struct {
 
 // NodePoolReq struct used to create a node pool
 type NodePoolReq struct {
-	NodeQuantity int               `json:"node_quantity"`
+	AutoScaler   *bool             `json:"auto_scaler"`
+	Labels       map[string]string `json:"labels,omitempty"`
 	Label        string            `json:"label"`
 	Plan         string            `json:"plan"`
 	Tag          string            `json:"tag"`
+	NodeQuantity int               `json:"node_quantity"`
 	MinNodes     int               `json:"min_nodes,omitempty"`
 	MaxNodes     int               `json:"max_nodes,omitempty"`
-	AutoScaler   *bool             `json:"auto_scaler"`
-	Labels       map[string]string `json:"labels,omitempty"`
 }
 
 // NodePoolReqUpdate struct used to update a node pool
 type NodePoolReqUpdate struct {
-	NodeQuantity int               `json:"node_quantity,omitempty"`
 	Tag          *string           `json:"tag,omitempty"`
-	MinNodes     int               `json:"min_nodes,omitempty"`
-	MaxNodes     int               `json:"max_nodes,omitempty"`
 	AutoScaler   *bool             `json:"auto_scaler,omitempty"`
 	Labels       map[string]string `json:"labels,omitempty"`
+	NodeQuantity int               `json:"node_quantity,omitempty"`
+	MinNodes     int               `json:"min_nodes,omitempty"`
+	MaxNodes     int               `json:"max_nodes,omitempty"`
 }
 
 type vkeClustersBase struct {
-	VKEClusters []Cluster `json:"vke_clusters"`
 	Meta        *Meta     `json:"meta"`
+	VKEClusters []Cluster `json:"vke_clusters"`
 }
 
 type vkeClusterBase struct {
@@ -135,8 +135,8 @@ type vkeClusterBase struct {
 }
 
 type vkeNodePoolsBase struct {
-	NodePools []NodePool `json:"node_pools"`
 	Meta      *Meta      `json:"meta"`
+	NodePools []NodePool `json:"node_pools"`
 }
 
 type vkeNodePoolBase struct {

@@ -24,17 +24,16 @@ type FireWallRuleServiceHandler struct {
 
 // FirewallRule represents a Vultr firewall rule
 type FirewallRule struct {
-	ID     int    `json:"id"`
-	Action string `json:"action"`
-	// Deprecated:  Type should no longer be used. Instead, use IPType.
+	Action     string `json:"action"`
 	Type       string `json:"type"`
 	IPType     string `json:"ip_type"`
 	Protocol   string `json:"protocol"`
 	Port       string `json:"port"`
 	Subnet     string `json:"subnet"`
-	SubnetSize int    `json:"subnet_size"`
 	Source     string `json:"source"`
 	Notes      string `json:"notes"`
+	ID         int    `json:"id"`
+	SubnetSize int    `json:"subnet_size"`
 }
 
 // FirewallRuleReq struct used to create a FirewallRule.
@@ -42,15 +41,15 @@ type FirewallRuleReq struct {
 	IPType     string `json:"ip_type"`
 	Protocol   string `json:"protocol"`
 	Subnet     string `json:"subnet"`
-	SubnetSize int    `json:"subnet_size"`
 	Port       string `json:"port,omitempty"`
 	Source     string `json:"source,omitempty"`
 	Notes      string `json:"notes,omitempty"`
+	SubnetSize int    `json:"subnet_size"`
 }
 
 type firewallRulesBase struct {
-	FirewallRules []FirewallRule `json:"firewall_rules"`
 	Meta          *Meta          `json:"meta"`
+	FirewallRules []FirewallRule `json:"firewall_rules"`
 }
 
 type firewallRuleBase struct {

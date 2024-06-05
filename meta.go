@@ -2,8 +2,8 @@ package govultr
 
 // Meta represents the available pagination information
 type Meta struct {
-	Total int    `json:"total"`
 	Links *Links `json:"links"`
+	Total int    `json:"total"`
 }
 
 // Links represent the next/previous cursor in your pagination calls

@@ -28,9 +28,9 @@ type Snapshot struct {
 	ID             string `json:"id"`
 	DateCreated    string `json:"date_created"`
 	Description    string `json:"description"`
+	Status         string `json:"status"`
 	Size           int    `json:"size"`
 	CompressedSize int    `json:"compressed_size"`
-	Status         string `json:"status"`
 	OsID           int    `json:"os_id"`
 	AppID          int    `json:"app_id"`
 }
@@ -48,8 +48,8 @@ type SnapshotURLReq struct {
 }
 
 type snapshotsBase struct {
-	Snapshots []Snapshot `json:"snapshots"`
 	Meta      *Meta      `json:"meta"`
+	Snapshots []Snapshot `json:"snapshots"`
 }
 
 type snapshotBase struct {

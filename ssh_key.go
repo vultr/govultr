@@ -38,8 +38,8 @@ type SSHKeyReq struct {
 }
 
 type sshKeysBase struct {
-	SSHKeys []SSHKey `json:"ssh_keys"`
 	Meta    *Meta    `json:"meta"`
+	SSHKeys []SSHKey `json:"ssh_keys"`
 }
 
 type sshKeyBase struct {
