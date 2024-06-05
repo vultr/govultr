@@ -88,7 +88,7 @@ func (d *InferenceServiceHandler) List(ctx context.Context) ([]Inference, *http.
 }
 
 // Create will create the Serverless Inference subscription with the given parameters
-func (d *InferenceServiceHandler) Create(ctx context.Context, inferenceReq *InferenceCreateUpdateReq) (*Inference, *http.Response, error) {
+func (d *InferenceServiceHandler) Create(ctx context.Context, inferenceReq *InferenceCreateUpdateReq) (*Inference, *http.Response, error) { //nolint:lll
 	req, err := d.client.NewRequest(ctx, http.MethodPost, inferencePath, inferenceReq)
 	if err != nil {
 		return nil, nil, err
