@@ -24,19 +24,19 @@ type BillingServiceHandler struct {
 
 // History represents a billing history item on an account
 type History struct {
+	ID          int     `json:"id"`
 	Date        string  `json:"date"`
 	Type        string  `json:"type"`
 	Description string  `json:"description"`
-	ID          int     `json:"id"`
 	Amount      float32 `json:"amount"`
 	Balance     float32 `json:"balance"`
 }
 
 // Invoice represents an invoice on an account
 type Invoice struct {
+	ID          int     `json:"id"`
 	Date        string  `json:"date"`
 	Description string  `json:"description"`
-	ID          int     `json:"id"`
 	Amount      float32 `json:"amount"`
 	Balance     float32 `json:"balance"`
 }
@@ -47,20 +47,20 @@ type InvoiceItem struct {
 	Product     string  `json:"product"`
 	StartDate   string  `json:"start_date"`
 	EndDate     string  `json:"end_date"`
-	UnitType    string  `json:"unit_type"`
 	Units       int     `json:"units"`
+	UnitType    string  `json:"unit_type"`
 	UnitPrice   float32 `json:"unit_price"`
 	Total       float32 `json:"total"`
 }
 
 type billingHistoryBase struct {
-	Meta    *Meta     `json:"meta"`
 	History []History `json:"billing_history"`
+	Meta    *Meta     `json:"meta"`
 }
 
 type invoicesBase struct {
-	Meta    *Meta     `json:"meta"`
 	Invoice []Invoice `json:"billing_invoices"`
+	Meta    *Meta     `json:"meta"`
 }
 
 type invoiceBase struct {
@@ -68,8 +68,8 @@ type invoiceBase struct {
 }
 
 type invoiceItemsBase struct {
-	Meta         *Meta         `json:"meta"`
 	InvoiceItems []InvoiceItem `json:"invoice_items"`
+	Meta         *Meta         `json:"meta"`
 }
 
 // ListHistory retrieves a list of all billing history on the current account

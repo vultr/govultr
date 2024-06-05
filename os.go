@@ -20,15 +20,15 @@ type OSServiceHandler struct {
 
 // OS represents a Vultr operating system
 type OS struct {
+	ID     int    `json:"id"`
 	Name   string `json:"name"`
 	Arch   string `json:"arch"`
 	Family string `json:"family"`
-	ID     int    `json:"id"`
 }
 
 type osBase struct {
-	Meta *Meta `json:"meta"`
 	OS   []OS  `json:"os"`
+	Meta *Meta `json:"meta"`
 }
 
 var _ OSService = &OSServiceHandler{}

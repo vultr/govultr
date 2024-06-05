@@ -33,38 +33,39 @@ type LoadBalancerHandler struct {
 
 // LoadBalancer represent the structure of a load balancer
 type LoadBalancer struct {
-	HealthCheck     *HealthCheck     `json:"health_check,omitempty"`
-	SSLInfo         *bool            `json:"has_ssl,omitempty"`
-	GenericInfo     *GenericInfo     `json:"generic_info,omitempty"`
+	ID              string           `json:"id,omitempty"`
+	DateCreated     string           `json:"date_created,omitempty"`
+	Region          string           `json:"region,omitempty"`
 	Label           string           `json:"label,omitempty"`
 	Status          string           `json:"status,omitempty"`
 	IPV4            string           `json:"ipv4,omitempty"`
 	IPV6            string           `json:"ipv6,omitempty"`
-	ID              string           `json:"id,omitempty"`
-	Region          string           `json:"region,omitempty"`
-	DateCreated     string           `json:"date_created,omitempty"`
 	Instances       []string         `json:"instances,omitempty"`
+	Nodes           int              `json:"nodes,omitempty"`
+	HealthCheck     *HealthCheck     `json:"health_check,omitempty"`
+	GenericInfo     *GenericInfo     `json:"generic_info,omitempty"`
+	SSLInfo         *bool            `json:"has_ssl,omitempty"`
 	ForwardingRules []ForwardingRule `json:"forwarding_rules,omitempty"`
 	FirewallRules   []LBFirewallRule `json:"firewall_rules,omitempty"`
-	Nodes           int              `json:"nodes,omitempty"`
 }
 
 // LoadBalancerReq gives options for creating or updating a load balancer
 type LoadBalancerReq struct {
-	VPC                *string          `json:"vpc,omitempty"`
-	PrivateNetwork     *string          `json:"private_network,omitempty"`
+	Region             string           `json:"region,omitempty"`
+	Label              string           `json:"label,omitempty"`
+	Instances          []string         `json:"instances,omitempty"`
+	Nodes              int              `json:"nodes,omitempty"`
 	HealthCheck        *HealthCheck     `json:"health_check,omitempty"`
 	StickySessions     *StickySessions  `json:"sticky_session,omitempty"`
+	ForwardingRules    []ForwardingRule `json:"forwarding_rules,omitempty"`
 	SSL                *SSL             `json:"ssl,omitempty"`
 	SSLRedirect        *bool            `json:"ssl_redirect,omitempty"`
 	ProxyProtocol      *bool            `json:"proxy_protocol,omitempty"`
 	BalancingAlgorithm string           `json:"balancing_algorithm,omitempty"`
-	Label              string           `json:"label,omitempty"`
-	Region             string           `json:"region,omitempty"`
-	ForwardingRules    []ForwardingRule `json:"forwarding_rules,omitempty"`
 	FirewallRules      []LBFirewallRule `json:"firewall_rules"`
-	Instances          []string         `json:"instances,omitempty"`
-	Nodes              int              `json:"nodes,omitempty"`
+	// Deprecated:  PrivateNetwork should no longer be used. Instead, use VPC.
+	PrivateNetwork *string `json:"private_network,omitempty"`
+	VPC            *string `json:"vpc,omitempty"`
 }
 
 // InstanceList represents instances that are attached to your load balancer
@@ -75,8 +76,8 @@ type InstanceList struct {
 // HealthCheck represents your health check configuration for your load balancer.
 type HealthCheck struct {
 	Protocol           string `json:"protocol,omitempty"`
-	Path               string `json:"path,omitempty"`
 	Port               int    `json:"port,omitempty"`
+	Path               string `json:"path,omitempty"`
 	CheckInterval      int    `json:"check_interval,omitempty"`
 	ResponseTimeout    int    `json:"response_timeout,omitempty"`
 	UnhealthyThreshold int    `json:"unhealthy_threshold,omitempty"`
@@ -108,17 +109,17 @@ type ForwardingRules struct {
 type ForwardingRule struct {
 	RuleID           string `json:"id,omitempty"`
 	FrontendProtocol string `json:"frontend_protocol,omitempty"`
-	BackendProtocol  string `json:"backend_protocol,omitempty"`
 	FrontendPort     int    `json:"frontend_port,omitempty"`
+	BackendProtocol  string `json:"backend_protocol,omitempty"`
 	BackendPort      int    `json:"backend_port,omitempty"`
 }
 
 // LBFirewallRule represent a single firewall rule
 type LBFirewallRule struct {
 	RuleID string `json:"id,omitempty"`
+	Port   int    `json:"port,omitempty"`
 	IPType string `json:"ip_type,omitempty"`
 	Source string `json:"source,omitempty"`
-	Port   int    `json:"port,omitempty"`
 }
 
 // SSL represents valid SSL config
@@ -129,8 +130,8 @@ type SSL struct {
 }
 
 type lbsBase struct {
-	Meta          *Meta          `json:"meta"`
 	LoadBalancers []LoadBalancer `json:"load_balancers"`
+	Meta          *Meta          `json:"meta"`
 }
 
 type lbBase struct {
@@ -138,8 +139,8 @@ type lbBase struct {
 }
 
 type lbRulesBase struct {
-	Meta            *Meta            `json:"meta"`
 	ForwardingRules []ForwardingRule `json:"forwarding_rules"`
+	Meta            *Meta            `json:"meta"`
 }
 
 type lbRuleBase struct {
@@ -147,8 +148,8 @@ type lbRuleBase struct {
 }
 
 type lbFWRulesBase struct {
-	Meta          *Meta            `json:"meta"`
 	FirewallRules []LBFirewallRule `json:"firewall_rules"`
+	Meta          *Meta            `json:"meta"`
 }
 
 type lbFWRuleBase struct {

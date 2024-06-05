@@ -37,19 +37,19 @@ type ContainerRegistryServiceHandler struct {
 
 // ContainerRegistry represents a Vultr container registry subscription.
 type ContainerRegistry struct {
-	RootUser    ContainerRegistryUser     `json:"root_user"`
-	Storage     ContainerRegistryStorage  `json:"storage"`
 	ID          string                    `json:"id"`
 	Name        string                    `json:"name"`
 	URN         string                    `json:"urn"`
+	Storage     ContainerRegistryStorage  `json:"storage"`
 	DateCreated string                    `json:"date_created"`
-	Metadata    ContainerRegistryMetadata `json:"metadata"`
 	Public      bool                      `json:"public"`
+	RootUser    ContainerRegistryUser     `json:"root_user"`
+	Metadata    ContainerRegistryMetadata `json:"metadata"`
 }
 
 type containerRegistries struct {
-	Meta                *Meta               `json:"meta"`
 	ContainerRegistries []ContainerRegistry `json:"registries"`
+	Meta                *Meta               `json:"meta"`
 }
 
 // ContainerRegistryStorage represents the storage usage and limit
@@ -60,21 +60,21 @@ type ContainerRegistryStorage struct {
 
 // ContainerRegistryStorageCount represents the different storage usage counts
 type ContainerRegistryStorageCount struct {
-	DateModified string  `json:"updated_at"`
 	Bytes        float32 `json:"bytes"`
 	MegaBytes    float32 `json:"mb"`
 	GigaBytes    float32 `json:"gb"`
 	TeraBytes    float32 `json:"tb"`
+	DateModified string  `json:"updated_at"`
 }
 
 // ContainerRegistryUser contains the user data
 type ContainerRegistryUser struct {
+	ID           int    `json:"id"`
 	UserName     string `json:"username"`
 	Password     string `json:"password"`
+	Root         bool   `json:"root"`
 	DateCreated  string `json:"added_at"`
 	DateModified string `json:"updated_at"`
-	ID           int    `json:"id"`
-	Root         bool   `json:"root"`
 }
 
 // ContainerRegistryMetadata contains the meta data for the registry
@@ -99,9 +99,9 @@ type ContainerRegistrySubscriptionBilling struct {
 // ContainerRegistryReq represents the data used to create a registry
 type ContainerRegistryReq struct {
 	Name   string `json:"name"`
+	Public bool   `json:"public"`
 	Region string `json:"region"`
 	Plan   string `json:"plan"`
-	Public bool   `json:"public"`
 }
 
 // ContainerRegistryUpdateReq represents the data used to update a registry
@@ -122,8 +122,8 @@ type ContainerRegistryRepo struct {
 }
 
 type containerRegistryRepos struct {
-	Meta         *Meta                   `json:"meta"`
 	Repositories []ContainerRegistryRepo `json:"repositories"`
+	Meta         *Meta                   `json:"meta"`
 }
 
 // ContainerRegistryRepoUpdateReq is the data to update a registry repository
@@ -155,18 +155,19 @@ func (c *ContainerRegistryDockerCredentials) String() string {
 
 // ContainerRegistryRegion represents the region data
 type ContainerRegistryRegion struct {
+	ID           int                               `json:"id"`
 	Name         string                            `json:"name"`
 	URN          string                            `json:"urn"`
 	BaseURL      string                            `json:"base_url"`
+	Public       bool                              `json:"public"`
 	DateCreated  string                            `json:"added_at"`
 	DateModified string                            `json:"updated_at"`
 	DataCenter   ContainerRegistryRegionDataCenter `json:"data_center"`
-	ID           int                               `json:"id"`
-	Public       bool                              `json:"public"`
 }
 
 // ContainerRegistryRegionDataCenter is the datacenter info for a given region
 type ContainerRegistryRegionDataCenter struct {
+	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	SiteCode    string `json:"site_code"`
 	Region      string `json:"region"`
@@ -174,12 +175,11 @@ type ContainerRegistryRegionDataCenter struct {
 	Continent   string `json:"continent"`
 	Description string `json:"description"`
 	Airport     string `json:"airport"`
-	ID          int    `json:"id"`
 }
 
 type containerRegistryRegions struct {
-	Meta    *Meta                     `json:"meta"`
 	Regions []ContainerRegistryRegion `json:"regions"`
+	Meta    *Meta                     `json:"meta"`
 }
 
 // ContainerRegistryPlans contains all plan types

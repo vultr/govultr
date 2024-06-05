@@ -31,39 +31,49 @@ type RequestBody map[string]interface{}
 
 // Client manages interaction with the Vultr API
 type Client struct {
-	ISO                ISOService
-	Billing            BillingService
-	VPC2               VPC2Service
-	VPC                VPCService
-	Application        ApplicationService
-	Backup             BackupService
-	BareMetalServer    BareMetalServerService
-	Kubernetes         KubernetesService
-	BlockStorage       BlockStorageService
-	ContainerRegistry  ContainerRegistryService
-	Database           DatabaseService
-	Domain             DomainService
-	DomainRecord       DomainRecordService
-	LoadBalancer       LoadBalancerService
-	FirewallRule       FireWallRuleService
-	Instance           InstanceService
-	Account            AccountService
-	User               UserService
-	FirewallGroup      FirewallGroupService
-	Marketplace        MarketplaceService
-	Network            NetworkService
-	ObjectStorage      ObjectStorageService
-	OS                 OSService
-	Plan               PlanService
-	Region             RegionService
-	ReservedIP         ReservedIPService
-	Snapshot           SnapshotService
-	SSHKey             SSHKeyService
-	StartupScript      StartupScriptService
-	BaseURL            *url.URL
-	client             *retryablehttp.Client
+	// Http Client used to interact with the Vultr API
+	client *retryablehttp.Client
+
+	// BASE URL for APIs
+	BaseURL *url.URL
+
+	// User Agent for the client
+	UserAgent string
+
+	// Services used to interact with the API
+	Account           AccountService
+	Application       ApplicationService
+	Backup            BackupService
+	BareMetalServer   BareMetalServerService
+	Billing           BillingService
+	BlockStorage      BlockStorageService
+	ContainerRegistry ContainerRegistryService
+	Database          DatabaseService
+	Domain            DomainService
+	DomainRecord      DomainRecordService
+	FirewallGroup     FirewallGroupService
+	FirewallRule      FireWallRuleService
+	Instance          InstanceService
+	ISO               ISOService
+	Kubernetes        KubernetesService
+	LoadBalancer      LoadBalancerService
+	Marketplace       MarketplaceService
+	// Deprecated: Network should no longer be used. Instead, use VPC.
+	Network       NetworkService
+	ObjectStorage ObjectStorageService
+	OS            OSService
+	Plan          PlanService
+	Region        RegionService
+	ReservedIP    ReservedIPService
+	Snapshot      SnapshotService
+	SSHKey        SSHKeyService
+	StartupScript StartupScriptService
+	User          UserService
+	VPC           VPCService
+	VPC2          VPC2Service
+
+	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
-	UserAgent          string
 }
 
 // RequestCompletionCallback defines the type of the request callback function

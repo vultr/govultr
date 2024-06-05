@@ -79,36 +79,37 @@ type InstanceServiceHandler struct {
 
 // Instance represents a VPS
 type Instance struct {
-	PowerStatus      string   `json:"power_status"`
-	Tag              string   `json:"tag"`
-	ServerStatus     string   `json:"server_status"`
-	ID               string   `json:"id"`
-	Plan             string   `json:"plan"`
-	MainIP           string   `json:"main_ip"`
-	Hostname         string   `json:"hostname"`
-	Region           string   `json:"region"`
-	DefaultPassword  string   `json:"default_password,omitempty"`
-	DateCreated      string   `json:"date_created"`
-	Status           string   `json:"status"`
-	FirewallGroupID  string   `json:"firewall_group_id"`
-	NetmaskV4        string   `json:"netmask_v4"`
-	GatewayV4        string   `json:"gateway_v4"`
-	ImageID          string   `json:"image_id"`
-	Os               string   `json:"os"`
-	V6Network        string   `json:"v6_network"`
-	V6MainIP         string   `json:"v6_main_ip"`
-	KVM              string   `json:"kvm"`
-	Label            string   `json:"label"`
-	InternalIP       string   `json:"internal_ip"`
-	Tags             []string `json:"tags"`
-	Features         []string `json:"features"`
-	V6NetworkSize    int      `json:"v6_network_size"`
-	RAM              int      `json:"ram"`
-	OsID             int      `json:"os_id"`
-	AppID            int      `json:"app_id"`
-	AllowedBandwidth int      `json:"allowed_bandwidth"`
-	VCPUCount        int      `json:"vcpu_count"`
-	Disk             int      `json:"disk"`
+	ID               string `json:"id"`
+	Os               string `json:"os"`
+	RAM              int    `json:"ram"`
+	Disk             int    `json:"disk"`
+	Plan             string `json:"plan"`
+	MainIP           string `json:"main_ip"`
+	VCPUCount        int    `json:"vcpu_count"`
+	Region           string `json:"region"`
+	DefaultPassword  string `json:"default_password,omitempty"`
+	DateCreated      string `json:"date_created"`
+	Status           string `json:"status"`
+	AllowedBandwidth int    `json:"allowed_bandwidth"`
+	NetmaskV4        string `json:"netmask_v4"`
+	GatewayV4        string `json:"gateway_v4"`
+	PowerStatus      string `json:"power_status"`
+	ServerStatus     string `json:"server_status"`
+	V6Network        string `json:"v6_network"`
+	V6MainIP         string `json:"v6_main_ip"`
+	V6NetworkSize    int    `json:"v6_network_size"`
+	Label            string `json:"label"`
+	InternalIP       string `json:"internal_ip"`
+	KVM              string `json:"kvm"`
+	// Deprecated: Tag should no longer be used. Instead, use Tags.
+	Tag             string   `json:"tag"`
+	OsID            int      `json:"os_id"`
+	AppID           int      `json:"app_id"`
+	ImageID         string   `json:"image_id"`
+	FirewallGroupID string   `json:"firewall_group_id"`
+	Features        []string `json:"features"`
+	Hostname        string   `json:"hostname"`
+	Tags            []string `json:"tags"`
 }
 
 type instanceBase struct {
@@ -120,8 +121,8 @@ type ipv4Base struct {
 }
 
 type instancesBase struct {
-	Meta      *Meta      `json:"meta"`
 	Instances []Instance `json:"instances"`
+	Meta      *Meta      `json:"meta"`
 }
 
 // Neighbors that might exist on the same host.
@@ -138,8 +139,8 @@ type Bandwidth struct {
 }
 
 type privateNetworksBase struct {
-	Meta            *Meta            `json:"meta"`
 	PrivateNetworks []PrivateNetwork `json:"private_networks"`
+	Meta            *Meta            `json:"meta"`
 }
 
 // PrivateNetwork information for a given instance.
@@ -151,8 +152,8 @@ type PrivateNetwork struct {
 }
 
 type vpcInfoBase struct {
-	Meta *Meta     `json:"meta"`
 	VPCs []VPCInfo `json:"vpcs"`
+	Meta *Meta     `json:"meta"`
 }
 
 // VPCInfo information for a given instance.
@@ -163,8 +164,8 @@ type VPCInfo struct {
 }
 
 type vpc2InfoBase struct {
-	Meta *Meta      `json:"meta"`
 	VPCs []VPC2Info `json:"vpcs"`
+	Meta *Meta      `json:"meta"`
 }
 
 // VPC2Info information for a given instance.
@@ -176,8 +177,8 @@ type VPC2Info struct {
 
 // AttachVPC2Req parameters for attaching a VPC 2.0 network
 type AttachVPC2Req struct {
-	IPAddress *string `json:"ip_address,omitempty"`
 	VPCID     string  `json:"vpc_id,omitempty"`
+	IPAddress *string `json:"ip_address,omitempty"`
 }
 
 type isoStatusBase struct {
@@ -206,9 +207,9 @@ type BackupSchedule struct {
 
 // BackupScheduleReq struct used to create a backup schedule for an instance.
 type BackupScheduleReq struct {
+	Type string `json:"type"`
 	Hour *int   `json:"hour,omitempty"`
 	Dow  *int   `json:"dow,omitempty"`
-	Type string `json:"type"`
 	Dom  int    `json:"dom,omitempty"`
 }
 
@@ -252,60 +253,67 @@ type Upgrades struct {
 
 // InstanceCreateReq struct used to create an instance.
 type InstanceCreateReq struct {
-	DisablePublicIPv4    *bool             `json:"disable_public_ipv4,omitempty"`
-	EnableIPv6           *bool             `json:"enable_ipv6,omitempty"`
-	EnableVPC2           *bool             `json:"enable_vpc2,omitempty"`
-	DDOSProtection       *bool             `json:"ddos_protection,omitempty"`
-	AppVariables         map[string]string `json:"app_variables,omitempty"`
-	ActivationEmail      *bool             `json:"activation_email,omitempty"`
+	Region string `json:"region,omitempty"`
+	Plan   string `json:"plan,omitempty"`
+	Label  string `json:"label,omitempty"`
+	// Deprecated: Tag should no longer be used. Instead, use Tags.
+	Tag               string   `json:"tag,omitempty"`
+	Tags              []string `json:"tags"`
+	OsID              int      `json:"os_id,omitempty"`
+	ISOID             string   `json:"iso_id,omitempty"`
+	AppID             int      `json:"app_id,omitempty"`
+	ImageID           string   `json:"image_id,omitempty"`
+	FirewallGroupID   string   `json:"firewall_group_id,omitempty"`
+	Hostname          string   `json:"hostname,omitempty"`
+	IPXEChainURL      string   `json:"ipxe_chain_url,omitempty"`
+	ScriptID          string   `json:"script_id,omitempty"`
+	SnapshotID        string   `json:"snapshot_id,omitempty"`
+	EnableIPv6        *bool    `json:"enable_ipv6,omitempty"`
+	DisablePublicIPv4 *bool    `json:"disable_public_ipv4,omitempty"`
+	// Deprecated:  EnablePrivateNetwork should no longer be used. Instead, use EnableVPC.
+	EnablePrivateNetwork *bool `json:"enable_private_network,omitempty"`
+	// Deprecated:  AttachPrivateNetwork should no longer be used. Instead, use AttachVPC.
+	AttachPrivateNetwork []string          `json:"attach_private_network,omitempty"`
 	EnableVPC            *bool             `json:"enable_vpc,omitempty"`
-	EnablePrivateNetwork *bool             `json:"enable_private_network,omitempty"`
-	ISOID                string            `json:"iso_id,omitempty"`
-	Backups              string            `json:"backups,omitempty"`
-	Region               string            `json:"region,omitempty"`
-	Label                string            `json:"label,omitempty"`
-	ImageID              string            `json:"image_id,omitempty"`
-	SnapshotID           string            `json:"snapshot_id,omitempty"`
-	ScriptID             string            `json:"script_id,omitempty"`
-	FirewallGroupID      string            `json:"firewall_group_id,omitempty"`
-	ReservedIPv4         string            `json:"reserved_ipv4,omitempty"`
-	UserData             string            `json:"user_data,omitempty"`
-	Plan                 string            `json:"plan,omitempty"`
-	Tag                  string            `json:"tag,omitempty"`
-	IPXEChainURL         string            `json:"ipxe_chain_url,omitempty"`
-	Hostname             string            `json:"hostname,omitempty"`
+	AttachVPC            []string          `json:"attach_vpc,omitempty"`
+	EnableVPC2           *bool             `json:"enable_vpc2,omitempty"`
 	AttachVPC2           []string          `json:"attach_vpc2,omitempty"`
 	SSHKeys              []string          `json:"sshkey_id,omitempty"`
-	AttachVPC            []string          `json:"attach_vpc,omitempty"`
-	AttachPrivateNetwork []string          `json:"attach_private_network,omitempty"`
-	Tags                 []string          `json:"tags"`
-	AppID                int               `json:"app_id,omitempty"`
-	OsID                 int               `json:"os_id,omitempty"`
+	Backups              string            `json:"backups,omitempty"`
+	DDOSProtection       *bool             `json:"ddos_protection,omitempty"`
+	UserData             string            `json:"user_data,omitempty"`
+	ReservedIPv4         string            `json:"reserved_ipv4,omitempty"`
+	ActivationEmail      *bool             `json:"activation_email,omitempty"`
+	AppVariables         map[string]string `json:"app_variables,omitempty"`
 }
 
 // InstanceUpdateReq struct used to update an instance.
 type InstanceUpdateReq struct {
-	EnableVPC2           *bool    `json:"enable_vpc2,omitempty"`
-	Tag                  *string  `json:"tag,omitempty"`
-	DDOSProtection       *bool    `json:"ddos_protection"`
-	EnableIPv6           *bool    `json:"enable_ipv6,omitempty"`
-	EnablePrivateNetwork *bool    `json:"enable_private_network,omitempty"`
-	EnableVPC            *bool    `json:"enable_vpc,omitempty"`
-	Label                string   `json:"label,omitempty"`
-	FirewallGroupID      string   `json:"firewall_group_id,omitempty"`
-	UserData             string   `json:"user_data,omitempty"`
-	ImageID              string   `json:"image_id,omitempty"`
-	Backups              string   `json:"backups,omitempty"`
-	Plan                 string   `json:"plan,omitempty"`
-	AttachVPC2           []string `json:"attach_vpc2,omitempty"`
-	DetachVPC            []string `json:"detach_vpc,omitempty"`
-	AttachVPC            []string `json:"attach_vpc,omitempty"`
-	DetachPrivateNetwork []string `json:"detach_private_network,omitempty"`
-	DetachVPC2           []string `json:"detach_vpc2,omitempty"`
+	Plan  string `json:"plan,omitempty"`
+	Label string `json:"label,omitempty"`
+	// Deprecated: Tag should no longer be used. Instead, use Tags.
+	Tag        *string  `json:"tag,omitempty"`
+	Tags       []string `json:"tags"`
+	OsID       int      `json:"os_id,omitempty"`
+	AppID      int      `json:"app_id,omitempty"`
+	ImageID    string   `json:"image_id,omitempty"`
+	EnableIPv6 *bool    `json:"enable_ipv6,omitempty"`
+	// Deprecated:  EnablePrivateNetwork should no longer be used. Instead, use EnableVPC.
+	EnablePrivateNetwork *bool `json:"enable_private_network,omitempty"`
+	// Deprecated:  AttachPrivateNetwork should no longer be used. Instead, use AttachVPC.
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
-	Tags                 []string `json:"tags"`
-	AppID                int      `json:"app_id,omitempty"`
-	OsID                 int      `json:"os_id,omitempty"`
+	// Deprecated:  DetachPrivateNetwork should no longer be used. Instead, use DetachVPC.
+	DetachPrivateNetwork []string `json:"detach_private_network,omitempty"`
+	EnableVPC            *bool    `json:"enable_vpc,omitempty"`
+	AttachVPC            []string `json:"attach_vpc,omitempty"`
+	DetachVPC            []string `json:"detach_vpc,omitempty"`
+	EnableVPC2           *bool    `json:"enable_vpc2,omitempty"`
+	AttachVPC2           []string `json:"attach_vpc2,omitempty"`
+	DetachVPC2           []string `json:"detach_vpc2,omitempty"`
+	Backups              string   `json:"backups,omitempty"`
+	DDOSProtection       *bool    `json:"ddos_protection"`
+	UserData             string   `json:"user_data,omitempty"`
+	FirewallGroupID      string   `json:"firewall_group_id,omitempty"`
 }
 
 // ReinstallReq struct used to allow changes during a reinstall

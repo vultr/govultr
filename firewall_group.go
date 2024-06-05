@@ -40,8 +40,8 @@ type FirewallGroupReq struct {
 }
 
 type firewallGroupsBase struct {
-	Meta           *Meta           `json:"meta"`
 	FirewallGroups []FirewallGroup `json:"firewall_groups"`
+	Meta           *Meta           `json:"meta"`
 }
 
 type firewallGroupBase struct {

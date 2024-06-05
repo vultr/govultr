@@ -35,16 +35,16 @@ type DomainRecord struct {
 
 // DomainRecordReq struct to use for create/update domain record calls.
 type DomainRecordReq struct {
-	Priority *int   `json:"priority,omitempty"`
 	Name     string `json:"name"`
 	Type     string `json:"type,omitempty"`
 	Data     string `json:"data,omitempty"`
 	TTL      int    `json:"ttl,omitempty"`
+	Priority *int   `json:"priority,omitempty"`
 }
 
 type domainRecordsBase struct {
-	Meta    *Meta          `json:"meta,omitempty"`
 	Records []DomainRecord `json:"records,omitempty"`
+	Meta    *Meta          `json:"meta,omitempty"`
 }
 
 type domainRecordBase struct {

@@ -46,8 +46,8 @@ type DomainReq struct {
 }
 
 type domainsBase struct {
-	Meta    *Meta    `json:"meta"`
 	Domains []Domain `json:"domains"`
+	Meta    *Meta    `json:"meta"`
 }
 
 type domainBase struct {

@@ -35,9 +35,9 @@ type ReservedIP struct {
 	Region     string `json:"region"`
 	IPType     string `json:"ip_type"`
 	Subnet     string `json:"subnet"`
+	SubnetSize int    `json:"subnet_size"`
 	Label      string `json:"label"`
 	InstanceID string `json:"instance_id"`
-	SubnetSize int    `json:"subnet_size"`
 }
 
 // ReservedIPReq represents the parameters for creating a new Reserved IP on Vultr
@@ -55,8 +55,8 @@ type ReservedIPUpdateReq struct {
 }
 
 type reservedIPsBase struct {
-	Meta        *Meta        `json:"meta"`
 	ReservedIPs []ReservedIP `json:"reserved_ips"`
+	Meta        *Meta        `json:"meta"`
 }
 
 type reservedIPBase struct {

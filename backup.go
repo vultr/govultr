@@ -25,13 +25,13 @@ type Backup struct {
 	ID          string `json:"id"`
 	DateCreated string `json:"date_created"`
 	Description string `json:"description"`
-	Status      string `json:"status"`
 	Size        int    `json:"size"`
+	Status      string `json:"status"`
 }
 
 type backupsBase struct {
-	Meta    *Meta    `json:"meta"`
 	Backups []Backup `json:"backups"`
+	Meta    *Meta    `json:"meta"`
 }
 
 type backupBase struct {

@@ -28,10 +28,10 @@ type ISO struct {
 	ID          string `json:"id"`
 	DateCreated string `json:"date_created"`
 	FileName    string `json:"filename"`
+	Size        int    `json:"size,omitempty"`
 	MD5Sum      string `json:"md5sum,omitempty"`
 	SHA512Sum   string `json:"sha512sum,omitempty"`
 	Status      string `json:"status"`
-	Size        int    `json:"size,omitempty"`
 }
 
 // PublicISO represents public ISOs offered in the Vultr ISO library.
@@ -48,8 +48,8 @@ type ISOReq struct {
 }
 
 type isosBase struct {
-	Meta *Meta `json:"meta"`
 	ISOs []ISO `json:"isos"`
+	Meta *Meta `json:"meta"`
 }
 
 type isoBase struct {
@@ -57,8 +57,8 @@ type isoBase struct {
 }
 
 type publicIsosBase struct {
-	Meta       *Meta       `json:"meta"`
 	PublicIsos []PublicISO `json:"public_isos"`
+	Meta       *Meta       `json:"meta"`
 }
 
 // Create will create a new ISO image on your account

@@ -28,14 +28,14 @@ type ObjectStorageServiceHandler struct {
 
 // ObjectStorage represents a Vultr Object Storage subscription.
 type ObjectStorage struct {
-	S3Keys
 	ID                   string `json:"id"`
 	DateCreated          string `json:"date_created"`
+	ObjectStoreClusterID int    `json:"cluster_id"`
 	Region               string `json:"region"`
 	Location             string `json:"location"`
 	Label                string `json:"label"`
 	Status               string `json:"status"`
-	ObjectStoreClusterID int    `json:"cluster_id"`
+	S3Keys
 }
 
 // S3Keys define your api access to your cluster
@@ -47,15 +47,15 @@ type S3Keys struct {
 
 // ObjectStorageCluster represents a Vultr Object Storage cluster.
 type ObjectStorageCluster struct {
+	ID       int    `json:"id"`
 	Region   string `json:"region"`
 	Hostname string `json:"hostname"`
 	Deploy   string `json:"deploy"`
-	ID       int    `json:"id"`
 }
 
 type objectStoragesBase struct {
-	Meta           *Meta           `json:"meta"`
 	ObjectStorages []ObjectStorage `json:"object_storages"`
+	Meta           *Meta           `json:"meta"`
 }
 
 type objectStorageBase struct {
@@ -63,8 +63,8 @@ type objectStorageBase struct {
 }
 
 type objectStorageClustersBase struct {
-	Meta     *Meta                  `json:"meta"`
 	Clusters []ObjectStorageCluster `json:"clusters"`
+	Meta     *Meta                  `json:"meta"`
 }
 
 type s3KeysBase struct {

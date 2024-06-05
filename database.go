@@ -72,22 +72,22 @@ type DatabaseServiceHandler struct {
 // DBPlanListOptions handles GET request parameters for the ListPlans endpoint
 type DBPlanListOptions struct {
 	Engine string `url:"engine,omitempty"`
-	Region string `url:"region,omitempty"`
 	Nodes  int    `url:"nodes,omitempty"`
+	Region string `url:"region,omitempty"`
 }
 
 // DatabasePlan represents a Managed Database plan
 type DatabasePlan struct {
-	SupportedEngines SupportedEngines `json:"supported_engines"`
-	MaxConnections   *MaxConnections  `json:"max_connections,omitempty"`
 	ID               string           `json:"id"`
-	Type             string           `json:"type"`
-	Locations        []string         `json:"locations"`
 	NumberOfNodes    int              `json:"number_of_nodes"`
+	Type             string           `json:"type"`
 	VCPUCount        int              `json:"vcpu_count"`
 	RAM              int              `json:"ram"`
 	Disk             int              `json:"disk"`
 	MonthlyCost      int              `json:"monthly_cost"`
+	SupportedEngines SupportedEngines `json:"supported_engines"`
+	MaxConnections   *MaxConnections  `json:"max_connections,omitempty"`
+	Locations        []string         `json:"locations"`
 }
 
 // SupportedEngines represents an object containing supported database engine types for Managed Database plans
@@ -105,8 +105,8 @@ type MaxConnections struct {
 
 // databasePlansBase holds the entire ListPlans API response
 type databasePlansBase struct {
-	Meta          *Meta          `json:"meta"`
 	DatabasePlans []DatabasePlan `json:"plans"`
+	Meta          *Meta          `json:"meta"`
 }
 
 // DBListOptions handles GET request parameters for the List endpoint
@@ -118,13 +118,13 @@ type DBListOptions struct {
 
 // Database represents a Managed Database subscription
 type Database struct {
-	FerretDBCredentials    *FerretDBCredentials `json:"ferretdb_credentials,omitempty"`
-	MySQLSlowQueryLog      *bool                `json:"mysql_slow_query_log,omitempty"`
-	MySQLRequirePrimaryKey *bool                `json:"mysql_require_primary_key,omitempty"`
-	Host                   string               `json:"host"`
-	DBName                 string               `json:"dbname,omitempty"`
-	User                   string               `json:"user"`
-	PublicHost             string               `json:"public_host,omitempty"`
+	ID                     string               `json:"id"`
+	DateCreated            string               `json:"date_created"`
+	Plan                   string               `json:"plan"`
+	PlanDisk               int                  `json:"plan_disk"`
+	PlanRAM                int                  `json:"plan_ram"`
+	PlanVCPUs              int                  `json:"plan_vcpus"`
+	PlanReplicas           int                  `json:"plan_replicas"`
 	Region                 string               `json:"region"`
 	DatabaseEngine         string               `json:"database_engine"`
 	DatabaseEngineVersion  string               `json:"database_engine_version"`
@@ -132,35 +132,35 @@ type Database struct {
 	Status                 string               `json:"status"`
 	Label                  string               `json:"label"`
 	Tag                    string               `json:"tag"`
-	Plan                   string               `json:"plan"`
-	ClusterTimeZone        string               `json:"cluster_time_zone,omitempty"`
-	ID                     string               `json:"id"`
-	RedisEvictionPolicy    string               `json:"redis_eviction_policy,omitempty"`
-	DateCreated            string               `json:"date_created"`
+	DBName                 string               `json:"dbname,omitempty"`
+	FerretDBCredentials    *FerretDBCredentials `json:"ferretdb_credentials,omitempty"`
+	Host                   string               `json:"host"`
+	PublicHost             string               `json:"public_host,omitempty"`
+	User                   string               `json:"user"`
 	Password               string               `json:"password"`
 	Port                   string               `json:"port"`
 	MaintenanceDOW         string               `json:"maintenance_dow"`
 	MaintenanceTime        string               `json:"maintenance_time"`
 	LatestBackup           string               `json:"latest_backup"`
-	MySQLSQLModes          []string             `json:"mysql_sql_modes,omitempty"`
 	TrustedIPs             []string             `json:"trusted_ips"`
-	PGAvailableExtensions  []PGExtension        `json:"pg_available_extensions,omitempty"`
-	ReadReplicas           []Database           `json:"read_replicas,omitempty"`
-	PlanRAM                int                  `json:"plan_ram"`
-	PlanVCPUs              int                  `json:"plan_vcpus"`
+	MySQLSQLModes          []string             `json:"mysql_sql_modes,omitempty"`
+	MySQLRequirePrimaryKey *bool                `json:"mysql_require_primary_key,omitempty"`
+	MySQLSlowQueryLog      *bool                `json:"mysql_slow_query_log,omitempty"`
 	MySQLLongQueryTime     int                  `json:"mysql_long_query_time,omitempty"`
-	PlanDisk               int                  `json:"plan_disk"`
-	PlanReplicas           int                  `json:"plan_replicas"`
+	PGAvailableExtensions  []PGExtension        `json:"pg_available_extensions,omitempty"`
+	RedisEvictionPolicy    string               `json:"redis_eviction_policy,omitempty"`
+	ClusterTimeZone        string               `json:"cluster_time_zone,omitempty"`
+	ReadReplicas           []Database           `json:"read_replicas,omitempty"`
 }
 
 // FerretDBCredentials represents connection details and IP address information for FerretDB engine type subscriptions
 type FerretDBCredentials struct {
 	Host      string `json:"host"`
+	Port      int    `json:"port"`
 	User      string `json:"user"`
 	Password  string `json:"password"`
 	PublicIP  string `json:"public_ip"`
 	PrivateIP string `json:"private_ip,omitempty"`
-	Port      int    `json:"port"`
 }
 
 // PGExtension represents an object containing extension name and version information
@@ -171,8 +171,8 @@ type PGExtension struct {
 
 // databasesBase holds the entire List API response
 type databasesBase struct {
-	Meta      *Meta      `json:"meta"`
 	Databases []Database `json:"databases"`
+	Meta      *Meta      `json:"meta"`
 }
 
 // databaseBase holds the entire Get API response
@@ -182,39 +182,39 @@ type databaseBase struct {
 
 // DatabaseCreateReq struct used to create a database.
 type DatabaseCreateReq struct {
-	MySQLRequirePrimaryKey *bool    `json:"mysql_require_primary_key,omitempty"`
-	MySQLSlowQueryLog      *bool    `json:"mysql_slow_query_log,omitempty"`
-	VPCID                  string   `json:"vpc_id,omitempty"`
+	DatabaseEngine         string   `json:"database_engine,omitempty"`
+	DatabaseEngineVersion  string   `json:"database_engine_version,omitempty"`
+	Region                 string   `json:"region,omitempty"`
 	Plan                   string   `json:"plan,omitempty"`
 	Label                  string   `json:"label,omitempty"`
 	Tag                    string   `json:"tag,omitempty"`
-	DatabaseEngine         string   `json:"database_engine,omitempty"`
+	VPCID                  string   `json:"vpc_id,omitempty"`
 	MaintenanceDOW         string   `json:"maintenance_dow,omitempty"`
 	MaintenanceTime        string   `json:"maintenance_time,omitempty"`
-	Region                 string   `json:"region,omitempty"`
-	DatabaseEngineVersion  string   `json:"database_engine_version,omitempty"`
-	RedisEvictionPolicy    string   `json:"redis_eviction_policy,omitempty"`
 	TrustedIPs             []string `json:"trusted_ips,omitempty"`
 	MySQLSQLModes          []string `json:"mysql_sql_modes,omitempty"`
+	MySQLRequirePrimaryKey *bool    `json:"mysql_require_primary_key,omitempty"`
+	MySQLSlowQueryLog      *bool    `json:"mysql_slow_query_log,omitempty"`
 	MySQLLongQueryTime     int      `json:"mysql_long_query_time,omitempty"`
+	RedisEvictionPolicy    string   `json:"redis_eviction_policy,omitempty"`
 }
 
 // DatabaseUpdateReq struct used to update a dataase.
 type DatabaseUpdateReq struct {
-	VPCID                  *string  `json:"vpc_id,omitempty"`
-	MySQLSlowQueryLog      *bool    `json:"mysql_slow_query_log,omitempty"`
-	MySQLRequirePrimaryKey *bool    `json:"mysql_require_primary_key,omitempty"`
-	MaintenanceTime        string   `json:"maintenance_time,omitempty"`
-	Tag                    string   `json:"tag,omitempty"`
-	MaintenanceDOW         string   `json:"maintenance_dow,omitempty"`
 	Region                 string   `json:"region,omitempty"`
-	ClusterTimeZone        string   `json:"cluster_time_zone,omitempty"`
-	Label                  string   `json:"label,omitempty"`
 	Plan                   string   `json:"plan,omitempty"`
-	RedisEvictionPolicy    string   `json:"redis_eviction_policy,omitempty"`
+	Label                  string   `json:"label,omitempty"`
+	Tag                    string   `json:"tag,omitempty"`
+	VPCID                  *string  `json:"vpc_id,omitempty"`
+	MaintenanceDOW         string   `json:"maintenance_dow,omitempty"`
+	MaintenanceTime        string   `json:"maintenance_time,omitempty"`
+	ClusterTimeZone        string   `json:"cluster_time_zone,omitempty"`
 	TrustedIPs             []string `json:"trusted_ips,omitempty"`
 	MySQLSQLModes          []string `json:"mysql_sql_modes,omitempty"`
+	MySQLRequirePrimaryKey *bool    `json:"mysql_require_primary_key,omitempty"`
+	MySQLSlowQueryLog      *bool    `json:"mysql_slow_query_log,omitempty"`
 	MySQLLongQueryTime     int      `json:"mysql_long_query_time,omitempty"`
+	RedisEvictionPolicy    string   `json:"redis_eviction_policy,omitempty"`
 }
 
 // DatabaseUsage represents disk, memory, and CPU usage for a Managed Database
@@ -226,15 +226,15 @@ type DatabaseUsage struct {
 
 // DatabaseDiskUsage represents disk usage details for a Managed Database
 type DatabaseDiskUsage struct {
-	MaxGB      int     `json:"max_gb"`
 	CurrentGB  float32 `json:"current_gb"`
+	MaxGB      int     `json:"max_gb"`
 	Percentage float32 `json:"percentage"`
 }
 
 // DatabaseMemoryUsage represents memory usage details for a Managed Database
 type DatabaseMemoryUsage struct {
-	MaxMB      int     `json:"max_mb"`
 	CurrentMB  float32 `json:"current_mb"`
+	MaxMB      int     `json:"max_mb"`
 	Percentage float32 `json:"percentage"`
 }
 
@@ -250,10 +250,10 @@ type databaseUsageBase struct {
 
 // DatabaseUser represents a user within a Managed Database cluster
 type DatabaseUser struct {
-	AccessControl *DatabaseUserACL `json:"access_control,omitempty"`
 	Username      string           `json:"username"`
 	Password      string           `json:"password"`
 	Encryption    string           `json:"encryption,omitempty"`
+	AccessControl *DatabaseUserACL `json:"access_control,omitempty"`
 }
 
 // DatabaseUserACL represents an access control configuration for a user within a Redis Managed Database cluster
@@ -279,8 +279,8 @@ type databaseUserBase struct {
 
 // databaseUsersBase holds the API response for retrieving a list of database users within a Managed Database
 type databaseUsersBase struct {
-	Meta          *Meta          `json:"meta"`
 	DatabaseUsers []DatabaseUser `json:"users"`
+	Meta          *Meta          `json:"meta"`
 }
 
 // DatabaseUserCreateReq struct used to create a user within a Managed Database.
@@ -307,8 +307,8 @@ type databaseDBBase struct {
 
 // databaseDBsBase holds the API response for retrieving a list of logical databases within a Managed Database
 type databaseDBsBase struct {
-	Meta        *Meta        `json:"meta"`
 	DatabaseDBs []DatabaseDB `json:"dbs"`
+	Meta        *Meta        `json:"meta"`
 }
 
 // DatabaseDBCreateReq struct used to create a logical database within a Managed Database.
@@ -357,13 +357,13 @@ type DatabaseMigration struct {
 
 // DatabaseCredentials represents migration credentials for migration within a Managed Database cluster
 type DatabaseCredentials struct {
-	SSL              *bool  `json:"ssl"`
 	Host             string `json:"host"`
+	Port             int    `json:"port"`
 	Username         string `json:"username"`
 	Password         string `json:"password"`
 	Database         string `json:"database,omitempty"`
 	IgnoredDatabases string `json:"ignored_databases,omitempty"`
-	Port             int    `json:"port"`
+	SSL              *bool  `json:"ssl"`
 }
 
 // databaseMigrationBase represents a migration status object API response for a Managed Database
@@ -373,13 +373,13 @@ type databaseMigrationBase struct {
 
 // DatabaseMigrationStartReq struct used to start a migration for a Managed Database.
 type DatabaseMigrationStartReq struct {
-	SSL              *bool  `json:"ssl"`
 	Host             string `json:"host"`
+	Port             int    `json:"port"`
 	Username         string `json:"username"`
 	Password         string `json:"password"`
 	Database         string `json:"database,omitempty"`
 	IgnoredDatabases string `json:"ignored_databases,omitempty"`
-	Port             int    `json:"port"`
+	SSL              *bool  `json:"ssl"`
 }
 
 // DatabaseAddReplicaReq struct used to add a read-only replica to a Managed Database.
@@ -442,8 +442,8 @@ type databaseConnectionPoolBase struct {
 // databaseConnectionPoolBase represents the API response for retrieving all connection pool information for a PostgreSQL Managed Database
 type databaseConnectionPoolsBase struct {
 	Connections     *DatabaseConnections     `json:"connections"`
-	Meta            *Meta                    `json:"meta"`
 	ConnectionPools []DatabaseConnectionPool `json:"connection_pools"`
+	Meta            *Meta                    `json:"meta"`
 }
 
 // DatabaseConnectionPoolCreateReq struct used to create a connection pool within a PostgreSQL Managed Database.
@@ -465,29 +465,29 @@ type DatabaseConnectionPoolUpdateReq struct {
 
 // DatabaseAdvancedOptions represents user configurable advanced options within a PostgreSQL Managed Database cluster
 type DatabaseAdvancedOptions struct {
-	Jit                             *bool   `json:"jit,omitempty"`
-	DefaultToastCompression         string  `json:"default_toast_compression,omitempty"`
-	TrackIOTiming                   string  `json:"track_io_timing,omitempty"`
-	TrackFunctions                  string  `json:"track_functions,omitempty"`
-	TrackCommitTimestamp            string  `json:"track_commit_timestamp,omitempty"`
-	PGStateStatementsTrack          string  `json:"pg_stat_statements.track,omitempty"`
-	PGPartmanBGWRole                string  `json:"pg_partman_bgw.role,omitempty"`
-	LogLinePrefix                   string  `json:"log_line_prefix,omitempty"`
-	LogErrorVerbosity               string  `json:"log_error_verbosity,omitempty"`
-	MaxLocksPerTransaction          int     `json:"max_locks_per_transaction,omitempty"`
-	PGPartmanBGWInterval            int     `json:"pg_partman_bgw.interval,omitempty"`
-	BGWRITERLRUMaxPages             int     `json:"bgwriter_lru_maxpages,omitempty"`
-	WALWriterDelay                  int     `json:"wal_writer_delay,omitempty"`
-	DeadlockTimeout                 int     `json:"deadlock_timeout,omitempty"`
-	BGWRITERDelay                   int     `json:"bgwriter_delay,omitempty"`
-	IdleInTransactionSessionTimeout int     `json:"idle_in_transaction_session_timeout,omitempty"`
-	AutovacuumVacuumThreshold       int     `json:"autovacuum_vacuum_threshold,omitempty"`
-	LogAutovacuumMinDuration        int     `json:"log_autovacuum_min_duration,omitempty"`
-	WALSenderTImeout                int     `json:"wal_sender_timeout,omitempty"`
+	AutovacuumAnalyzeScaleFactor    float32 `json:"autovacuum_analyze_scale_factor,omitempty"`
+	AutovacuumAnalyzeThreshold      int     `json:"autovacuum_analyze_threshold,omitempty"`
+	AutovacuumFreezeMaxAge          int     `json:"autovacuum_freeze_max_age,omitempty"`
+	AutovacuumMaxWorkers            int     `json:"autovacuum_max_workers,omitempty"`
+	AutovacuumNaptime               int     `json:"autovacuum_naptime,omitempty"`
+	AutovacuumVacuumCostDelay       int     `json:"autovacuum_vacuum_cost_delay,omitempty"`
 	AutovacuumVacuumCostLimit       int     `json:"autovacuum_vacuum_cost_limit,omitempty"`
+	AutovacuumVacuumScaleFactor     float32 `json:"autovacuum_vacuum_scale_factor,omitempty"`
+	AutovacuumVacuumThreshold       int     `json:"autovacuum_vacuum_threshold,omitempty"`
+	BGWRITERDelay                   int     `json:"bgwriter_delay,omitempty"`
+	BGWRITERFlushAFter              int     `json:"bgwriter_flush_after,omitempty"`
+	BGWRITERLRUMaxPages             int     `json:"bgwriter_lru_maxpages,omitempty"`
+	BGWRITERLRUMultiplier           float32 `json:"bgwriter_lru_multiplier,omitempty"`
+	DeadlockTimeout                 int     `json:"deadlock_timeout,omitempty"`
+	DefaultToastCompression         string  `json:"default_toast_compression,omitempty"`
+	IdleInTransactionSessionTimeout int     `json:"idle_in_transaction_session_timeout,omitempty"`
+	Jit                             *bool   `json:"jit,omitempty"`
+	LogAutovacuumMinDuration        int     `json:"log_autovacuum_min_duration,omitempty"`
+	LogErrorVerbosity               string  `json:"log_error_verbosity,omitempty"`
+	LogLinePrefix                   string  `json:"log_line_prefix,omitempty"`
 	LogMinDurationStatement         int     `json:"log_min_duration_statement,omitempty"`
 	MaxFilesPerProcess              int     `json:"max_files_per_process,omitempty"`
-	AutovacuumAnalyzeThreshold      int     `json:"autovacuum_analyze_threshold,omitempty"`
+	MaxLocksPerTransaction          int     `json:"max_locks_per_transaction,omitempty"`
 	MaxLogicalReplicationWorkers    int     `json:"max_logical_replication_workers,omitempty"`
 	MaxParallelWorkers              int     `json:"max_parallel_workers,omitempty"`
 	MaxParallelWorkersPerGather     int     `json:"max_parallel_workers_per_gather,omitempty"`
@@ -499,27 +499,27 @@ type DatabaseAdvancedOptions struct {
 	MaxStandbyStreamingDelay        int     `json:"max_standby_streaming_delay,omitempty"`
 	MaxWalSenders                   int     `json:"max_wal_senders,omitempty"`
 	MaxWorkerProcesses              int     `json:"max_worker_processes,omitempty"`
-	BGWRITERFlushAFter              int     `json:"bgwriter_flush_after,omitempty"`
-	AutovacuumVacuumCostDelay       int     `json:"autovacuum_vacuum_cost_delay,omitempty"`
-	AutovacuumNaptime               int     `json:"autovacuum_naptime,omitempty"`
+	PGPartmanBGWInterval            int     `json:"pg_partman_bgw.interval,omitempty"`
+	PGPartmanBGWRole                string  `json:"pg_partman_bgw.role,omitempty"`
+	PGStateStatementsTrack          string  `json:"pg_stat_statements.track,omitempty"`
 	TempFileLimit                   int     `json:"temp_file_limit,omitempty"`
 	TrackActivityQuerySize          int     `json:"track_activity_query_size,omitempty"`
-	AutovacuumMaxWorkers            int     `json:"autovacuum_max_workers,omitempty"`
-	AutovacuumFreezeMaxAge          int     `json:"autovacuum_freeze_max_age,omitempty"`
-	AutovacuumAnalyzeScaleFactor    float32 `json:"autovacuum_analyze_scale_factor,omitempty"`
-	AutovacuumVacuumScaleFactor     float32 `json:"autovacuum_vacuum_scale_factor,omitempty"`
-	BGWRITERLRUMultiplier           float32 `json:"bgwriter_lru_multiplier,omitempty"`
+	TrackCommitTimestamp            string  `json:"track_commit_timestamp,omitempty"`
+	TrackFunctions                  string  `json:"track_functions,omitempty"`
+	TrackIOTiming                   string  `json:"track_io_timing,omitempty"`
+	WALSenderTImeout                int     `json:"wal_sender_timeout,omitempty"`
+	WALWriterDelay                  int     `json:"wal_writer_delay,omitempty"`
 }
 
 // AvailableOption represents an available advanced configuration option for a PostgreSQL Managed Database cluster
 type AvailableOption struct {
-	MinValue  *int     `json:"min_value,omitempty"`
-	MaxValue  *int     `json:"max_value,omitempty"`
 	Name      string   `json:"name"`
 	Type      string   `json:"type"`
-	Units     string   `json:"units,omitempty"`
 	Enumerals []string `json:"enumerals,omitempty"`
+	MinValue  *int     `json:"min_value,omitempty"`
+	MaxValue  *int     `json:"max_value,omitempty"`
 	AltValues []int    `json:"alt_values,omitempty"`
+	Units     string   `json:"units,omitempty"`
 }
 
 // databaseAdvancedOptionsBase represents the API response for PostgreSQL advanced configuration options for a Managed Database

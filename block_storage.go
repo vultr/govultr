@@ -29,35 +29,35 @@ type BlockStorageServiceHandler struct {
 // BlockStorage represents Vultr Block-Storage
 type BlockStorage struct {
 	ID                 string  `json:"id"`
+	Cost               float32 `json:"cost"`
 	Status             string  `json:"status"`
+	SizeGB             int     `json:"size_gb"`
 	Region             string  `json:"region"`
 	DateCreated        string  `json:"date_created"`
 	AttachedToInstance string  `json:"attached_to_instance"`
 	Label              string  `json:"label"`
 	MountID            string  `json:"mount_id"`
 	BlockType          string  `json:"block_type"`
-	SizeGB             int     `json:"size_gb"`
-	Cost               float32 `json:"cost"`
 }
 
 // BlockStorageCreate struct is used for creating Block Storage.
 type BlockStorageCreate struct {
 	Region    string `json:"region"`
+	SizeGB    int    `json:"size_gb"`
 	Label     string `json:"label,omitempty"`
 	BlockType string `json:"block_type,omitempty"`
-	SizeGB    int    `json:"size_gb"`
 }
 
 // BlockStorageUpdate struct is used to update Block Storage.
 type BlockStorageUpdate struct {
-	Label  string `json:"label,omitempty"`
 	SizeGB int    `json:"size_gb,omitempty"`
+	Label  string `json:"label,omitempty"`
 }
 
 // BlockStorageAttach struct used to define if a attach should be restart the instance.
 type BlockStorageAttach struct {
-	Live       *bool  `json:"live,omitempty"`
 	InstanceID string `json:"instance_id"`
+	Live       *bool  `json:"live,omitempty"`
 }
 
 // BlockStorageDetach struct used to define if a detach should be restart the instance.
@@ -66,8 +66,8 @@ type BlockStorageDetach struct {
 }
 
 type blockStoragesBase struct {
-	Meta   *Meta          `json:"meta"`
 	Blocks []BlockStorage `json:"blocks"`
+	Meta   *Meta          `json:"meta"`
 }
 
 type blockStorageBase struct {

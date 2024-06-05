@@ -39,16 +39,16 @@ type User struct {
 
 // UserReq is the user struct for create and update calls
 type UserReq struct {
-	APIEnabled *bool    `json:"api_enabled,omitempty"`
 	Email      string   `json:"email,omitempty"`
 	Name       string   `json:"name,omitempty"`
-	Password   string   `json:"password,omitempty"`
+	APIEnabled *bool    `json:"api_enabled,omitempty"`
 	ACL        []string `json:"acls,omitempty"`
+	Password   string   `json:"password,omitempty"`
 }
 
 type usersBase struct {
-	Meta  *Meta  `json:"meta"`
 	Users []User `json:"users"`
+	Meta  *Meta  `json:"meta"`
 }
 
 type userBase struct {

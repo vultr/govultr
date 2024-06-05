@@ -20,18 +20,18 @@ type ApplicationServiceHandler struct {
 
 // Application represents all available apps that can be used to deployed with vultr Instances.
 type Application struct {
+	ID         int    `json:"id"`
 	Name       string `json:"name"`
 	ShortName  string `json:"short_name"`
 	DeployName string `json:"deploy_name"`
 	Type       string `json:"type"`
 	Vendor     string `json:"vendor"`
 	ImageID    string `json:"image_id"`
-	ID         int    `json:"id"`
 }
 
 type applicationBase struct {
-	Meta         *Meta         `json:"meta"`
 	Applications []Application `json:"applications"`
+	Meta         *Meta         `json:"meta"`
 }
 
 // List retrieves a list of available applications that can be launched when creating a Vultr instance
