@@ -50,7 +50,7 @@ linters-settings:
           - (github.com/golangci/golangci-lint/pkg/logutils.Log).Errorf
           - (github.com/golangci/golangci-lint/pkg/logutils.Log).Fatalf
   lll:
-    line-length: 120
+    line-length: 140
   misspell:
     locale: US
   nolintlint:
