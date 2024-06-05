@@ -23,7 +23,7 @@ linters-settings:
     min-complexity: 15
   goimports:
     local-prefixes: github.com/golangci/golangci-lint
-  gomnd:
+  mnd:
     # don't include the "operation" and "assign"
     checks:
       - argument
@@ -39,7 +39,9 @@ linters-settings:
       - strings.SplitN
 
   govet:
-    check-shadowing: true
+    enable-all: true
+    disable:
+      - fieldalignment # a lot of manual overhead for reduced readability and adding a linter "gotcha"
     settings:
       printf:
         funcs:
@@ -74,7 +76,6 @@ linters:
     - gocyclo
     - gofmt
     - goimports
-    - gomnd
     - goprintffuncname
     - gosec
     - gosimple
@@ -82,6 +83,7 @@ linters:
     - ineffassign
     - lll
     - misspell
+    - mnd
     - nakedret
     - noctx
     - nolintlint
@@ -132,6 +134,5 @@ issues:
         - lll
         - goconst
         - dogsled
-
 run:
   timeout: 5m
