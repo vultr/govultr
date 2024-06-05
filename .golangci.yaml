@@ -40,6 +40,8 @@ linters-settings:
 
   govet:
     enable-all: true
+    disable:
+      - fieldalignment # a lot of manual overhead for reduced readability and adding a linter "gotcha"
     settings:
       printf:
         funcs:
