@@ -1,5 +1,9 @@
 # Change Log
-## [3.8.0](https://github.com/vultr/govultr/compare/v3.7.0...v3.8.0)
+## [3.8.1](https://github.com/vultr/govultr/compare/v3.8.0...v3.8.1) (2023-06-06)
+### Automation
+* Update goreleaser github action from v2 to v6 [PR 317](https://github.com/vultr/govultr/pull/317)
+
+## [3.8.0](https://github.com/vultr/govultr/compare/v3.7.0...v3.8.0) (2023-06-06)
 ### Enhancements
 * Inference: add support for serverless inference endpoints [PR 315](https://github.com/vultr/govultr/pull/315)
 
