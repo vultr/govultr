@@ -1,4 +1,8 @@
 # Change Log
+## [3.9.0](https://github.com/vultr/govultr/compare/v3.8.1...v3.9.0) (2024-06-30)
+### Enhancements
+* CDN: Full support added [PR 319](https://github.com/vultr/govultr/pull/319)
+
 ## [3.8.1](https://github.com/vultr/govultr/compare/v3.8.0...v3.8.1) (2023-06-06)
 ### Automation
 * Update goreleaser github action from v2 to v6 [PR 317](https://github.com/vultr/govultr/pull/317)
