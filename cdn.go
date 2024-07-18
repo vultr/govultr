@@ -367,8 +367,8 @@ func (c *CDNServiceHandler) GetPushZoneFile(ctx context.Context, zoneID, fileNam
 
 // DeletePushZoneFile delete a file in a CDN push zone
 func (c *CDNServiceHandler) DeletePushZoneFile(ctx context.Context, zoneID, fileName string) error {
-	cdnFileGetPath := fmt.Sprintf("%s/%s/files/%s", cdnPushPath, zoneID, fileName)
-	if _, err := c.client.NewRequest(ctx, http.MethodGet, cdnFileGetPath, nil); err != nil {
+	cdnFileDelPath := fmt.Sprintf("%s/%s/files/%s", cdnPushPath, zoneID, fileName)
+	if _, err := c.client.NewRequest(ctx, http.MethodDelete, cdnFileDelPath, nil); err != nil {
 		return err
 	}
 
