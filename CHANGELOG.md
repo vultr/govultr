@@ -1,4 +1,11 @@
 # Change Log
+## [3.9.1](https://github.com/vultr/govultr/compare/v3.9.0...v3.9.1) (2024-08-13)
+### Enhancements
+* Database: Add support for Managed MySQL advanced config [PR 322](https://github.com/vultr/govultr/pull/322)
+
+### Bug Fixes
+* CDN: Fix http method used on push zone file delete [PR 321](https://github.com/vultr/govultr/pull/321)
+
 ## [3.9.0](https://github.com/vultr/govultr/compare/v3.8.1...v3.9.0) (2024-06-30)
 ### Enhancements
 * CDN: Full support added [PR 319](https://github.com/vultr/govultr/pull/319)
