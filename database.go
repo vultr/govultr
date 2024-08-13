@@ -463,7 +463,7 @@ type DatabaseConnectionPoolUpdateReq struct {
 	Size     int    `json:"size,omitempty"`
 }
 
-// DatabaseAdvancedOptions represents user configurable advanced options within a PostgreSQL Managed Database cluster
+// DatabaseAdvancedOptions represents user configurable advanced options within a MySQL/PostgreSQL Managed Database cluster
 type DatabaseAdvancedOptions struct {
 	AutovacuumAnalyzeScaleFactor    float32 `json:"autovacuum_analyze_scale_factor,omitempty"`
 	AutovacuumAnalyzeThreshold      int     `json:"autovacuum_analyze_threshold,omitempty"`
@@ -478,15 +478,33 @@ type DatabaseAdvancedOptions struct {
 	BGWRITERFlushAFter              int     `json:"bgwriter_flush_after,omitempty"`
 	BGWRITERLRUMaxPages             int     `json:"bgwriter_lru_maxpages,omitempty"`
 	BGWRITERLRUMultiplier           float32 `json:"bgwriter_lru_multiplier,omitempty"`
+	ConnectTimeout                  int     `json:"connect_timeout,omitempty"`
 	DeadlockTimeout                 int     `json:"deadlock_timeout,omitempty"`
 	DefaultToastCompression         string  `json:"default_toast_compression,omitempty"`
+	GroupConcatMaxLen               int     `json:"group_concat_max_len,omitempty"`
 	IdleInTransactionSessionTimeout int     `json:"idle_in_transaction_session_timeout,omitempty"`
+	InnoDBChangeBufferMaxSize       int     `json:"innodb_change_buffer_max_size,omitempty"`
+	InnoDBFlushNeighbors            int     `json:"innodb_flush_neighbors,omitempty"`
+	InnoDBFTMinTokenSize            int     `json:"innodb_ft_min_token_size,omitempty"`
+	InnoDBFTServerStopwordTable     string  `json:"innodb_ft_server_stopword_table,omitempty"`
+	InnoDBLockWaitTimeout           int     `json:"innodb_lock_wait_timeout,omitempty"`
+	InnoDBLogBufferSize             int     `json:"innodb_log_buffer_size,omitempty"`
+	InnoDBOnlineAlterLogMaxSize     int     `json:"innodb_online_alter_log_max_size,omitempty"`
+	InnoDBPrintAllDeadlocks         *bool   `json:"innodb_print_all_deadlocks,omitempty"`
+	InnoDBReadIOThreads             int     `json:"innodb_read_io_threads,omitempty"`
+	InnoDBRollbackOnTimeout         *bool   `json:"innodb_rollback_on_timeout,omitempty"`
+	InnoDBThreadConcurrency         int     `json:"innodb_thread_concurrency,omitempty"`
+	InnoDBWriteIOThreads            int     `json:"innodb_write_io_threads,omitempty"`
+	InteractiveTimeout              int     `json:"interactive_timeout,omitempty"`
+	InternalTmpMemStorageEngine     string  `json:"internal_tmp_mem_storage_engine,omitempty"`
 	Jit                             *bool   `json:"jit,omitempty"`
 	LogAutovacuumMinDuration        int     `json:"log_autovacuum_min_duration,omitempty"`
 	LogErrorVerbosity               string  `json:"log_error_verbosity,omitempty"`
 	LogLinePrefix                   string  `json:"log_line_prefix,omitempty"`
 	LogMinDurationStatement         int     `json:"log_min_duration_statement,omitempty"`
+	MaxAllowedPacket                int     `json:"max_allowed_packet,omitempty"`
 	MaxFilesPerProcess              int     `json:"max_files_per_process,omitempty"`
+	MaxHeapTableSize                int     `json:"max_heap_table_size,omitempty"`
 	MaxLocksPerTransaction          int     `json:"max_locks_per_transaction,omitempty"`
 	MaxLogicalReplicationWorkers    int     `json:"max_logical_replication_workers,omitempty"`
 	MaxParallelWorkers              int     `json:"max_parallel_workers,omitempty"`
@@ -499,14 +517,20 @@ type DatabaseAdvancedOptions struct {
 	MaxStandbyStreamingDelay        int     `json:"max_standby_streaming_delay,omitempty"`
 	MaxWalSenders                   int     `json:"max_wal_senders,omitempty"`
 	MaxWorkerProcesses              int     `json:"max_worker_processes,omitempty"`
+	NetBufferLength                 int     `json:"net_buffer_length,omitempty"`
+	NetReadTimeout                  int     `json:"net_read_timeout,omitempty"`
+	NetWriteTimeout                 int     `json:"net_write_timeout,omitempty"`
 	PGPartmanBGWInterval            int     `json:"pg_partman_bgw.interval,omitempty"`
 	PGPartmanBGWRole                string  `json:"pg_partman_bgw.role,omitempty"`
 	PGStateStatementsTrack          string  `json:"pg_stat_statements.track,omitempty"`
+	SortBufferSize                  int     `json:"sort_buffer_size,omitempty"`
 	TempFileLimit                   int     `json:"temp_file_limit,omitempty"`
+	TmpTableSize                    int     `json:"tmp_table_size,omitempty"`
 	TrackActivityQuerySize          int     `json:"track_activity_query_size,omitempty"`
 	TrackCommitTimestamp            string  `json:"track_commit_timestamp,omitempty"`
 	TrackFunctions                  string  `json:"track_functions,omitempty"`
 	TrackIOTiming                   string  `json:"track_io_timing,omitempty"`
+	WaitTimeout                     int     `json:"wait_timeout,omitempty"`
 	WALSenderTImeout                int     `json:"wal_sender_timeout,omitempty"`
 	WALWriterDelay                  int     `json:"wal_writer_delay,omitempty"`
 }
