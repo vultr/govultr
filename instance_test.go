@@ -155,49 +155,6 @@ func TestServerServiceHandler_Neighbors(t *testing.T) {
 	}
 }
 
-func TestServerServiceHandler_ListPrivateNetworks(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v2/instances/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/private-networks", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"private_networks": [{"network_id": "v1-net539626f0798d7","mac_address": "5a:02:00:00:24:e9","ip_address": "10.99.0.3"}],"meta":{"total":1,"links":{"next":"thisismycusror","prev":""}}}`
-		fmt.Fprint(writer, response)
-	})
-
-	options := &ListOptions{
-		PerPage: 1,
-		Cursor:  "",
-	}
-	privateNetwork, meta, _, err := client.Instance.ListPrivateNetworks(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", options)
-	if err != nil {
-		t.Errorf("Instance.ListPrivateNetworks return %+v, ", err)
-	}
-
-	expected := []PrivateNetwork{
-		{
-			NetworkID:  "v1-net539626f0798d7",
-			MacAddress: "5a:02:00:00:24:e9",
-			IPAddress:  "10.99.0.3",
-		},
-	}
-
-	if !reflect.DeepEqual(privateNetwork, expected) {
-		t.Errorf("Instance.ListPrivateNetworks returned %+v, expected %+v", privateNetwork, expected)
-	}
-
-	expectedMeta := &Meta{
-		Total: 1,
-		Links: &Links{
-			Next: "thisismycusror",
-			Prev: "",
-		},
-	}
-
-	if !reflect.DeepEqual(meta, expectedMeta) {
-		t.Errorf("Instance.ListPrivateNetworks meta returned %+v, expected %+v", meta, expectedMeta)
-	}
-}
-
 func TestServerServiceHandler_ListVPCInfo(t *testing.T) {
 	setup()
 	defer teardown()
@@ -977,32 +934,6 @@ func TestServerServiceHandler_MassHalt(t *testing.T) {
 
 	if err := client.Instance.MassHalt(ctx, []string{"14b3e7d6-ffb5-4994-8502-57fcd9db3b33"}); err != nil {
 		t.Errorf("Instance.MassHalt returned %+v", err)
-	}
-}
-
-func TestServerServiceHandler_AttachPrivateNetwork(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v2/instances/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/private-networks/attach", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
-
-	if err := client.Instance.AttachPrivateNetwork(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", "14b3e7d6-ffb5-4994-8502-57fcd9db3b33"); err != nil {
-		t.Errorf("Instance.AttachPrivateNetwork returned %+v", err)
-	}
-}
-
-func TestServerServiceHandler_DetachPrivateNetwork(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v2/instances/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/private-networks/detach", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
-
-	if err := client.Instance.DetachPrivateNetwork(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", "14b3e7d6-ffb5-4994-8502-57fcd9db3b33"); err != nil {
-		t.Errorf("Instance.DetachPrivateNetwork returned %+v", err)
 	}
 }
 

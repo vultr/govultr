@@ -59,20 +59,18 @@ type Client struct {
 	Kubernetes        KubernetesService
 	LoadBalancer      LoadBalancerService
 	Marketplace       MarketplaceService
-	// Deprecated: Network should no longer be used. Instead, use VPC.
-	Network       NetworkService
-	ObjectStorage ObjectStorageService
-	OS            OSService
-	Plan          PlanService
-	Region        RegionService
-	ReservedIP    ReservedIPService
-	Inference     InferenceService
-	Snapshot      SnapshotService
-	SSHKey        SSHKeyService
-	StartupScript StartupScriptService
-	User          UserService
-	VPC           VPCService
-	VPC2          VPC2Service
+	ObjectStorage     ObjectStorageService
+	OS                OSService
+	Plan              PlanService
+	Region            RegionService
+	ReservedIP        ReservedIPService
+	Inference         InferenceService
+	Snapshot          SnapshotService
+	SSHKey            SSHKeyService
+	StartupScript     StartupScriptService
+	User              UserService
+	VPC               VPCService
+	VPC2              VPC2Service
 
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
@@ -134,7 +132,6 @@ func NewClient(httpClient *http.Client) *Client {
 	client.Kubernetes = &KubernetesHandler{client}
 	client.LoadBalancer = &LoadBalancerHandler{client}
 	client.Marketplace = &MarketplaceServiceHandler{client}
-	client.Network = &NetworkServiceHandler{client}
 	client.ObjectStorage = &ObjectStorageServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
 	client.Plan = &PlanServiceHandler{client}
