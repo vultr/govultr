@@ -101,6 +101,7 @@ type Instance struct {
 	Features         []string `json:"features"`
 	Hostname         string   `json:"hostname"`
 	Tags             []string `json:"tags"`
+	UserScheme       string   `json:"user_scheme"`
 }
 
 type instanceBase struct {
@@ -256,6 +257,7 @@ type InstanceCreateReq struct {
 	UserData          string            `json:"user_data,omitempty"`
 	ReservedIPv4      string            `json:"reserved_ipv4,omitempty"`
 	ActivationEmail   *bool             `json:"activation_email,omitempty"`
+	UserScheme        string            `json:"user_scheme,omitempty"`
 	AppVariables      map[string]string `json:"app_variables,omitempty"`
 }
 
@@ -278,6 +280,7 @@ type InstanceUpdateReq struct {
 	DDOSProtection  *bool    `json:"ddos_protection"`
 	UserData        string   `json:"user_data,omitempty"`
 	FirewallGroupID string   `json:"firewall_group_id,omitempty"`
+	UserScheme      string   `json:"user_scheme,omitempty"`
 }
 
 // ReinstallReq struct used to allow changes during a reinstall
