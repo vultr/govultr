@@ -45,6 +45,8 @@ type LoadBalancer struct {
 	HealthCheck     *HealthCheck     `json:"health_check,omitempty"`
 	GenericInfo     *GenericInfo     `json:"generic_info,omitempty"`
 	SSLInfo         *bool            `json:"has_ssl,omitempty"`
+	HTTP2           *bool            `json:"http2,omitempty"`
+	HTTP3           *bool            `json:"http3,omitempty"`
 	ForwardingRules []ForwardingRule `json:"forwarding_rules,omitempty"`
 	FirewallRules   []LBFirewallRule `json:"firewall_rules,omitempty"`
 }
@@ -60,9 +62,12 @@ type LoadBalancerReq struct {
 	ForwardingRules    []ForwardingRule `json:"forwarding_rules,omitempty"`
 	SSL                *SSL             `json:"ssl,omitempty"`
 	SSLRedirect        *bool            `json:"ssl_redirect,omitempty"`
+	HTTP2              *bool            `json:"http2,omitempty"`
+	HTTP3              *bool            `json:"http3,omitempty"`
 	ProxyProtocol      *bool            `json:"proxy_protocol,omitempty"`
 	BalancingAlgorithm string           `json:"balancing_algorithm,omitempty"`
-	FirewallRules      []LBFirewallRule `json:"firewall_rules"`
+	FirewallRules      []LBFirewallRule `json:"firewall_rules,omitempty"`
+	Timeout            int              `json:"timeout,omitempty"`
 	VPC                *string          `json:"vpc,omitempty"`
 }
 
@@ -85,6 +90,7 @@ type HealthCheck struct {
 // GenericInfo represents generic configuration of your load balancer
 type GenericInfo struct {
 	BalancingAlgorithm string          `json:"balancing_algorithm,omitempty"`
+	Timeout            int             `json:"timeout,omitempty"`
 	SSLRedirect        *bool           `json:"ssl_redirect,omitempty"`
 	StickySessions     *StickySessions `json:"sticky_sessions,omitempty"`
 	ProxyProtocol      *bool           `json:"proxy_protocol,omitempty"`
