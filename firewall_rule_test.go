@@ -33,7 +33,6 @@ func TestFireWallRuleServiceHandler_Create(t *testing.T) {
 	expected := &FirewallRule{
 		ID:         1,
 		Action:     "accept",
-		Type:       "v4",
 		IPType:     "v4",
 		Protocol:   "tcp",
 		Port:       "80",
@@ -81,7 +80,6 @@ func TestFireWallRuleServiceHandler_List(t *testing.T) {
 		{
 			ID:         1,
 			Action:     "accept",
-			Type:       "v4",
 			IPType:     "v4",
 			Protocol:   "tcp",
 			Port:       "22",
@@ -123,7 +121,6 @@ func TestFireWallRuleServiceHandler_Get(t *testing.T) {
 	expectedRule := &FirewallRule{
 		ID:         1,
 		Action:     "accept",
-		Type:       "v4",
 		IPType:     "v4",
 		Protocol:   "tcp",
 		Port:       "22",
