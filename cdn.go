@@ -43,6 +43,9 @@ type CDNZone struct {
 	Label         string   `json:"label"`
 	OriginScheme  string   `json:"origin_scheme,omitempty"`
 	OriginDomain  string   `json:"origin_domain,omitempty"`
+	VanityDomain  string   `json:"vanity_domain,omitempty"`
+	SSLCert       string   `json:"ssl_cert,omitempty"`
+	SSLCertKey    string   `json:"ssl_cert_key,omitempty"`
 	CDNURL        string   `json:"cdn_url"`
 	CacheSize     int      `json:"cache_size"`
 	Requests      int      `json:"requests"`
@@ -62,6 +65,9 @@ type CDNZoneReq struct {
 	Label        string   `json:"label"`
 	OriginScheme string   `json:"origin_scheme,omitempty"`
 	OriginDomain string   `json:"origin_domain,omitempty"`
+	VanityDomain string   `json:"vanity_domain,omitempty"`
+	SSLCert      string   `json:"ssl_cert,omitempty"`
+	SSLCertKey   string   `json:"ssl_cert_key,omitempty"`
 	CORS         bool     `json:"cors"`
 	GZIP         bool     `json:"gzip"`
 	BlockAI      bool     `json:"block_ai"`
