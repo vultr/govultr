@@ -24,10 +24,8 @@ type FireWallRuleServiceHandler struct {
 
 // FirewallRule represents a Vultr firewall rule
 type FirewallRule struct {
-	ID     int    `json:"id"`
-	Action string `json:"action"`
-	// Deprecated:  Type should no longer be used. Instead, use IPType.
-	Type       string `json:"type"`
+	ID         int    `json:"id"`
+	Action     string `json:"action"`
 	IPType     string `json:"ip_type"`
 	Protocol   string `json:"protocol"`
 	Port       string `json:"port"`
