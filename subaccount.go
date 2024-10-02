@@ -8,7 +8,8 @@ import (
 // SubAccountService is the interface to interact with sub-accounts endpoint on the Vultr API
 // Link : https://www.vultr.com/api/#tag/subaccount
 type SubAccountService interface {
-	Get(ctx context.Context) (*Account, *http.Response, error)
+	List(ctx context.Context, options *ListOptions) ([]SubAccount, *Meta, *http.Response, error)
+	Create(ctx context.Context, saReq *SubAccountReq) (*SubAccount, *http.Response, error)
 }
 
 // SubAccountServiceHandler handles interaction with the account methods for the Vultr API
