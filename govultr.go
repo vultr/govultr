@@ -68,6 +68,7 @@ type Client struct {
 	Snapshot          SnapshotService
 	SSHKey            SSHKeyService
 	StartupScript     StartupScriptService
+	SubAccount        SubAccountService
 	User              UserService
 	VPC               VPCService
 	VPC2              VPC2Service
@@ -141,6 +142,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.Snapshot = &SnapshotServiceHandler{client}
 	client.SSHKey = &SSHKeyServiceHandler{client}
 	client.StartupScript = &StartupScriptServiceHandler{client}
+	client.SubAccount = &SubAccountServiceHandler{client}
 	client.User = &UserServiceHandler{client}
 	client.VPC = &VPCServiceHandler{client}
 	client.VPC2 = &VPC2ServiceHandler{client}
