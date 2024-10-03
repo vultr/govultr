@@ -27,17 +27,17 @@ type SubAccount struct {
 	ID             string `json:"id"`
 	Email          string `json:"email"`
 	Name           string `json:"subaccount_name"`
-	SubID          string `json:"subaccount_id"`
+	OtherID        string `json:"subaccount_id"`
 	Activated      bool   `json:"activated"`
 	Balance        int    `json:"balance"`
-	PendingCharged int    `json:"pending_charges"`
+	PendingCharges int    `json:"pending_charges"`
 }
 
 // SubAccountReq is the sub-account struct for create calls
 type SubAccountReq struct {
-	Email string `json:"email"`
-	Name  string `json:"subaccount_name,omitempty"`
-	SubID string `json:"subaccount_id,omitempty"`
+	Email   string `json:"email"`
+	Name    string `json:"subaccount_name,omitempty"`
+	OtherID string `json:"subaccount_id,omitempty"`
 }
 
 // List all sub-accounts
