@@ -68,10 +68,10 @@ type CDNZoneReq struct {
 	VanityDomain string   `json:"vanity_domain,omitempty"`
 	SSLCert      string   `json:"ssl_cert,omitempty"`
 	SSLCertKey   string   `json:"ssl_cert_key,omitempty"`
-	CORS         bool     `json:"cors"`
-	GZIP         bool     `json:"gzip"`
-	BlockAI      bool     `json:"block_ai"`
-	BlockBadBots bool     `json:"block_bad_bots"`
+	CORS         *bool    `json:"cors,omitempty"`
+	GZIP         *bool    `json:"gzip,omitempty"`
+	BlockAI      *bool    `json:"block_ai,omitempty"`
+	BlockBadBots *bool    `json:"block_bad_bots,omitempty"`
 	Regions      []string `json:"regions,omitempty"`
 }
 
