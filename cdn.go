@@ -339,7 +339,7 @@ func (c *CDNServiceHandler) CreatePushZoneFileEndpoint(ctx context.Context, zone
 // ListPushZoneFiles will retrieve all CDN push zone file data that have been
 // uploaded
 func (c *CDNServiceHandler) ListPushZoneFiles(ctx context.Context, zoneID string) (*CDNZoneFileData, *http.Response, error) {
-	cdnPushFilesPath := fmt.Sprintf("%s/%s", cdnPushPath, zoneID)
+	cdnPushFilesPath := fmt.Sprintf("%s/%s/files", cdnPushPath, zoneID)
 	req, err := c.client.NewRequest(ctx, http.MethodGet, cdnPushFilesPath, nil)
 	if err != nil {
 		return nil, nil, err
