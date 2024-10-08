@@ -41,18 +41,18 @@ type CDNZone struct {
 	DateCreated   string   `json:"date_created"`
 	Status        string   `json:"status"`
 	Label         string   `json:"label"`
-	OriginScheme  string   `json:"origin_scheme,omitempty"`
-	OriginDomain  string   `json:"origin_domain,omitempty"`
-	VanityDomain  string   `json:"vanity_domain,omitempty"`
-	SSLCert       string   `json:"ssl_cert,omitempty"`
-	SSLCertKey    string   `json:"ssl_cert_key,omitempty"`
+	OriginScheme  string   `json:"origin_scheme"`
+	OriginDomain  string   `json:"origin_domain"`
+	VanityDomain  string   `json:"vanity_domain"`
+	SSLCert       string   `json:"ssl_cert"`
+	SSLCertKey    string   `json:"ssl_cert_key"`
 	CDNURL        string   `json:"cdn_url"`
 	CacheSize     int      `json:"cache_size"`
 	Requests      int      `json:"requests"`
 	BytesIn       int      `json:"in_bytes"`
 	BytesOut      int      `json:"out_bytes"`
 	PacketsPerSec int      `json:"packets_per_sec"`
-	DatePurged    string   `json:"last_purge,omitempty"`
+	DatePurged    string   `json:"last_purge"`
 	CORS          bool     `json:"cors"`
 	GZIP          bool     `json:"gzip"`
 	BlockAI       bool     `json:"block_ai"`
