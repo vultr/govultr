@@ -22,6 +22,10 @@ type subAccountsBase struct {
 	Meta        *Meta        `json:"meta"`
 }
 
+type subAccountBase struct {
+	SubAccount *SubAccount `json:"subaccount"`
+}
+
 // SubAccount represents a Vultr sub-account
 type SubAccount struct {
 	ID             string `json:"id"`
@@ -65,11 +69,11 @@ func (s *SubAccountServiceHandler) Create(ctx context.Context, saReq *SubAccount
 		return nil, nil, err
 	}
 
-	sa := new(SubAccount)
+	sa := new(subAccountBase)
 	resp, err := s.client.DoWithContext(ctx, req, sa)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return sa, resp, nil
+	return sa.SubAccount, resp, nil
 }
