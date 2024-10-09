@@ -1,6 +1,6 @@
 module github.com/vultr/govultr/v3
 
-go 1.21
+go 1.23
 
 require (
 	github.com/google/go-querystring v1.1.0
@@ -8,6 +8,6 @@ require (
 )
 
 require (
-	github.com/google/go-cmp v0.5.8 // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 )
