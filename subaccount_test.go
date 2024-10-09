@@ -13,7 +13,8 @@ func TestSubAccountServiceHandler_Create(t *testing.T) {
 
 	mux.HandleFunc("/v2/subaccounts", func(writer http.ResponseWriter, request *http.Request) {
 		response := `
-{ "subaccount": { 
+{
+	"subaccount": { 
 		"id": "cb676a46-66fd-4dfb-b839-443f2e6c0b60", 
 		"email": "subaccount@vultr.com", 
 		"subaccount_name": "Acme Widgets LLC", 
