@@ -75,8 +75,8 @@ func TestSubAccountServiceHandler_List(t *testing.T) {
 	"meta": {
 		"total": 1,
 		"links": {
-				"next": "",
-				"prev": ""
+			"next": "",
+			"prev": ""
 		}
 	}
 }`
