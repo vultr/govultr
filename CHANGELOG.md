@@ -1,4 +1,27 @@
 # Change Log
+## [3.10.0](https://github.com/vultr/govultr/compare/v3.9.1...v3.10.0) (2024-10-10)
+### Enhancements
+* Load Balancers: Add HTTP2/3 and timeout options [PR 325](https://github.com/vultr/govultr/pull/325)
+* CDN: add vanity domain and SSL options [PR 326](https://github.com/vultr/govultr/pull/326)
+* Instance: add user scheme field [PR 328](https://github.com/vultr/govultr/pull/328)
+* Bare Metal: add user scheme field [PR 335](https://github.com/vultr/govultr/pull/335)
+* Sub-accounts: Add support for sub-accounts [PR 329](https://github.com/vultr/govultr/pull/329)
+
+### Bug Fixes
+* CDN: Fix default empty struct fields and list files endpoint URL [PR 330](https://github.com/vultr/govultr/pull/330)
+* Sub-accounts: Fix base struct on create [PR 331](https://github.com/vultr/govultr/pull/331)
+
+### Clean Up
+* Remove deprecated private network functionality [PR 324](https://github.com/vultr/govultr/pull/324)
+* Bare Metal: remove deprecated tag fields [PR 327](https://github.com/vultr/govultr/pull/327)
+* Firewall: remove deprecated type fields [PR 327](https://github.com/vultr/govultr/pull/327)
+* Instance: remove deprecated tag fields [PR 327](https://github.com/vultr/govultr/pull/327)
+
+### Dependencies & Automation
+* Update go from v1.21 to v1.23 [PR 333](https://github.com/vultr/govultr/pull/333)
+* Update github workflows to go 1.23 [PR 334](https://github.com/vultr/govultr/pull/334)
+* Add CDN & Sub-account tests [PR 332](https://github.com/vultr/govultr/pull/332)
+
 ## [3.9.1](https://github.com/vultr/govultr/compare/v3.9.0...v3.9.1) (2024-08-13)
 ### Enhancements
 * Database: Add support for Managed MySQL advanced config [PR 322](https://github.com/vultr/govultr/pull/322)
