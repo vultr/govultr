@@ -76,12 +76,13 @@ type BareMetalServer struct {
 	ImageID         string   `json:"image_id"`
 	Features        []string `json:"features"`
 	Tags            []string `json:"tags"`
+	UserScheme      string   `json:"user_scheme"`
 }
 
 // BareMetalCreate represents the optional parameters that can be set when creating a Bare Metal server
 type BareMetalCreate struct {
-	Region          string            `json:"region,omitempty"`
-	Plan            string            `json:"plan,omitempty"`
+	Region          string            `json:"region"`
+	Plan            string            `json:"plan"`
 	OsID            int               `json:"os_id,omitempty"`
 	StartupScriptID string            `json:"script_id,omitempty"`
 	SnapshotID      string            `json:"snapshot_id,omitempty"`
@@ -96,7 +97,8 @@ type BareMetalCreate struct {
 	MdiskMode       string            `json:"mdisk_mode,omitempty"`
 	ReservedIPv4    string            `json:"reserved_ipv4,omitempty"`
 	PersistentPxe   *bool             `json:"persistent_pxe,omitempty"`
-	Tags            []string          `json:"tags"`
+	Tags            []string          `json:"tags,omitempty"`
+	UserScheme      string            `json:"user_scheme,omitempty"`
 	AttachVPC2      []string          `json:"attach_vpc2,omitempty"`
 	DetachVPC2      []string          `json:"detach_vpc2,omitempty"`
 	EnableVPC2      *bool             `json:"enable_vpc2,omitempty"`
@@ -112,7 +114,8 @@ type BareMetalUpdate struct {
 	ImageID    string   `json:"image_id,omitempty"`
 	UserData   string   `json:"user_data,omitempty"`
 	MdiskMode  string   `json:"mdisk_mode,omitempty"`
-	Tags       []string `json:"tags"`
+	Tags       []string `json:"tags,omitempty"`
+	UserScheme string   `json:"user_scheme,omitempty"`
 	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
 	DetachVPC2 []string `json:"detach_vpc2,omitempty"`
 	EnableVPC2 *bool    `json:"enable_vpc2,omitempty"`
