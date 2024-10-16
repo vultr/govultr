@@ -35,6 +35,17 @@ type DatabaseService interface {
 	GetDB(ctx context.Context, databaseID string, dbname string) (*DatabaseDB, *http.Response, error)
 	DeleteDB(ctx context.Context, databaseID string, dbname string) error
 
+	ListTopics(ctx context.Context, databaseID string) ([]DatabaseTopic, *Meta, *http.Response, error)
+	CreateTopic(ctx context.Context, databaseID string, databaseTopicReq *DatabaseTopicCreateReq) (*DatabaseTopic, *http.Response, error)
+	GetTopic(ctx context.Context, databaseID string, topicName string) (*DatabaseTopic, *http.Response, error)
+	UpdateTopic(ctx context.Context, databaseID string, topicName string, databaseTopicReq *DatabaseTopicUpdateReq) (*DatabaseTopic, *http.Response, error) //nolint:lll
+	DeleteTopic(ctx context.Context, databaseID string, topicName string) error
+
+	ListQuotas(ctx context.Context, databaseID string) ([]DatabaseQuota, *Meta, *http.Response, error)
+	CreateQuota(ctx context.Context, databaseID string, databaseQuotaReq *DatabaseQuotaCreateReq) (*DatabaseQuota, *http.Response, error)
+	GetQuota(ctx context.Context, databaseID string, quotaName, username string) (*DatabaseQuota, *http.Response, error)
+	DeleteQuota(ctx context.Context, databaseID string, quotaName, username string) error
+
 	ListMaintenanceUpdates(ctx context.Context, databaseID string) ([]string, *http.Response, error)
 	StartMaintenance(ctx context.Context, databaseID string) (string, *http.Response, error)
 
@@ -124,7 +135,8 @@ type Database struct {
 	PlanDisk               int                  `json:"plan_disk"`
 	PlanRAM                int                  `json:"plan_ram"`
 	PlanVCPUs              int                  `json:"plan_vcpus"`
-	PlanReplicas           int                  `json:"plan_replicas"`
+	PlanReplicas           *int                 `json:"plan_replicas,omitempty"`
+	PlanBrokers            int                  `json:"plan_brokers,omitempty"`
 	Region                 string               `json:"region"`
 	DatabaseEngine         string               `json:"database_engine"`
 	DatabaseEngineVersion  string               `json:"database_engine_version"`
@@ -136,9 +148,12 @@ type Database struct {
 	FerretDBCredentials    *FerretDBCredentials `json:"ferretdb_credentials,omitempty"`
 	Host                   string               `json:"host"`
 	PublicHost             string               `json:"public_host,omitempty"`
+	Port                   string               `json:"port"`
+	SASLPort               string               `json:"sasl_port,omitempty"`
 	User                   string               `json:"user"`
 	Password               string               `json:"password"`
-	Port                   string               `json:"port"`
+	AccessKey              string               `json:"access_key,omitempty"`
+	AccessCert             string               `json:"access_cert,omitempty"`
 	MaintenanceDOW         string               `json:"maintenance_dow"`
 	MaintenanceTime        string               `json:"maintenance_time"`
 	LatestBackup           string               `json:"latest_backup"`
@@ -254,6 +269,9 @@ type DatabaseUser struct {
 	Password      string           `json:"password"`
 	Encryption    string           `json:"encryption,omitempty"`
 	AccessControl *DatabaseUserACL `json:"access_control,omitempty"`
+	Permission    string           `json:"permission,omitempty"`
+	AccessKey     string           `json:"access_key,omitempty"`
+	AccessCert    string           `json:"access_cert,omitempty"`
 }
 
 // DatabaseUserACL represents an access control configuration for a user within a Redis Managed Database cluster
@@ -264,12 +282,13 @@ type DatabaseUserACL struct {
 	RedisACLKeys       []string `json:"redis_acl_keys"`
 }
 
-// DatabaseUserACLReq represents input for updating a user's access control within a Redis Managed Database cluster
+// DatabaseUserACLReq represents input for updating a user's access control within a Managed Database cluster
 type DatabaseUserACLReq struct {
 	RedisACLCategories *[]string `json:"redis_acl_categories,omitempty"`
 	RedisACLChannels   *[]string `json:"redis_acl_channels,omitempty"`
 	RedisACLCommands   *[]string `json:"redis_acl_commands,omitempty"`
 	RedisACLKeys       *[]string `json:"redis_acl_keys,omitempty"`
+	Permission         string    `json:"permission,omitempty"`
 }
 
 // databaseUserBase holds the API response for retrieving a single database user within a Managed Database
@@ -288,6 +307,7 @@ type DatabaseUserCreateReq struct {
 	Username   string `json:"username"`
 	Password   string `json:"password,omitempty"`
 	Encryption string `json:"encryption,omitempty"`
+	Permission string `json:"permission,omitempty"`
 }
 
 // DatabaseUserUpdateReq struct used to update a user within a Managed Database.
@@ -314,6 +334,72 @@ type databaseDBsBase struct {
 // DatabaseDBCreateReq struct used to create a logical database within a Managed Database.
 type DatabaseDBCreateReq struct {
 	Name string `json:"name"`
+}
+
+// DatabaseTopic represents a Kafka topic within a Managed Database cluster
+type DatabaseTopic struct {
+	Name           string `json:"name"`
+	Partitions     int    `json:"partitions"`
+	Replication    int    `json:"replication"`
+	RetentionHours int    `json:"retention_hours"`
+	RetentionBytes int    `json:"retention_bytes"`
+}
+
+// databaseTopicBase holds the API response for retrieving a single Kafka topic within a Managed Database
+type databaseTopicBase struct {
+	DatabaseTopic *DatabaseTopic `json:"topic"`
+}
+
+// databaseTopicsBase holds the API response for retrieving a list of Kafka topics within a Managed Database
+type databaseTopicsBase struct {
+	DatabaseTopics []DatabaseTopic `json:"topics"`
+	Meta           *Meta           `json:"meta"`
+}
+
+// DatabaseTopicCreateReq struct used to create a Kafka topic within a Managed Database.
+type DatabaseTopicCreateReq struct {
+	Name           string `json:"name"`
+	Partitions     int    `json:"partitions"`
+	Replication    int    `json:"replication"`
+	RetentionHours int    `json:"retention_hours"`
+	RetentionBytes int    `json:"retention_bytes"`
+}
+
+// DatabaseTopicUpdateReq struct used to update a Kafka topic within a Managed Database.
+type DatabaseTopicUpdateReq struct {
+	Partitions     int `json:"partitions"`
+	Replication    int `json:"replication"`
+	RetentionHours int `json:"retention_hours"`
+	RetentionBytes int `json:"retention_bytes"`
+}
+
+// DatabaseQuota represents a Kafka quota within a Managed Database cluster
+type DatabaseQuota struct {
+	ClientID          string `json:"client_id"`
+	ConsumerByteRate  int    `json:"consumer_byte_rate"`
+	ProducerByteRate  int    `json:"producer_byte_rate"`
+	RequestPercentage int    `json:"request_percentage"`
+	User              string `json:"user"`
+}
+
+// databaseQuotaBase holds the API response for retrieving a single Kafka quota within a Managed Database
+type databaseQuotaBase struct {
+	DatabaseQuota *DatabaseQuota `json:"quota"`
+}
+
+// databaseQuotasBase holds the API response for retrieving a list of Kafka quotas within a Managed Database
+type databaseQuotasBase struct {
+	DatabaseQuotas []DatabaseQuota `json:"quotas"`
+	Meta           *Meta           `json:"meta"`
+}
+
+// DatabaseQuotaCreateReq struct used to create a Kafka quota within a Managed Database.
+type DatabaseQuotaCreateReq struct {
+	ClientID          string `json:"name"`
+	ConsumerByteRate  int    `json:"consumer_byte_rate"`
+	ProducerByteRate  int    `json:"producer_byte_rate"`
+	RequestPercentage int    `json:"request_percentage"`
+	User              string `json:"user"`
 }
 
 // databaseDBsBase holds the API response for retrieving a list of available maintenance updates within a Managed Database
@@ -765,7 +851,7 @@ func (d *DatabaseServiceHandler) UpdateUser(ctx context.Context, databaseID, use
 	return databaseUser.DatabaseUser, resp, nil
 }
 
-// DeleteUser will delete a user within the Managed database. All data will be permanently lost.
+// DeleteUser will delete a user within the Managed database
 func (d *DatabaseServiceHandler) DeleteUser(ctx context.Context, databaseID, username string) error {
 	uri := fmt.Sprintf("%s/%s/users/%s", databasePath, databaseID, username)
 
@@ -853,6 +939,158 @@ func (d *DatabaseServiceHandler) GetDB(ctx context.Context, databaseID, dbname s
 // DeleteDB will delete a user within the Managed database
 func (d *DatabaseServiceHandler) DeleteDB(ctx context.Context, databaseID, dbname string) error {
 	uri := fmt.Sprintf("%s/%s/dbs/%s", databasePath, databaseID, dbname)
+
+	req, err := d.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// ListTopics retrieves all Kafka topics on your Managed Database.
+func (d *DatabaseServiceHandler) ListTopics(ctx context.Context, databaseID string) ([]DatabaseTopic, *Meta, *http.Response, error) { //nolint:dupl,lll
+	uri := fmt.Sprintf("%s/%s/topics", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	databaseTopics := new(databaseTopicsBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseTopics)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return databaseTopics.DatabaseTopics, databaseTopics.Meta, resp, nil
+}
+
+// CreateTopic will create a Kafka topic within the Managed Database with the given parameters
+func (d *DatabaseServiceHandler) CreateTopic(ctx context.Context, databaseID string, databaseTopicReq *DatabaseTopicCreateReq) (*DatabaseTopic, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/topics", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, databaseTopicReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseTopic := new(databaseTopicBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseTopic)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseTopic.DatabaseTopic, resp, nil
+}
+
+// GetTopic retrieves information on an individual Kafka topic within a Managed Database based on a topicName and databaseID
+func (d *DatabaseServiceHandler) GetTopic(ctx context.Context, databaseID, topicName string) (*DatabaseTopic, *http.Response, error) {
+	uri := fmt.Sprintf("%s/%s/topics/%s", databasePath, databaseID, topicName)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseTopic := new(databaseTopicBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseTopic)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseTopic.DatabaseTopic, resp, nil
+}
+
+// UpdateTopic will update a Kafka topic within the Managed Database with the given parameters
+func (d *DatabaseServiceHandler) UpdateTopic(ctx context.Context, databaseID, topicName string, databaseTopicReq *DatabaseTopicUpdateReq) (*DatabaseTopic, *http.Response, error) { //nolint:lll,dupl
+	uri := fmt.Sprintf("%s/%s/topics/%s", databasePath, databaseID, topicName)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseTopicReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseTopic := new(databaseTopicBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseTopic)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseTopic.DatabaseTopic, resp, nil
+}
+
+// DeleteTopic will delete a Kafka topic within the Managed database
+func (d *DatabaseServiceHandler) DeleteTopic(ctx context.Context, databaseID, topicName string) error {
+	uri := fmt.Sprintf("%s/%s/topics/%s", databasePath, databaseID, topicName)
+
+	req, err := d.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// ListQuotas retrieves all Kafka quotas on your Managed Database.
+func (d *DatabaseServiceHandler) ListQuotas(ctx context.Context, databaseID string) ([]DatabaseQuota, *Meta, *http.Response, error) { //nolint:dupl,lll
+	uri := fmt.Sprintf("%s/%s/quotas", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	databaseQuotas := new(databaseQuotasBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseQuotas)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return databaseQuotas.DatabaseQuotas, databaseQuotas.Meta, resp, nil
+}
+
+// CreateQuota will create a Kafka quota within the Managed Database with the given parameters
+func (d *DatabaseServiceHandler) CreateQuota(ctx context.Context, databaseID string, databaseQuotaReq *DatabaseQuotaCreateReq) (*DatabaseQuota, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/quotas", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, databaseQuotaReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseQuota := new(databaseQuotaBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseQuota)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseQuota.DatabaseQuota, resp, nil
+}
+
+// GetQuota retrieves information on an individual Kafka quota within a Managed Database based on a quotaName and databaseID
+func (d *DatabaseServiceHandler) GetQuota(ctx context.Context, databaseID, quotaName, username string) (*DatabaseQuota, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/quotas/%s/%s", databasePath, databaseID, quotaName, username)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseQuota := new(databaseQuotaBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseQuota)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseQuota.DatabaseQuota, resp, nil
+}
+
+// DeleteQuota will delete a Kafka quota within the Managed database
+func (d *DatabaseServiceHandler) DeleteQuota(ctx context.Context, databaseID, quotaName, username string) error {
+	uri := fmt.Sprintf("%s/%s/quotas/%s/%s", databasePath, databaseID, quotaName, username)
 
 	req, err := d.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
@@ -1124,7 +1362,7 @@ func (d *DatabaseServiceHandler) UpdateConnectionPool(ctx context.Context, datab
 	return databaseConnectionPool.ConnectionPool, resp, nil
 }
 
-// DeleteConnectionPool will delete a user within the Managed database. All data will be permanently lost.
+// DeleteConnectionPool will delete a connection pool within the Managed database
 func (d *DatabaseServiceHandler) DeleteConnectionPool(ctx context.Context, databaseID, poolName string) error {
 	uri := fmt.Sprintf("%s/%s/connection-pools/%s", databasePath, databaseID, poolName)
 
