@@ -43,8 +43,8 @@ type DatabaseService interface {
 
 	ListQuotas(ctx context.Context, databaseID string) ([]DatabaseQuota, *Meta, *http.Response, error)
 	CreateQuota(ctx context.Context, databaseID string, databaseQuotaReq *DatabaseQuotaCreateReq) (*DatabaseQuota, *http.Response, error)
-	GetQuota(ctx context.Context, databaseID string, quotaName, username string) (*DatabaseQuota, *http.Response, error)
-	DeleteQuota(ctx context.Context, databaseID string, quotaName, username string) error
+	GetQuota(ctx context.Context, databaseID string, clientID, username string) (*DatabaseQuota, *http.Response, error)
+	DeleteQuota(ctx context.Context, databaseID string, clientID, username string) error
 
 	ListMaintenanceUpdates(ctx context.Context, databaseID string) ([]string, *http.Response, error)
 	StartMaintenance(ctx context.Context, databaseID string) (string, *http.Response, error)
@@ -1116,9 +1116,9 @@ func (d *DatabaseServiceHandler) CreateQuota(ctx context.Context, databaseID str
 	return databaseQuota.DatabaseQuota, resp, nil
 }
 
-// GetQuota retrieves information on an individual Kafka quota within a Managed Database based on a quotaName and databaseID
-func (d *DatabaseServiceHandler) GetQuota(ctx context.Context, databaseID, quotaName, username string) (*DatabaseQuota, *http.Response, error) { //nolint:lll
-	uri := fmt.Sprintf("%s/%s/quotas/%s/%s", databasePath, databaseID, quotaName, username)
+// GetQuota retrieves information on an individual Kafka quota within a Managed Database based on a clientID and databaseID
+func (d *DatabaseServiceHandler) GetQuota(ctx context.Context, databaseID, clientID, username string) (*DatabaseQuota, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/quotas/%s/%s", databasePath, databaseID, clientID, username)
 
 	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -1135,8 +1135,8 @@ func (d *DatabaseServiceHandler) GetQuota(ctx context.Context, databaseID, quota
 }
 
 // DeleteQuota will delete a Kafka quota within the Managed database
-func (d *DatabaseServiceHandler) DeleteQuota(ctx context.Context, databaseID, quotaName, username string) error {
-	uri := fmt.Sprintf("%s/%s/quotas/%s/%s", databasePath, databaseID, quotaName, username)
+func (d *DatabaseServiceHandler) DeleteQuota(ctx context.Context, databaseID, clientID, username string) error {
+	uri := fmt.Sprintf("%s/%s/quotas/%s/%s", databasePath, databaseID, clientID, username)
 
 	req, err := d.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
