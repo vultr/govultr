@@ -1,4 +1,12 @@
 # Change Log
+## [3.11.0](https://github.com/vultr/govultr/compare/v3.10.0...v3.11.0) (2024-10-22)
+### Enhancements
+* Database: Add support for managed Kafka [PR 337](https://github.com/vultr/govultr/pull/337)
+
+### Automation
+* Remove deprecated exportloopref linter [PR 338](https://github.com/vultr/govultr/pull/338)
+* Add Github CODEOWNERS file [PR 339](https://github.com/vultr/govultr/pull/339)
+
 ## [3.10.0](https://github.com/vultr/govultr/compare/v3.9.1...v3.10.0) (2024-10-10)
 ### Enhancements
 * Load Balancers: Add HTTP2/3 and timeout options [PR 325](https://github.com/vultr/govultr/pull/325)
