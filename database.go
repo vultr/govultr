@@ -395,7 +395,7 @@ type databaseQuotasBase struct {
 
 // DatabaseQuotaCreateReq struct used to create a Kafka quota within a Managed Database.
 type DatabaseQuotaCreateReq struct {
-	ClientID          string `json:"name"`
+	ClientID          string `json:"client_id"`
 	ConsumerByteRate  int    `json:"consumer_byte_rate"`
 	ProducerByteRate  int    `json:"producer_byte_rate"`
 	RequestPercentage int    `json:"request_percentage"`
