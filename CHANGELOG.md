@@ -1,4 +1,8 @@
 # Change Log
+## [3.11.1](https://github.com/vultr/govultr/compare/v3.11.0...v3.11.1) (2024-10-24)
+### Bug Fixes
+* Database: Fix quota create endpoint param for Kafka [PR 341](https://github.com/vultr/govultr/pull/341)
+
 ## [3.11.0](https://github.com/vultr/govultr/compare/v3.10.0...v3.11.0) (2024-10-22)
 ### Enhancements
 * Database: Add support for managed Kafka [PR 337](https://github.com/vultr/govultr/pull/337)
