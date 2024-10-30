@@ -659,7 +659,7 @@ type DatabaseAdvancedOptions struct {
 	ProducerPurgatoryPurgeIntervalRequests               int     `json:"producer_purgatory_purge_interval_requests,omitempty"`
 	SASLOauthbearerExpectedAudience                      string  `json:"sasl_oauthbearer_expected_audience,omitempty"`
 	SASLOauthbearerExpectedIssuer                        string  `json:"sasl_oauthbearer_expected_issuer,omitempty"`
-	SASLOauthbearerJwksEndpointURL                       string  `json:"sasl_oauthbearer_jwks_endpoint_url,omitempty"`
+	SASLOauthbearerJWKSEndpointURL                       string  `json:"sasl_oauthbearer_jwks_endpoint_url,omitempty"`
 	SASLOauthbearerSubClaimName                          string  `json:"sasl_oauthbearer_sub_claim_name,omitempty"`
 	SocketRequestMaxBytes                                int     `json:"socket_request_max_bytes,omitempty"`
 	TransactionStateLogSegmentBytes                      int     `json:"transaction_state_log_segment_bytes,omitempty"`
