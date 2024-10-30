@@ -1,4 +1,8 @@
 # Change Log
+## [3.11.2]( https://github.com/vultr/govultr/compare/v3.11.1...v3.11.2) (2024-10-30)
+### Bug fixes
+* Database: Fix Kafka advanced config field names [PR 343](https://github.com/vultr/govultr/pull/343)
+
 ## [3.11.1](https://github.com/vultr/govultr/compare/v3.11.0...v3.11.1) (2024-10-24)
 ### Bug Fixes
 * Database: Fix quota create endpoint param for Kafka [PR 341](https://github.com/vultr/govultr/pull/341)
