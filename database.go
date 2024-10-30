@@ -635,7 +635,7 @@ type DatabaseAdvancedOptions struct {
 	LogFlushIntervalMessages                             int     `json:"log_flush_interval_messages,omitempty"`
 	LogFlushIntervalMS                                   int     `json:"log_flush_interval_ms,omitempty"`
 	LogIndexIntervalBytes                                int     `json:"log_index_interval_bytes,omitempty"`
-	LogindexSizeMaxBytes                                 int     `json:"log_index_size_max_bytes,omitempty"`
+	LogIndexSizeMaxBytes                                 int     `json:"log_index_size_max_bytes,omitempty"`
 	LogLocalRetentionMS                                  int     `json:"log_local_retention_ms,omitempty"`
 	LogLocalRetentionBytes                               int     `json:"log_local_retention_bytes,omitempty"`
 	LogMessageDownconversionEnable                       *bool   `json:"log_message_downconversion_enable,omitempty"`
@@ -652,14 +652,14 @@ type DatabaseAdvancedOptions struct {
 	AutoCreateTopicsEnable                               *bool   `json:"auto_create_topics_enable,omitempty"`
 	MinInsyncReplicas                                    int     `json:"min_insync_replicas,omitempty"`
 	NumPartitions                                        int     `json:"num_partitions,omitempty"`
-	DefaultReplicationRefactor                           int     `json:"default_replication_factor,omitempty"`
+	DefaultReplicationFactor                             int     `json:"default_replication_factor,omitempty"`
 	ReplicaFetchMaxBytes                                 int     `json:"replica_fetch_max_bytes,omitempty"`
 	ReplicaFetchResponseMaxBytes                         int     `json:"replica_fetch_response_max_bytes,omitempty"`
 	MaxConnectionsPerIP                                  int     `json:"max_connections_per_ip,omitempty"`
 	ProducerPurgatoryPurgeIntervalRequests               int     `json:"producer_purgatory_purge_interval_requests,omitempty"`
 	SASLOauthbearerExpectedAudience                      string  `json:"sasl_oauthbearer_expected_audience,omitempty"`
 	SASLOauthbearerExpectedIssuer                        string  `json:"sasl_oauthbearer_expected_issuer,omitempty"`
-	SASLOauthbearerJwksEndpointURL                       string  `json:"sasl_oauthbearer_jwks_endpoint_url,omitempty"`
+	SASLOauthbearerJWKSEndpointURL                       string  `json:"sasl_oauthbearer_jwks_endpoint_url,omitempty"`
 	SASLOauthbearerSubClaimName                          string  `json:"sasl_oauthbearer_sub_claim_name,omitempty"`
 	SocketRequestMaxBytes                                int     `json:"socket_request_max_bytes,omitempty"`
 	TransactionStateLogSegmentBytes                      int     `json:"transaction_state_log_segment_bytes,omitempty"`
