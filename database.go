@@ -635,7 +635,7 @@ type DatabaseAdvancedOptions struct {
 	LogFlushIntervalMessages                             int     `json:"log_flush_interval_messages,omitempty"`
 	LogFlushIntervalMS                                   int     `json:"log_flush_interval_ms,omitempty"`
 	LogIndexIntervalBytes                                int     `json:"log_index_interval_bytes,omitempty"`
-	LogindexSizeMaxBytes                                 int     `json:"log_index_size_max_bytes,omitempty"`
+	LogIndexSizeMaxBytes                                 int     `json:"log_index_size_max_bytes,omitempty"`
 	LogLocalRetentionMS                                  int     `json:"log_local_retention_ms,omitempty"`
 	LogLocalRetentionBytes                               int     `json:"log_local_retention_bytes,omitempty"`
 	LogMessageDownconversionEnable                       *bool   `json:"log_message_downconversion_enable,omitempty"`
