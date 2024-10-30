@@ -652,7 +652,7 @@ type DatabaseAdvancedOptions struct {
 	AutoCreateTopicsEnable                               *bool   `json:"auto_create_topics_enable,omitempty"`
 	MinInsyncReplicas                                    int     `json:"min_insync_replicas,omitempty"`
 	NumPartitions                                        int     `json:"num_partitions,omitempty"`
-	DefaultReplicationRefactor                           int     `json:"default_replication_factor,omitempty"`
+	DefaultReplicationFactor                             int     `json:"default_replication_factor,omitempty"`
 	ReplicaFetchMaxBytes                                 int     `json:"replica_fetch_max_bytes,omitempty"`
 	ReplicaFetchResponseMaxBytes                         int     `json:"replica_fetch_response_max_bytes,omitempty"`
 	MaxConnectionsPerIP                                  int     `json:"max_connections_per_ip,omitempty"`
