@@ -163,9 +163,11 @@ type Database struct {
 	MySQLSlowQueryLog      *bool                `json:"mysql_slow_query_log,omitempty"`
 	MySQLLongQueryTime     int                  `json:"mysql_long_query_time,omitempty"`
 	PGAvailableExtensions  []PGExtension        `json:"pg_available_extensions,omitempty"`
-	RedisEvictionPolicy    string               `json:"redis_eviction_policy,omitempty"`
-	ClusterTimeZone        string               `json:"cluster_time_zone,omitempty"`
-	ReadReplicas           []Database           `json:"read_replicas,omitempty"`
+	// Deprecated: RedisEvictionPolicy should no longer be used. Instead, use EvictionPolicy
+	RedisEvictionPolicy string     `json:"redis_eviction_policy,omitempty"`
+	EvictionPolicy      string     `json:"eviction_policy,omitempty"`
+	ClusterTimeZone     string     `json:"cluster_time_zone,omitempty"`
+	ReadReplicas        []Database `json:"read_replicas,omitempty"`
 }
 
 // FerretDBCredentials represents connection details and IP address information for FerretDB engine type subscriptions
@@ -211,7 +213,9 @@ type DatabaseCreateReq struct {
 	MySQLRequirePrimaryKey *bool    `json:"mysql_require_primary_key,omitempty"`
 	MySQLSlowQueryLog      *bool    `json:"mysql_slow_query_log,omitempty"`
 	MySQLLongQueryTime     int      `json:"mysql_long_query_time,omitempty"`
-	RedisEvictionPolicy    string   `json:"redis_eviction_policy,omitempty"`
+	// Deprecated: RedisEvictionPolicy should no longer be used. Instead, use EvictionPolicy
+	RedisEvictionPolicy string `json:"redis_eviction_policy,omitempty"`
+	EvictionPolicy      string `json:"eviction_policy,omitempty"`
 }
 
 // DatabaseUpdateReq struct used to update a dataase.
@@ -229,7 +233,9 @@ type DatabaseUpdateReq struct {
 	MySQLRequirePrimaryKey *bool    `json:"mysql_require_primary_key,omitempty"`
 	MySQLSlowQueryLog      *bool    `json:"mysql_slow_query_log,omitempty"`
 	MySQLLongQueryTime     int      `json:"mysql_long_query_time,omitempty"`
-	RedisEvictionPolicy    string   `json:"redis_eviction_policy,omitempty"`
+	// Deprecated: RedisEvictionPolicy should no longer be used. Instead, use EvictionPolicy
+	RedisEvictionPolicy string `json:"redis_eviction_policy,omitempty"`
+	EvictionPolicy      string `json:"eviction_policy,omitempty"`
 }
 
 // DatabaseUsage represents disk, memory, and CPU usage for a Managed Database
@@ -276,19 +282,35 @@ type DatabaseUser struct {
 
 // DatabaseUserACL represents an access control configuration for a user within a Redis Managed Database cluster
 type DatabaseUserACL struct {
-	RedisACLCategories []string `json:"redis_acl_categories"`
-	RedisACLChannels   []string `json:"redis_acl_channels"`
-	RedisACLCommands   []string `json:"redis_acl_commands"`
-	RedisACLKeys       []string `json:"redis_acl_keys"`
+	// Deprecated: RedisACLCategories should no longer be used. Instead, use ACLCategories
+	RedisACLCategories []string `json:"redis_acl_categories,omitempty"`
+	// Deprecated: RedisACLChannels should no longer be used. Instead, use ACLChannels
+	RedisACLChannels []string `json:"redis_acl_channels,omitempty"`
+	// Deprecated: RedisACLCommands should no longer be used. Instead, use ACLCommands
+	RedisACLCommands []string `json:"redis_acl_commands,omitempty"`
+	// Deprecated: RedisACLKeys should no longer be used. Instead, use ACLKeys
+	RedisACLKeys  []string `json:"redis_acl_keys,omitempty"`
+	ACLCategories []string `json:"acl_categories"`
+	ACLChannels   []string `json:"acl_channels"`
+	ACLCommands   []string `json:"acl_commands"`
+	ACLKeys       []string `json:"acl_keys"`
 }
 
 // DatabaseUserACLReq represents input for updating a user's access control within a Managed Database cluster
 type DatabaseUserACLReq struct {
+	// Deprecated: RedisACLCategories should no longer be used. Instead, use ACLCategories
 	RedisACLCategories *[]string `json:"redis_acl_categories,omitempty"`
-	RedisACLChannels   *[]string `json:"redis_acl_channels,omitempty"`
-	RedisACLCommands   *[]string `json:"redis_acl_commands,omitempty"`
-	RedisACLKeys       *[]string `json:"redis_acl_keys,omitempty"`
-	Permission         string    `json:"permission,omitempty"`
+	// Deprecated: RedisACLChannels should no longer be used. Instead, use ACLChannels
+	RedisACLChannels *[]string `json:"redis_acl_channels,omitempty"`
+	// Deprecated: RedisACLCommands should no longer be used. Instead, use ACLCommands
+	RedisACLCommands *[]string `json:"redis_acl_commands,omitempty"`
+	// Deprecated: RedisACLKeys should no longer be used. Instead, use ACLKeys
+	RedisACLKeys  *[]string `json:"redis_acl_keys,omitempty"`
+	ACLCategories *[]string `json:"acl_categories,omitempty"`
+	ACLChannels   *[]string `json:"acl_channels,omitempty"`
+	ACLCommands   *[]string `json:"acl_commands,omitempty"`
+	ACLKeys       *[]string `json:"acl_keys,omitempty"`
+	Permission    string    `json:"permission,omitempty"`
 }
 
 // databaseUserBase holds the API response for retrieving a single database user within a Managed Database
