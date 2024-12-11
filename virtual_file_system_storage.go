@@ -49,7 +49,7 @@ type VirtualFileSystemStorage struct {
 // VirtualFileSystemStorageSize represents the on disk size of a virtual file
 // system storage
 type VirtualFileSystemStorageSize struct {
-	SizeBytes int `json:"bytes"`
+	SizeBytes int `json:"bytes,omitempty"`
 	SizeGB    int `json:"gb"`
 }
 
