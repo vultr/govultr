@@ -41,37 +41,38 @@ type Client struct {
 	UserAgent string
 
 	// Services used to interact with the API
-	Account           AccountService
-	Application       ApplicationService
-	Backup            BackupService
-	BareMetalServer   BareMetalServerService
-	Billing           BillingService
-	BlockStorage      BlockStorageService
-	CDN               CDNService
-	ContainerRegistry ContainerRegistryService
-	Database          DatabaseService
-	Domain            DomainService
-	DomainRecord      DomainRecordService
-	FirewallGroup     FirewallGroupService
-	FirewallRule      FireWallRuleService
-	Instance          InstanceService
-	ISO               ISOService
-	Kubernetes        KubernetesService
-	LoadBalancer      LoadBalancerService
-	Marketplace       MarketplaceService
-	ObjectStorage     ObjectStorageService
-	OS                OSService
-	Plan              PlanService
-	Region            RegionService
-	ReservedIP        ReservedIPService
-	Inference         InferenceService
-	Snapshot          SnapshotService
-	SSHKey            SSHKeyService
-	StartupScript     StartupScriptService
-	SubAccount        SubAccountService
-	User              UserService
-	VPC               VPCService
-	VPC2              VPC2Service
+	Account                  AccountService
+	Application              ApplicationService
+	Backup                   BackupService
+	BareMetalServer          BareMetalServerService
+	Billing                  BillingService
+	BlockStorage             BlockStorageService
+	CDN                      CDNService
+	ContainerRegistry        ContainerRegistryService
+	Database                 DatabaseService
+	Domain                   DomainService
+	DomainRecord             DomainRecordService
+	FirewallGroup            FirewallGroupService
+	FirewallRule             FireWallRuleService
+	Instance                 InstanceService
+	ISO                      ISOService
+	Kubernetes               KubernetesService
+	LoadBalancer             LoadBalancerService
+	Marketplace              MarketplaceService
+	ObjectStorage            ObjectStorageService
+	OS                       OSService
+	Plan                     PlanService
+	Region                   RegionService
+	ReservedIP               ReservedIPService
+	Inference                InferenceService
+	Snapshot                 SnapshotService
+	SSHKey                   SSHKeyService
+	StartupScript            StartupScriptService
+	SubAccount               SubAccountService
+	User                     UserService
+	VirtualFileSystemStorage VirtualFileSystemStorageService
+	VPC                      VPCService
+	VPC2                     VPC2Service
 
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
@@ -144,6 +145,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.StartupScript = &StartupScriptServiceHandler{client}
 	client.SubAccount = &SubAccountServiceHandler{client}
 	client.User = &UserServiceHandler{client}
+	client.VirtualFileSystemStorage = &VirtualFileSystemStorageServiceHandler{client}
 	client.VPC = &VPCServiceHandler{client}
 	client.VPC2 = &VPC2ServiceHandler{client}
 
