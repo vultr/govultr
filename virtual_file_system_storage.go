@@ -71,8 +71,8 @@ type VirtualFileSystemStorageReq struct {
 	Region      string                       `json:"region"`
 	Label       string                       `json:"label"`
 	StorageSize VirtualFileSystemStorageSize `json:"storage_size"`
-	DiskType    string                       `json:"disk_type"`
-	Tags        []string                     `json:"tags"`
+	DiskType    string                       `json:"disk_type,omitempty"`
+	Tags        []string                     `json:"tags,omitempty"`
 }
 
 // VirtualFileSystemStorageUpdateReq struct represents the request used when
