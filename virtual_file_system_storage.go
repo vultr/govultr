@@ -12,7 +12,7 @@ const virtualFileSystemStoragePath = "/v2/vfs"
 
 // VirtualFileSystemStorageService is the interface to interact with virtual
 // file system endpoint on the Vultr API
-// TODO: link // Link : https://www.vultr.com/api/#tag/block
+// Link : https://www.vultr.com/api/#tag/vfs
 type VirtualFileSystemStorageService interface {
 	Create(ctx context.Context, vfsReq *VirtualFileSystemStorageReq) (*VirtualFileSystemStorage, *http.Response, error)
 	Get(ctx context.Context, vfsID string) (*VirtualFileSystemStorage, *http.Response, error)
@@ -26,12 +26,12 @@ type VirtualFileSystemStorageService interface {
 }
 
 // VirtualFileSystemStorageServiceHandler handles interaction with the virtual
-// file system methods for the Vultr API
+// file system methods for the Vultr API.
 type VirtualFileSystemStorageServiceHandler struct {
 	client *Client
 }
 
-// VirtualFileSystemStorage represents a virtual file system storage
+// VirtualFileSystemStorage represents a virtual file system storage.
 type VirtualFileSystemStorage struct {
 	ID          string                          `json:"id"`
 	Region      string                          `json:"region"`
@@ -47,14 +47,14 @@ type VirtualFileSystemStorage struct {
 }
 
 // VirtualFileSystemStorageSize represents the on disk size of a virtual file
-// system storage
+// system storage.
 type VirtualFileSystemStorageSize struct {
 	SizeBytes int `json:"bytes,omitempty"`
 	SizeGB    int `json:"gb"`
 }
 
 // VirtualFileSystemStorageBilling represents the billing data of a virtual
-// file system storage
+// file system storage.
 type VirtualFileSystemStorageBilling struct {
 	Charges float32 `json:"charges"`
 	Monthly float32 `json:"monthly"`
@@ -83,7 +83,7 @@ type VirtualFileSystemStorageUpdateReq struct {
 }
 
 // VirtualFileSystemStorageAttachment represents an attachment for a virtual
-// file system
+// file system.
 type VirtualFileSystemStorageAttachment struct {
 	ID       string `json:"vfs_id"`
 	State    string `json:"state"`
@@ -197,7 +197,7 @@ func (f *VirtualFileSystemStorageServiceHandler) Attach(ctx context.Context, vfs
 }
 
 // AttachmentGet retrieves the attachment of a virtual file system storage and
-// the attached instance.
+// its attached instance.
 func (f *VirtualFileSystemStorageServiceHandler) AttachmentGet(ctx context.Context, vfsID, targetID string) (*VirtualFileSystemStorageAttachment, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/attachments/%s", virtualFileSystemStoragePath, vfsID, targetID)
 
@@ -216,7 +216,7 @@ func (f *VirtualFileSystemStorageServiceHandler) AttachmentGet(ctx context.Conte
 }
 
 // Detach sends a delete request for an attachment of a virtual file system
-// storage and another instance.
+// storage, detaching it from its instance.
 func (f *VirtualFileSystemStorageServiceHandler) Detach(ctx context.Context, vfsID, targetID string) error {
 	uri := fmt.Sprintf("%s/%s/attachments/%s", virtualFileSystemStoragePath, vfsID, targetID)
 
