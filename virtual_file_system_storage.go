@@ -20,8 +20,9 @@ type VirtualFileSystemStorageService interface {
 	Delete(ctx context.Context, vfsID string) error
 	List(ctx context.Context, options *ListOptions) ([]VirtualFileSystemStorage, *Meta, *http.Response, error)
 
-	Attach(ctx context.Context, vfsID, targetID string) (*VirtualFileSystemStorageAttachment, *http.Response, error)
+	AttachmentList(ctx context.Context, vfsID string) ([]VirtualFileSystemStorageAttachment, *http.Response, error)
 	AttachmentGet(ctx context.Context, vfsID, targetID string) (*VirtualFileSystemStorageAttachment, *http.Response, error)
+	Attach(ctx context.Context, vfsID, targetID string) (*VirtualFileSystemStorageAttachment, *http.Response, error)
 	Detach(ctx context.Context, vfsID, targetID string) error
 }
 
@@ -88,6 +89,10 @@ type VirtualFileSystemStorageAttachment struct {
 	ID       string `json:"vfs_id"`
 	State    string `json:"state"`
 	TargetID string `json:"target_id"`
+}
+
+type virtualFileSystemStorageAttachmentsBase struct {
+	Attachments []VirtualFileSystemStorageAttachment `json:"attachments"`
 }
 
 // Create sends a create request for a virtual file system storage.
@@ -194,6 +199,25 @@ func (f *VirtualFileSystemStorageServiceHandler) Attach(ctx context.Context, vfs
 	fmt.Printf("%v", resp)
 
 	return att, resp, err
+}
+
+// AttachmentList retrieves a list the active attachments on a virtual file
+// system storage.
+func (f *VirtualFileSystemStorageServiceHandler) AttachmentList(ctx context.Context, vfsID string) ([]VirtualFileSystemStorageAttachment, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/attachments", virtualFileSystemStoragePath, vfsID)
+
+	req, err := f.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	atts := new(virtualFileSystemStorageAttachmentsBase)
+	resp, err := f.client.DoWithContext(ctx, req, atts)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return atts.Attachments, resp, err
 }
 
 // AttachmentGet retrieves the attachment of a virtual file system storage and
