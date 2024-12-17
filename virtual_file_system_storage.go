@@ -38,7 +38,6 @@ type VirtualFileSystemStorage struct {
 	Region      string                          `json:"region"`
 	DateCreated string                          `json:"date_created"`
 	Status      string                          `json:"status"`
-	SubStatus   string                          `json:"sub_status"`
 	Label       string                          `json:"label"`
 	Tags        []string                        `json:"tags"`
 	DiskType    string                          `json:"disk_type"`
