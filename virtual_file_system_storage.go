@@ -88,6 +88,7 @@ type VirtualFileSystemStorageAttachment struct {
 	ID       string `json:"vfs_id"`
 	State    string `json:"state"`
 	TargetID string `json:"target_id"`
+	MountTag int    `json:"mount_tag"`
 }
 
 type virtualFileSystemStorageAttachmentsBase struct {
