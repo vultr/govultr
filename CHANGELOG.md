@@ -1,4 +1,8 @@
 # Change Log
+## [3.13.0](https://github.com/vultr/govultr/compare/v3.12.0...v3.13.0) (2024-12-17)
+### Enhancements
+* VFS Storage: Add support for virtual file system storages [PR 347](https://github.com/vultr/govultr/pull/347)
+
 ## [3.12.0]( https://github.com/vultr/govultr/compare/v3.11.2...v3.12.0) (2024-11-22)
 ### Clean Up
 * Database: Deprecate Redis-Named Fields [PR 345](https://github.com/vultr/govultr/pull/345)
