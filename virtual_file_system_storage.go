@@ -195,8 +195,6 @@ func (f *VirtualFileSystemStorageServiceHandler) Attach(ctx context.Context, vfs
 		return nil, resp, err
 	}
 
-	fmt.Printf("%v", resp)
-
 	return att, resp, err
 }
 
