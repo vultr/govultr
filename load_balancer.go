@@ -17,6 +17,8 @@ type LoadBalancerService interface {
 	Get(ctx context.Context, lbID string) (*LoadBalancer, *http.Response, error)
 	Update(ctx context.Context, lbID string, updateReq *LoadBalancerReq) error
 	Delete(ctx context.Context, lbID string) error
+	DeleteSSL(ctx context.Context, lbID string) error
+	DeleteAutoSSL(ctx context.Context, lbID string) error
 	List(ctx context.Context, options *ListOptions) ([]LoadBalancer, *Meta, *http.Response, error)
 	CreateForwardingRule(ctx context.Context, lbID string, rule *ForwardingRule) (*ForwardingRule, *http.Response, error)
 	GetForwardingRule(ctx context.Context, lbID string, ruleID string) (*ForwardingRule, *http.Response, error)
@@ -49,7 +51,7 @@ type LoadBalancer struct {
 	HTTP3           *bool            `json:"http3,omitempty"`
 	ForwardingRules []ForwardingRule `json:"forwarding_rules,omitempty"`
 	FirewallRules   []LBFirewallRule `json:"firewall_rules,omitempty"`
-	GlobalRegions 	[]string 		 `json:"global_regions,omitempty"`
+	GlobalRegions   []string         `json:"global_regions,omitempty"`
 }
 
 // LoadBalancerReq gives options for creating or updating a load balancer
@@ -71,7 +73,7 @@ type LoadBalancerReq struct {
 	FirewallRules      []LBFirewallRule `json:"firewall_rules,omitempty"`
 	Timeout            int              `json:"timeout,omitempty"`
 	VPC                *string          `json:"vpc,omitempty"`
-	GlobalRegions 	   []string 		`json:"global_regions,omitempty"`
+	GlobalRegions      []string         `json:"global_regions,omitempty"`
 }
 
 // InstanceList represents instances that are attached to your load balancer
@@ -350,4 +352,28 @@ func (l *LoadBalancerHandler) ListFirewallRules(ctx context.Context, lbID string
 	}
 
 	return fwRules.FirewallRules, fwRules.Meta, resp, nil
+}
+
+// DeleteSSL removes the SSL configuration from a load balancer subscription.
+func (l *LoadBalancerHandler) DeleteSSL(ctx context.Context, lbID string) error {
+	uri := fmt.Sprintf("%s/%s/ssl", lbPath, lbID)
+	req, err := l.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = l.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// DeleteAutoSSL removes the AutoSSL configuration from a load balancer subscription.
+func (l *LoadBalancerHandler) DeleteAutoSSL(ctx context.Context, lbID string) error {
+	uri := fmt.Sprintf("%s/%s/auto_ssl", lbPath, lbID)
+	req, err := l.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = l.client.DoWithContext(ctx, req, nil)
+	return err
 }
