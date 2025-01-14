@@ -49,6 +49,7 @@ type LoadBalancer struct {
 	HTTP3           *bool            `json:"http3,omitempty"`
 	ForwardingRules []ForwardingRule `json:"forwarding_rules,omitempty"`
 	FirewallRules   []LBFirewallRule `json:"firewall_rules,omitempty"`
+	GlobalRegions 	[]string 		 `json:"global_regions,omitempty"`
 }
 
 // LoadBalancerReq gives options for creating or updating a load balancer
@@ -61,6 +62,7 @@ type LoadBalancerReq struct {
 	StickySessions     *StickySessions  `json:"sticky_session,omitempty"`
 	ForwardingRules    []ForwardingRule `json:"forwarding_rules,omitempty"`
 	SSL                *SSL             `json:"ssl,omitempty"`
+	AutoSSL            *SSL             `json:"autossl,omitempty"`
 	SSLRedirect        *bool            `json:"ssl_redirect,omitempty"`
 	HTTP2              *bool            `json:"http2,omitempty"`
 	HTTP3              *bool            `json:"http3,omitempty"`
@@ -69,6 +71,7 @@ type LoadBalancerReq struct {
 	FirewallRules      []LBFirewallRule `json:"firewall_rules,omitempty"`
 	Timeout            int              `json:"timeout,omitempty"`
 	VPC                *string          `json:"vpc,omitempty"`
+	GlobalRegions 	   []string 		`json:"global_regions,omitempty"`
 }
 
 // InstanceList represents instances that are attached to your load balancer
