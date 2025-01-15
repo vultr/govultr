@@ -131,9 +131,17 @@ type LBFirewallRule struct {
 
 // SSL represents valid SSL config
 type SSL struct {
-	PrivateKey  string `json:"private_key,omitempty"`
-	Certificate string `json:"certificate,omitempty"`
-	Chain       string `json:"chain,omitempty"`
+	PrivateKey     string `json:"private_key,omitempty"`
+	Certificate    string `json:"certificate,omitempty"`
+	Chain          string `json:"chain,omitempty"`
+	PrivateKeyB64  string `json:"private_key_b64,omitempty"`
+	CertificateB64 string `json:"certificate_b64,omitempty"`
+	ChainB64       string `json:"chain_b64,omitempty"`
+}
+
+type AutoSSL struct {
+	DomainZone string `json:"domain_zone"`
+	DomainSub  string `json:"domain_sub,omitempty"`
 }
 
 type lbsBase struct {
