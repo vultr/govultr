@@ -1,8 +1,10 @@
 # Change Log
 ## [3.14.0](https://github.com/vultr/govultr/compare/v3.13.0...v3.14.0) (2025-01-15)
 ### Enhancements
-* Database: Remove deprecated Redis references [PR 349](https://github.com/vultr/govultr/pull/349)
 * Load Balancers: Add support for AutoSSL and GlobalRegions [PR 350](https://github.com/vultr/govultr/pull/350)
+
+### Clean Up
+* Database: Remove deprecated Redis references [PR 349](https://github.com/vultr/govultr/pull/349)
 
 ## [3.13.0](https://github.com/vultr/govultr/compare/v3.12.0...v3.13.0) (2024-12-17)
 ### Enhancements
