@@ -139,6 +139,7 @@ type SSL struct {
 	ChainB64       string `json:"chain_b64,omitempty"`
 }
 
+// AutoSSL represents valid AutoSSL config
 type AutoSSL struct {
 	DomainZone string `json:"domain_zone"`
 	DomainSub  string `json:"domain_sub,omitempty"`
