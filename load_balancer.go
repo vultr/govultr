@@ -47,6 +47,7 @@ type LoadBalancer struct {
 	HealthCheck     *HealthCheck     `json:"health_check,omitempty"`
 	GenericInfo     *GenericInfo     `json:"generic_info,omitempty"`
 	SSLInfo         *bool            `json:"has_ssl,omitempty"`
+	AutoSSL         *AutoSSL         `json:"auto_ssl,omitempty"`
 	HTTP2           *bool            `json:"http2,omitempty"`
 	HTTP3           *bool            `json:"http3,omitempty"`
 	ForwardingRules []ForwardingRule `json:"forwarding_rules,omitempty"`
@@ -64,7 +65,7 @@ type LoadBalancerReq struct {
 	StickySessions     *StickySessions  `json:"sticky_session,omitempty"`
 	ForwardingRules    []ForwardingRule `json:"forwarding_rules,omitempty"`
 	SSL                *SSL             `json:"ssl,omitempty"`
-	AutoSSL            *SSL             `json:"auto_ssl,omitempty"`
+	AutoSSL            *AutoSSL         `json:"auto_ssl,omitempty"`
 	SSLRedirect        *bool            `json:"ssl_redirect,omitempty"`
 	HTTP2              *bool            `json:"http2,omitempty"`
 	HTTP3              *bool            `json:"http3,omitempty"`
