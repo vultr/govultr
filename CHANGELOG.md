@@ -1,4 +1,8 @@
 # Change Log
+## [3.14.1](https://github.com/vultr/govultr/compare/v3.14.0...v3.14.1) (2025-01-17)
+### Bug Fixes
+* Load Balancers: Add missing SSL fields and AutoSSL struct [PR 352](https://github.com/vultr/govultr/pull/352)
+
 ## [3.14.0](https://github.com/vultr/govultr/compare/v3.13.0...v3.14.0) (2025-01-15)
 ### Enhancements
 * Load Balancers: Add support for AutoSSL and GlobalRegions [PR 350](https://github.com/vultr/govultr/pull/350)
