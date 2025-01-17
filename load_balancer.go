@@ -47,6 +47,7 @@ type LoadBalancer struct {
 	HealthCheck     *HealthCheck     `json:"health_check,omitempty"`
 	GenericInfo     *GenericInfo     `json:"generic_info,omitempty"`
 	SSLInfo         *bool            `json:"has_ssl,omitempty"`
+	AutoSSL         *AutoSSL         `json:"auto_ssl,omitempty"`
 	HTTP2           *bool            `json:"http2,omitempty"`
 	HTTP3           *bool            `json:"http3,omitempty"`
 	ForwardingRules []ForwardingRule `json:"forwarding_rules,omitempty"`
@@ -64,7 +65,7 @@ type LoadBalancerReq struct {
 	StickySessions     *StickySessions  `json:"sticky_session,omitempty"`
 	ForwardingRules    []ForwardingRule `json:"forwarding_rules,omitempty"`
 	SSL                *SSL             `json:"ssl,omitempty"`
-	AutoSSL            *SSL             `json:"auto_ssl,omitempty"`
+	AutoSSL            *AutoSSL         `json:"auto_ssl,omitempty"`
 	SSLRedirect        *bool            `json:"ssl_redirect,omitempty"`
 	HTTP2              *bool            `json:"http2,omitempty"`
 	HTTP3              *bool            `json:"http3,omitempty"`
@@ -131,9 +132,18 @@ type LBFirewallRule struct {
 
 // SSL represents valid SSL config
 type SSL struct {
-	PrivateKey  string `json:"private_key,omitempty"`
-	Certificate string `json:"certificate,omitempty"`
-	Chain       string `json:"chain,omitempty"`
+	PrivateKey     string `json:"private_key,omitempty"`
+	Certificate    string `json:"certificate,omitempty"`
+	Chain          string `json:"chain,omitempty"`
+	PrivateKeyB64  string `json:"private_key_b64,omitempty"`
+	CertificateB64 string `json:"certificate_b64,omitempty"`
+	ChainB64       string `json:"chain_b64,omitempty"`
+}
+
+// AutoSSL represents valid AutoSSL config
+type AutoSSL struct {
+	DomainZone string `json:"domain_zone"`
+	DomainSub  string `json:"domain_sub,omitempty"`
 }
 
 type lbsBase struct {
