@@ -31,7 +31,7 @@ type Account struct {
 	Email             string   `json:"email"`
 	ACL               []string `json:"acls"`
 }
-type AccountBandwidthBase struct {
+type accountBandwidthBase struct {
 	Bandwidth *AccountBandwidth `json:"bandwidth"`
 }
 
@@ -83,7 +83,7 @@ func (a *AccountServiceHandler) GetBandwidth(ctx context.Context) (*AccountBandw
 		return nil, nil, err
 	}
 
-	accountBandwidth := new(AccountBandwidthBase)
+	accountBandwidth := new(accountBandwidthBase)
 	resp, err := a.client.DoWithContext(ctx, req, accountBandwidth)
 	if err != nil {
 		return nil, resp, err
