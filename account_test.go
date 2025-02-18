@@ -112,8 +112,8 @@ func TestAccountServiceHandler_GetBandwidth(t *testing.T) {
 		PreviousMonth: AccountBandwidthPeriod{
 			TimestampStart:            "1735689600",
 			TimestampEnd:              "1738367999",
-			GbIn:                      0,
-			GbOut:                     0,
+			GBIn:                      0,
+			GBOut:                     0,
 			TotalInstanceHours:        1,
 			TotalInstanceCount:        1,
 			InstanceBandwidthCredits:  1,
@@ -126,8 +126,8 @@ func TestAccountServiceHandler_GetBandwidth(t *testing.T) {
 		CurrentMonthToDate: AccountBandwidthPeriod{
 			TimestampStart:            "1738368000",
 			TimestampEnd:              "1739577600",
-			GbIn:                      0,
-			GbOut:                     0,
+			GBIn:                      0,
+			GBOut:                     0,
 			TotalInstanceHours:        0,
 			TotalInstanceCount:        0,
 			InstanceBandwidthCredits:  0,
@@ -140,8 +140,8 @@ func TestAccountServiceHandler_GetBandwidth(t *testing.T) {
 		CurrentMonthProjected: AccountBandwidthPeriod{
 			TimestampStart:            "1738368000",
 			TimestampEnd:              "1740787199",
-			GbIn:                      0,
-			GbOut:                     0,
+			GBIn:                      0,
+			GBOut:                     0,
 			TotalInstanceHours:        0,
 			TotalInstanceCount:        0,
 			InstanceBandwidthCredits:  0,

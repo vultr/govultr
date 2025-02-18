@@ -46,8 +46,8 @@ type AccountBandwidth struct {
 type AccountBandwidthPeriod struct {
 	TimestampStart            string  `json:"timestamp_start"`
 	TimestampEnd              string  `json:"timestamp_end"`
-	GbIn                      int     `json:"gb_in"`
-	GbOut                     int     `json:"gb_out"`
+	GBIn                      int     `json:"gb_in"`
+	GBOut                     int     `json:"gb_out"`
 	TotalInstanceHours        int     `json:"total_instance_hours"`
 	TotalInstanceCount        int     `json:"total_instance_count"`
 	InstanceBandwidthCredits  int     `json:"instance_bandwidth_credits"`
