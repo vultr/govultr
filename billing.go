@@ -15,6 +15,7 @@ type BillingService interface {
 	ListInvoices(ctx context.Context, options *ListOptions) ([]Invoice, *Meta, *http.Response, error)
 	GetInvoice(ctx context.Context, invoiceID string) (*Invoice, *http.Response, error)
 	ListInvoiceItems(ctx context.Context, invoiceID int, options *ListOptions) ([]InvoiceItem, *Meta, *http.Response, error)
+	ListPendingCharges(ctx context.Context, options *ListOptions) ([]InvoiceItem, *http.Response, error)
 }
 
 // BillingServiceHandler handles interaction with the billing methods for the Vultr API
@@ -70,6 +71,10 @@ type invoiceBase struct {
 type invoiceItemsBase struct {
 	InvoiceItems []InvoiceItem `json:"invoice_items"`
 	Meta         *Meta         `json:"meta"`
+}
+
+type pendingChargesBase struct {
+	PendingCharges []InvoiceItem `json:"pending_charges"`
 }
 
 // ListHistory retrieves a list of all billing history on the current account
@@ -160,4 +165,28 @@ func (b *BillingServiceHandler) ListInvoiceItems(ctx context.Context, invoiceID 
 	}
 
 	return invoice.InvoiceItems, invoice.Meta, resp, nil
+}
+
+// ListPendingCharges retrieves a list of all pending charges on the current account
+func (b *BillingServiceHandler) ListPendingCharges(ctx context.Context, options *ListOptions) ([]InvoiceItem, *http.Response, error) {
+	uri := "/v2/billing/pending-charges"
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	newValues, err := query.Values(options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req.URL.RawQuery = newValues.Encode()
+
+	invoice := new(pendingChargesBase)
+	resp, err := b.client.DoWithContext(ctx, req, invoice)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return invoice.PendingCharges, resp, nil
 }
