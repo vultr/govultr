@@ -315,3 +315,50 @@ func TestBillingServiceHandler_ListInvoiceItems(t *testing.T) {
 		t.Errorf("Billing.ListInvoiceItems returned %+v, expected %+v", meta, expectedMeta)
 	}
 }
+
+func TestBillingServiceHandler_ListPendingCharges(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/billing/pending-charges", func(w http.ResponseWriter, r *http.Request) {
+		response := `
+		{
+			"pending_charges": [
+				{
+					"description": "Load Balancer (my-loadbalancer)",
+					"start_date": "2020-10-10T01:56:20+00:00",
+					"end_date": "2020-10-10T01:56:20+00:00",
+					"units": 720,
+					"unit_type": "hours",
+					"unit_price": 0.0149,
+					"total": 10,
+					"product": "Load Balancer"
+				}
+			]
+		}
+		`
+
+		fmt.Fprint(w, response)
+	})
+	invoices, _, err := client.Billing.ListPendingCharges(ctx, nil)
+	if err != nil {
+		t.Errorf("Billing.ListPendingCharges returned error: %v", err)
+	}
+
+	expected := []InvoiceItem{
+		{
+			Description: "Load Balancer (my-loadbalancer)",
+			StartDate:   "2020-10-10T01:56:20+00:00",
+			EndDate:     "2020-10-10T01:56:20+00:00",
+			Units:       720,
+			UnitType:    "hours",
+			UnitPrice:   0.0149,
+			Total:       10,
+			Product:     "Load Balancer",
+		},
+	}
+
+	if !reflect.DeepEqual(invoices, expected) {
+		t.Errorf("Billing.ListInvoices returned %+v, expected %+v", invoices, expected)
+	}
+}
