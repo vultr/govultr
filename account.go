@@ -31,6 +31,7 @@ type Account struct {
 	Email             string   `json:"email"`
 	ACL               []string `json:"acls"`
 }
+
 type accountBandwidthBase struct {
 	Bandwidth *AccountBandwidth `json:"bandwidth"`
 }
