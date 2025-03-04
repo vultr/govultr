@@ -1,4 +1,18 @@
 # Change Log
+## [3.15.0](https://github.com/vultr/govultr/compare/v3.14.1...v3.15.0) (2025-03-04)
+### Enhancements
+* Add functions for account bandwidth [PR 356](https://github.com/vultr/govultr/pull/356)
+* Add functions for billing pending charges [PR 357](https://github.com/vultr/govultr/pull/357)
+
+### Dependencies
+* Update Go from v1.23 to v1.24 [PR 360](https://github.com/vultr/govultr/pull/360)
+
+### Clean Up
+* Fix whitespace [PR 359](https://github.com/vultr/govultr/pull/359)
+
+### New Contributors
+* @DazWilkin made their first contribution in [PR 356](https://github.com/vultr/govultr/pull/356)
+
 ## [3.14.1](https://github.com/vultr/govultr/compare/v3.14.0...v3.14.1) (2025-01-17)
 ### Bug Fixes
 * Load Balancers: Add missing SSL fields and AutoSSL struct [PR 352](https://github.com/vultr/govultr/pull/352)
