@@ -72,7 +72,8 @@ type Client struct {
 	User                     UserService
 	VirtualFileSystemStorage VirtualFileSystemStorageService
 	VPC                      VPCService
-	VPC2                     VPC2Service
+	// Deprecated: VPC2 is no longer supported
+	VPC2 VPC2Service
 
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
