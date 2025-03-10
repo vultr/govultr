@@ -198,49 +198,6 @@ func TestServerServiceHandler_ListVPCInfo(t *testing.T) {
 	}
 }
 
-func TestServerServiceHandler_ListVPC2Info(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v2/instances/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/vpc2", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"vpcs": [{"id": "v1-net539626f0798d7","mac_address": "5a:02:00:00:24:e9","ip_address": "10.99.0.3"}],"meta":{"total":1,"links":{"next":"thisismycusror","prev":""}}}`
-		fmt.Fprint(writer, response)
-	})
-
-	options := &ListOptions{
-		PerPage: 1,
-		Cursor:  "",
-	}
-	vpc, meta, _, err := client.Instance.ListVPC2Info(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", options)
-	if err != nil {
-		t.Errorf("Instance.ListVPC2Info returned %+v, ", err)
-	}
-
-	expected := []VPC2Info{
-		{
-			ID:         "v1-net539626f0798d7",
-			MacAddress: "5a:02:00:00:24:e9",
-			IPAddress:  "10.99.0.3",
-		},
-	}
-
-	if !reflect.DeepEqual(vpc, expected) {
-		t.Errorf("Instance.ListVPC2Info returned %+v, expected %+v", vpc, expected)
-	}
-
-	expectedMeta := &Meta{
-		Total: 1,
-		Links: &Links{
-			Next: "thisismycusror",
-			Prev: "",
-		},
-	}
-
-	if !reflect.DeepEqual(meta, expectedMeta) {
-		t.Errorf("Instance.ListVPC2Info meta returned %+v, expected %+v", meta, expectedMeta)
-	}
-}
-
 func TestServerServiceHandler_GetUserData(t *testing.T) {
 	setup()
 	defer teardown()
@@ -960,32 +917,6 @@ func TestServerServiceHandler_DetachVPC(t *testing.T) {
 
 	if err := client.Instance.DetachVPC(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", "14b3e7d6-ffb5-4994-8502-57fcd9db3b33"); err != nil {
 		t.Errorf("Instance.DetachVPC returned %+v", err)
-	}
-}
-
-func TestServerServiceHandler_AttachVPC2(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v2/instances/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/vpc2/attach", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
-
-	if err := client.Instance.AttachVPC2(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", &AttachVPC2Req{VPCID: "14b3e7d6-ffb5-4994-8502-57fcd9db3b33"}); err != nil {
-		t.Errorf("Instance.AttachVPC2 returned %+v", err)
-	}
-}
-
-func TestServerServiceHandler_DetachVPC2(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v2/instances/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/vpc2/detach", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
-
-	if err := client.Instance.DetachVPC2(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", "14b3e7d6-ffb5-4994-8502-57fcd9db3b33"); err != nil {
-		t.Errorf("Instance.DetachVPC2 returned %+v", err)
 	}
 }
 

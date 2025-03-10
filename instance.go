@@ -37,8 +37,11 @@ type InstanceService interface {
 	AttachVPC(ctx context.Context, instanceID, vpcID string) error
 	DetachVPC(ctx context.Context, instanceID, vpcID string) error
 
+	// Deprecated: VPC2 is no longer supported
 	ListVPC2Info(ctx context.Context, instanceID string, options *ListOptions) ([]VPC2Info, *Meta, *http.Response, error)
+	// Deprecated: VPC2 is no longer supported
 	AttachVPC2(ctx context.Context, instanceID string, vpc2Req *AttachVPC2Req) error
+	// Deprecated: VPC2 is no longer supported
 	DetachVPC2(ctx context.Context, instanceID, vpcID string) error
 
 	ISOStatus(ctx context.Context, instanceID string) (*Iso, *http.Response, error)
@@ -148,6 +151,7 @@ type vpc2InfoBase struct {
 }
 
 // VPC2Info information for a given instance.
+// Deprecated: VPC2 is no longer supported
 type VPC2Info struct {
 	ID         string `json:"id"`
 	MacAddress string `json:"mac_address"`
@@ -155,6 +159,7 @@ type VPC2Info struct {
 }
 
 // AttachVPC2Req parameters for attaching a VPC 2.0 network
+// Deprecated: VPC2 is no longer supported
 type AttachVPC2Req struct {
 	VPCID     string  `json:"vpc_id,omitempty"`
 	IPAddress *string `json:"ip_address,omitempty"`
@@ -232,49 +237,54 @@ type Upgrades struct {
 
 // InstanceCreateReq struct used to create an instance.
 type InstanceCreateReq struct {
-	Region            string            `json:"region,omitempty"`
-	Plan              string            `json:"plan,omitempty"`
-	Label             string            `json:"label,omitempty"`
-	Tags              []string          `json:"tags"`
-	OsID              int               `json:"os_id,omitempty"`
-	ISOID             string            `json:"iso_id,omitempty"`
-	AppID             int               `json:"app_id,omitempty"`
-	ImageID           string            `json:"image_id,omitempty"`
-	FirewallGroupID   string            `json:"firewall_group_id,omitempty"`
-	Hostname          string            `json:"hostname,omitempty"`
-	IPXEChainURL      string            `json:"ipxe_chain_url,omitempty"`
-	ScriptID          string            `json:"script_id,omitempty"`
-	SnapshotID        string            `json:"snapshot_id,omitempty"`
-	EnableIPv6        *bool             `json:"enable_ipv6,omitempty"`
-	DisablePublicIPv4 *bool             `json:"disable_public_ipv4,omitempty"`
-	EnableVPC         *bool             `json:"enable_vpc,omitempty"`
-	AttachVPC         []string          `json:"attach_vpc,omitempty"`
-	EnableVPC2        *bool             `json:"enable_vpc2,omitempty"`
-	AttachVPC2        []string          `json:"attach_vpc2,omitempty"`
-	SSHKeys           []string          `json:"sshkey_id,omitempty"`
-	Backups           string            `json:"backups,omitempty"`
-	DDOSProtection    *bool             `json:"ddos_protection,omitempty"`
-	UserData          string            `json:"user_data,omitempty"`
-	ReservedIPv4      string            `json:"reserved_ipv4,omitempty"`
-	ActivationEmail   *bool             `json:"activation_email,omitempty"`
-	UserScheme        string            `json:"user_scheme,omitempty"`
-	AppVariables      map[string]string `json:"app_variables,omitempty"`
+	Region            string   `json:"region,omitempty"`
+	Plan              string   `json:"plan,omitempty"`
+	Label             string   `json:"label,omitempty"`
+	Tags              []string `json:"tags"`
+	OsID              int      `json:"os_id,omitempty"`
+	ISOID             string   `json:"iso_id,omitempty"`
+	AppID             int      `json:"app_id,omitempty"`
+	ImageID           string   `json:"image_id,omitempty"`
+	FirewallGroupID   string   `json:"firewall_group_id,omitempty"`
+	Hostname          string   `json:"hostname,omitempty"`
+	IPXEChainURL      string   `json:"ipxe_chain_url,omitempty"`
+	ScriptID          string   `json:"script_id,omitempty"`
+	SnapshotID        string   `json:"snapshot_id,omitempty"`
+	EnableIPv6        *bool    `json:"enable_ipv6,omitempty"`
+	DisablePublicIPv4 *bool    `json:"disable_public_ipv4,omitempty"`
+	EnableVPC         *bool    `json:"enable_vpc,omitempty"`
+	AttachVPC         []string `json:"attach_vpc,omitempty"`
+	// Deprecated: VPC2 is no longer supported
+	EnableVPC2 *bool `json:"enable_vpc2,omitempty"`
+	// Deprecated: VPC2 is no longer supported
+	AttachVPC2      []string          `json:"attach_vpc2,omitempty"`
+	SSHKeys         []string          `json:"sshkey_id,omitempty"`
+	Backups         string            `json:"backups,omitempty"`
+	DDOSProtection  *bool             `json:"ddos_protection,omitempty"`
+	UserData        string            `json:"user_data,omitempty"`
+	ReservedIPv4    string            `json:"reserved_ipv4,omitempty"`
+	ActivationEmail *bool             `json:"activation_email,omitempty"`
+	UserScheme      string            `json:"user_scheme,omitempty"`
+	AppVariables    map[string]string `json:"app_variables,omitempty"`
 }
 
 // InstanceUpdateReq struct used to update an instance.
 type InstanceUpdateReq struct {
-	Plan            string   `json:"plan,omitempty"`
-	Label           string   `json:"label,omitempty"`
-	Tags            []string `json:"tags"`
-	OsID            int      `json:"os_id,omitempty"`
-	AppID           int      `json:"app_id,omitempty"`
-	ImageID         string   `json:"image_id,omitempty"`
-	EnableIPv6      *bool    `json:"enable_ipv6,omitempty"`
-	EnableVPC       *bool    `json:"enable_vpc,omitempty"`
-	AttachVPC       []string `json:"attach_vpc,omitempty"`
-	DetachVPC       []string `json:"detach_vpc,omitempty"`
-	EnableVPC2      *bool    `json:"enable_vpc2,omitempty"`
-	AttachVPC2      []string `json:"attach_vpc2,omitempty"`
+	Plan       string   `json:"plan,omitempty"`
+	Label      string   `json:"label,omitempty"`
+	Tags       []string `json:"tags"`
+	OsID       int      `json:"os_id,omitempty"`
+	AppID      int      `json:"app_id,omitempty"`
+	ImageID    string   `json:"image_id,omitempty"`
+	EnableIPv6 *bool    `json:"enable_ipv6,omitempty"`
+	EnableVPC  *bool    `json:"enable_vpc,omitempty"`
+	AttachVPC  []string `json:"attach_vpc,omitempty"`
+	DetachVPC  []string `json:"detach_vpc,omitempty"`
+	// Deprecated: VPC2 is no longer supported
+	EnableVPC2 *bool `json:"enable_vpc2,omitempty"`
+	// Deprecated: VPC2 is no longer supported
+	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
+	// Deprecated: VPC2 is no longer supported
 	DetachVPC2      []string `json:"detach_vpc2,omitempty"`
 	Backups         string   `json:"backups,omitempty"`
 	DDOSProtection  *bool    `json:"ddos_protection"`
@@ -566,6 +576,7 @@ func (i *InstanceServiceHandler) DetachVPC(ctx context.Context, instanceID, vpcI
 }
 
 // ListVPC2Info currently attached to an instance.
+// Deprecated: VPC2 is no longer supported
 func (i *InstanceServiceHandler) ListVPC2Info(ctx context.Context, instanceID string, options *ListOptions) ([]VPC2Info, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/vpc2", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -590,6 +601,7 @@ func (i *InstanceServiceHandler) ListVPC2Info(ctx context.Context, instanceID st
 }
 
 // AttachVPC2 to an instance
+// Deprecated: VPC2 is no longer supported
 func (i *InstanceServiceHandler) AttachVPC2(ctx context.Context, instanceID string, vpc2Req *AttachVPC2Req) error {
 	uri := fmt.Sprintf("%s/%s/vpc2/attach", instancePath, instanceID)
 
@@ -603,6 +615,7 @@ func (i *InstanceServiceHandler) AttachVPC2(ctx context.Context, instanceID stri
 }
 
 // DetachVPC2 from an instance.
+// Deprecated: VPC2 is no longer supported
 func (i *InstanceServiceHandler) DetachVPC2(ctx context.Context, instanceID, vpcID string) error {
 	uri := fmt.Sprintf("%s/%s/vpc2/detach", instancePath, instanceID)
 	body := RequestBody{"vpc_id": vpcID}
