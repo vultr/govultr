@@ -11,9 +11,9 @@ import (
 // ObjectStorageService is the interface to interact with the object storage endpoints on the Vultr API.
 // Link : https://www.vultr.com/api/#tag/s3
 type ObjectStorageService interface {
-	Create(ctx context.Context, clusterID int, label string) (*ObjectStorage, *http.Response, error)
+	Create(ctx context.Context, objReq *ObjectStorageReq) (*ObjectStorage, *http.Response, error)
 	Get(ctx context.Context, id string) (*ObjectStorage, *http.Response, error)
-	Update(ctx context.Context, id, label string) error
+	Update(ctx context.Context, id string, objReq *ObjectStorageReq) error
 	Delete(ctx context.Context, id string) error
 	List(ctx context.Context, options *ListOptions) ([]ObjectStorage, *Meta, *http.Response, error)
 
@@ -39,6 +39,14 @@ type ObjectStorage struct {
 	Label                string `json:"label"`
 	Status               string `json:"status"`
 	S3Keys
+}
+
+// ObjectStorageReq represents the parameters for creating and updating object
+// storages
+type ObjectStorageReq struct {
+	ClusterID int    `json:"cluster_id,omitempty"`
+	TierID    int    `json:"tier_id,omitempty"`
+	Label     string `json:"label"`
 }
 
 // S3Keys define your api access to your cluster
@@ -95,11 +103,10 @@ type s3KeysBase struct {
 }
 
 // Create an object storage subscription
-func (o *ObjectStorageServiceHandler) Create(ctx context.Context, clusterID int, label string) (*ObjectStorage, *http.Response, error) {
+func (o *ObjectStorageServiceHandler) Create(ctx context.Context, objReq *ObjectStorageReq) (*ObjectStorage, *http.Response, error) {
 	uri := "/v2/object-storage"
 
-	values := RequestBody{"cluster_id": clusterID, "label": label}
-	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, values)
+	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, objReq)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -132,11 +139,10 @@ func (o *ObjectStorageServiceHandler) Get(ctx context.Context, id string) (*Obje
 }
 
 // Update a Object Storage Subscription.
-func (o *ObjectStorageServiceHandler) Update(ctx context.Context, id, label string) error {
+func (o *ObjectStorageServiceHandler) Update(ctx context.Context, id string, objReq *ObjectStorageReq) error {
 	uri := fmt.Sprintf("/v2/object-storage/%s", id)
 
-	value := RequestBody{"label": label}
-	req, err := o.client.NewRequest(ctx, http.MethodPut, uri, value)
+	req, err := o.client.NewRequest(ctx, http.MethodPut, uri, objReq)
 	if err != nil {
 		return err
 	}
