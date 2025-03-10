@@ -41,8 +41,11 @@ type BareMetalServerService interface {
 	AttachVPC(ctx context.Context, serverID, vpcID string) error
 	DetachVPC(ctx context.Context, serverID, vpcID string) error
 
+	// Deprecated: VPC2 is no longer supported
 	ListVPC2Info(ctx context.Context, serverID string) ([]VPC2Info, *http.Response, error)
+	// Deprecated: VPC2 is no longer supported
 	AttachVPC2(ctx context.Context, serverID string, vpc2Req *AttachVPC2Req) error
+	// Deprecated: VPC2 is no longer supported
 	DetachVPC2(ctx context.Context, serverID, vpcID string) error
 }
 
@@ -81,28 +84,31 @@ type BareMetalServer struct {
 
 // BareMetalCreate represents the optional parameters that can be set when creating a Bare Metal server
 type BareMetalCreate struct {
-	Region          string            `json:"region"`
-	Plan            string            `json:"plan"`
-	OsID            int               `json:"os_id,omitempty"`
-	StartupScriptID string            `json:"script_id,omitempty"`
-	SnapshotID      string            `json:"snapshot_id,omitempty"`
-	EnableIPv6      *bool             `json:"enable_ipv6,omitempty"`
-	Label           string            `json:"label,omitempty"`
-	SSHKeyIDs       []string          `json:"sshkey_id,omitempty"`
-	AppID           int               `json:"app_id,omitempty"`
-	ImageID         string            `json:"image_id,omitempty"`
-	UserData        string            `json:"user_data,omitempty"`
-	ActivationEmail *bool             `json:"activation_email,omitempty"`
-	Hostname        string            `json:"hostname,omitempty"`
-	MdiskMode       string            `json:"mdisk_mode,omitempty"`
-	ReservedIPv4    string            `json:"reserved_ipv4,omitempty"`
-	PersistentPxe   *bool             `json:"persistent_pxe,omitempty"`
-	Tags            []string          `json:"tags,omitempty"`
-	UserScheme      string            `json:"user_scheme,omitempty"`
-	AttachVPC2      []string          `json:"attach_vpc2,omitempty"`
-	DetachVPC2      []string          `json:"detach_vpc2,omitempty"`
-	EnableVPC2      *bool             `json:"enable_vpc2,omitempty"`
-	AppVariables    map[string]string `json:"app_variables,omitempty"`
+	Region          string   `json:"region"`
+	Plan            string   `json:"plan"`
+	OsID            int      `json:"os_id,omitempty"`
+	StartupScriptID string   `json:"script_id,omitempty"`
+	SnapshotID      string   `json:"snapshot_id,omitempty"`
+	EnableIPv6      *bool    `json:"enable_ipv6,omitempty"`
+	Label           string   `json:"label,omitempty"`
+	SSHKeyIDs       []string `json:"sshkey_id,omitempty"`
+	AppID           int      `json:"app_id,omitempty"`
+	ImageID         string   `json:"image_id,omitempty"`
+	UserData        string   `json:"user_data,omitempty"`
+	ActivationEmail *bool    `json:"activation_email,omitempty"`
+	Hostname        string   `json:"hostname,omitempty"`
+	MdiskMode       string   `json:"mdisk_mode,omitempty"`
+	ReservedIPv4    string   `json:"reserved_ipv4,omitempty"`
+	PersistentPxe   *bool    `json:"persistent_pxe,omitempty"`
+	Tags            []string `json:"tags,omitempty"`
+	UserScheme      string   `json:"user_scheme,omitempty"`
+	// Deprecated: VPC2 is no longer supported
+	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
+	// Deprecated: VPC2 is no longer supported
+	DetachVPC2 []string `json:"detach_vpc2,omitempty"`
+	// Deprecated: VPC2 is no longer supported
+	EnableVPC2   *bool             `json:"enable_vpc2,omitempty"`
+	AppVariables map[string]string `json:"app_variables,omitempty"`
 }
 
 // BareMetalUpdate represents the optional parameters that can be set when updating a Bare Metal server
@@ -116,9 +122,12 @@ type BareMetalUpdate struct {
 	MdiskMode  string   `json:"mdisk_mode,omitempty"`
 	Tags       []string `json:"tags,omitempty"`
 	UserScheme string   `json:"user_scheme,omitempty"`
+	// Deprecated: VPC2 is no longer supported
 	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
+	// Deprecated: VPC2 is no longer supported
 	DetachVPC2 []string `json:"detach_vpc2,omitempty"`
-	EnableVPC2 *bool    `json:"enable_vpc2,omitempty"`
+	// Deprecated: VPC2 is no longer supported
+	EnableVPC2 *bool `json:"enable_vpc2,omitempty"`
 }
 
 // BareMetalServerBandwidth represents bandwidth information for a Bare Metal server
@@ -496,6 +505,7 @@ func (b *BareMetalServerServiceHandler) DetachVPC(ctx context.Context, serverID,
 }
 
 // ListVPC2Info currently attached to a Bare Metal server.
+// Deprecated: VPC2 is no longer supported
 func (b *BareMetalServerServiceHandler) ListVPC2Info(ctx context.Context, serverID string) ([]VPC2Info, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/vpc2", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -513,6 +523,7 @@ func (b *BareMetalServerServiceHandler) ListVPC2Info(ctx context.Context, server
 }
 
 // AttachVPC2 to a Bare Metal server.
+// Deprecated: VPC2 is no longer supported
 func (b *BareMetalServerServiceHandler) AttachVPC2(ctx context.Context, serverID string, vpc2Req *AttachVPC2Req) error {
 	uri := fmt.Sprintf("%s/%s/vpc2/attach", bmPath, serverID)
 
@@ -526,6 +537,7 @@ func (b *BareMetalServerServiceHandler) AttachVPC2(ctx context.Context, serverID
 }
 
 // DetachVPC2 from a Bare Metal server.
+// Deprecated: VPC2 is no longer supported
 func (b *BareMetalServerServiceHandler) DetachVPC2(ctx context.Context, serverID, vpcID string) error {
 	uri := fmt.Sprintf("%s/%s/vpc2/detach", bmPath, serverID)
 	body := RequestBody{"vpc_id": vpcID}
