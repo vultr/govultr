@@ -16,7 +16,7 @@ func TestObjectStorageServiceHandler_Create(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 
-	objectStorage, _, err := client.ObjectStorage.Create(ctx, 2, "api-obj-storage2")
+	objectStorage, _, err := client.ObjectStorage.Create(ctx, &ObjectStorageReq{ClusterID: 2, Label: "api-obj-storage2"})
 	if err != nil {
 		t.Errorf("ObjectStorage.Create returned %+v", err)
 	}
@@ -77,7 +77,7 @@ func TestObjectStorageServiceHandler_Update(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 
-	err := client.ObjectStorage.Update(ctx, "1234", "s3 label")
+	err := client.ObjectStorage.Update(ctx, "1234", &ObjectStorageReq{Label: "s3 label"})
 	if err != nil {
 		t.Errorf("ObjectStorage.Create returned %+v", err)
 	}
