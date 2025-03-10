@@ -901,10 +901,7 @@ func TestTaintStructForNodePool(t *testing.T) {
 
 	// Construct a NodePoolReq with taints
 	nodePoolReq := &NodePoolReq{
-		NodeQuantity: 1,
-		Label:        "test-taint-nodepool",
-		Plan:         "vc2-1c-2gb",
-		Taints:       taints,
+		Taints: taints,
 	}
 
 	// Test that the taints are properly included in the struct
@@ -923,8 +920,7 @@ func TestTaintStructForNodePool(t *testing.T) {
 
 	// Test NodePoolReqUpdate with taints
 	updateReq := &NodePoolReqUpdate{
-		NodeQuantity: 2,
-		Taints:       taints,
+		Taints: taints,
 	}
 
 	if len(updateReq.Taints) != 2 {
