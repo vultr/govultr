@@ -1,4 +1,8 @@
 # Change Log
+## [3.16.1](https://github.com/vultr/govultr/compare/v3.16.0...v3.16.1) (2025-03-10)
+### Bug Fixes
+* Object Storage: Make create & update requests use request struct [PR 369](https://github.com/vultr/govultr/pull/369)
+
 ## [3.16.0](https://github.com/vultr/govultr/compare/v3.15.0...v3.16.0) (2025-03-10)
 ### Enhancements
 * Object Storage: Add tiers [PR 365](https://github.com/vultr/govultr/pull/365)
