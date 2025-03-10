@@ -19,6 +19,9 @@ type ObjectStorageService interface {
 
 	ListCluster(ctx context.Context, options *ListOptions) ([]ObjectStorageCluster, *Meta, *http.Response, error)
 	RegenerateKeys(ctx context.Context, id string) (*S3Keys, *http.Response, error)
+
+	ListTiers(ctx context.Context) ([]ObjectStorageTier, *http.Response, error)
+	ListClusterTiers(ctx context.Context, clusterID int) ([]ObjectStorageTier, *http.Response, error)
 }
 
 // ObjectStorageServiceHandler handles interaction between the object storage service and the Vultr API.
@@ -49,8 +52,24 @@ type S3Keys struct {
 type ObjectStorageCluster struct {
 	ID       int    `json:"id"`
 	Region   string `json:"region"`
+	Name     string `json:"name,omitempty"`
 	Hostname string `json:"hostname"`
 	Deploy   string `json:"deploy"`
+}
+
+// ObjectStorageTier represents the object storage tier data
+type ObjectStorageTier struct {
+	ID                int                    `json:"id"`
+	Name              string                 `json:"sales_name"`
+	Description       string                 `json:"sales_desc"`
+	Price             float32                `json:"price"`
+	PriceBandwidthGB  float32                `json:"bw_gb_price"`
+	PriceDiskGB       float32                `json:"disk_gb_price"`
+	RateLimitBytesSec int                    `json:"ratelimit_ops_bytes"`
+	RateLimitOpsSec   int                    `json:"ratelimit_ops_secs"`
+	Default           string                 `json:"is_default"`
+	Locations         []ObjectStorageCluster `json:"locations,omitempty"`
+	Slug              string                 `json:"slug"`
 }
 
 type objectStoragesBase struct {
@@ -65,6 +84,10 @@ type objectStorageBase struct {
 type objectStorageClustersBase struct {
 	Clusters []ObjectStorageCluster `json:"clusters"`
 	Meta     *Meta                  `json:"meta"`
+}
+
+type objectStorageTiersBase struct {
+	Tiers []ObjectStorageTier `json:"tiers"`
 }
 
 type s3KeysBase struct {
@@ -194,4 +217,38 @@ func (o *ObjectStorageServiceHandler) RegenerateKeys(ctx context.Context, id str
 	}
 
 	return s3Keys.S3Credentials, resp, nil
+}
+
+// ListTiers retrieves all tiers for object storage deployments
+func (o *ObjectStorageServiceHandler) ListTiers(ctx context.Context) ([]ObjectStorageTier, *http.Response, error) {
+	uri := "/v2/object-storage/tiers"
+	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tiers := new(objectStorageTiersBase)
+	resp, err := o.client.DoWithContext(ctx, req, tiers)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tiers.Tiers, resp, nil
+}
+
+// ListClusterTiers retrieves all tiers for object storage deployments on a specific cluster
+func (o *ObjectStorageServiceHandler) ListClusterTiers(ctx context.Context, clusterID int) ([]ObjectStorageTier, *http.Response, error) {
+	uri := fmt.Sprintf("/v2/object-storage/clusters/%d/tiers", clusterID)
+	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tiers := new(objectStorageTiersBase)
+	resp, err := o.client.DoWithContext(ctx, req, tiers)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return tiers.Tiers, resp, nil
 }
