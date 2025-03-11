@@ -79,7 +79,7 @@ type NodePool struct {
 	AutoScaler   bool              `json:"auto_scaler"`
 	Tag          string            `json:"tag"`
 	Labels       map[string]string `json:"labels"`
-	Taints       []Taint           `json:"taints,omitempty"`
+	Taints       []Taint           `json:"taints"`
 	Nodes        []Node            `json:"nodes"`
 }
 
