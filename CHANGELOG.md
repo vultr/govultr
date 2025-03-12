@@ -1,4 +1,20 @@
 # Change Log
+## [3.16.1](https://github.com/vultr/govultr/compare/v3.16.0...v3.16.1) (2025-03-10)
+### Bug Fixes
+* Object Storage: Make create & update requests use request struct [PR 369](https://github.com/vultr/govultr/pull/369)
+
+## [3.16.0](https://github.com/vultr/govultr/compare/v3.15.0...v3.16.0) (2025-03-10)
+### Enhancements
+* Object Storage: Add tiers [PR 365](https://github.com/vultr/govultr/pull/365)
+
+### Documentation
+* Bare Metal: Add notice for deprecation of VPC2 [PR 364](https://github.com/vultr/govultr/pull/364)
+* Instance: Add notice for deprecation of VPC2 [PR 364](https://github.com/vultr/govultr/pull/364)
+* VPC2: Add notice for deprecation of VPC2[PR 364](https://github.com/vultr/govultr/pull/364)
+
+### Dependencies
+* Reset min go.mod go version to v1.23 [PR 367](https://github.com/vultr/govultr/pull/367)
+
 ## [3.15.0](https://github.com/vultr/govultr/compare/v3.14.1...v3.15.0) (2025-03-04)
 ### Enhancements
 * Add functions for account bandwidth [PR 356](https://github.com/vultr/govultr/pull/356)
