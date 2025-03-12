@@ -132,7 +132,7 @@ type NodePoolReqUpdate struct {
 	MaxNodes     int               `json:"max_nodes,omitempty"`
 	AutoScaler   *bool             `json:"auto_scaler,omitempty"`
 	Labels       map[string]string `json:"labels,omitempty"`
-	Taints       []Taint           `json:"taints,omitempty"`
+	Taints       []Taint           `json:"taints"`
 }
 
 type vkeClustersBase struct {
