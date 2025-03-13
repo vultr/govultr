@@ -58,6 +58,13 @@ type Cluster struct {
 	NodePools       []NodePool `json:"node_pools"`
 }
 
+// Taint represents a Kubernetes taint that can be applied to nodes in a node pool
+type Taint struct {
+	Key    string `json:"key"`
+	Value  string `json:"value"`
+	Effect string `json:"effect"`
+}
+
 // NodePool represents a pool of nodes that are grouped by their label and plan type
 type NodePool struct {
 	ID           string            `json:"id"`
@@ -72,6 +79,7 @@ type NodePool struct {
 	AutoScaler   bool              `json:"auto_scaler"`
 	Tag          string            `json:"tag"`
 	Labels       map[string]string `json:"labels"`
+	Taints       []Taint           `json:"taints"`
 	Nodes        []Node            `json:"nodes"`
 }
 
@@ -113,6 +121,7 @@ type NodePoolReq struct {
 	MaxNodes     int               `json:"max_nodes,omitempty"`
 	AutoScaler   *bool             `json:"auto_scaler"`
 	Labels       map[string]string `json:"labels,omitempty"`
+	Taints       []Taint           `json:"taints,omitempty"`
 }
 
 // NodePoolReqUpdate struct used to update a node pool
@@ -123,6 +132,7 @@ type NodePoolReqUpdate struct {
 	MaxNodes     int               `json:"max_nodes,omitempty"`
 	AutoScaler   *bool             `json:"auto_scaler,omitempty"`
 	Labels       map[string]string `json:"labels,omitempty"`
+	Taints       []Taint           `json:"taints"`
 }
 
 type vkeClustersBase struct {

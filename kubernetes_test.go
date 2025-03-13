@@ -382,6 +382,13 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 			"vultr.com/label1": "value1",
 			"vultr.com/label2": "value2"
 		},
+		"taints": [
+			{
+				"key": "gpu",
+				"value": "test",
+				"effect": "NoSchedule"
+			}
+		],
         "nodes": [
             {
                 "id": "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -404,6 +411,13 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 			"vultr.com/label1": "value1",
 			"vultr.com/label2": "value2",
 		},
+		Taints: []Taint{
+			{
+				Key:    "gpu",
+				Value:  "test",
+				Effect: "NoSchedule",
+			},
+		},
 	}
 	np, _, err := client.Kubernetes.CreateNodePool(ctx, "1", createReq)
 	if err != nil {
@@ -424,6 +438,13 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 		Labels: map[string]string{
 			"vultr.com/label1": "value1",
 			"vultr.com/label2": "value2",
+		},
+		Taints: []Taint{
+			{
+				Key:    "gpu",
+				Value:  "test",
+				Effect: "NoSchedule",
+			},
 		},
 		Nodes: []Node{
 			{
@@ -464,6 +485,13 @@ func TestKubernetesHandler_GetNodePool(t *testing.T) {
 		"max_nodes": 2,
 		"auto_scaler": true,
 		"tag": "mytag",
+		"taints": [
+			{
+				"key": "gpu",
+				"value": "test",
+				"effect": "NoSchedule"
+			}
+		],
         "nodes": [
             {
                 "id": "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -493,6 +521,13 @@ func TestKubernetesHandler_GetNodePool(t *testing.T) {
 		MinNodes:     1,
 		MaxNodes:     2,
 		AutoScaler:   true,
+		Taints: []Taint{
+			{
+				Key:    "gpu",
+				Value:  "test",
+				Effect: "NoSchedule",
+			},
+		},
 		Nodes: []Node{
 			{
 				ID:          "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -532,6 +567,13 @@ func TestKubernetesHandler_ListNodePools(t *testing.T) {
 		"max_nodes": 2,
 		"auto_scaler": true,
 		"tag": "mytag",
+		"taints": [
+			{
+				"key": "gpu",
+				"value": "test",
+				"effect": "NoSchedule"
+			}
+		],
         "nodes": [
             {
                 "id": "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -569,6 +611,13 @@ func TestKubernetesHandler_ListNodePools(t *testing.T) {
 			MinNodes:     1,
 			MaxNodes:     2,
 			AutoScaler:   true,
+			Taints: []Taint{
+				{
+					Key:    "gpu",
+					Value:  "test",
+					Effect: "NoSchedule",
+				},
+			},
 			Nodes: []Node{
 				{
 					ID:          "3e1ca1e0-25be-4977-907a-3dee42b9bb15",
@@ -621,6 +670,13 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
 	"max_nodes": 2,
 	"auto_scaler": true,
 	"tag": "mytag",
+	"taints": [
+		{
+			"key": "gpu",
+			"value": "updated-test",
+			"effect": "NoSchedule"
+		}
+	],
     "nodes": [
       {
         "id": "f2e11430-76e5-4dc6-a1c9-ef5682c21ddf",
@@ -633,7 +689,20 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
 }`
 		fmt.Fprint(writer, response)
 	})
-	update := NodePoolReqUpdate{NodeQuantity: 1}
+
+	taints := []Taint{
+		{
+			Key:    "gpu",
+			Value:  "updated-test",
+			Effect: "NoSchedule",
+		},
+	}
+
+	update := NodePoolReqUpdate{
+		NodeQuantity: 1,
+		Taints:       taints,
+	}
+
 	response, _, err := client.Kubernetes.UpdateNodePool(ctx, "1", "2", &update)
 	if err != nil {
 		t.Errorf("Kubernetes.UpdateNodePool returned %+v", err)
@@ -651,6 +720,7 @@ func TestKubernetesHandler_UpdateNodePool(t *testing.T) {
 		MaxNodes:     2,
 		AutoScaler:   true,
 		Tag:          "mytag",
+		Taints:       taints,
 		Nodes: []Node{
 			{
 				ID:          "f2e11430-76e5-4dc6-a1c9-ef5682c21ddf",
@@ -808,5 +878,52 @@ func TestKubernetesHandler_Upgrade(t *testing.T) {
 	err := client.Kubernetes.Upgrade(ctx, "1", req)
 	if err != nil {
 		t.Errorf("Kubernetes.StartUpgrade returned %+v", err)
+	}
+}
+
+func TestTaintStructForNodePool(t *testing.T) {
+	setup()
+	defer teardown()
+
+	// Test creating a node pool with taints
+	taints := []Taint{
+		{
+			Key:    "key1",
+			Value:  "value1",
+			Effect: "NoSchedule",
+		},
+		{
+			Key:    "key2",
+			Value:  "value2",
+			Effect: "NoExecute",
+		},
+	}
+
+	// Construct a NodePoolReq with taints
+	nodePoolReq := &NodePoolReq{
+		Taints: taints,
+	}
+
+	// Test that the taints are properly included in the struct
+	if len(nodePoolReq.Taints) != 2 {
+		t.Errorf("Expected 2 taints in the NodePoolReq struct, got %d", len(nodePoolReq.Taints))
+	}
+
+	// Test that the taints values are correct
+	if nodePoolReq.Taints[0].Key != "key1" || nodePoolReq.Taints[0].Value != "value1" || nodePoolReq.Taints[0].Effect != "NoSchedule" {
+		t.Errorf("First taint values don't match expected values, got %+v", nodePoolReq.Taints[0])
+	}
+
+	if nodePoolReq.Taints[1].Key != "key2" || nodePoolReq.Taints[1].Value != "value2" || nodePoolReq.Taints[1].Effect != "NoExecute" {
+		t.Errorf("Second taint values don't match expected values, got %+v", nodePoolReq.Taints[1])
+	}
+
+	// Test NodePoolReqUpdate with taints
+	updateReq := &NodePoolReqUpdate{
+		Taints: taints,
+	}
+
+	if len(updateReq.Taints) != 2 {
+		t.Errorf("Expected 2 taints in the NodePoolReqUpdate struct, got %d", len(updateReq.Taints))
 	}
 }
