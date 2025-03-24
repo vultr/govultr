@@ -1,4 +1,11 @@
 # Change Log
+## [3.17.0](https://github.com/vultr/govultr/compare/v3.16.1...v3.17.0) (2025-03-13)
+### Enhancements
+* Kubernetes: Add support for taints to node pools [PR 363](https://github.com/vultr/govultr/pull/363)
+
+### New Contributors
+* @biondizzle made their first contribution in [PR 363](https://github.com/vultr/govultr/pull/363)
+
 ## [3.16.1](https://github.com/vultr/govultr/compare/v3.16.0...v3.16.1) (2025-03-10)
 ### Bug Fixes
 * Object Storage: Make create & update requests use request struct [PR 369](https://github.com/vultr/govultr/pull/369)
