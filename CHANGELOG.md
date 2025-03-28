@@ -1,4 +1,9 @@
 # Change Log
+## [3.18.0](https://github.com/vultr/govultr/compare/v3.17.0...v3.18.0) (2025-03-28)
+### Enhancements
+* Bare Metal: Add iPXE URL to bare metal [PR 372](https://github.com/vultr/govultr/pull/372)
+* Govultr: Increase default timeouts [PR 373](https://github.com/vultr/govultr/pull/373)
+
 ## [3.17.0](https://github.com/vultr/govultr/compare/v3.16.1...v3.17.0) (2025-03-13)
 ### Enhancements
 * Kubernetes: Add support for taints to node pools [PR 363](https://github.com/vultr/govultr/pull/363)
