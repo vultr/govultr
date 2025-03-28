@@ -99,7 +99,7 @@ func NewClient(httpClient *http.Client) *Client {
 				MaxIdleConnsPerHost:   -1,
 				DisableKeepAlives:     true,
 			},
-			Timeout: 30 * time.Second,
+			Timeout: 60 * time.Second,
 		}
 	}
 
