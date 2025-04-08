@@ -132,7 +132,7 @@ type NodePoolReqUpdate struct {
 	MinNodes     int               `json:"min_nodes,omitempty"`
 	MaxNodes     int               `json:"max_nodes,omitempty"`
 	AutoScaler   *bool             `json:"auto_scaler,omitempty"`
-	Labels       map[string]string `json:"labels,omitempty"`
+	Labels       map[string]string `json:"labels"`
 	Taints       []Taint           `json:"taints"`
 }
 
