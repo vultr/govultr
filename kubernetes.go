@@ -55,6 +55,7 @@ type Cluster struct {
 	Status          string     `json:"status"`
 	HAControlPlanes bool       `json:"ha_controlplanes"`
 	FirewallGroupID string     `json:"firewall_group_id"`
+	VpcID           string     `json:"vpc_id"`
 	NodePools       []NodePool `json:"node_pools"`
 }
 
@@ -103,6 +104,7 @@ type ClusterReq struct {
 	Version         string        `json:"version"`
 	HAControlPlanes bool          `json:"ha_controlplanes,omitempty"`
 	EnableFirewall  bool          `json:"enable_firewall,omitempty"`
+	VpcID           string        `json:"vpc_id,omitempty"`
 	NodePools       []NodePoolReq `json:"node_pools"`
 }
 
