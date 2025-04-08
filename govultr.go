@@ -183,7 +183,6 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 // a successful call. A successful call is then checked to see if we need to unmarshal since some resources
 // have their own implements of unmarshal.
 func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) (*http.Response, error) {
-	fmt.Printf("%v\n", r)
 	rreq, err := retryablehttp.FromRequest(r)
 	if err != nil {
 		return nil, err
