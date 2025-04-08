@@ -1,4 +1,11 @@
 # Change Log
+## [3.19.0](https://github.com/vultr/govultr/compare/v3.18.0...v3.19.0) (2025-04-08)
+### Enhancements
+* Kubernetes: Add VPC ID create param [PR 378](https://github.com/vultr/govultr/pull/378)
+
+### Bug Fixes
+* Bare Metal Server: Fix URI of VPC detach [PR 377](https://github.com/vultr/govultr/pull/377)
+
 ## [3.18.0](https://github.com/vultr/govultr/compare/v3.17.0...v3.18.0) (2025-03-28)
 ### Enhancements
 * Bare Metal: Add iPXE URL to bare metal [PR 372](https://github.com/vultr/govultr/pull/372)
