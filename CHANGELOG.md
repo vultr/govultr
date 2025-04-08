@@ -1,4 +1,8 @@
 # Change Log
+## [3.19.1](https://github.com/vultr/govultr/compare/v3.19.0...v3.19.1) (2025-04-08)
+### Bug Fixes
+* Kubernetes: Allow node pool update to properly delete labels [PR 380](https://github.com/vultr/govultr/pull/380)
+
 ## [3.19.0](https://github.com/vultr/govultr/compare/v3.18.0...v3.19.0) (2025-04-08)
 ### Enhancements
 * Kubernetes: Add VPC ID create param [PR 378](https://github.com/vultr/govultr/pull/378)
