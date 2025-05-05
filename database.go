@@ -157,6 +157,8 @@ type Database struct {
 	AccessCert             string               `json:"access_cert,omitempty"`
 	MaintenanceDOW         string               `json:"maintenance_dow"`
 	MaintenanceTime        string               `json:"maintenance_time"`
+	BackupHour             *string              `json:"backup_hour,omitempty"`
+	BackupMinute           *string              `json:"backup_minute,omitempty"`
 	LatestBackup           string               `json:"latest_backup"`
 	TrustedIPs             []string             `json:"trusted_ips"`
 	MySQLSQLModes          []string             `json:"mysql_sql_modes,omitempty"`
@@ -207,6 +209,8 @@ type DatabaseCreateReq struct {
 	VPCID                  string   `json:"vpc_id,omitempty"`
 	MaintenanceDOW         string   `json:"maintenance_dow,omitempty"`
 	MaintenanceTime        string   `json:"maintenance_time,omitempty"`
+	BackupHour             *string  `json:"backup_hour,omitempty"`
+	BackupMinute           *string  `json:"backup_minute,omitempty"`
 	TrustedIPs             []string `json:"trusted_ips,omitempty"`
 	MySQLSQLModes          []string `json:"mysql_sql_modes,omitempty"`
 	MySQLRequirePrimaryKey *bool    `json:"mysql_require_primary_key,omitempty"`
@@ -224,6 +228,8 @@ type DatabaseUpdateReq struct {
 	VPCID                  *string  `json:"vpc_id,omitempty"`
 	MaintenanceDOW         string   `json:"maintenance_dow,omitempty"`
 	MaintenanceTime        string   `json:"maintenance_time,omitempty"`
+	BackupHour             *string  `json:"backup_hour,omitempty"`
+	BackupMinute           *string  `json:"backup_minute,omitempty"`
 	ClusterTimeZone        string   `json:"cluster_time_zone,omitempty"`
 	TrustedIPs             []string `json:"trusted_ips,omitempty"`
 	MySQLSQLModes          []string `json:"mysql_sql_modes,omitempty"`
