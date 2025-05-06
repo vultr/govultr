@@ -1,4 +1,8 @@
 # Change Log
+## [3.20.0](https://github.com/vultr/govultr/compare/v3.19.1...v3.20.0) (2025-05-06)
+### Enhancements
+* Database: Support Managed Database backup schedule [PR 382](https://github.com/vultr/govultr/pull/382)
+
 ## [3.19.1](https://github.com/vultr/govultr/compare/v3.19.0...v3.19.1) (2025-04-08)
 ### Bug Fixes
 * Kubernetes: Allow node pool update to properly delete labels [PR 380](https://github.com/vultr/govultr/pull/380)
