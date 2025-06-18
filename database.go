@@ -44,10 +44,19 @@ type DatabaseService interface {
 	ListQuotas(ctx context.Context, databaseID string) ([]DatabaseQuota, *Meta, *http.Response, error)
 	CreateQuota(ctx context.Context, databaseID string, databaseQuotaReq *DatabaseQuotaCreateReq) (*DatabaseQuota, *http.Response, error)
 	GetQuota(ctx context.Context, databaseID string, clientID, username string) (*DatabaseQuota, *http.Response, error)
+	UpdateQuota(ctx context.Context, databaseID string, clientID, username string, databaseQuotaReq *DatabaseQuotaUpdateReq) (*DatabaseQuota, *http.Response, error) //nolint:lll
 	DeleteQuota(ctx context.Context, databaseID string, clientID, username string) error
 
 	ListMaintenanceUpdates(ctx context.Context, databaseID string) ([]string, *http.Response, error)
 	StartMaintenance(ctx context.Context, databaseID string) (string, *http.Response, error)
+
+	ListAvailableConnectors(ctx context.Context, databaseID string) ([]DatabaseAvailableConnector, *http.Response, error)
+	GetConnectorConfigurationSchema(ctx context.Context, databaseID string, connectorClass string) ([]DatabaseConnectorConfigurationOption, *http.Response, error) //nolint:lll
+	ListConnectors(ctx context.Context, databaseID string) ([]DatabaseConnector, *Meta, *http.Response, error)
+	CreateConnector(ctx context.Context, databaseID string, databaseConnectorReq *DatabaseConnectorCreateReq) (*DatabaseConnector, *http.Response, error) //nolint:lll
+	GetConnector(ctx context.Context, databaseID string, connectorName string) (*DatabaseConnector, *http.Response, error)
+	UpdateConnector(ctx context.Context, databaseID string, connectorName string, databaseConnectorReq *DatabaseConnectorUpdateReq) (*DatabaseConnector, *http.Response, error) //nolint:lll
+	DeleteConnector(ctx context.Context, databaseID string, connectorName string) error
 
 	ListServiceAlerts(ctx context.Context, databaseID string, databaseAlertsReq *DatabaseListAlertsReq) ([]DatabaseAlert, *http.Response, error) //nolint:lll
 
@@ -151,6 +160,11 @@ type Database struct {
 	PublicHost             string               `json:"public_host,omitempty"`
 	Port                   string               `json:"port"`
 	SASLPort               string               `json:"sasl_port,omitempty"`
+	EnableKafkaREST        *bool                `json:"enable_kafka_rest,omitempty"`
+	KafkaRESTURI           string               `json:"kafka_rest_uri,omitempty"`
+	EnableSchemaRegistry   *bool                `json:"enable_schema_registry,omitempty"`
+	SchemaRegistryURI      string               `json:"schema_registry_uri,omitempty"`
+	EnableKafkaConnect     *bool                `json:"enable_kafka_connect,omitempty"`
 	User                   string               `json:"user"`
 	Password               string               `json:"password"`
 	AccessKey              string               `json:"access_key,omitempty"`
@@ -217,6 +231,9 @@ type DatabaseCreateReq struct {
 	MySQLSlowQueryLog      *bool    `json:"mysql_slow_query_log,omitempty"`
 	MySQLLongQueryTime     int      `json:"mysql_long_query_time,omitempty"`
 	EvictionPolicy         string   `json:"eviction_policy,omitempty"`
+	EnableKafkaREST        *bool    `json:"enable_kafka_rest,omitempty"`
+	EnableSchemaRegistry   *bool    `json:"enable_schema_registry,omitempty"`
+	EnableKafkaConnect     *bool    `json:"enable_kafka_connect,omitempty"`
 }
 
 // DatabaseUpdateReq struct used to update a dataase.
@@ -237,6 +254,9 @@ type DatabaseUpdateReq struct {
 	MySQLSlowQueryLog      *bool    `json:"mysql_slow_query_log,omitempty"`
 	MySQLLongQueryTime     int      `json:"mysql_long_query_time,omitempty"`
 	EvictionPolicy         string   `json:"eviction_policy,omitempty"`
+	EnableKafkaREST        *bool    `json:"enable_kafka_rest,omitempty"`
+	EnableSchemaRegistry   *bool    `json:"enable_schema_registry,omitempty"`
+	EnableKafkaConnect     *bool    `json:"enable_kafka_connect,omitempty"`
 }
 
 // DatabaseUsage represents disk, memory, and CPU usage for a Managed Database
@@ -383,10 +403,10 @@ type DatabaseTopicUpdateReq struct {
 // DatabaseQuota represents a Kafka quota within a Managed Database cluster
 type DatabaseQuota struct {
 	ClientID          string `json:"client_id"`
+	User              string `json:"user"`
 	ConsumerByteRate  int    `json:"consumer_byte_rate"`
 	ProducerByteRate  int    `json:"producer_byte_rate"`
 	RequestPercentage int    `json:"request_percentage"`
-	User              string `json:"user"`
 }
 
 // databaseQuotaBase holds the API response for retrieving a single Kafka quota within a Managed Database
@@ -403,13 +423,81 @@ type databaseQuotasBase struct {
 // DatabaseQuotaCreateReq struct used to create a Kafka quota within a Managed Database.
 type DatabaseQuotaCreateReq struct {
 	ClientID          string `json:"client_id"`
+	User              string `json:"user"`
 	ConsumerByteRate  int    `json:"consumer_byte_rate"`
 	ProducerByteRate  int    `json:"producer_byte_rate"`
 	RequestPercentage int    `json:"request_percentage"`
-	User              string `json:"user"`
 }
 
-// databaseDBsBase holds the API response for retrieving a list of available maintenance updates within a Managed Database
+// DatabaseQuotaUpdateReq struct used to update a Kafka quota within a Managed Database.
+type DatabaseQuotaUpdateReq struct {
+	ConsumerByteRate  int `json:"consumer_byte_rate"`
+	ProducerByteRate  int `json:"producer_byte_rate"`
+	RequestPercentage int `json:"request_percentage"`
+}
+
+// DatabaseAvailableConnector represents an available Kafka connector within a Managed Database cluster
+type DatabaseAvailableConnector struct {
+	Class   string `json:"class"`
+	Title   string `json:"title"`
+	Version string `json:"version"`
+	Type    string `json:"type"`
+	DocURL  string `json:"doc_url"`
+}
+
+// databaseAvailableConnectorsBase holds the API response for retrieving a list of available Kafka connectors within a Managed Database
+type databaseAvailableConnectorsBase struct {
+	DatabaseAvailableConnectors []DatabaseAvailableConnector `json:"available_connectors"`
+}
+
+// DatabaseConnectorConfigurationOption represents a configuration option for a Kafka connector within a Managed Database cluster
+type DatabaseConnectorConfigurationOption struct {
+	Name         string `json:"name"`
+	Type         string `json:"type"`
+	Required     bool   `json:"required"`
+	DefaultValue string `json:"default_value"`
+	Description  string `json:"description"`
+}
+
+// databaseConnectorConfigBase holds the API response for retrieving a configuration schema for a Kafka connector within a Managed Database
+type databaseConnectorConfigBase struct {
+	ConfigurationSchema []DatabaseConnectorConfigurationOption `json:"configuration_schema"`
+}
+
+// DatabaseConnector represents a Kafka connector within a Managed Database cluster
+type DatabaseConnector struct {
+	Name   string                 `json:"name"`
+	Class  string                 `json:"class"`
+	Topics string                 `json:"topics"`
+	Config map[string]interface{} `json:"config"`
+}
+
+// databaseConnectorBase holds the API response for retrieving a single Kafka connector within a Managed Database
+type databaseConnectorBase struct {
+	DatabaseConnector *DatabaseConnector `json:"connector"`
+}
+
+// databaseConnectorsBase holds the API response for retrieving a list of Kafka connectors within a Managed Database
+type databaseConnectorsBase struct {
+	DatabaseConnectors []DatabaseConnector `json:"connectors"`
+	Meta               *Meta               `json:"meta"`
+}
+
+// DatabaseConnectorCreateReq struct used to create a Kafka connector within a Managed Database.
+type DatabaseConnectorCreateReq struct {
+	Name   string                 `json:"name"`
+	Class  string                 `json:"class"`
+	Topics string                 `json:"topics"`
+	Config map[string]interface{} `json:"config,omitempty"`
+}
+
+// DatabaseConnectorUpdateReq struct used to update a Kafka connector within a Managed Database.
+type DatabaseConnectorUpdateReq struct {
+	Topics string                 `json:"topics,omitempty"`
+	Config map[string]interface{} `json:"config,omitempty"`
+}
+
+// databaseUpdatesBase holds the API response for retrieving a list of available maintenance updates within a Managed Database
 type databaseUpdatesBase struct {
 	AvailableUpdates []string `json:"available_updates"`
 }
@@ -430,7 +518,7 @@ type DatabaseAlert struct {
 	TableCount           int    `json:"table_count,omitempty"`
 }
 
-// databaseDBsBase holds the API response for querying service alerts within a Managed Database
+// databaseAlertsBase holds the API response for querying service alerts within a Managed Database
 type databaseAlertsBase struct {
 	DatabaseAlerts []DatabaseAlert `json:"alerts"`
 }
@@ -1141,6 +1229,24 @@ func (d *DatabaseServiceHandler) GetQuota(ctx context.Context, databaseID, clien
 	return databaseQuota.DatabaseQuota, resp, nil
 }
 
+// UpdateQuota will update a Kafka quota within the Managed Database with the given parameters
+func (d *DatabaseServiceHandler) UpdateQuota(ctx context.Context, databaseID, clientID, username string, databaseQuotaReq *DatabaseQuotaUpdateReq) (*DatabaseQuota, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/quotas/%s/%s", databasePath, databaseID, clientID, username)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseQuotaReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseQuota := new(databaseQuotaBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseQuota)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseQuota.DatabaseQuota, resp, nil
+}
+
 // DeleteQuota will delete a Kafka quota within the Managed database
 func (d *DatabaseServiceHandler) DeleteQuota(ctx context.Context, databaseID, clientID, username string) error {
 	uri := fmt.Sprintf("%s/%s/quotas/%s/%s", databasePath, databaseID, clientID, username)
@@ -1188,6 +1294,127 @@ func (d *DatabaseServiceHandler) StartMaintenance(ctx context.Context, databaseI
 	}
 
 	return databaseUpdates.Message, resp, nil
+}
+
+// ListAvailableConnectors retrieves all available Kafka connectors for your Managed Database.
+func (d *DatabaseServiceHandler) ListAvailableConnectors(ctx context.Context, databaseID string) ([]DatabaseAvailableConnector, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/available-connectors", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseAvailableConnectors := new(databaseAvailableConnectorsBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseAvailableConnectors)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseAvailableConnectors.DatabaseAvailableConnectors, resp, nil
+}
+
+// GetConnectorConfigurationSchema retrieves all available configuration options for a Kafka connector on your Managed Database.
+func (d *DatabaseServiceHandler) GetConnectorConfigurationSchema(ctx context.Context, databaseID, connectorClass string) ([]DatabaseConnectorConfigurationOption, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/available-connectors/%s/configuration", databasePath, databaseID, connectorClass)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseConnectorConfigurationSchema := new(databaseConnectorConfigBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseConnectorConfigurationSchema)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseConnectorConfigurationSchema.ConfigurationSchema, resp, nil
+}
+
+// ListConnectors retrieves all Kafka connectors on your Managed Database.
+func (d *DatabaseServiceHandler) ListConnectors(ctx context.Context, databaseID string) ([]DatabaseConnector, *Meta, *http.Response, error) { //nolint:dupl,lll
+	uri := fmt.Sprintf("%s/%s/connectors", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	databaseConnectors := new(databaseConnectorsBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseConnectors)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return databaseConnectors.DatabaseConnectors, databaseConnectors.Meta, resp, nil
+}
+
+// CreateConnector will create a Kafka connector within the Managed Database with the given parameters
+func (d *DatabaseServiceHandler) CreateConnector(ctx context.Context, databaseID string, databaseConnectorReq *DatabaseConnectorCreateReq) (*DatabaseConnector, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/connectors", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, databaseConnectorReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseConnector := new(databaseConnectorBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseConnector)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseConnector.DatabaseConnector, resp, nil
+}
+
+// GetConnector retrieves information on an individual Kafka connector within a Managed Database based on a connectorName and databaseID
+func (d *DatabaseServiceHandler) GetConnector(ctx context.Context, databaseID, connectorName string) (*DatabaseConnector, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/connectors/%s", databasePath, databaseID, connectorName)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseConnector := new(databaseConnectorBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseConnector)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseConnector.DatabaseConnector, resp, nil
+}
+
+// UpdateConnector will update a Kafka connector within the Managed Database with the given parameters
+func (d *DatabaseServiceHandler) UpdateConnector(ctx context.Context, databaseID, connectorName string, databaseConnectorReq *DatabaseConnectorUpdateReq) (*DatabaseConnector, *http.Response, error) { //nolint:lll,dupl
+	uri := fmt.Sprintf("%s/%s/connectors/%s", databasePath, databaseID, connectorName)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseConnectorReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseConnector := new(databaseConnectorBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseConnector)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseConnector.DatabaseConnector, resp, nil
+}
+
+// DeleteConnector will delete a Kafka connector within the Managed database
+func (d *DatabaseServiceHandler) DeleteConnector(ctx context.Context, databaseID, connectorName string) error {
+	uri := fmt.Sprintf("%s/%s/connectors/%s", databasePath, databaseID, connectorName)
+
+	req, err := d.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // ListServiceAlerts queries for service alerts for the Managed Database using the given parameters
