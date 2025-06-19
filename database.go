@@ -57,6 +57,11 @@ type DatabaseService interface {
 	GetConnector(ctx context.Context, databaseID string, connectorName string) (*DatabaseConnector, *http.Response, error)
 	UpdateConnector(ctx context.Context, databaseID string, connectorName string, databaseConnectorReq *DatabaseConnectorUpdateReq) (*DatabaseConnector, *http.Response, error) //nolint:lll
 	DeleteConnector(ctx context.Context, databaseID string, connectorName string) error
+	GetConnectorStatus(ctx context.Context, databaseID string, connectorName string) (*DatabaseConnectorStatus, *http.Response, error)
+	RestartConnector(ctx context.Context, databaseID string, connectorName string) error
+	PauseConnector(ctx context.Context, databaseID string, connectorName string) error
+	ResumeConnector(ctx context.Context, databaseID string, connectorName string) error
+	RestartConnectorTask(ctx context.Context, databaseID string, connectorName string, taskID int) error
 
 	ListServiceAlerts(ctx context.Context, databaseID string, databaseAlertsReq *DatabaseListAlertsReq) ([]DatabaseAlert, *http.Response, error) //nolint:lll
 
@@ -495,6 +500,24 @@ type DatabaseConnectorCreateReq struct {
 type DatabaseConnectorUpdateReq struct {
 	Topics string                 `json:"topics,omitempty"`
 	Config map[string]interface{} `json:"config,omitempty"`
+}
+
+// DatabaseConnector represents a Kafka connector status within a Managed Database cluster
+type DatabaseConnectorStatus struct {
+	State string                  `json:"state"`
+	Tasks []DatabaseConnectorTask `json:"tasks"`
+}
+
+// DatabaseConnectorTask represents a Kafka connector task within a Managed Database cluster
+type DatabaseConnectorTask struct {
+	ID    int    `json:"id"`
+	State string `json:"state"`
+	Trace string `json:"trace"`
+}
+
+// databaseConnectorStatusBase holds the API response for retrieving a Kafka connector status within a Managed Database
+type databaseConnectorStatusBase struct {
+	ConnectorStatus *DatabaseConnectorStatus `json:"connector_status"`
 }
 
 // databaseUpdatesBase holds the API response for retrieving a list of available maintenance updates within a Managed Database
@@ -1409,6 +1432,76 @@ func (d *DatabaseServiceHandler) DeleteConnector(ctx context.Context, databaseID
 	uri := fmt.Sprintf("%s/%s/connectors/%s", databasePath, databaseID, connectorName)
 
 	req, err := d.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// GetConnectorStatus retrieves the status of a Kafka connector within a Managed Database based on a connectorName and databaseID
+func (d *DatabaseServiceHandler) GetConnectorStatus(ctx context.Context, databaseID, connectorName string) (*DatabaseConnectorStatus, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/connectors/%s/status", databasePath, databaseID, connectorName)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseConnectorStatus := new(databaseConnectorStatusBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseConnectorStatus)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseConnectorStatus.ConnectorStatus, resp, nil
+}
+
+// RestartConnector will restart a Kafka connector within the Managed database
+func (d *DatabaseServiceHandler) RestartConnector(ctx context.Context, databaseID, connectorName string) error {
+	uri := fmt.Sprintf("%s/%s/connectors/%s/restart", databasePath, databaseID, connectorName)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// PauseConnector will pause a Kafka connector within the Managed database
+func (d *DatabaseServiceHandler) PauseConnector(ctx context.Context, databaseID, connectorName string) error {
+	uri := fmt.Sprintf("%s/%s/connectors/%s/pause", databasePath, databaseID, connectorName)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// ResumeConnector will resume a paused Kafka connector within the Managed database
+func (d *DatabaseServiceHandler) ResumeConnector(ctx context.Context, databaseID, connectorName string) error {
+	uri := fmt.Sprintf("%s/%s/connectors/%s/resume", databasePath, databaseID, connectorName)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = d.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// RestartConnectorTask will restart a Kafka connector task within the Managed database
+func (d *DatabaseServiceHandler) RestartConnectorTask(ctx context.Context, databaseID, connectorName string, taskID int) error {
+	uri := fmt.Sprintf("%s/%s/connectors/%s/tasks/%d/restart", databasePath, databaseID, connectorName, taskID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, nil)
 	if err != nil {
 		return err
 	}
