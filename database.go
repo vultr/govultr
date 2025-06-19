@@ -83,7 +83,13 @@ type DatabaseService interface {
 	DeleteConnectionPool(ctx context.Context, databaseID string, poolName string) error
 
 	ListAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseAdvancedOptions, []AvailableOption, *http.Response, error)
-	UpdateAdvancedOptions(ctx context.Context, databaseID string, databaseAdvancedOptionsReq *DatabaseAdvancedOptions) (*DatabaseAdvancedOptions, []AvailableOption, *http.Response, error) //nolint:lll
+	UpdateAdvancedOptions(ctx context.Context, databaseID string, databaseAdvancedOptionsReq *DatabaseAdvancedOptions) (*DatabaseAdvancedOptions, []AvailableOption, *http.Response, error)                                                         //nolint:lll
+	ListKafkaRESTAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseKafkaRESTAdvancedOptions, []AvailableOption, *http.Response, error)                                                                                              //nolint:lll
+	UpdateKafkaRESTAdvancedOptions(ctx context.Context, databaseID string, databaseKafkaRESTAdvancedOptionsReq *DatabaseKafkaRESTAdvancedOptions) (*DatabaseKafkaRESTAdvancedOptions, []AvailableOption, *http.Response, error)                     //nolint:lll
+	ListSchemaRegistryAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseSchemaRegistryAdvancedOptions, []AvailableOption, *http.Response, error)                                                                                    //nolint:lll
+	UpdateSchemaRegistryAdvancedOptions(ctx context.Context, databaseID string, databaseSchemaRegistryAdvancedOptionsReq *DatabaseSchemaRegistryAdvancedOptions) (*DatabaseSchemaRegistryAdvancedOptions, []AvailableOption, *http.Response, error) //nolint:lll
+	ListKafkaConnectAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseKafkaConnectAdvancedOptions, []AvailableOption, *http.Response, error)                                                                                        //nolint:lll
+	UpdateKafkaConnectAdvancedOptions(ctx context.Context, databaseID string, databaseKafkaConnectAdvancedOptionsReq *DatabaseKafkaConnectAdvancedOptions) (*DatabaseKafkaConnectAdvancedOptions, []AvailableOption, *http.Response, error)         //nolint:lll
 
 	ListAvailableVersions(ctx context.Context, databaseID string) ([]string, *http.Response, error)
 	StartVersionUpgrade(ctx context.Context, databaseID string, databaseVersionUpgradeReq *DatabaseVersionUpgradeReq) (string, *http.Response, error) //nolint:lll
@@ -217,7 +223,7 @@ type databaseBase struct {
 	Database *Database `json:"database"`
 }
 
-// DatabaseCreateReq struct used to create a database.
+// DatabaseCreateReq struct used to create a database
 type DatabaseCreateReq struct {
 	DatabaseEngine         string   `json:"database_engine,omitempty"`
 	DatabaseEngineVersion  string   `json:"database_engine_version,omitempty"`
@@ -241,7 +247,7 @@ type DatabaseCreateReq struct {
 	EnableKafkaConnect     *bool    `json:"enable_kafka_connect,omitempty"`
 }
 
-// DatabaseUpdateReq struct used to update a dataase.
+// DatabaseUpdateReq struct used to update a database
 type DatabaseUpdateReq struct {
 	Region                 string   `json:"region,omitempty"`
 	Plan                   string   `json:"plan,omitempty"`
@@ -334,7 +340,7 @@ type databaseUsersBase struct {
 	Meta          *Meta          `json:"meta"`
 }
 
-// DatabaseUserCreateReq struct used to create a user within a Managed Database.
+// DatabaseUserCreateReq struct used to create a user within a Managed Database
 type DatabaseUserCreateReq struct {
 	Username   string `json:"username"`
 	Password   string `json:"password,omitempty"`
@@ -342,7 +348,7 @@ type DatabaseUserCreateReq struct {
 	Permission string `json:"permission,omitempty"`
 }
 
-// DatabaseUserUpdateReq struct used to update a user within a Managed Database.
+// DatabaseUserUpdateReq struct used to update a user within a Managed Database
 type DatabaseUserUpdateReq struct {
 	Password string `json:"password"`
 }
@@ -363,7 +369,7 @@ type databaseDBsBase struct {
 	Meta        *Meta        `json:"meta"`
 }
 
-// DatabaseDBCreateReq struct used to create a logical database within a Managed Database.
+// DatabaseDBCreateReq struct used to create a logical database within a Managed Database
 type DatabaseDBCreateReq struct {
 	Name string `json:"name"`
 }
@@ -388,7 +394,7 @@ type databaseTopicsBase struct {
 	Meta           *Meta           `json:"meta"`
 }
 
-// DatabaseTopicCreateReq struct used to create a Kafka topic within a Managed Database.
+// DatabaseTopicCreateReq struct used to create a Kafka topic within a Managed Database
 type DatabaseTopicCreateReq struct {
 	Name           string `json:"name"`
 	Partitions     int    `json:"partitions"`
@@ -397,7 +403,7 @@ type DatabaseTopicCreateReq struct {
 	RetentionBytes int    `json:"retention_bytes"`
 }
 
-// DatabaseTopicUpdateReq struct used to update a Kafka topic within a Managed Database.
+// DatabaseTopicUpdateReq struct used to update a Kafka topic within a Managed Database
 type DatabaseTopicUpdateReq struct {
 	Partitions     int `json:"partitions"`
 	Replication    int `json:"replication"`
@@ -425,7 +431,7 @@ type databaseQuotasBase struct {
 	Meta           *Meta           `json:"meta"`
 }
 
-// DatabaseQuotaCreateReq struct used to create a Kafka quota within a Managed Database.
+// DatabaseQuotaCreateReq struct used to create a Kafka quota within a Managed Database
 type DatabaseQuotaCreateReq struct {
 	ClientID          string `json:"client_id"`
 	User              string `json:"user"`
@@ -434,7 +440,7 @@ type DatabaseQuotaCreateReq struct {
 	RequestPercentage int    `json:"request_percentage"`
 }
 
-// DatabaseQuotaUpdateReq struct used to update a Kafka quota within a Managed Database.
+// DatabaseQuotaUpdateReq struct used to update a Kafka quota within a Managed Database
 type DatabaseQuotaUpdateReq struct {
 	ConsumerByteRate  int `json:"consumer_byte_rate"`
 	ProducerByteRate  int `json:"producer_byte_rate"`
@@ -488,7 +494,7 @@ type databaseConnectorsBase struct {
 	Meta               *Meta               `json:"meta"`
 }
 
-// DatabaseConnectorCreateReq struct used to create a Kafka connector within a Managed Database.
+// DatabaseConnectorCreateReq struct used to create a Kafka connector within a Managed Database
 type DatabaseConnectorCreateReq struct {
 	Name   string                 `json:"name"`
 	Class  string                 `json:"class"`
@@ -496,7 +502,7 @@ type DatabaseConnectorCreateReq struct {
 	Config map[string]interface{} `json:"config,omitempty"`
 }
 
-// DatabaseConnectorUpdateReq struct used to update a Kafka connector within a Managed Database.
+// DatabaseConnectorUpdateReq struct used to update a Kafka connector within a Managed Database
 type DatabaseConnectorUpdateReq struct {
 	Topics string                 `json:"topics,omitempty"`
 	Config map[string]interface{} `json:"config,omitempty"`
@@ -546,7 +552,7 @@ type databaseAlertsBase struct {
 	DatabaseAlerts []DatabaseAlert `json:"alerts"`
 }
 
-// DatabaseListAlertsReq struct used to query service alerts for a Managed Database.
+// DatabaseListAlertsReq struct used to query service alerts for a Managed Database
 type DatabaseListAlertsReq struct {
 	Period string `json:"period"`
 }
@@ -575,7 +581,7 @@ type databaseMigrationBase struct {
 	Migration *DatabaseMigration `json:"migration"`
 }
 
-// DatabaseMigrationStartReq struct used to start a migration for a Managed Database.
+// DatabaseMigrationStartReq struct used to start a migration for a Managed Database
 type DatabaseMigrationStartReq struct {
 	Host             string `json:"host"`
 	Port             int    `json:"port"`
@@ -586,7 +592,7 @@ type DatabaseMigrationStartReq struct {
 	SSL              *bool  `json:"ssl"`
 }
 
-// DatabaseAddReplicaReq struct used to add a read-only replica to a Managed Database.
+// DatabaseAddReplicaReq struct used to add a read-only replica to a Managed Database
 type DatabaseAddReplicaReq struct {
 	Region string `json:"region,omitempty"`
 	Label  string `json:"label,omitempty"`
@@ -604,7 +610,7 @@ type DatabaseBackup struct {
 	Time string `json:"time"`
 }
 
-// DatabaseBackupRestoreReq struct used to restore the backup of a Managed Database to a new subscription.
+// DatabaseBackupRestoreReq struct used to restore the backup of a Managed Database to a new subscription
 type DatabaseBackupRestoreReq struct {
 	Label string `json:"label,omitempty"`
 	Type  string `json:"type,omitempty"`
@@ -612,7 +618,7 @@ type DatabaseBackupRestoreReq struct {
 	Time  string `json:"time,omitempty"`
 }
 
-// DatabaseForkReq struct used to fork a Managed Database to a new subscription from a backup.
+// DatabaseForkReq struct used to fork a Managed Database to a new subscription from a backup
 type DatabaseForkReq struct {
 	Label  string `json:"label,omitempty"`
 	Region string `json:"region,omitempty"`
@@ -650,7 +656,7 @@ type databaseConnectionPoolsBase struct {
 	Meta            *Meta                    `json:"meta"`
 }
 
-// DatabaseConnectionPoolCreateReq struct used to create a connection pool within a PostgreSQL Managed Database.
+// DatabaseConnectionPoolCreateReq struct used to create a connection pool within a PostgreSQL Managed Database
 type DatabaseConnectionPoolCreateReq struct {
 	Name     string `json:"name,omitempty"`
 	Database string `json:"database,omitempty"`
@@ -659,7 +665,7 @@ type DatabaseConnectionPoolCreateReq struct {
 	Size     int    `json:"size,omitempty"`
 }
 
-// DatabaseConnectionPoolUpdateReq struct used to update a connection pool within a PostgreSQL Managed Database.
+// DatabaseConnectionPoolUpdateReq struct used to update a connection pool within a PostgreSQL Managed Database
 type DatabaseConnectionPoolUpdateReq struct {
 	Database string `json:"database,omitempty"`
 	Username string `json:"username,omitempty"`
@@ -667,7 +673,7 @@ type DatabaseConnectionPoolUpdateReq struct {
 	Size     int    `json:"size,omitempty"`
 }
 
-// DatabaseAdvancedOptions represents user configurable advanced options within a MySQL/PostgreSQL Managed Database cluster
+// DatabaseAdvancedOptions represents user configurable advanced options within a Managed Database cluster
 type DatabaseAdvancedOptions struct {
 	AutovacuumAnalyzeScaleFactor                         float32 `json:"autovacuum_analyze_scale_factor,omitempty"`
 	AutovacuumAnalyzeThreshold                           int     `json:"autovacuum_analyze_threshold,omitempty"`
@@ -785,7 +791,7 @@ type DatabaseAdvancedOptions struct {
 	TransactionPartitionVerificationEnable               *bool   `json:"transaction_partition_verification_enable,omitempty"`
 }
 
-// AvailableOption represents an available advanced configuration option for a PostgreSQL Managed Database cluster
+// AvailableOption represents an available advanced configuration option for a Managed Database cluster
 type AvailableOption struct {
 	Name      string   `json:"name"`
 	Type      string   `json:"type"`
@@ -796,10 +802,69 @@ type AvailableOption struct {
 	Units     string   `json:"units,omitempty"`
 }
 
-// databaseAdvancedOptionsBase represents the API response for PostgreSQL advanced configuration options for a Managed Database
+// databaseAdvancedOptionsBase represents the API response for advanced configuration options for a Managed Database
 type databaseAdvancedOptionsBase struct {
 	ConfiguredOptions *DatabaseAdvancedOptions `json:"configured_options"`
 	AvailableOptions  []AvailableOption        `json:"available_options"`
+}
+
+// DatabaseKafkaRESTAdvancedOptions represents user configurable Kafka REST advanced options within a Managed Database cluster
+type DatabaseKafkaRESTAdvancedOptions struct {
+	ProducerAcks              string `json:"producer_acks,omitempty"`
+	ProducerCompressionType   string `json:"producer_compression_type,omitempty"`
+	ProducerLingerMS          int    `json:"producer_linger_ms,omitempty"`
+	ProducerMaxRequestSize    int    `json:"producer_max_request_size,omitempty"`
+	ConsumerEnableAutoCommit  *bool  `json:"consumer_enable_auto_commit,omitempty"`
+	ConsumerRequestMaxBytes   int    `json:"consumer_request_max_bytes,omitempty"`
+	ConsumerRequestTimeoutMS  int    `json:"consumer_request_timeout_ms,omitempty"`
+	NameStrategy              string `json:"name_strategy,omitempty"`
+	NameStrategyValidation    *bool  `json:"name_strategy_validation,omitempty"`
+	SimpleConsumerPoolSizeMax int    `json:"simpleconsumer_pool_size_max,omitempty"`
+}
+
+// databaseKafkaRESTAdvancedOptionsBase represents the API response for Kafka REST advanced configuration options for a Managed Database
+type databaseKafkaRESTAdvancedOptionsBase struct {
+	ConfiguredOptions *DatabaseKafkaRESTAdvancedOptions `json:"configured_options"`
+	AvailableOptions  []AvailableOption                 `json:"available_options"`
+}
+
+// DatabaseSchemaRegistryAdvancedOptions represents user configurable Schema Registry advanced options within a Managed Database cluster
+type DatabaseSchemaRegistryAdvancedOptions struct {
+	LeaderEligibility       *bool `json:"leader_eligibility,omitempty"`
+	SchemaReaderStrictMode  *bool `json:"schema_reader_strict_mode,omitempty"`
+	RetriableErrorsSilenced *bool `json:"retriable_errors_silenced,omitempty"`
+}
+
+// databaseSchemaRegistryAdvancedOptionsBase represents the API response for Schema Registry advanced options for a Managed Database
+type databaseSchemaRegistryAdvancedOptionsBase struct {
+	ConfiguredOptions *DatabaseSchemaRegistryAdvancedOptions `json:"configured_options"`
+	AvailableOptions  []AvailableOption                      `json:"available_options"`
+}
+
+// DatabaseKafkaConnectAdvancedOptions represents user configurable Kafka Connect advanced options within a Managed Database cluster
+type DatabaseKafkaConnectAdvancedOptions struct {
+	ConnectorClientConfigOverridePolicy string `json:"connector_client_config_override_policy,omitempty"`
+	ConsumerAutoOffsetReset             string `json:"consumer_auto_offset_reset,omitempty"`
+	ConsumerFetchMaxBytes               int    `json:"consumer_fetch_max_bytes,omitempty"`
+	ConsumerIsolationLevel              string `json:"consumer_isolation_level,omitempty"`
+	ConsumerMaxPartitionFetchBytes      int    `json:"consumer_max_partition_fetch_bytes,omitempty"`
+	ConsumerMaxPollIntervalMS           int    `json:"consumer_max_poll_interval_ms,omitempty"`
+	ConsumerMaxPollRecords              int    `json:"consumer_max_poll_records,omitempty"`
+	OffsetFlushIntervalMS               int    `json:"offset_flush_interval_ms,omitempty"`
+	OffsetFlushTimeoutMS                int    `json:"offset_flush_timeout_ms,omitempty"`
+	ProducerBatchSize                   int    `json:"producer_batch_size,omitempty"`
+	ProducerBufferMemory                int    `json:"producer_buffer_memory,omitempty"`
+	ProducerCompressionType             string `json:"producer_compression_type,omitempty"`
+	ProducerLingerMS                    int    `json:"producer_linger_ms,omitempty"`
+	ProducerMaxRequestSize              int    `json:"producer_max_request_size,omitempty"`
+	ScheduledRebalanceMaxDelayMS        int    `json:"scheduled_rebalance_max_delay_ms,omitempty"`
+	SessionTimeoutMS                    int    `json:"session_timeout_ms,omitempty"`
+}
+
+// databaseKafkaConnectAdvancedOptionsBase represents the API response for Kafka Connect advanced options for a Managed Database
+type databaseKafkaConnectAdvancedOptionsBase struct {
+	ConfiguredOptions *DatabaseKafkaConnectAdvancedOptions `json:"configured_options"`
+	AvailableOptions  []AvailableOption                    `json:"available_options"`
 }
 
 // DatabaseAvailableVersions represents available versions upgrades for a Managed Database cluster
@@ -807,7 +872,7 @@ type DatabaseAvailableVersions struct {
 	AvailableVersions []string `json:"available_versions"`
 }
 
-// DatabaseVersionUpgradeReq struct used to initiate a version upgrade for a PostgreSQL Managed Database.
+// DatabaseVersionUpgradeReq struct used to initiate a version upgrade for a PostgreSQL Managed Database
 type DatabaseVersionUpgradeReq struct {
 	Version string `json:"version,omitempty"`
 }
@@ -860,7 +925,7 @@ func (d *DatabaseServiceHandler) List(ctx context.Context, options *DBListOption
 	return databases.Databases, databases.Meta, resp, nil
 }
 
-// Create will create the Managed Database with the given parameters
+// Create will create a Managed Database with the given parameters
 func (d *DatabaseServiceHandler) Create(ctx context.Context, databaseReq *DatabaseCreateReq) (*Database, *http.Response, error) {
 	req, err := d.client.NewRequest(ctx, http.MethodPost, databasePath, databaseReq)
 	if err != nil {
@@ -876,7 +941,7 @@ func (d *DatabaseServiceHandler) Create(ctx context.Context, databaseReq *Databa
 	return database.Database, resp, nil
 }
 
-// Get will get the Managed Database with the given databaseID
+// Get will get a Managed Database with the given databaseID
 func (d *DatabaseServiceHandler) Get(ctx context.Context, databaseID string) (*Database, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s", databasePath, databaseID)
 
@@ -894,7 +959,7 @@ func (d *DatabaseServiceHandler) Get(ctx context.Context, databaseID string) (*D
 	return database.Database, resp, nil
 }
 
-// Update will update the Managed Database with the given parameters
+// Update will update a Managed Database with the given parameters
 func (d *DatabaseServiceHandler) Update(ctx context.Context, databaseID string, databaseReq *DatabaseUpdateReq) (*Database, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s", databasePath, databaseID)
 
@@ -912,7 +977,7 @@ func (d *DatabaseServiceHandler) Update(ctx context.Context, databaseID string, 
 	return database.Database, resp, nil
 }
 
-// Delete a Managed database. All data will be permanently lost.
+// Delete a Managed database, all data will be permanently lost
 func (d *DatabaseServiceHandler) Delete(ctx context.Context, databaseID string) error {
 	uri := fmt.Sprintf("%s/%s", databasePath, databaseID)
 
@@ -925,7 +990,7 @@ func (d *DatabaseServiceHandler) Delete(ctx context.Context, databaseID string) 
 	return err
 }
 
-// GetUsage retrieves disk, memory, and CPU usage information for your Managed Database.
+// GetUsage retrieves disk, memory, and CPU usage information for a Managed Database
 func (d *DatabaseServiceHandler) GetUsage(ctx context.Context, databaseID string) (*DatabaseUsage, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/usage", databasePath, databaseID)
 
@@ -943,7 +1008,7 @@ func (d *DatabaseServiceHandler) GetUsage(ctx context.Context, databaseID string
 	return databaseUsage.Usage, resp, nil
 }
 
-// ListUsers retrieves all database users on your Managed Database.
+// ListUsers retrieves all database users on a Managed Database
 func (d *DatabaseServiceHandler) ListUsers(ctx context.Context, databaseID string) ([]DatabaseUser, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := fmt.Sprintf("%s/%s/users", databasePath, databaseID)
 
@@ -961,7 +1026,7 @@ func (d *DatabaseServiceHandler) ListUsers(ctx context.Context, databaseID strin
 	return databaseUsers.DatabaseUsers, databaseUsers.Meta, resp, nil
 }
 
-// CreateUser will create a user within the Managed Database with the given parameters
+// CreateUser will create a user within a Managed Database with the given parameters
 func (d *DatabaseServiceHandler) CreateUser(ctx context.Context, databaseID string, databaseUserReq *DatabaseUserCreateReq) (*DatabaseUser, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/users", databasePath, databaseID)
 
@@ -997,7 +1062,7 @@ func (d *DatabaseServiceHandler) GetUser(ctx context.Context, databaseID, userna
 	return databaseUser.DatabaseUser, resp, nil
 }
 
-// UpdateUser will update a user within the Managed Database with the given parameters
+// UpdateUser will update a user within a Managed Database with the given parameters
 func (d *DatabaseServiceHandler) UpdateUser(ctx context.Context, databaseID, username string, databaseUserReq *DatabaseUserUpdateReq) (*DatabaseUser, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/users/%s", databasePath, databaseID, username)
 
@@ -1015,7 +1080,7 @@ func (d *DatabaseServiceHandler) UpdateUser(ctx context.Context, databaseID, use
 	return databaseUser.DatabaseUser, resp, nil
 }
 
-// DeleteUser will delete a user within the Managed database
+// DeleteUser will delete a user within a Managed Database
 func (d *DatabaseServiceHandler) DeleteUser(ctx context.Context, databaseID, username string) error {
 	uri := fmt.Sprintf("%s/%s/users/%s", databasePath, databaseID, username)
 
@@ -1046,7 +1111,7 @@ func (d *DatabaseServiceHandler) UpdateUserACL(ctx context.Context, databaseID, 
 	return databaseUser.DatabaseUser, resp, nil
 }
 
-// ListDBs retrieves all logical databases on your Managed Database.
+// ListDBs retrieves all logical databases on a Managed Database
 func (d *DatabaseServiceHandler) ListDBs(ctx context.Context, databaseID string) ([]DatabaseDB, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := fmt.Sprintf("%s/%s/dbs", databasePath, databaseID)
 
@@ -1064,7 +1129,7 @@ func (d *DatabaseServiceHandler) ListDBs(ctx context.Context, databaseID string)
 	return databaseDBs.DatabaseDBs, databaseDBs.Meta, resp, nil
 }
 
-// CreateDB will create a logical database within the Managed Database with the given parameters
+// CreateDB will create a logical database within a Managed Database with the given parameters
 func (d *DatabaseServiceHandler) CreateDB(ctx context.Context, databaseID string, databaseDBReq *DatabaseDBCreateReq) (*DatabaseDB, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/dbs", databasePath, databaseID)
 
@@ -1100,7 +1165,7 @@ func (d *DatabaseServiceHandler) GetDB(ctx context.Context, databaseID, dbname s
 	return databaseDB.DatabaseDB, resp, nil
 }
 
-// DeleteDB will delete a user within the Managed database
+// DeleteDB will delete a user within a Managed Database
 func (d *DatabaseServiceHandler) DeleteDB(ctx context.Context, databaseID, dbname string) error {
 	uri := fmt.Sprintf("%s/%s/dbs/%s", databasePath, databaseID, dbname)
 
@@ -1113,7 +1178,7 @@ func (d *DatabaseServiceHandler) DeleteDB(ctx context.Context, databaseID, dbnam
 	return err
 }
 
-// ListTopics retrieves all Kafka topics on your Managed Database.
+// ListTopics retrieves all Kafka topics on a Managed Database
 func (d *DatabaseServiceHandler) ListTopics(ctx context.Context, databaseID string) ([]DatabaseTopic, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := fmt.Sprintf("%s/%s/topics", databasePath, databaseID)
 
@@ -1131,7 +1196,7 @@ func (d *DatabaseServiceHandler) ListTopics(ctx context.Context, databaseID stri
 	return databaseTopics.DatabaseTopics, databaseTopics.Meta, resp, nil
 }
 
-// CreateTopic will create a Kafka topic within the Managed Database with the given parameters
+// CreateTopic will create a Kafka topic within a Managed Database with the given parameters
 func (d *DatabaseServiceHandler) CreateTopic(ctx context.Context, databaseID string, databaseTopicReq *DatabaseTopicCreateReq) (*DatabaseTopic, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/topics", databasePath, databaseID)
 
@@ -1167,7 +1232,7 @@ func (d *DatabaseServiceHandler) GetTopic(ctx context.Context, databaseID, topic
 	return databaseTopic.DatabaseTopic, resp, nil
 }
 
-// UpdateTopic will update a Kafka topic within the Managed Database with the given parameters
+// UpdateTopic will update a Kafka topic within a Managed Database with the given parameters
 func (d *DatabaseServiceHandler) UpdateTopic(ctx context.Context, databaseID, topicName string, databaseTopicReq *DatabaseTopicUpdateReq) (*DatabaseTopic, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/topics/%s", databasePath, databaseID, topicName)
 
@@ -1185,7 +1250,7 @@ func (d *DatabaseServiceHandler) UpdateTopic(ctx context.Context, databaseID, to
 	return databaseTopic.DatabaseTopic, resp, nil
 }
 
-// DeleteTopic will delete a Kafka topic within the Managed database
+// DeleteTopic will delete a Kafka topic within a Managed Database
 func (d *DatabaseServiceHandler) DeleteTopic(ctx context.Context, databaseID, topicName string) error {
 	uri := fmt.Sprintf("%s/%s/topics/%s", databasePath, databaseID, topicName)
 
@@ -1198,7 +1263,7 @@ func (d *DatabaseServiceHandler) DeleteTopic(ctx context.Context, databaseID, to
 	return err
 }
 
-// ListQuotas retrieves all Kafka quotas on your Managed Database.
+// ListQuotas retrieves all Kafka quotas on a Managed Database
 func (d *DatabaseServiceHandler) ListQuotas(ctx context.Context, databaseID string) ([]DatabaseQuota, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := fmt.Sprintf("%s/%s/quotas", databasePath, databaseID)
 
@@ -1216,7 +1281,7 @@ func (d *DatabaseServiceHandler) ListQuotas(ctx context.Context, databaseID stri
 	return databaseQuotas.DatabaseQuotas, databaseQuotas.Meta, resp, nil
 }
 
-// CreateQuota will create a Kafka quota within the Managed Database with the given parameters
+// CreateQuota will create a Kafka quota within a Managed Database with the given parameters
 func (d *DatabaseServiceHandler) CreateQuota(ctx context.Context, databaseID string, databaseQuotaReq *DatabaseQuotaCreateReq) (*DatabaseQuota, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/quotas", databasePath, databaseID)
 
@@ -1252,7 +1317,7 @@ func (d *DatabaseServiceHandler) GetQuota(ctx context.Context, databaseID, clien
 	return databaseQuota.DatabaseQuota, resp, nil
 }
 
-// UpdateQuota will update a Kafka quota within the Managed Database with the given parameters
+// UpdateQuota will update a Kafka quota within a Managed Database with the given parameters
 func (d *DatabaseServiceHandler) UpdateQuota(ctx context.Context, databaseID, clientID, username string, databaseQuotaReq *DatabaseQuotaUpdateReq) (*DatabaseQuota, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/quotas/%s/%s", databasePath, databaseID, clientID, username)
 
@@ -1270,7 +1335,7 @@ func (d *DatabaseServiceHandler) UpdateQuota(ctx context.Context, databaseID, cl
 	return databaseQuota.DatabaseQuota, resp, nil
 }
 
-// DeleteQuota will delete a Kafka quota within the Managed database
+// DeleteQuota will delete a Kafka quota within a Managed Database
 func (d *DatabaseServiceHandler) DeleteQuota(ctx context.Context, databaseID, clientID, username string) error {
 	uri := fmt.Sprintf("%s/%s/quotas/%s/%s", databasePath, databaseID, clientID, username)
 
@@ -1283,7 +1348,7 @@ func (d *DatabaseServiceHandler) DeleteQuota(ctx context.Context, databaseID, cl
 	return err
 }
 
-// ListMaintenanceUpdates retrieves all available maintenance updates for your Managed Database.
+// ListMaintenanceUpdates retrieves all available maintenance updates for a Managed Database
 func (d *DatabaseServiceHandler) ListMaintenanceUpdates(ctx context.Context, databaseID string) ([]string, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/maintenance", databasePath, databaseID)
 
@@ -1301,7 +1366,7 @@ func (d *DatabaseServiceHandler) ListMaintenanceUpdates(ctx context.Context, dat
 	return databaseUpdates.AvailableUpdates, resp, nil
 }
 
-// StartMaintenance will start the maintenance update process for your Managed Database
+// StartMaintenance will start the maintenance update process for a Managed Database
 func (d *DatabaseServiceHandler) StartMaintenance(ctx context.Context, databaseID string) (string, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/maintenance", databasePath, databaseID)
 
@@ -1319,7 +1384,7 @@ func (d *DatabaseServiceHandler) StartMaintenance(ctx context.Context, databaseI
 	return databaseUpdates.Message, resp, nil
 }
 
-// ListAvailableConnectors retrieves all available Kafka connectors for your Managed Database.
+// ListAvailableConnectors retrieves all available Kafka connectors for a Managed Database
 func (d *DatabaseServiceHandler) ListAvailableConnectors(ctx context.Context, databaseID string) ([]DatabaseAvailableConnector, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/available-connectors", databasePath, databaseID)
 
@@ -1337,7 +1402,7 @@ func (d *DatabaseServiceHandler) ListAvailableConnectors(ctx context.Context, da
 	return databaseAvailableConnectors.DatabaseAvailableConnectors, resp, nil
 }
 
-// GetConnectorConfigurationSchema retrieves all available configuration options for a Kafka connector on your Managed Database.
+// GetConnectorConfigurationSchema retrieves all available configuration options for a Kafka connector on a Managed Database
 func (d *DatabaseServiceHandler) GetConnectorConfigurationSchema(ctx context.Context, databaseID, connectorClass string) ([]DatabaseConnectorConfigurationOption, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/available-connectors/%s/configuration", databasePath, databaseID, connectorClass)
 
@@ -1355,7 +1420,7 @@ func (d *DatabaseServiceHandler) GetConnectorConfigurationSchema(ctx context.Con
 	return databaseConnectorConfigurationSchema.ConfigurationSchema, resp, nil
 }
 
-// ListConnectors retrieves all Kafka connectors on your Managed Database.
+// ListConnectors retrieves all Kafka connectors on a Managed Database
 func (d *DatabaseServiceHandler) ListConnectors(ctx context.Context, databaseID string) ([]DatabaseConnector, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := fmt.Sprintf("%s/%s/connectors", databasePath, databaseID)
 
@@ -1373,7 +1438,7 @@ func (d *DatabaseServiceHandler) ListConnectors(ctx context.Context, databaseID 
 	return databaseConnectors.DatabaseConnectors, databaseConnectors.Meta, resp, nil
 }
 
-// CreateConnector will create a Kafka connector within the Managed Database with the given parameters
+// CreateConnector will create a Kafka connector within a Managed Database with the given parameters
 func (d *DatabaseServiceHandler) CreateConnector(ctx context.Context, databaseID string, databaseConnectorReq *DatabaseConnectorCreateReq) (*DatabaseConnector, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/connectors", databasePath, databaseID)
 
@@ -1409,7 +1474,7 @@ func (d *DatabaseServiceHandler) GetConnector(ctx context.Context, databaseID, c
 	return databaseConnector.DatabaseConnector, resp, nil
 }
 
-// UpdateConnector will update a Kafka connector within the Managed Database with the given parameters
+// UpdateConnector will update a Kafka connector within a Managed Database with the given parameters
 func (d *DatabaseServiceHandler) UpdateConnector(ctx context.Context, databaseID, connectorName string, databaseConnectorReq *DatabaseConnectorUpdateReq) (*DatabaseConnector, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/connectors/%s", databasePath, databaseID, connectorName)
 
@@ -1427,7 +1492,7 @@ func (d *DatabaseServiceHandler) UpdateConnector(ctx context.Context, databaseID
 	return databaseConnector.DatabaseConnector, resp, nil
 }
 
-// DeleteConnector will delete a Kafka connector within the Managed database
+// DeleteConnector will delete a Kafka connector within a Managed Database
 func (d *DatabaseServiceHandler) DeleteConnector(ctx context.Context, databaseID, connectorName string) error {
 	uri := fmt.Sprintf("%s/%s/connectors/%s", databasePath, databaseID, connectorName)
 
@@ -1458,7 +1523,7 @@ func (d *DatabaseServiceHandler) GetConnectorStatus(ctx context.Context, databas
 	return databaseConnectorStatus.ConnectorStatus, resp, nil
 }
 
-// RestartConnector will restart a Kafka connector within the Managed database
+// RestartConnector will restart a Kafka connector within a Managed Database
 func (d *DatabaseServiceHandler) RestartConnector(ctx context.Context, databaseID, connectorName string) error {
 	uri := fmt.Sprintf("%s/%s/connectors/%s/restart", databasePath, databaseID, connectorName)
 
@@ -1471,7 +1536,7 @@ func (d *DatabaseServiceHandler) RestartConnector(ctx context.Context, databaseI
 	return err
 }
 
-// PauseConnector will pause a Kafka connector within the Managed database
+// PauseConnector will pause a Kafka connector within a Managed Database
 func (d *DatabaseServiceHandler) PauseConnector(ctx context.Context, databaseID, connectorName string) error {
 	uri := fmt.Sprintf("%s/%s/connectors/%s/pause", databasePath, databaseID, connectorName)
 
@@ -1484,7 +1549,7 @@ func (d *DatabaseServiceHandler) PauseConnector(ctx context.Context, databaseID,
 	return err
 }
 
-// ResumeConnector will resume a paused Kafka connector within the Managed database
+// ResumeConnector will resume a paused Kafka connector within a Managed Database
 func (d *DatabaseServiceHandler) ResumeConnector(ctx context.Context, databaseID, connectorName string) error {
 	uri := fmt.Sprintf("%s/%s/connectors/%s/resume", databasePath, databaseID, connectorName)
 
@@ -1497,7 +1562,7 @@ func (d *DatabaseServiceHandler) ResumeConnector(ctx context.Context, databaseID
 	return err
 }
 
-// RestartConnectorTask will restart a Kafka connector task within the Managed database
+// RestartConnectorTask will restart a Kafka connector task within a Managed Database
 func (d *DatabaseServiceHandler) RestartConnectorTask(ctx context.Context, databaseID, connectorName string, taskID int) error {
 	uri := fmt.Sprintf("%s/%s/connectors/%s/tasks/%d/restart", databasePath, databaseID, connectorName, taskID)
 
@@ -1510,7 +1575,7 @@ func (d *DatabaseServiceHandler) RestartConnectorTask(ctx context.Context, datab
 	return err
 }
 
-// ListServiceAlerts queries for service alerts for the Managed Database using the given parameters
+// ListServiceAlerts queries for service alerts for a Managed Database using the given parameters
 func (d *DatabaseServiceHandler) ListServiceAlerts(ctx context.Context, databaseID string, databaseAlertsReq *DatabaseListAlertsReq) ([]DatabaseAlert, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/alerts", databasePath, databaseID)
 
@@ -1528,7 +1593,7 @@ func (d *DatabaseServiceHandler) ListServiceAlerts(ctx context.Context, database
 	return databaseAlerts.DatabaseAlerts, resp, nil
 }
 
-// GetMigrationStatus retrieves the migration status for your Managed Database.
+// GetMigrationStatus retrieves the migration status for a Managed Database
 func (d *DatabaseServiceHandler) GetMigrationStatus(ctx context.Context, databaseID string) (*DatabaseMigration, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/migration", databasePath, databaseID)
 
@@ -1546,7 +1611,7 @@ func (d *DatabaseServiceHandler) GetMigrationStatus(ctx context.Context, databas
 	return databaseMigration.Migration, resp, nil
 }
 
-// StartMigration will start a migration for the Managed Database using the given credentials.
+// StartMigration will start a migration for a Managed Database using the given credentials
 func (d *DatabaseServiceHandler) StartMigration(ctx context.Context, databaseID string, databaseMigrationReq *DatabaseMigrationStartReq) (*DatabaseMigration, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/migration", databasePath, databaseID)
 
@@ -1564,7 +1629,7 @@ func (d *DatabaseServiceHandler) StartMigration(ctx context.Context, databaseID 
 	return databaseMigration.Migration, resp, nil
 }
 
-// DetachMigration will detach a migration from the Managed database.
+// DetachMigration will detach a migration from a Managed Database
 func (d *DatabaseServiceHandler) DetachMigration(ctx context.Context, databaseID string) error {
 	uri := fmt.Sprintf("%s/%s/migration", databasePath, databaseID)
 
@@ -1577,7 +1642,7 @@ func (d *DatabaseServiceHandler) DetachMigration(ctx context.Context, databaseID
 	return err
 }
 
-// AddReadOnlyReplica will add a read-only replica node to the Managed Database with the given parameters
+// AddReadOnlyReplica will add a read-only replica node to a Managed Database with the given parameters
 func (d *DatabaseServiceHandler) AddReadOnlyReplica(ctx context.Context, databaseID string, databaseReplicaReq *DatabaseAddReplicaReq) (*Database, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/read-replica", databasePath, databaseID)
 
@@ -1595,7 +1660,7 @@ func (d *DatabaseServiceHandler) AddReadOnlyReplica(ctx context.Context, databas
 	return database.Database, resp, nil
 }
 
-// PromoteReadReplica will promote a read-only replica to its own standalone Managed Database subscription.
+// PromoteReadReplica will promote a read-only replica to its own standalone Managed Database subscription
 func (d *DatabaseServiceHandler) PromoteReadReplica(ctx context.Context, databaseID string) error {
 	uri := fmt.Sprintf("%s/%s/promote-read-replica", databasePath, databaseID)
 
@@ -1608,7 +1673,7 @@ func (d *DatabaseServiceHandler) PromoteReadReplica(ctx context.Context, databas
 	return err
 }
 
-// GetBackupInformation retrieves backup information for your Managed Database.
+// GetBackupInformation retrieves backup information for a Managed Database
 func (d *DatabaseServiceHandler) GetBackupInformation(ctx context.Context, databaseID string) (*DatabaseBackups, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/backups", databasePath, databaseID)
 
@@ -1626,7 +1691,7 @@ func (d *DatabaseServiceHandler) GetBackupInformation(ctx context.Context, datab
 	return databaseBackups, resp, nil
 }
 
-// RestoreFromBackup will create a new subscription of the same plan from a backup of the Managed Database using the given parameters
+// RestoreFromBackup will create a new subscription of the same plan from a backup of a Managed Database using the given parameters
 func (d *DatabaseServiceHandler) RestoreFromBackup(ctx context.Context, databaseID string, databaseRestoreReq *DatabaseBackupRestoreReq) (*Database, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/restore", databasePath, databaseID)
 
@@ -1644,7 +1709,7 @@ func (d *DatabaseServiceHandler) RestoreFromBackup(ctx context.Context, database
 	return database.Database, resp, nil
 }
 
-// Fork will create a new subscription of any plan from a backup of the Managed Database using the given parameters
+// Fork will create a new subscription of any plan from a backup of a Managed Database using the given parameters
 func (d *DatabaseServiceHandler) Fork(ctx context.Context, databaseID string, databaseForkReq *DatabaseForkReq) (*Database, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/fork", databasePath, databaseID)
 
@@ -1662,7 +1727,7 @@ func (d *DatabaseServiceHandler) Fork(ctx context.Context, databaseID string, da
 	return database.Database, resp, nil
 }
 
-// ListConnectionPools retrieves all connection pools within your PostgreSQL Managed Database.
+// ListConnectionPools retrieves all connection pools within your PostgreSQL Managed Database
 func (d *DatabaseServiceHandler) ListConnectionPools(ctx context.Context, databaseID string) (*DatabaseConnections, []DatabaseConnectionPool, *Meta, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/connection-pools", databasePath, databaseID)
 
@@ -1735,7 +1800,7 @@ func (d *DatabaseServiceHandler) UpdateConnectionPool(ctx context.Context, datab
 	return databaseConnectionPool.ConnectionPool, resp, nil
 }
 
-// DeleteConnectionPool will delete a connection pool within the Managed database
+// DeleteConnectionPool will delete a connection pool within a Managed Database
 func (d *DatabaseServiceHandler) DeleteConnectionPool(ctx context.Context, databaseID, poolName string) error {
 	uri := fmt.Sprintf("%s/%s/connection-pools/%s", databasePath, databaseID, poolName)
 
@@ -1748,8 +1813,8 @@ func (d *DatabaseServiceHandler) DeleteConnectionPool(ctx context.Context, datab
 	return err
 }
 
-// ListAdvancedOptions retrieves all connection pools within your PostgreSQL Managed Database.
-func (d *DatabaseServiceHandler) ListAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseAdvancedOptions, []AvailableOption, *http.Response, error) { //nolint:lll
+// ListAdvancedOptions retrieves all current and available advanced configuration options within a Managed Database
+func (d *DatabaseServiceHandler) ListAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseAdvancedOptions, []AvailableOption, *http.Response, error) { //nolint:dupl,lll
 	uri := fmt.Sprintf("%s/%s/advanced-options", databasePath, databaseID)
 
 	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -1766,7 +1831,7 @@ func (d *DatabaseServiceHandler) ListAdvancedOptions(ctx context.Context, databa
 	return databaseAdvancedOptions.ConfiguredOptions, databaseAdvancedOptions.AvailableOptions, resp, nil
 }
 
-// UpdateAdvancedOptions will update a connection pool within the PostgreSQL Managed Database with the given parameters
+// UpdateAdvancedOptions will update advanced configuration options within a Managed Database with the given parameters
 func (d *DatabaseServiceHandler) UpdateAdvancedOptions(ctx context.Context, databaseID string, databaseAdvancedOptionsReq *DatabaseAdvancedOptions) (*DatabaseAdvancedOptions, []AvailableOption, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/advanced-options", databasePath, databaseID)
 
@@ -1784,7 +1849,115 @@ func (d *DatabaseServiceHandler) UpdateAdvancedOptions(ctx context.Context, data
 	return databaseAdvancedOptions.ConfiguredOptions, databaseAdvancedOptions.AvailableOptions, resp, nil
 }
 
-// ListAvailableVersions retrieves all available version upgrades for your Managed Database.
+// ListKafkaRESTAdvancedOptions retrieves all current and available Kafka REST advanced configuration options within a Managed Database
+func (d *DatabaseServiceHandler) ListKafkaRESTAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseKafkaRESTAdvancedOptions, []AvailableOption, *http.Response, error) { //nolint:dupl,lll
+	uri := fmt.Sprintf("%s/%s/advanced-options/kafka-rest", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	databaseKafkaRESTAdvancedOptions := new(databaseKafkaRESTAdvancedOptionsBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseKafkaRESTAdvancedOptions)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return databaseKafkaRESTAdvancedOptions.ConfiguredOptions, databaseKafkaRESTAdvancedOptions.AvailableOptions, resp, nil
+}
+
+// UpdateKafkaRESTAdvancedOptions will update Kafka REST advanced configuration options within a Managed Database with the given parameters
+func (d *DatabaseServiceHandler) UpdateKafkaRESTAdvancedOptions(ctx context.Context, databaseID string, databaseKafkaRESTAdvancedOptionsReq *DatabaseKafkaRESTAdvancedOptions) (*DatabaseKafkaRESTAdvancedOptions, []AvailableOption, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/advanced-options/kafka-rest", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseKafkaRESTAdvancedOptionsReq)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	databaseKafkaRESTAdvancedOptions := new(databaseKafkaRESTAdvancedOptionsBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseKafkaRESTAdvancedOptions)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return databaseKafkaRESTAdvancedOptions.ConfiguredOptions, databaseKafkaRESTAdvancedOptions.AvailableOptions, resp, nil
+}
+
+// ListSchemaRegistryAdvancedOptions retrieves all current and available Schema Registry advanced options within a Managed Database
+func (d *DatabaseServiceHandler) ListSchemaRegistryAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseSchemaRegistryAdvancedOptions, []AvailableOption, *http.Response, error) { //nolint:dupl,lll
+	uri := fmt.Sprintf("%s/%s/advanced-options/schema-registry", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	databaseSchemaRegistryAdvancedOptions := new(databaseSchemaRegistryAdvancedOptionsBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseSchemaRegistryAdvancedOptions)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return databaseSchemaRegistryAdvancedOptions.ConfiguredOptions, databaseSchemaRegistryAdvancedOptions.AvailableOptions, resp, nil
+}
+
+// UpdateSchemaRegistryAdvancedOptions will update Schema Registry advanced options within a Managed Database with the given parameters
+func (d *DatabaseServiceHandler) UpdateSchemaRegistryAdvancedOptions(ctx context.Context, databaseID string, databaseSchemaRegistryAdvancedOptionsReq *DatabaseSchemaRegistryAdvancedOptions) (*DatabaseSchemaRegistryAdvancedOptions, []AvailableOption, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/advanced-options/schema-registry", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseSchemaRegistryAdvancedOptionsReq)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	databaseSchemaRegistryAdvancedOptions := new(databaseSchemaRegistryAdvancedOptionsBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseSchemaRegistryAdvancedOptions)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return databaseSchemaRegistryAdvancedOptions.ConfiguredOptions, databaseSchemaRegistryAdvancedOptions.AvailableOptions, resp, nil
+}
+
+// ListKafkaConnectAdvancedOptions retrieves all current and available Kafka Connect advanced options within a Managed Database
+func (d *DatabaseServiceHandler) ListKafkaConnectAdvancedOptions(ctx context.Context, databaseID string) (*DatabaseKafkaConnectAdvancedOptions, []AvailableOption, *http.Response, error) { //nolint:dupl,lll
+	uri := fmt.Sprintf("%s/%s/advanced-options/kafka-connect", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	databaseKafkaConnectAdvancedOptions := new(databaseKafkaConnectAdvancedOptionsBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseKafkaConnectAdvancedOptions)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return databaseKafkaConnectAdvancedOptions.ConfiguredOptions, databaseKafkaConnectAdvancedOptions.AvailableOptions, resp, nil
+}
+
+// UpdateKafkaConnectAdvancedOptions will update Kafka Connect advanced options within a Managed Database with the given parameters
+func (d *DatabaseServiceHandler) UpdateKafkaConnectAdvancedOptions(ctx context.Context, databaseID string, databaseKafkaConnectAdvancedOptionsReq *DatabaseKafkaConnectAdvancedOptions) (*DatabaseKafkaConnectAdvancedOptions, []AvailableOption, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/advanced-options/kafka-connect", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseKafkaConnectAdvancedOptionsReq)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	databaseKafkaConnectAdvancedOptions := new(databaseKafkaConnectAdvancedOptionsBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseKafkaConnectAdvancedOptions)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return databaseKafkaConnectAdvancedOptions.ConfiguredOptions, databaseKafkaConnectAdvancedOptions.AvailableOptions, resp, nil
+}
+
+// ListAvailableVersions retrieves all available version upgrades for a Managed Database
 func (d *DatabaseServiceHandler) ListAvailableVersions(ctx context.Context, databaseID string) ([]string, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/version-upgrade", databasePath, databaseID)
 
@@ -1802,7 +1975,7 @@ func (d *DatabaseServiceHandler) ListAvailableVersions(ctx context.Context, data
 	return databaseVersions.AvailableVersions, resp, nil
 }
 
-// StartVersionUpgrade will start a migration for the Managed Database using the given credentials.
+// StartVersionUpgrade will start a migration for a Managed Database using the given credentials
 func (d *DatabaseServiceHandler) StartVersionUpgrade(ctx context.Context, databaseID string, databaseVersionUpgradeReq *DatabaseVersionUpgradeReq) (string, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/version-upgrade", databasePath, databaseID)
 
