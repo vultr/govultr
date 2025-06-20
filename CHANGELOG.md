@@ -11,7 +11,7 @@
 
 ## [3.20.0](https://github.com/vultr/govultr/compare/v3.19.1...v3.20.0) (2025-05-06)
 ### Enhancements
-* Database: Add database backup schedule [PR 382](https://github.com/vultr/govultr/pull/382)
+* Database: Add backup schedule [PR 382](https://github.com/vultr/govultr/pull/382)
 
 ## [3.19.1](https://github.com/vultr/govultr/compare/v3.19.0...v3.19.1) (2025-04-08)
 ### Bug Fixes
