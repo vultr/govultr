@@ -1,7 +1,17 @@
 # Change Log
+## [3.21.0](https://github.com/vultr/govultr/compare/v3.20.0...v3.21.0) (2025-06-20)
+### Enhancements
+* Database: Add Kafka additional features [PR 386](https://github.com/vultr/govultr/pull/386)
+
+### Dependencies
+* Bump github.com/hashicorp/go-retryablehttp from 0.7.7 to 0.7.8 [PR 385](https://github.com/vultr/govultr/pull/385)
+
+### Automation
+* Update goreleaser to lock to v2 [PR 384](https://github.com/vultr/govultr/pull/384)
+
 ## [3.20.0](https://github.com/vultr/govultr/compare/v3.19.1...v3.20.0) (2025-05-06)
 ### Enhancements
-* Database: Support Managed Database backup schedule [PR 382](https://github.com/vultr/govultr/pull/382)
+* Database: Add backup schedule [PR 382](https://github.com/vultr/govultr/pull/382)
 
 ## [3.19.1](https://github.com/vultr/govultr/compare/v3.19.0...v3.19.1) (2025-04-08)
 ### Bug Fixes
