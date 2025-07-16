@@ -1,4 +1,8 @@
 # Change Log
+## [3.21.1](https://github.com/vultr/govultr/compare/v3.21.0...v3.21.1) (2025-07-16
+### Bug Fixes
+* Load Balancer: Add missing auto SSL domain field [PR 388](https://github.com/vultr/govultr/pull/388)
+
 ## [3.21.0](https://github.com/vultr/govultr/compare/v3.20.0...v3.21.0) (2025-06-20)
 ### Enhancements
 * Database: Add Kafka additional features [PR 386](https://github.com/vultr/govultr/pull/386)
