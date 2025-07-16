@@ -65,7 +65,7 @@ type LoadBalancerReq struct {
 	StickySessions     *StickySessions  `json:"sticky_session,omitempty"`
 	ForwardingRules    []ForwardingRule `json:"forwarding_rules,omitempty"`
 	SSL                *SSL             `json:"ssl,omitempty"`
-	AutoSSL            *AutoSSL         `json:"auto_ssl,omitempty"`
+	AutoSSL            *AutoSSLReq      `json:"auto_ssl,omitempty"`
 	SSLRedirect        *bool            `json:"ssl_redirect,omitempty"`
 	HTTP2              *bool            `json:"http2,omitempty"`
 	HTTP3              *bool            `json:"http3,omitempty"`
@@ -142,6 +142,12 @@ type SSL struct {
 
 // AutoSSL represents valid AutoSSL config
 type AutoSSL struct {
+	DomainZone string `json:"domain_zone"`
+	Domain     string `json:"domain"`
+}
+
+// AutoSSLReq represents a request to create a load balancer AutoSSL config
+type AutoSSLReq struct {
 	DomainZone string `json:"domain_zone"`
 	DomainSub  string `json:"domain_sub,omitempty"`
 }
