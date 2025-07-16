@@ -144,6 +144,7 @@ type SSL struct {
 type AutoSSL struct {
 	DomainZone string `json:"domain_zone"`
 	DomainSub  string `json:"domain_sub,omitempty"`
+	Domain     string `json:"domain,omitempty"`
 }
 
 type lbsBase struct {
