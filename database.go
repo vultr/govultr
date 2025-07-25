@@ -1318,7 +1318,7 @@ func (d *DatabaseServiceHandler) GetQuota(ctx context.Context, databaseID, clien
 }
 
 // UpdateQuota will update a Kafka quota within a Managed Database with the given parameters
-func (d *DatabaseServiceHandler) UpdateQuota(ctx context.Context, databaseID, clientID, username string, databaseQuotaReq *DatabaseQuotaUpdateReq) (*DatabaseQuota, *http.Response, error) { //nolint:lll
+func (d *DatabaseServiceHandler) UpdateQuota(ctx context.Context, databaseID, clientID, username string, databaseQuotaReq *DatabaseQuotaUpdateReq) (*DatabaseQuota, *http.Response, error) { //nolint:dupl,lll
 	uri := fmt.Sprintf("%s/%s/quotas/%s/%s", databasePath, databaseID, clientID, username)
 
 	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseQuotaReq)
