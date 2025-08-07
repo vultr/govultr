@@ -1,6 +1,7 @@
 package govultr
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -43,32 +44,62 @@ func TestSnapshotServiceHandler_Create(t *testing.T) {
 }
 
 func TestSnapshotServiceHandler_CreateFromURL(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v2/snapshots/create-from-url", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"snapshot":{"id": "5359435d28b9a","date_created": "2014-04-18 12:40:40","description": "Test snapshot","size": 42949672960,"compressed_size" : 1078864689,"status": "complete","os_id": 127,"app_id": 0}}`
-		fmt.Fprint(writer, response)
-	})
-	snap := SnapshotURLReq{URL: "http://vultr.com"}
-	snapshot, _, err := client.Snapshot.CreateFromURL(ctx, &snap)
-	if err != nil {
-		t.Errorf("Snapshot.CreateFromURL returned error: %v", err)
+	tests := map[string]struct {
+		inUEFI   SnapshotURLReqUEFI
+		wantUEFI string
+	}{
+		"defaults": {},
+		"unspecified": {
+			inUEFI:   SnapshotURLReqUEFIUnspecified,
+			wantUEFI: "",
+		},
+		"yes": {
+			inUEFI:   SnapshotURLReqUEFIYes,
+			wantUEFI: "yes",
+		},
+		"no": {
+			inUEFI:   SnapshotURLReqUEFINo,
+			wantUEFI: "no",
+		},
 	}
 
-	expected := &Snapshot{
-		ID:             "5359435d28b9a",
-		DateCreated:    "2014-04-18 12:40:40",
-		Description:    "Test snapshot",
-		Size:           42949672960,
-		CompressedSize: 1078864689,
-		Status:         "complete",
-		OsID:           127,
-		AppID:          0,
-	}
+	for tn, tc := range tests {
+		t.Run(tn, func(t *testing.T) {
+			setup()
+			defer teardown()
 
-	if !reflect.DeepEqual(snapshot, expected) {
-		t.Errorf("Snapshot.CreateFromURL returned %+v, expected %+v", snapshot, expected)
+			mux.HandleFunc("/v2/snapshots/create-from-url", func(writer http.ResponseWriter, request *http.Request) {
+				uefiReq := SnapshotURLReq{}
+				if err := json.NewDecoder(request.Body).Decode(&uefiReq); err != nil {
+					t.Errorf("Snapshot.CreateFromURL: unable to unmarshal request body: %v.", err)
+				} else if got, want := string(uefiReq.UEFI), tc.wantUEFI; got != want {
+					t.Errorf("Snapshot.CreateFromURL: UEIF got %v, want %v.", got, want)
+				}
+
+				response := `{"snapshot":{"id": "5359435d28b9a","date_created": "2014-04-18 12:40:40","description": "Test snapshot","size": 42949672960,"compressed_size" : 1078864689,"status": "complete","os_id": 127,"app_id": 0}}`
+				fmt.Fprint(writer, response)
+			})
+			snap := SnapshotURLReq{URL: "http://vultr.com", UEFI: tc.inUEFI}
+			snapshot, _, err := client.Snapshot.CreateFromURL(ctx, &snap)
+			if err != nil {
+				t.Errorf("Snapshot.CreateFromURL returned error: %v", err)
+			}
+
+			expected := &Snapshot{
+				ID:             "5359435d28b9a",
+				DateCreated:    "2014-04-18 12:40:40",
+				Description:    "Test snapshot",
+				Size:           42949672960,
+				CompressedSize: 1078864689,
+				Status:         "complete",
+				OsID:           127,
+				AppID:          0,
+			}
+
+			if !reflect.DeepEqual(snapshot, expected) {
+				t.Errorf("Snapshot.CreateFromURL returned %+v, expected %+v", snapshot, expected)
+			}
+		})
 	}
 }
 

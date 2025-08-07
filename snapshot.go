@@ -43,9 +43,19 @@ type SnapshotReq struct {
 
 // SnapshotURLReq struct is used to create snapshots from a URL.
 type SnapshotURLReq struct {
-	URL         string `json:"url"`
-	Description string `json:"description,omitempty"`
+	URL         string             `json:"url"`
+	Description string             `json:"description,omitempty"`
+	UEFI        SnapshotURLReqUEFI `json:"uefi,omitempty"`
 }
+
+// SnapshotURLReqUEFI is an enum type representing the values accepted by the API.
+type SnapshotURLReqUEFI string
+
+const (
+	SnapshotURLReqUEFIUnspecified SnapshotURLReqUEFI = ""
+	SnapshotURLReqUEFIYes         SnapshotURLReqUEFI = "yes"
+	SnapshotURLReqUEFINo          SnapshotURLReqUEFI = "no"
+)
 
 type snapshotsBase struct {
 	Snapshots []Snapshot `json:"snapshots"`
