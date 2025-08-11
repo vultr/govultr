@@ -45,6 +45,7 @@ type SnapshotReq struct {
 type SnapshotURLReq struct {
 	URL         string `json:"url"`
 	Description string `json:"description,omitempty"`
+	UEFI        *bool  `json:"uefi"`
 }
 
 type snapshotsBase struct {
