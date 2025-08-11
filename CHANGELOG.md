@@ -4,7 +4,7 @@
 * Snapshots: Add support for CreateFromURL UEFI field [PR 390](https://github.com/vultr/govultr/pull/390)
 
 ### New Contributors
-* @mmonaco made their first contribution in https://github.com/vultr/govultr/pull/390
+* @mmonaco made their first contribution in [PR 390](https://github.com/vultr/govultr/pull/390)
 
 ## [3.22.0](https://github.com/vultr/govultr/compare/v3.21.1...v3.22.0) (2025-08-11)
 ### Enhancements
