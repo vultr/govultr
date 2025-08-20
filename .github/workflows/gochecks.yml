@@ -1,41 +1,10 @@
 name: Checks
-
 on:
-  push:
+  pull_request:
     branches:
       - master
-  pull_request:
 jobs:
-  Golangci-lint:
-    name: Check golangci-lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.24"
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: "latest"
-          args: "./..."
-
-  Go-Fmt:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.24"
-
-      - name: Run fmt
-        run: |
-          gofmt_files=$(gofmt -l .)
-          if [[ -n ${gofmt_files} ]]; then
-              echo 'gofmt needs running on the following files:'
-              echo "${gofmt_files}"
-              exit 1
-          fi
-          exit 0
+  checks:
+    uses: vultr/shared-actions/.github/workflows/go-checks.yml@main
+    with:
+      go_version: "1.24"
