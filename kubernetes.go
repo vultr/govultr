@@ -77,6 +77,7 @@ type NodePool struct {
 	MinNodes     int               `json:"min_nodes"`
 	MaxNodes     int               `json:"max_nodes"`
 	AutoScaler   bool              `json:"auto_scaler"`
+	UserData     string            `json:"user_data"`
 	Tag          string            `json:"tag"`
 	Labels       map[string]string `json:"labels"`
 	Taints       []Taint           `json:"taints"`
@@ -123,6 +124,7 @@ type NodePoolReq struct {
 	AutoScaler   *bool             `json:"auto_scaler"`
 	Labels       map[string]string `json:"labels,omitempty"`
 	Taints       []Taint           `json:"taints,omitempty"`
+	UserData     string            `json:"user_data"`
 }
 
 // NodePoolReqUpdate struct used to update a node pool
@@ -134,6 +136,7 @@ type NodePoolReqUpdate struct {
 	AutoScaler   *bool             `json:"auto_scaler,omitempty"`
 	Labels       map[string]string `json:"labels"`
 	Taints       []Taint           `json:"taints"`
+	UserData     *string           `json:"user_data,omitempty"`
 }
 
 type vkeClustersBase struct {

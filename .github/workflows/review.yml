@@ -1,0 +1,10 @@
+name: AI PR Review
+on:
+  pull_request_target:
+    types: [opened, reopened, ready_for_review]
+  issue_comment:
+jobs:
+  pr_agent_job:
+    if: ${{ github.event.sender.type != 'Bot' }}
+    uses: vultr/shared-actions/.github/workflows/review.yml@main
+    secrets: inherit

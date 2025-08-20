@@ -1,4 +1,15 @@
 # Change Log
+## [3.22.1](https://github.com/vultr/govultr/compare/v3.22.0...v3.22.1) (2025-08-11)
+### Enhancements
+* Snapshots: Add support for CreateFromURL UEFI field [PR 390](https://github.com/vultr/govultr/pull/390)
+
+### New Contributors
+* @mmonaco made their first contribution in [PR 390](https://github.com/vultr/govultr/pull/390)
+
+## [3.22.0](https://github.com/vultr/govultr/compare/v3.21.1...v3.22.0) (2025-08-11)
+### Enhancements
+* Kubernetes: Add node pool user_data to create/update structs [PR 391](https://github.com/vultr/govultr/pull/391)
+
 ## [3.21.1](https://github.com/vultr/govultr/compare/v3.21.0...v3.21.1) (2025-07-16
 ### Bug Fixes
 * Load Balancer: Add missing auto SSL domain field [PR 388](https://github.com/vultr/govultr/pull/388)
