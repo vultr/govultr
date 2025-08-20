@@ -69,17 +69,16 @@ type vpcBase struct {
 
 // NATGateway represents a Vultr NAT Gateway
 type NATGateway struct {
-	ID           string            `json:"id"`
-	VPCID        string            `json:"vpc_id"`
-	DateCreated  string            `json:"date_created"`
-	Status       string            `json:"status"`
-	Label        string            `json:"label"`
-	Tags         []string          `json:"tags"`
-	Billing      NATGatewayBilling `json:"billing"`
-	PublicIPs    []string          `json:"public_ips"`
-	PrivateIPs   []string          `json:"private_ips"`
-	PublicIPsV6  []string          `json:"public_ips_v6"`
-	PrivateIPsV6 []string          `json:"private_ips_v6"`
+	ID          string            `json:"id"`
+	VPCID       string            `json:"vpc_id"`
+	DateCreated string            `json:"date_created"`
+	Status      string            `json:"status"`
+	Label       string            `json:"label"`
+	Tags        []string          `json:"tags"`
+	Billing     NATGatewayBilling `json:"billing"`
+	PublicIPs   []string          `json:"public_ips"`
+	PrivateIPs  []string          `json:"private_ips"`
+	PublicIPsV6 []string          `json:"public_ips_v6"`
 }
 
 // NATGatewayBilling represents a Vultr NAT Gateway
@@ -111,7 +110,6 @@ type NATGatewayFirewallRule struct {
 	Port       string `json:"port"`
 	Subnet     string `json:"subnet"`
 	SubnetSize int    `json:"subnet_size"`
-	Source     string `json:"source"`
 	Notes      string `json:"notes"`
 }
 
@@ -122,7 +120,6 @@ type NATGatewayFirewallRuleCreateReq struct {
 	Port       string `json:"port,omitempty"`
 	Subnet     string `json:"subnet,omitempty"`
 	SubnetSize int    `json:"subnet_size,omitempty"`
-	Source     string `json:"source,omitempty"`
 	Notes      string `json:"notes,omitempty"`
 }
 
@@ -162,6 +159,7 @@ type NATGatewayPortForwardingRuleCreateReq struct {
 	Protocol     string `json:"protocol,omitempty"`
 	ExternalPort int    `json:"external_port,omitempty"`
 	InternalPort int    `json:"internal_port,omitempty"`
+	Enabled      *bool  `json:"enabled,omitempty"`
 }
 
 // NATGatewayPortForwardingRuleUpdateReq represents parameters to update a NAT Gateway port forwarding rule resource
