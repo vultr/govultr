@@ -77,6 +77,7 @@ type BareMetalServer struct {
 	OsID            int      `json:"os_id"`
 	AppID           int      `json:"app_id"`
 	ImageID         string   `json:"image_id"`
+	SnapshotID      string   `json:"snapshot_id"`
 	Features        []string `json:"features"`
 	Tags            []string `json:"tags"`
 	UserScheme      string   `json:"user_scheme"`

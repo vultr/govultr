@@ -186,6 +186,7 @@ type Database struct {
 	BackupMinute           *string              `json:"backup_minute,omitempty"`
 	LatestBackup           string               `json:"latest_backup"`
 	TrustedIPs             []string             `json:"trusted_ips"`
+	CACertificate          string               `json:"ca_certificate"`
 	MySQLSQLModes          []string             `json:"mysql_sql_modes,omitempty"`
 	MySQLRequirePrimaryKey *bool                `json:"mysql_require_primary_key,omitempty"`
 	MySQLSlowQueryLog      *bool                `json:"mysql_slow_query_log,omitempty"`

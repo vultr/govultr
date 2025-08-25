@@ -100,6 +100,7 @@ type Instance struct {
 	OsID             int      `json:"os_id"`
 	AppID            int      `json:"app_id"`
 	ImageID          string   `json:"image_id"`
+	SnapshotID       string   `json:"snapshot_id"`
 	FirewallGroupID  string   `json:"firewall_group_id"`
 	Features         []string `json:"features"`
 	Hostname         string   `json:"hostname"`
