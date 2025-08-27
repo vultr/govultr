@@ -1,4 +1,10 @@
 # Change Log
+## [3.23.0](https://github.com/vultr/govultr/compare/v3.22.1...v3.23.0) (2025-08-27)
+### Enhancements
+* Bare Metal Server: Add snapshot ID field [PR 396](https://github.com/vultr/govultr/pull/396)
+* Instance: Add snapshot ID field [PR 396](https://github.com/vultr/govultr/pull/396)
+* Database: Add CA certificate field [PR 396](https://github.com/vultr/govultr/pull/396)
+
 ## [3.22.1](https://github.com/vultr/govultr/compare/v3.22.0...v3.22.1) (2025-08-11)
 ### Enhancements
 * Snapshots: Add support for CreateFromURL UEFI field [PR 390](https://github.com/vultr/govultr/pull/390)
