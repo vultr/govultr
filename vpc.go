@@ -27,10 +27,10 @@ type VPCService interface {
 	GetNATGatewayFirewallRule(ctx context.Context, vpcID, gatewayID, ruleID string) (*NATGatewayFirewallRule, *http.Response, error)
 	UpdateNATGatewayFirewallRule(ctx context.Context, vpcID, gatewayID, ruleID string, updateReq *NATGatewayFirewallRuleUpdateReq) (*NATGatewayFirewallRule, *http.Response, error) //nolint:lll
 	DeleteNATGatewayFirewallRule(ctx context.Context, vpcID, gatewayID, ruleID string) error
-	ListNATGatewayFirewallRules(ctx context.Context, vpcID, gatewayID string, options *ListOptions) ([]NATGatewayFirewallRule, *Meta, *http.Response, error)                                          //nolint:lll
-	CreateNATGatewayPortForwardingRule(ctx context.Context, vpcID, gatewayID string, createReq *NATGatewayPortForwardingRuleCreateReq) (*NATGatewayPortForwardingRule, *http.Response, error)         //nolint:lll
-	GetNATGatewayPortForwardingRule(ctx context.Context, vpcID, gatewayID, ruleID string) (*NATGatewayPortForwardingRule, *http.Response, error)                                                      //nolint:lll
-	UpdateNATGatewayPortForwardingRule(ctx context.Context, vpcID, gatewayID, ruleID string, updateReq *NATGatewayPortForwardingRuleUpdateReq) (*NATGatewayPortForwardingRule, *http.Response, error) //nolint:lll
+	ListNATGatewayFirewallRules(ctx context.Context, vpcID, gatewayID string, options *ListOptions) ([]NATGatewayFirewallRule, *Meta, *http.Response, error)                                    //nolint:lll
+	CreateNATGatewayPortForwardingRule(ctx context.Context, vpcID, gatewayID string, createReq *NATGatewayPortForwardingRuleReq) (*NATGatewayPortForwardingRule, *http.Response, error)         //nolint:lll
+	GetNATGatewayPortForwardingRule(ctx context.Context, vpcID, gatewayID, ruleID string) (*NATGatewayPortForwardingRule, *http.Response, error)                                                //nolint:lll
+	UpdateNATGatewayPortForwardingRule(ctx context.Context, vpcID, gatewayID, ruleID string, updateReq *NATGatewayPortForwardingRuleReq) (*NATGatewayPortForwardingRule, *http.Response, error) //nolint:lll
 	DeleteNATGatewayPortForwardingRule(ctx context.Context, vpcID, gatewayID, ruleID string) error
 	ListNATGatewayPortForwardingRules(ctx context.Context, vpcID, gatewayID string, options *ListOptions) ([]NATGatewayPortForwardingRule, *Meta, *http.Response, error) //nolint:lll
 }
@@ -151,19 +151,8 @@ type NATGatewayPortForwardingRule struct {
 	UpdatedAt    string `json:"updated_at"`
 }
 
-// NATGatewayPortForwardingRuleCreateReq represents parameters to create a NAT Gateway port forwarding rule resource
-type NATGatewayPortForwardingRuleCreateReq struct {
-	Name         string `json:"name,omitempty"`
-	Description  string `json:"description,omitempty"`
-	InternalIP   string `json:"internal_ip,omitempty"`
-	Protocol     string `json:"protocol,omitempty"`
-	ExternalPort int    `json:"external_port,omitempty"`
-	InternalPort int    `json:"internal_port,omitempty"`
-	Enabled      *bool  `json:"enabled,omitempty"`
-}
-
-// NATGatewayPortForwardingRuleUpdateReq represents parameters to update a NAT Gateway port forwarding rule resource
-type NATGatewayPortForwardingRuleUpdateReq struct {
+// NATGatewayPortForwardingRuleReq represents parameters to create or update a NAT Gateway port forwarding rule resource
+type NATGatewayPortForwardingRuleReq struct {
 	Name         string `json:"name,omitempty"`
 	Description  string `json:"description,omitempty"`
 	InternalIP   string `json:"internal_ip,omitempty"`
@@ -436,7 +425,7 @@ func (n *VPCServiceHandler) ListNATGatewayFirewallRules(ctx context.Context, vpc
 }
 
 // CreateNATGatewayPortForwardingRule creates a new port forwarding rule on the current NAT Gateway
-func (n *VPCServiceHandler) CreateNATGatewayPortForwardingRule(ctx context.Context, vpcID, gatewayID string, createReq *NATGatewayPortForwardingRuleCreateReq) (*NATGatewayPortForwardingRule, *http.Response, error) { //nolint:dupl,lll
+func (n *VPCServiceHandler) CreateNATGatewayPortForwardingRule(ctx context.Context, vpcID, gatewayID string, createReq *NATGatewayPortForwardingRuleReq) (*NATGatewayPortForwardingRule, *http.Response, error) { //nolint:dupl,lll
 	uri := fmt.Sprintf("%s/%s/nat-gateway/%s/global/port-forwarding-rules", vpcPath, vpcID, gatewayID)
 	req, err := n.client.NewRequest(ctx, http.MethodPost, uri, createReq)
 	if err != nil {
@@ -470,7 +459,7 @@ func (n *VPCServiceHandler) GetNATGatewayPortForwardingRule(ctx context.Context,
 }
 
 // UpdateNATGatewayPortForwardingRule updates a port forwarding rule on the current NAT Gateway
-func (n *VPCServiceHandler) UpdateNATGatewayPortForwardingRule(ctx context.Context, vpcID, gatewayID, ruleID string, updateReq *NATGatewayPortForwardingRuleUpdateReq) (*NATGatewayPortForwardingRule, *http.Response, error) { //nolint:dupl,lll
+func (n *VPCServiceHandler) UpdateNATGatewayPortForwardingRule(ctx context.Context, vpcID, gatewayID, ruleID string, updateReq *NATGatewayPortForwardingRuleReq) (*NATGatewayPortForwardingRule, *http.Response, error) { //nolint:dupl,lll
 	uri := fmt.Sprintf("%s/%s/nat-gateway/%s/global/port-forwarding-rules/%s", vpcPath, vpcID, gatewayID, ruleID)
 	req, err := n.client.NewRequest(ctx, http.MethodPut, uri, updateReq)
 	if err != nil {
