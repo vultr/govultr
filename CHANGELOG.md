@@ -1,7 +1,7 @@
 # Change Log
 ## [3.24.0](https://github.com/vultr/govultr/compare/v3.23.0...v3.24.0) (2025-09-19)
 ### Enhancements
-* Logs: Functions added to library [PR 399](https://github.com/vultr/govultr/pull/399)
+* Logs: Added to library [PR 399](https://github.com/vultr/govultr/pull/399)
 
 ### Automation
 * Migrate golangci-lint config to v2 [PR 398](https://github.com/vultr/govultr/pull/398)
