@@ -65,7 +65,7 @@ type LogsOptions struct {
 }
 
 // List retrieves logs
-func (l *LogsServiceHandler) List(ctx context.Context, options LogsOptions) ([]Log, *LogsMeta, *http.Response, error) {
+func (l *LogsServiceHandler) List(ctx context.Context, options LogsOptions) ([]Log, *LogsMeta, *http.Response, error) { //nolint:gocritic,lll
 	req, err := l.client.NewRequest(ctx, http.MethodGet, logsPath, nil)
 	if err != nil {
 		return nil, nil, nil, err
