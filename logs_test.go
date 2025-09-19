@@ -57,5 +57,4 @@ func TestLogsServiceHandler_List(t *testing.T) {
 	if !reflect.DeepEqual(meta, expectedMeta) {
 		t.Errorf("Logs.List meta returned %+v, expected %+v", meta, expectedMeta)
 	}
-
 }
