@@ -58,6 +58,7 @@ type Client struct {
 	ISO                      ISOService
 	Kubernetes               KubernetesService
 	LoadBalancer             LoadBalancerService
+	Logs                     LogsService
 	Marketplace              MarketplaceService
 	ObjectStorage            ObjectStorageService
 	OS                       OSService
@@ -134,6 +135,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.ISO = &ISOServiceHandler{client}
 	client.Kubernetes = &KubernetesHandler{client}
 	client.LoadBalancer = &LoadBalancerHandler{client}
+	client.Logs = &LogsServiceHandler{client}
 	client.Marketplace = &MarketplaceServiceHandler{client}
 	client.ObjectStorage = &ObjectStorageServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
