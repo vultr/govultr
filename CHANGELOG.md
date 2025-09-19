@@ -1,4 +1,11 @@
 # Change Log
+## [3.24.0](https://github.com/vultr/govultr/compare/v3.23.0...v3.24.0) (2025-09-19)
+### Enhancements
+* Logs: Added to library [PR 399](https://github.com/vultr/govultr/pull/399)
+
+### Automation
+* Migrate golangci-lint config to v2 [PR 398](https://github.com/vultr/govultr/pull/398)
+
 ## [3.23.0](https://github.com/vultr/govultr/compare/v3.22.1...v3.23.0) (2025-08-27)
 ### Enhancements
 * Bare Metal Server: Add snapshot ID field [PR 396](https://github.com/vultr/govultr/pull/396)
