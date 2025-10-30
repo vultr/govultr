@@ -1658,8 +1658,6 @@ func (o *OrganizationServiceHandler) ListRoleGroups(ctx context.Context, roleID 
 		return nil, nil, nil, err
 	}
 
-	fmt.Printf("%v \n\n", req)
-
 	req.URL.RawQuery = newValues.Encode()
 
 	groups := new(organizationRoleGroupAssignmentsBase)
