@@ -1567,7 +1567,7 @@ func (o *OrganizationServiceHandler) AttachRolePolicy(ctx context.Context, roleI
 	return role, resp, nil
 }
 
-// DettachRolePolicy detaches a role policy
+// DetachRolePolicy detaches a role policy
 func (o *OrganizationServiceHandler) DetachRolePolicy(ctx context.Context, roleID, policyID string) (*OrganizationRole, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/policies/%s", rolePath, roleID, policyID)
 
