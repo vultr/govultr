@@ -99,7 +99,7 @@ type OrganizationService interface {
 	RevokeRoleSession(ctx context.Context, token string) error
 
 	ListEndpointActionMaps(ctx context.Context, options *ListOptions) ([]OrganizationEndpointAction, *Meta, *http.Response, error)
-	ListEndpointActionMapActions(ctx context.Context) (*OrganizationEndpointActionsAvailable, *Meta, *http.Response, error)
+	ListEndpointActionMapActions(ctx context.Context) ([]OrganizationEndpointActionAvailable, *Meta, *http.Response, error)
 	GetEndpointActionMap(ctx context.Context, mapID string) (*OrganizationEndpointAction, *http.Response, error)
 
 	ListUserGroups(ctx context.Context, userID string, options *ListOptions) ([]OrganizationGroup, *Meta, *http.Response, error)
@@ -182,7 +182,8 @@ type OrganizationInvitationReq struct {
 
 // OrganizationInvitationPermission represents an organization invitation permission
 type OrganizationInvitationPermission struct {
-	// Roles      map[string]string `json:"roles"` // TODO when not specified, it only returns string, when the docs show multiple possible strings
+	// TODO when not specified, it only returns string, when the docs show multiple possible strings
+	// Roles      map[string]string `json:"roles"`
 	APIEnabled bool `json:"api_enabled"`
 }
 
@@ -307,6 +308,10 @@ type OrganizationPolicy struct {
 type organizationPoliciesBase struct {
 	Policies []OrganizationPolicy `json:"policies"`
 	Meta     *Meta                `json:"meta"`
+}
+
+type organizationPolicyBase struct {
+	Policy *OrganizationPolicy `json:"policy"`
 }
 
 // OrganizationRolesForUser represents the roles for a user
@@ -466,11 +471,11 @@ type OrganizationRoleTrustReq struct {
 
 // OrganizationRoleAssumedReq represents an organization assumed role
 type OrganizationRoleSessionReq struct {
-	UserID      string                             `json:"user_id"`
-	RoleID      string                             `json:"role_id"`
-	SessionName string                             `json:"session_name"`
-	Duration    int                                `json:"duration"`
-	Context     *OrganizationRoleSessionReqContext `json:"context"`
+	UserID      string                            `json:"user_id"`
+	RoleID      string                            `json:"role_id"`
+	SessionName string                            `json:"session_name"`
+	Duration    int                               `json:"duration"`
+	Context     OrganizationRoleSessionReqContext `json:"context"`
 }
 
 // OrganizationRoleAssumedContext represents an organization assumed role context
@@ -490,7 +495,6 @@ type OrganizationRoleSession struct {
 	SourceIP          string   `json:"source_ip"`
 	DateExpires       string   `json:"expires_at"`
 	DateAssumed       string   `json:"assumed_at"`
-	DateCreated       string   `json:"date_created"`
 }
 
 type organizationRoleSessionsBase struct {
@@ -527,40 +531,8 @@ type organizationEndpointActionBase struct {
 }
 
 type organizationEndpointActionsAvailableBase struct {
-	Actions *OrganizationEndpointActionsAvailable `json:"actions"`
+	Actions []OrganizationEndpointActionAvailable `json:"actions"`
 	Meta    *Meta                                 `json:"meta"`
-}
-
-// OrganizationEndpointActionsAvailable represents the available types of endpoint actions
-type OrganizationEndpointActionsAvailable struct {
-	Account           []OrganizationEndpointActionAvailable `json:"account"`
-	Backup            []OrganizationEndpointActionAvailable `json:"backup"`
-	BareMetal         []OrganizationEndpointActionAvailable `json:"baremetal"`
-	Billing           []OrganizationEndpointActionAvailable `json:"billing"`
-	BlockStorage      []OrganizationEndpointActionAvailable `json:"block"`
-	ContainerRegistry []OrganizationEndpointActionAvailable `json:"registery"`
-	Database          []OrganizationEndpointActionAvailable `json:"database"`
-	DNS               []OrganizationEndpointActionAvailable `json:"dns"`
-	Firewall          []OrganizationEndpointActionAvailable `json:"firewall"`
-	Group             []OrganizationEndpointActionAvailable `json:"group"`
-	Instance          []OrganizationEndpointActionAvailable `json:"instance"`
-	Invitation        []OrganizationEndpointActionAvailable `json:"invitation"`
-	ISO               []OrganizationEndpointActionAvailable `json:"iso"`
-	Kubernetes        []OrganizationEndpointActionAvailable `json:"kubernetes"`
-	LoadBalancer      []OrganizationEndpointActionAvailable `json:"loadbalancer"`
-	ObjectStorage     []OrganizationEndpointActionAvailable `json:"objectstorage"`
-	Organization      []OrganizationEndpointActionAvailable `json:"organization"`
-	Policy            []OrganizationEndpointActionAvailable `json:"policy"`
-	ReservedIP        []OrganizationEndpointActionAvailable `json:"resevedIP"`
-	Role              []OrganizationEndpointActionAvailable `json:"role"`
-	RoleTrust         []OrganizationEndpointActionAvailable `json:"roletrust"`
-	Script            []OrganizationEndpointActionAvailable `json:"script"`
-	Snapshot          []OrganizationEndpointActionAvailable `json:"snapshot"`
-	SSHKey            []OrganizationEndpointActionAvailable `json:"sshkey"`
-	User              []OrganizationEndpointActionAvailable `json:"user"`
-	VFS               []OrganizationEndpointActionAvailable `json:"vfs"`
-	VPC               []OrganizationEndpointActionAvailable `json:"vpc"`
-	VPC2              []OrganizationEndpointActionAvailable `json:"vpc2"`
 }
 
 // TODO: all SCIM functions are not working and probably will not be
@@ -1196,7 +1168,7 @@ func (o *OrganizationServiceHandler) GetSCIMUser(ctx context.Context, userID str
 
 // ListSCIMUser retrieves a list of SCIM users
 // TODO what is this list?? it's just schemas? the options are different? this is broken for now
-func (o *OrganizationServiceHandler) ListSCIMUsers(ctx context.Context, scimOptions *OrganizationSCIMListOptions) (*OrganizationSCIMListResponse, *http.Response, error) {
+func (o *OrganizationServiceHandler) ListSCIMUsers(ctx context.Context, scimOptions *OrganizationSCIMListOptions) (*OrganizationSCIMListResponse, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/scim", userPath)
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -1257,7 +1229,7 @@ func (o *OrganizationServiceHandler) GetSCIMGroup(ctx context.Context, scimGroup
 }
 
 // ListSCIMGroups retrieves a list of SCIM groups
-func (o *OrganizationServiceHandler) ListSCIMGroups(ctx context.Context, scimOptions *OrganizationSCIMListOptions) (*OrganizationSCIMListResponse, *http.Response, error) { //nolint:lll
+func (o *OrganizationServiceHandler) ListSCIMGroups(ctx context.Context, scimOptions *OrganizationSCIMListOptions) (*OrganizationSCIMListResponse, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/scim", groupPath)
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -1468,13 +1440,13 @@ func (o *OrganizationServiceHandler) GetPolicy(ctx context.Context, policyID str
 		return nil, nil, err
 	}
 
-	policy := new(OrganizationPolicy)
+	policy := new(organizationPolicyBase)
 	resp, err := o.client.DoWithContext(ctx, req, policy)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return policy, resp, nil
+	return policy.Policy, resp, nil
 }
 
 // ListPolicies retrieves a list of all policys
@@ -1553,7 +1525,7 @@ func (o *OrganizationServiceHandler) RestorePolicy(ctx context.Context, policyID
 }
 
 // ListRolePolicies retrieves a list of role policies
-func (o *OrganizationServiceHandler) ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationPolicy, *Meta, *http.Response, error) { //nolint:lll
+func (o *OrganizationServiceHandler) ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationPolicy, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/policies", rolePath, roleID)
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -1673,7 +1645,7 @@ func (o *OrganizationServiceHandler) DetachRoleUser(ctx context.Context, roleID,
 }
 
 // ListRoleGroups lists a role's groups
-func (o *OrganizationServiceHandler) ListRoleGroups(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRoleGroupAssignment, *Meta, *http.Response, error) { //nolint:lll,dupl
+func (o *OrganizationServiceHandler) ListRoleGroups(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRoleGroupAssignment, *Meta, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/groups", rolePath, roleID)
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -2092,8 +2064,8 @@ func (o *OrganizationServiceHandler) ListEndpointActionMaps(ctx context.Context,
 }
 
 // ListEndpointActionMapActions retrieves a list of endpoint action map actions
-func (o *OrganizationServiceHandler) ListEndpointActionMapActions(ctx context.Context) (*OrganizationEndpointActionsAvailable, *Meta, *http.Response, error) { //nolint:lll
-	uri := fmt.Sprintf("%s/available-actions", endpointActionPath)
+func (o *OrganizationServiceHandler) ListEndpointActionMapActions(ctx context.Context) ([]OrganizationEndpointActionAvailable, *Meta, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/available-actions?view=kv", endpointActionPath)
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
