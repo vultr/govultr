@@ -348,7 +348,7 @@ type OrganizationPolicyReq struct {
 type OrganizationPolicyStatement struct {
 	Effect   string   `json:"Effect"`
 	Action   []string `json:"Action"`
-	Resource string   `json:"Resource"`
+	Resource []string `json:"Resource"`
 }
 
 // OrganizationGroupPolicies represents all organization group policies
