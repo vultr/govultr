@@ -272,7 +272,7 @@ type InstanceCreateReq struct {
 	AppVariables    map[string]string `json:"app_variables,omitempty"`
 
 	// Deprecated: VPC2 is no longer supported
-	EnableVPC2 *bool `json:"enable_vpc2,omitempty"`
+	EnableVPC2      *bool             `json:"enable_vpc2,omitempty"`
 
 	// Deprecated: VPC2 is no longer supported
 	AttachVPC2      []string          `json:"attach_vpc2,omitempty"`
