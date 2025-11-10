@@ -43,7 +43,11 @@ type BareMetalServerService interface {
 
 	// Deprecated: VPC2 is no longer supported
 	ListVPC2Info(ctx context.Context, serverID string) ([]VPC2Info, *http.Response, error)
+
+	// Deprecated: VPC2 is no longer supported
 	AttachVPC2(ctx context.Context, serverID string, vpc2Req *AttachVPC2Req) error
+
+	// Deprecated: VPC2 is no longer supported
 	DetachVPC2(ctx context.Context, serverID, vpcID string) error
 }
 
@@ -106,7 +110,11 @@ type BareMetalCreate struct {
 
 	// Deprecated: VPC2 is no longer supported
 	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
+
+	// Deprecated: VPC2 is no longer supported
 	DetachVPC2 []string `json:"detach_vpc2,omitempty"`
+
+	// Deprecated: VPC2 is no longer supported
 	EnableVPC2   *bool             `json:"enable_vpc2,omitempty"`
 }
 
@@ -125,7 +133,11 @@ type BareMetalUpdate struct {
 
 	// Deprecated: VPC2 is no longer supported
 	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
+
+	// Deprecated: VPC2 is no longer supported
 	DetachVPC2 []string `json:"detach_vpc2,omitempty"`
+
+	// Deprecated: VPC2 is no longer supported
 	EnableVPC2 *bool `json:"enable_vpc2,omitempty"`
 }
 
