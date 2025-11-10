@@ -272,24 +272,24 @@ type InstanceCreateReq struct {
 	AppVariables    map[string]string `json:"app_variables,omitempty"`
 
 	// Deprecated: VPC2 is no longer supported
-	EnableVPC2      *bool             `json:"enable_vpc2,omitempty"`
+	EnableVPC2 *bool `json:"enable_vpc2,omitempty"`
 
 	// Deprecated: VPC2 is no longer supported
-	AttachVPC2      []string          `json:"attach_vpc2,omitempty"`
+	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
 }
 
 // InstanceUpdateReq struct used to update an instance.
 type InstanceUpdateReq struct {
-	Plan       string   `json:"plan,omitempty"`
-	Label      string   `json:"label,omitempty"`
-	Tags       []string `json:"tags"`
-	OsID       int      `json:"os_id,omitempty"`
-	AppID      int      `json:"app_id,omitempty"`
-	ImageID    string   `json:"image_id,omitempty"`
-	EnableIPv6 *bool    `json:"enable_ipv6,omitempty"`
-	EnableVPC  *bool    `json:"enable_vpc,omitempty"`
-	AttachVPC  []string `json:"attach_vpc,omitempty"`
-	DetachVPC  []string `json:"detach_vpc,omitempty"`
+	Plan            string   `json:"plan,omitempty"`
+	Label           string   `json:"label,omitempty"`
+	Tags            []string `json:"tags"`
+	OsID            int      `json:"os_id,omitempty"`
+	AppID           int      `json:"app_id,omitempty"`
+	ImageID         string   `json:"image_id,omitempty"`
+	EnableIPv6      *bool    `json:"enable_ipv6,omitempty"`
+	EnableVPC       *bool    `json:"enable_vpc,omitempty"`
+	AttachVPC       []string `json:"attach_vpc,omitempty"`
+	DetachVPC       []string `json:"detach_vpc,omitempty"`
 	Backups         string   `json:"backups,omitempty"`
 	DDOSProtection  *bool    `json:"ddos_protection"`
 	UserData        string   `json:"user_data,omitempty"`
@@ -303,7 +303,7 @@ type InstanceUpdateReq struct {
 	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
 
 	// Deprecated: VPC2 is no longer supported
-	DetachVPC2      []string `json:"detach_vpc2,omitempty"`
+	DetachVPC2 []string `json:"detach_vpc2,omitempty"`
 }
 
 // ReinstallReq struct used to allow changes during a reinstall

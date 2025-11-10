@@ -87,26 +87,26 @@ type BareMetalServer struct {
 
 // BareMetalCreate represents the optional parameters that can be set when creating a Bare Metal server
 type BareMetalCreate struct {
-	Region          string   `json:"region"`
-	Plan            string   `json:"plan"`
-	OsID            int      `json:"os_id,omitempty"`
-	StartupScriptID string   `json:"script_id,omitempty"`
-	SnapshotID      string   `json:"snapshot_id,omitempty"`
-	EnableIPv6      *bool    `json:"enable_ipv6,omitempty"`
-	Label           string   `json:"label,omitempty"`
-	SSHKeyIDs       []string `json:"sshkey_id,omitempty"`
-	AppID           int      `json:"app_id,omitempty"`
-	ImageID         string   `json:"image_id,omitempty"`
-	UserData        string   `json:"user_data,omitempty"`
-	ActivationEmail *bool    `json:"activation_email,omitempty"`
-	Hostname        string   `json:"hostname,omitempty"`
-	MdiskMode       string   `json:"mdisk_mode,omitempty"`
-	ReservedIPv4    string   `json:"reserved_ipv4,omitempty"`
-	PersistentPxe   *bool    `json:"persistent_pxe,omitempty"`
-	IPXEChainURL    string   `json:"ipxe_chain_url,omitempty"`
-	Tags            []string `json:"tags,omitempty"`
-	UserScheme      string   `json:"user_scheme,omitempty"`
-	AppVariables map[string]string `json:"app_variables,omitempty"`
+	Region          string            `json:"region"`
+	Plan            string            `json:"plan"`
+	OsID            int               `json:"os_id,omitempty"`
+	StartupScriptID string            `json:"script_id,omitempty"`
+	SnapshotID      string            `json:"snapshot_id,omitempty"`
+	EnableIPv6      *bool             `json:"enable_ipv6,omitempty"`
+	Label           string            `json:"label,omitempty"`
+	SSHKeyIDs       []string          `json:"sshkey_id,omitempty"`
+	AppID           int               `json:"app_id,omitempty"`
+	ImageID         string            `json:"image_id,omitempty"`
+	UserData        string            `json:"user_data,omitempty"`
+	ActivationEmail *bool             `json:"activation_email,omitempty"`
+	Hostname        string            `json:"hostname,omitempty"`
+	MdiskMode       string            `json:"mdisk_mode,omitempty"`
+	ReservedIPv4    string            `json:"reserved_ipv4,omitempty"`
+	PersistentPxe   *bool             `json:"persistent_pxe,omitempty"`
+	IPXEChainURL    string            `json:"ipxe_chain_url,omitempty"`
+	Tags            []string          `json:"tags,omitempty"`
+	UserScheme      string            `json:"user_scheme,omitempty"`
+	AppVariables    map[string]string `json:"app_variables,omitempty"`
 
 	// Deprecated: VPC2 is no longer supported
 	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
@@ -115,7 +115,7 @@ type BareMetalCreate struct {
 	DetachVPC2 []string `json:"detach_vpc2,omitempty"`
 
 	// Deprecated: VPC2 is no longer supported
-	EnableVPC2   *bool             `json:"enable_vpc2,omitempty"`
+	EnableVPC2 *bool `json:"enable_vpc2,omitempty"`
 }
 
 // BareMetalUpdate represents the optional parameters that can be set when updating a Bare Metal server
