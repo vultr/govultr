@@ -81,6 +81,7 @@ type Instance struct {
 	Disk             int      `json:"disk"`
 	Plan             string   `json:"plan"`
 	MainIP           string   `json:"main_ip"`
+	VPCOnly          bool     `json:"vpc_only"`
 	VCPUCount        int      `json:"vcpu_count"`
 	Region           string   `json:"region"`
 	DefaultPassword  string   `json:"default_password,omitempty"`
@@ -255,6 +256,7 @@ type InstanceCreateReq struct {
 	DisablePublicIPv4 *bool    `json:"disable_public_ipv4,omitempty"`
 	EnableVPC         *bool    `json:"enable_vpc,omitempty"`
 	AttachVPC         []string `json:"attach_vpc,omitempty"`
+	VPCOnly           *bool    `json:"vpc_only,omitempty"`
 	// Deprecated: VPC2 is no longer supported
 	EnableVPC2 *bool `json:"enable_vpc2,omitempty"`
 	// Deprecated: VPC2 is no longer supported
