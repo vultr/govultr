@@ -257,6 +257,7 @@ type InstanceCreateReq struct {
 	EnableVPC         *bool    `json:"enable_vpc,omitempty"`
 	AttachVPC         []string `json:"attach_vpc,omitempty"`
 	VPCOnly           *bool    `json:"vpc_only,omitempty"`
+
 	// Deprecated: VPC2 is no longer supported
 	EnableVPC2 *bool `json:"enable_vpc2,omitempty"`
 	// Deprecated: VPC2 is no longer supported
