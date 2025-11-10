@@ -43,9 +43,7 @@ type BareMetalServerService interface {
 
 	// Deprecated: VPC2 is no longer supported
 	ListVPC2Info(ctx context.Context, serverID string) ([]VPC2Info, *http.Response, error)
-	// Deprecated: VPC2 is no longer supported
 	AttachVPC2(ctx context.Context, serverID string, vpc2Req *AttachVPC2Req) error
-	// Deprecated: VPC2 is no longer supported
 	DetachVPC2(ctx context.Context, serverID, vpcID string) error
 }
 
@@ -104,13 +102,12 @@ type BareMetalCreate struct {
 	IPXEChainURL    string   `json:"ipxe_chain_url,omitempty"`
 	Tags            []string `json:"tags,omitempty"`
 	UserScheme      string   `json:"user_scheme,omitempty"`
+	AppVariables map[string]string `json:"app_variables,omitempty"`
+
 	// Deprecated: VPC2 is no longer supported
 	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
-	// Deprecated: VPC2 is no longer supported
 	DetachVPC2 []string `json:"detach_vpc2,omitempty"`
-	// Deprecated: VPC2 is no longer supported
 	EnableVPC2   *bool             `json:"enable_vpc2,omitempty"`
-	AppVariables map[string]string `json:"app_variables,omitempty"`
 }
 
 // BareMetalUpdate represents the optional parameters that can be set when updating a Bare Metal server
@@ -125,11 +122,10 @@ type BareMetalUpdate struct {
 	MdiskMode    string   `json:"mdisk_mode,omitempty"`
 	Tags         []string `json:"tags,omitempty"`
 	UserScheme   string   `json:"user_scheme,omitempty"`
+
 	// Deprecated: VPC2 is no longer supported
 	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
-	// Deprecated: VPC2 is no longer supported
 	DetachVPC2 []string `json:"detach_vpc2,omitempty"`
-	// Deprecated: VPC2 is no longer supported
 	EnableVPC2 *bool `json:"enable_vpc2,omitempty"`
 }
 
@@ -508,6 +504,7 @@ func (b *BareMetalServerServiceHandler) DetachVPC(ctx context.Context, serverID,
 }
 
 // ListVPC2Info currently attached to a Bare Metal server.
+//
 // Deprecated: VPC2 is no longer supported
 func (b *BareMetalServerServiceHandler) ListVPC2Info(ctx context.Context, serverID string) ([]VPC2Info, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/vpc2", bmPath, serverID)
@@ -526,6 +523,7 @@ func (b *BareMetalServerServiceHandler) ListVPC2Info(ctx context.Context, server
 }
 
 // AttachVPC2 to a Bare Metal server.
+//
 // Deprecated: VPC2 is no longer supported
 func (b *BareMetalServerServiceHandler) AttachVPC2(ctx context.Context, serverID string, vpc2Req *AttachVPC2Req) error {
 	uri := fmt.Sprintf("%s/%s/vpc2/attach", bmPath, serverID)
@@ -540,6 +538,7 @@ func (b *BareMetalServerServiceHandler) AttachVPC2(ctx context.Context, serverID
 }
 
 // DetachVPC2 from a Bare Metal server.
+//
 // Deprecated: VPC2 is no longer supported
 func (b *BareMetalServerServiceHandler) DetachVPC2(ctx context.Context, serverID, vpcID string) error {
 	uri := fmt.Sprintf("%s/%s/vpc2/detach", bmPath, serverID)
