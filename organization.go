@@ -1668,7 +1668,7 @@ func (o *OrganizationServiceHandler) DetachRoleUser(ctx context.Context, roleID,
 }
 
 // ListRoleGroups lists a role's groups
-func (o *OrganizationServiceHandler) ListRoleGroups(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRoleGroupAssignment, *Meta, *http.Response, error) { //nolint:lll
+func (o *OrganizationServiceHandler) ListRoleGroups(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRoleGroupAssignment, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/groups", rolePath, roleID)
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
