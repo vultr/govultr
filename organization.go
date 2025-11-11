@@ -2,6 +2,7 @@ package govultr
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -349,6 +350,28 @@ type OrganizationPolicyStatement struct {
 	Effect   string   `json:"Effect"`
 	Action   []string `json:"Action"`
 	Resource []string `json:"Resource"`
+}
+
+// UnmarshalJSON is a custom unmarshaller because the Resource field can, in
+// some cases, be a string and not an array. This forces the value to an array.
+func (s *OrganizationPolicyStatement) UnmarshalJSON(b []byte) error {
+	arr := map[string]interface{}{}
+	if err := json.Unmarshal(b, &arr); err != nil {
+		return fmt.Errorf("unable to unmarshal organization policy statement : %s", err.Error())
+	}
+
+	switch res := arr["Resource"].(type) {
+	case []interface{}:
+		for i := range res {
+			s.Resource = append(s.Resource, res[i].(string))
+		}
+	case string:
+		s.Resource = append(s.Resource, res)
+	default:
+		return fmt.Errorf("unable to unmarshal organization policy statement resource value")
+	}
+
+	return nil
 }
 
 // OrganizationGroupPolicies represents all organization group policies
