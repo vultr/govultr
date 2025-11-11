@@ -1495,7 +1495,7 @@ func (o *OrganizationServiceHandler) ListPolicies(ctx context.Context, options *
 	return policies.Policies, policies.Meta, resp, nil
 }
 
-// UpdatePolicy is not supported. To change a policy, create a new one and delete the old one.
+// UpdatePolicy updates a policy
 func (o *OrganizationServiceHandler) UpdatePolicy(ctx context.Context, policyID string, policyReq *OrganizationPolicyReq) (*OrganizationPolicy, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s", policyPath, policyID)
 
