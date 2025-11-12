@@ -352,8 +352,9 @@ type OrganizationPolicyStatement struct {
 	Resource []string `json:"Resource"`
 }
 
-// UnmarshalJSON is a custom unmarshaller because the Resource field can, in
-// some cases, be a string and not an array. This forces the value to an array.
+// UnmarshalJSON is a custom unmarshaller because the Resource and Action
+// fields can, in some cases, be a string and not an array. This forces these
+// values to an array.
 func (s *OrganizationPolicyStatement) UnmarshalJSON(b []byte) error {
 	if s == nil {
 		return nil
@@ -366,10 +367,14 @@ func (s *OrganizationPolicyStatement) UnmarshalJSON(b []byte) error {
 
 	switch res := arr["Resource"].(type) {
 	case []interface{}:
+		if len(res) == 0 {
+			break
+		}
+
 		for i := range res {
 			val, ok := res[i].(string)
 			if !ok {
-				return fmt.Errorf("unable to unmarshal resource interface slice string value : %v", res[i])
+				return fmt.Errorf("unable to unmarshal 'Resource' interface slice string value : %v", res[i])
 			}
 			s.Resource = append(s.Resource, val)
 		}
@@ -381,10 +386,14 @@ func (s *OrganizationPolicyStatement) UnmarshalJSON(b []byte) error {
 
 	switch act := arr["Action"].(type) {
 	case []interface{}:
+		if len(act) == 0 {
+			break
+		}
+
 		for i := range act {
 			val, ok := act[i].(string)
 			if !ok {
-				return fmt.Errorf("unable to unmarshal action interface slice string value : %v", act[i])
+				return fmt.Errorf("unable to unmarshal 'Action' interface slice string value : %v", act[i])
 			}
 			s.Action = append(s.Action, val)
 		}
