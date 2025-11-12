@@ -2,6 +2,7 @@ package govultr
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -349,6 +350,59 @@ type OrganizationPolicyStatement struct {
 	Effect   string   `json:"Effect"`
 	Action   []string `json:"Action"`
 	Resource []string `json:"Resource"`
+}
+
+// UnmarshalJSON is a custom unmarshaller because the Resource and Action
+// fields can, in some cases, be a string and not an array. This forces these
+// values to an array.
+func (s *OrganizationPolicyStatement) UnmarshalJSON(b []byte) error {
+	if s == nil {
+		return nil
+	}
+
+	elems := map[string]interface{}{}
+	if err := json.Unmarshal(b, &elems); err != nil {
+		return fmt.Errorf("unable to unmarshal organization policy statement : %s", err.Error())
+	}
+
+	switch res := elems["Resource"].(type) {
+	case []interface{}:
+		for i := range res {
+			val, ok := res[i].(string)
+			if !ok {
+				return fmt.Errorf("unable to unmarshal 'Resource' interface slice string value : %v", res[i])
+			}
+			s.Resource = append(s.Resource, val)
+		}
+	case string:
+		s.Resource = append(s.Resource, res)
+	default:
+		return fmt.Errorf("unable to unmarshal organization policy statement 'Resource' value")
+	}
+
+	switch act := elems["Action"].(type) {
+	case []interface{}:
+		for i := range act {
+			val, ok := act[i].(string)
+			if !ok {
+				return fmt.Errorf("unable to unmarshal 'Action' interface slice string value : %v", act[i])
+			}
+			s.Action = append(s.Action, val)
+		}
+	case string:
+		s.Action = append(s.Action, act)
+	default:
+		return fmt.Errorf("unable to unmarshal organization policy statement 'Action' value")
+	}
+
+	effect, ok := elems["Effect"].(string)
+	if !ok {
+		return fmt.Errorf("unable to unmarshal organization policy statement 'Effect' value")
+	}
+
+	s.Effect = effect
+
+	return nil
 }
 
 // OrganizationGroupPolicies represents all organization group policies
@@ -1472,7 +1526,7 @@ func (o *OrganizationServiceHandler) ListPolicies(ctx context.Context, options *
 	return policies.Policies, policies.Meta, resp, nil
 }
 
-// UpdatePolicy is not supported. To change a policy, create a new one and delete the old one.
+// UpdatePolicy updates a policy
 func (o *OrganizationServiceHandler) UpdatePolicy(ctx context.Context, policyID string, policyReq *OrganizationPolicyReq) (*OrganizationPolicy, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s", policyPath, policyID)
 
@@ -1645,7 +1699,7 @@ func (o *OrganizationServiceHandler) DetachRoleUser(ctx context.Context, roleID,
 }
 
 // ListRoleGroups lists a role's groups
-func (o *OrganizationServiceHandler) ListRoleGroups(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRoleGroupAssignment, *Meta, *http.Response, error) { //nolint:lll
+func (o *OrganizationServiceHandler) ListRoleGroups(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRoleGroupAssignment, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/groups", rolePath, roleID)
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
