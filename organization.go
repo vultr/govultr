@@ -389,6 +389,8 @@ func (s *OrganizationPolicyStatement) UnmarshalJSON(b []byte) error {
 			}
 			s.Action = append(s.Action, val)
 		}
+	case string:
+		s.Action = append(s.Action, act)
 	default:
 		return fmt.Errorf("unable to unmarshal organization policy statement 'Action' value")
 	}
