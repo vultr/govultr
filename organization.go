@@ -355,6 +355,10 @@ type OrganizationPolicyStatement struct {
 // UnmarshalJSON is a custom unmarshaller because the Resource field can, in
 // some cases, be a string and not an array. This forces the value to an array.
 func (s *OrganizationPolicyStatement) UnmarshalJSON(b []byte) error {
+	if s == nil {
+		return nil
+	}
+
 	arr := map[string]interface{}{}
 	if err := json.Unmarshal(b, &arr); err != nil {
 		return fmt.Errorf("unable to unmarshal organization policy statement : %s", err.Error())
@@ -363,13 +367,37 @@ func (s *OrganizationPolicyStatement) UnmarshalJSON(b []byte) error {
 	switch res := arr["Resource"].(type) {
 	case []interface{}:
 		for i := range res {
-			s.Resource = append(s.Resource, res[i].(string))
+			val, ok := res[i].(string)
+			if !ok {
+				return fmt.Errorf("unable to unmarshal resource interface slice string value : %v", res[i])
+			}
+			s.Resource = append(s.Resource, val)
 		}
 	case string:
 		s.Resource = append(s.Resource, res)
 	default:
-		return fmt.Errorf("unable to unmarshal organization policy statement resource value")
+		return fmt.Errorf("unable to unmarshal organization policy statement 'Resource' value")
 	}
+
+	switch act := arr["Action"].(type) {
+	case []interface{}:
+		for i := range act {
+			val, ok := act[i].(string)
+			if !ok {
+				return fmt.Errorf("unable to unmarshal action interface slice string value : %v", act[i])
+			}
+			s.Action = append(s.Action, val)
+		}
+	default:
+		return fmt.Errorf("unable to unmarshal organization policy statement 'Action' value")
+	}
+
+	effect, ok := arr["Effect"].(string)
+	if !ok {
+		return fmt.Errorf("unable to unmarshal organization policy statement 'Effect' value")
+	}
+
+	s.Effect = effect
 
 	return nil
 }
