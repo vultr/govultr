@@ -367,10 +367,6 @@ func (s *OrganizationPolicyStatement) UnmarshalJSON(b []byte) error {
 
 	switch res := arr["Resource"].(type) {
 	case []interface{}:
-		if len(res) == 0 {
-			break
-		}
-
 		for i := range res {
 			val, ok := res[i].(string)
 			if !ok {
@@ -386,10 +382,6 @@ func (s *OrganizationPolicyStatement) UnmarshalJSON(b []byte) error {
 
 	switch act := arr["Action"].(type) {
 	case []interface{}:
-		if len(act) == 0 {
-			break
-		}
-
 		for i := range act {
 			val, ok := act[i].(string)
 			if !ok {
