@@ -360,12 +360,12 @@ func (s *OrganizationPolicyStatement) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 
-	arr := map[string]interface{}{}
-	if err := json.Unmarshal(b, &arr); err != nil {
+	elems := map[string]interface{}{}
+	if err := json.Unmarshal(b, &elems); err != nil {
 		return fmt.Errorf("unable to unmarshal organization policy statement : %s", err.Error())
 	}
 
-	switch res := arr["Resource"].(type) {
+	switch res := elems["Resource"].(type) {
 	case []interface{}:
 		for i := range res {
 			val, ok := res[i].(string)
@@ -380,7 +380,7 @@ func (s *OrganizationPolicyStatement) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("unable to unmarshal organization policy statement 'Resource' value")
 	}
 
-	switch act := arr["Action"].(type) {
+	switch act := elems["Action"].(type) {
 	case []interface{}:
 		for i := range act {
 			val, ok := act[i].(string)
@@ -395,7 +395,7 @@ func (s *OrganizationPolicyStatement) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("unable to unmarshal organization policy statement 'Action' value")
 	}
 
-	effect, ok := arr["Effect"].(string)
+	effect, ok := elems["Effect"].(string)
 	if !ok {
 		return fmt.Errorf("unable to unmarshal organization policy statement 'Effect' value")
 	}
