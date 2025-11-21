@@ -20,11 +20,37 @@ type ContainerRegistryService interface {
 	Update(ctx context.Context, vcrID string, updateReq *ContainerRegistryUpdateReq) (*ContainerRegistry, *http.Response, error)
 	Delete(ctx context.Context, vcrID string) error
 	List(ctx context.Context, options *ListOptions) ([]ContainerRegistry, *Meta, *http.Response, error)
+
 	ListRepositories(ctx context.Context, vcrID string, options *ListOptions) ([]ContainerRegistryRepo, *Meta, *http.Response, error)
 	GetRepository(ctx context.Context, vcrID, imageName string) (*ContainerRegistryRepo, *http.Response, error)
 	UpdateRepository(ctx context.Context, vcrID, imageName string, updateReq *ContainerRegistryRepoUpdateReq) (*ContainerRegistryRepo, *http.Response, error) //nolint:lll
 	DeleteRepository(ctx context.Context, vcrID, imageName string) error
+
+	ListReplications(ctx context.Context, vcrID string, options *ListOptions) ([]ContainerRegistryReplication, *Meta, *http.Response, error)
+	CreateReplication(ctx context.Context, vcrID, regionID string) (*ContainerRegistryReplication, *http.Response, error)
+	GetReplication(ctx context.Context, vcrID, regionID string) (*ContainerRegistryReplication, *http.Response, error)
+	DeleteReplication(ctx context.Context, vcrID, regionID string) error
+
+	UpdateRetentionSchedule(ctx context.Context, vcrID, schedule string) (*ContainerRegistryRetentionSchedule, *http.Response, error)
+	ExecuteRetention(ctx context.Context, vcrID string, dryRun bool) (*ContainerRegistryRetentionExecution, *http.Response, error)
+
+	ListRetentionRules(ctx context.Context, vcrID string, options *ListOptions) ([]ContainerRegistryRetentionRule, *Meta, *http.Response, error) //nolint:lll
+	GetRetentionRule(ctx context.Context, vcrID string, ruleID int) (*ContainerRegistryRetentionRule, *http.Response, error)
+	CreateRetentionRule(ctx context.Context, vcrID string, ruleReq *ContainerRegistryRetentionRuleReq) (*ContainerRegistryRetentionRule, *http.Response, error) //nolint:lll
+	UpdateRetentionRule(ctx context.Context, vcrID string, ruleID int, disabled bool) (*ContainerRegistryRetentionRule, *http.Response, error)
+	DeleteRetentionRule(ctx context.Context, vcrID string, ruleID int) error
+
+	ListRobots(ctx context.Context, vcrID string, options *ListOptions) ([]ContainerRegistryRobot, *Meta, *http.Response, error)
+	GetRobot(ctx context.Context, vcrID, robotName string) (*ContainerRegistryRobot, *http.Response, error)
+	UpdateRobot(ctx context.Context, vcrID, robotName string, updateReq *ContainerRegistryRobotReq) (*ContainerRegistryRobot, *http.Response, error) //nolint:lll
+	DeleteRobot(ctx context.Context, vcrID, robotName string) error
+
+	ListArtifacts(ctx context.Context, vcrID, imageName string, options *ListOptions) ([]ContainerRegistryArtifact, *Meta, *http.Response, error) //nolint:lll
+	GetArtifact(ctx context.Context, vcrID, imageName, artifactDigest string) (*ContainerRegistryArtifact, *http.Response, error)
+	DeleteArtifact(ctx context.Context, vcrID, imageName, artifactDigest string) error
+
 	CreateDockerCredentials(ctx context.Context, vcrID string, createOptions *DockerCredentialsOpt) (*ContainerRegistryDockerCredentials, *http.Response, error) //nolint:lll
+
 	ListRegions(ctx context.Context) ([]ContainerRegistryRegion, *Meta, *http.Response, error)
 	ListPlans(ctx context.Context) (*ContainerRegistryPlans, *http.Response, error)
 }
@@ -52,13 +78,13 @@ type containerRegistries struct {
 	Meta                *Meta               `json:"meta"`
 }
 
-// ContainerRegistryStorage represents the storage usage and limit
+// ContainerRegistryStorage represents the storage usage and limit.
 type ContainerRegistryStorage struct {
 	Used    ContainerRegistryStorageCount `json:"used"`
 	Allowed ContainerRegistryStorageCount `json:"allowed"`
 }
 
-// ContainerRegistryStorageCount represents the different storage usage counts
+// ContainerRegistryStorageCount represents the different storage usage counts.
 type ContainerRegistryStorageCount struct {
 	Bytes        float32 `json:"bytes"`
 	MegaBytes    float32 `json:"mb"`
@@ -67,7 +93,7 @@ type ContainerRegistryStorageCount struct {
 	DateModified string  `json:"updated_at"`
 }
 
-// ContainerRegistryUser contains the user data
+// ContainerRegistryUser contains the user data.
 type ContainerRegistryUser struct {
 	ID           int    `json:"id"`
 	UserName     string `json:"username"`
@@ -77,26 +103,26 @@ type ContainerRegistryUser struct {
 	DateModified string `json:"updated_at"`
 }
 
-// ContainerRegistryMetadata contains the meta data for the registry
+// ContainerRegistryMetadata contains the meta data for the registry.
 type ContainerRegistryMetadata struct {
 	Region       ContainerRegistryRegion       `json:"region"`
 	Subscription ContainerRegistrySubscription `json:"subscription"`
 }
 
 // ContainerRegistrySubscription contains the subscription information for the
-// registry
+// registry.
 type ContainerRegistrySubscription struct {
 	Billing ContainerRegistrySubscriptionBilling `json:"billing"`
 }
 
 // ContainerRegistrySubscriptionBilling represents the subscription billing
-// data on the registry
+// data on the registry.
 type ContainerRegistrySubscriptionBilling struct {
 	MonthlyPrice   float32 `json:"monthly_price"`
 	PendingCharges float32 `json:"pending_charges"`
 }
 
-// ContainerRegistryReq represents the data used to create a registry
+// ContainerRegistryReq represents the data used to create a registry.
 type ContainerRegistryReq struct {
 	Name   string `json:"name"`
 	Public bool   `json:"public"`
@@ -104,13 +130,13 @@ type ContainerRegistryReq struct {
 	Plan   string `json:"plan"`
 }
 
-// ContainerRegistryUpdateReq represents the data used to update a registry
+// ContainerRegistryUpdateReq represents the data used to update a registry.
 type ContainerRegistryUpdateReq struct {
 	Public *bool   `json:"public,omitempty"`
 	Plan   *string `json:"plan,omitempty"`
 }
 
-// ContainerRegistryRepo represents the data of a registry repository
+// ContainerRegistryRepo represents the data of a registry repository.
 type ContainerRegistryRepo struct {
 	Name          string `json:"name"`
 	Image         string `json:"image"`
@@ -126,34 +152,201 @@ type containerRegistryRepos struct {
 	Meta         *Meta                   `json:"meta"`
 }
 
-// ContainerRegistryRepoUpdateReq is the data to update a registry repository
+// ContainerRegistryRepoUpdateReq is the data to update a registry repository.
 type ContainerRegistryRepoUpdateReq struct {
 	Description string `json:"description"`
 }
 
-// DockerCredentialsOpt contains the options used to create Docker credentials
+// ContainerRegistryReplication represents a container registry replication.
+type ContainerRegistryReplication struct {
+	Region    string `json:"region"`
+	Namespace string `json:"namespace"`
+	URN       string `json:"urn"`
+}
+
+// ContainerRegistryReplicationReq represents a container registry replication.
+// request
+type ContainerRegistryReplicationReq struct {
+	Region string `json:"region"`
+}
+
+type containerRegistryReplicationsBase struct {
+	Replications []ContainerRegistryReplication `json:"replications"`
+	Meta         *Meta                          `json:"meta"`
+}
+
+// ContainerRegistryRetentionSchedule represents a container registry retention
+// schedule.
+type ContainerRegistryRetentionSchedule struct {
+	Schedule          string `json:"schedule"`
+	NextScheduledTime string `json:"next_scheduled_time"`
+}
+
+// ContainerRegistryRetentionScheduleReq represents a container registry
+// schedule request.
+type ContainerRegistryRetentionScheduleReq struct {
+	Cron string `json:"cron"`
+}
+
+// ContainerRegistryRetentionExecution represents a container registry
+// execution.
+type ContainerRegistryRetentionExecution struct {
+	Start   string `json:"start_time"`
+	End     string `json:"end_time"`
+	Trigger string `json:"trigger"`
+	DryRun  bool   `json:"dry_run"`
+}
+
+// ContainerRegistryRetentionExecutionReq represents a container registry
+// execution request.
+type ContainerRegistryRetentionExecutionReq struct {
+	DryRun bool `json:"dry_run"`
+}
+
+// ContainerRegistryRetentionRule represents a container registry retention
+// rule.
+type ContainerRegistryRetentionRule struct {
+	ID            int                                      `json:"id"`
+	Disabled      bool                                     `json:"disabled"`
+	Action        string                                   `json:"action"`
+	Parameters    ContainerRegistryRetentionRuleParameter  `json:"params"`
+	ScopeSelector ContainerRegistryScopeSelector           `json:"scope_selector"`
+	TagSelectors  []ContainerRegistryRetentionRuleSelector `json:"tag_selectors"`
+	Template      string                                   `json:"template"`
+}
+
+// ContainerRegistryRetentionRuleParameter represents a container registry rule
+// parameter.
+type ContainerRegistryRetentionRuleParameter struct {
+	AdditionalProperty int `json:"additional_prop"`
+}
+
+// ContainerRegistryScopeSelector represents a container registry retention
+// rule scope selector.
+type ContainerRegistryScopeSelector struct {
+	Repository []ContainerRegistryRetentionRuleSelector `json:"repository"`
+}
+
+// ContainerRegistryRetentionRuleSelector represents a container registry
+// retention rule selector.
+type ContainerRegistryRetentionRuleSelector struct {
+	Decoration string `json:"decoration"`
+	Kind       string `json:"kind"`
+	Pattern    string `json:"pattern"`
+}
+
+type containerRegistryRetentionRulesBase struct {
+	Rules []ContainerRegistryRetentionRule `json:"retention_rules"`
+	Meta  *Meta                            `json:"meta"`
+}
+
+// ContainerRegistryRetentionRuleReq represents the options for creating a
+// container registry retention rule.
+type ContainerRegistryRetentionRuleReq struct {
+	Type             string `json:"rule_type"`
+	Count            int    `json:"count,omitempty"`
+	RepositoryAction string `json:"repository_action"`
+	RepositoryMatch  string `json:"repository_match"`
+	TagAction        string `json:"tag_action"`
+	TagMatch         string `json:"tag_match"`
+	Untagged         bool   `json:"untagged"`
+}
+
+// ContainerRegistryRetentionRuleUpdateReq represents the options for updating
+// a container registry retention rule.
+type ContainerRegistryRetentionRuleUpdateReq struct {
+	Disabled bool `json:"disabled"`
+}
+
+// ContainerRegistryRobot represents the details of a container registry robot.
+type ContainerRegistryRobot struct {
+	Name        string                             `json:"name"`
+	Description string                             `json:"description"`
+	Secret      string                             `json:"secret"`
+	Disable     bool                               `json:"disable"`
+	Duration    int                                `json:"duration"`
+	Permissions []ContainerRegistryRobotPermission `json:"permissions"`
+	DateCreated string                             `json:"creation_time"`
+}
+
+// ContainerRegistryRobotPermission represent container registry robot
+// permission details.
+type ContainerRegistryRobotPermission struct {
+	Kind      string                         `json:"kind"`
+	Namespace string                         `json:"namespace"`
+	Access    []ContainerRegistryRobotAccess `json:"access"`
+}
+
+// ContainerRegistryRobotAccess represents container registry robot access
+// details.
+type ContainerRegistryRobotAccess struct {
+	Action   string `json:"action"`
+	Resource string `json:"resource"`
+	Effect   string `json:"effect"`
+}
+
+type containerRegistryRobotsBase struct {
+	Robots []ContainerRegistryRobot `json:"robots"`
+	Meta   *Meta                    `json:"meta"`
+}
+
+type ContainerRegistryRobotReq struct {
+	Description string                       `json:"description,omitempty"`
+	Disable     bool                         `json:"disable,omitempty"`
+	Duration    int                          `json:"duration,omitempty"`
+	Access      ContainerRegistryRobotAccess `json:"access,omitempty"`
+}
+
+// ContainerRegistryArtifact represents a container registry artifact.
+type ContainerRegistryArtifact struct {
+	ArtifactType      string                         `json:"artifact_type"`
+	Digest            string                         `json:"digest"`
+	ManifestMediaType string                         `json:"manifest_media_type"`
+	MediaType         string                         `json:"media_type"`
+	RepositoryName    string                         `json:"repository_name"`
+	Size              int                            `json:"size"`
+	Type              string                         `json:"type"`
+	Tags              []ContainerRegistryArtifactTag `json:"tags"`
+	DatePulled        string                         `json:"pull_time"`
+	DatePushed        string                         `json:"push_time"`
+}
+
+// ContainerRegistryArtifactTag represents tags on an artifact.
+type ContainerRegistryArtifactTag struct {
+	Name       string `json:"name"`
+	Immutable  bool   `json:"immutable"`
+	DatePulled string `json:"pull_time"`
+	DatePushed string `json:"push_time"`
+}
+
+type containerRegistryArtifactsBase struct {
+	Artifacts []ContainerRegistryArtifact `json:"artifacts"`
+	Meta      *Meta                       `json:"meta"`
+}
+
+// DockerCredentialsOpt contains the options used to create Docker credentials.
 type DockerCredentialsOpt struct {
 	ExpirySeconds *int
 	WriteAccess   *bool
 }
 
 // ContainerRegistryDockerCredentials represents the byte array of character
-// data returned after creating a Docker credential
+// data returned after creating a Docker credential.
 type ContainerRegistryDockerCredentials []byte
 
 // UnmarshalJSON is a custom unmarshal function for
-// ContainerRegistryDockerCredentials
+// ContainerRegistryDockerCredentials.
 func (c *ContainerRegistryDockerCredentials) UnmarshalJSON(b []byte) error {
 	*c = b
 	return nil
 }
 
-// String converts the ContainerRegistryDockerCredentials to a string
+// String converts the ContainerRegistryDockerCredentials to a string.
 func (c *ContainerRegistryDockerCredentials) String() string {
 	return string(*c)
 }
 
-// ContainerRegistryRegion represents the region data
+// ContainerRegistryRegion represents the region data.
 type ContainerRegistryRegion struct {
 	ID           int                               `json:"id"`
 	Name         string                            `json:"name"`
@@ -165,7 +358,7 @@ type ContainerRegistryRegion struct {
 	DataCenter   ContainerRegistryRegionDataCenter `json:"data_center"`
 }
 
-// ContainerRegistryRegionDataCenter is the datacenter info for a given region
+// ContainerRegistryRegionDataCenter is the datacenter info for a given region.
 type ContainerRegistryRegionDataCenter struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
@@ -182,12 +375,12 @@ type containerRegistryRegions struct {
 	Meta    *Meta                     `json:"meta"`
 }
 
-// ContainerRegistryPlans contains all plan types
+// ContainerRegistryPlans contains all plan types.
 type ContainerRegistryPlans struct {
 	Plans ContainerRegistryPlanTypes `json:"plans"`
 }
 
-// ContainerRegistryPlanTypes represent the different plan types
+// ContainerRegistryPlanTypes represent the different plan types.
 type ContainerRegistryPlanTypes struct {
 	StartUp    ContainerRegistryPlan `json:"start_up"`
 	Business   ContainerRegistryPlan `json:"business"`
@@ -195,7 +388,7 @@ type ContainerRegistryPlanTypes struct {
 	Enterprise ContainerRegistryPlan `json:"enterprise"`
 }
 
-// ContainerRegistryPlan represent the plan data
+// ContainerRegistryPlan represent the plan data.
 type ContainerRegistryPlan struct {
 	VanityName   string `json:"vanity_name"`
 	MaxStorageMB int    `json:"max_storage_mb"`
@@ -356,6 +549,357 @@ func (h *ContainerRegistryServiceHandler) DeleteRepository(ctx context.Context, 
 	_, errResp := h.client.DoWithContext(ctx, req, nil)
 	if errResp != nil {
 		return errResp
+	}
+
+	return nil
+}
+
+// ListReplications retrieves a list of container registry replications
+func (h *ContainerRegistryServiceHandler) ListReplications(ctx context.Context, vcrID string, options *ListOptions) ([]ContainerRegistryReplication, *Meta, *http.Response, error) { //nolint:lll,dupl
+	url := fmt.Sprintf("%s/%s/replications", vcrPath, vcrID)
+
+	req, err := h.client.NewRequest(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	qStrings, err := query.Values(options)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	req.URL.RawQuery = qStrings.Encode()
+
+	replications := new(containerRegistryReplicationsBase)
+
+	resp, err := h.client.DoWithContext(ctx, req, &replications)
+	if err != nil {
+		return nil, nil, resp, err
+	}
+
+	return replications.Replications, replications.Meta, resp, nil
+}
+
+// CreateReplication creates a container registry replication
+func (h *ContainerRegistryServiceHandler) CreateReplication(ctx context.Context, vcrID, regionID string) (*ContainerRegistryReplication, *http.Response, error) { //nolint:lll
+	url := fmt.Sprintf("%s/%s/replication", vcrPath, vcrID)
+
+	req, err := h.client.NewRequest(ctx, http.MethodPost, url, &ContainerRegistryReplicationReq{Region: regionID})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	replication := new(ContainerRegistryReplication)
+
+	resp, err := h.client.DoWithContext(ctx, req, &replication)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return replication, resp, nil
+}
+
+// GetReplication retrieves a container registry replication
+func (h *ContainerRegistryServiceHandler) GetReplication(ctx context.Context, vcrID, regionID string) (*ContainerRegistryReplication, *http.Response, error) { //nolint:lll
+	url := fmt.Sprintf("%s/%s/replication/%s", vcrPath, vcrID, regionID)
+
+	req, errReq := h.client.NewRequest(ctx, http.MethodGet, url, nil)
+	if errReq != nil {
+		return nil, nil, errReq
+	}
+
+	replication := new(ContainerRegistryReplication)
+
+	resp, errResp := h.client.DoWithContext(ctx, req, &replication)
+	if errResp != nil {
+		return nil, resp, errResp
+	}
+
+	return replication, resp, nil
+}
+
+// DeleteReplication deletes a container registry replication
+func (h *ContainerRegistryServiceHandler) DeleteReplication(ctx context.Context, vcrID, regionID string) error {
+	url := fmt.Sprintf("%s/%s/replication/%s", vcrPath, vcrID, regionID)
+
+	req, err := h.client.NewRequest(ctx, http.MethodDelete, url, nil)
+	if err != nil {
+		return err
+	}
+
+	if _, err := h.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UpdateRetentionSchedule updates a container registry retention schedule
+func (h *ContainerRegistryServiceHandler) UpdateRetentionSchedule(ctx context.Context, vcrID, schedule string) (*ContainerRegistryRetentionSchedule, *http.Response, error) { //nolint:lll
+	url := fmt.Sprintf("%s/%s/retention/schedule", vcrPath, vcrID)
+
+	req, err := h.client.NewRequest(ctx, http.MethodPut, url, &ContainerRegistryRetentionScheduleReq{Cron: schedule})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	sched := new(ContainerRegistryRetentionSchedule)
+
+	resp, errResp := h.client.DoWithContext(ctx, req, &sched)
+	if errResp != nil {
+		return nil, resp, errResp
+	}
+
+	return sched, resp, nil
+}
+
+// ExecuteRetention triggers a container registry retention execution
+func (h *ContainerRegistryServiceHandler) ExecuteRetention(ctx context.Context, vcrID string, dryRun bool) (*ContainerRegistryRetentionExecution, *http.Response, error) { //nolint:lll
+	url := fmt.Sprintf("%s/%s/retention/executions", vcrPath, vcrID)
+
+	req, err := h.client.NewRequest(ctx, http.MethodPost, url, &ContainerRegistryRetentionExecutionReq{DryRun: dryRun})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	execution := new(ContainerRegistryRetentionExecution)
+
+	resp, errResp := h.client.DoWithContext(ctx, req, &execution)
+	if errResp != nil {
+		return nil, resp, errResp
+	}
+
+	return execution, resp, nil
+}
+
+// ListRetentionRules retrieves a list of container registry retention rules
+func (h *ContainerRegistryServiceHandler) ListRetentionRules(ctx context.Context, vcrID string, options *ListOptions) ([]ContainerRegistryRetentionRule, *Meta, *http.Response, error) { //nolint:lll,dupl
+	url := fmt.Sprintf("%s/%s/retention/rules", vcrPath, vcrID)
+
+	req, err := h.client.NewRequest(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	qStrings, err := query.Values(options)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	req.URL.RawQuery = qStrings.Encode()
+
+	rules := new(containerRegistryRetentionRulesBase)
+
+	resp, err := h.client.DoWithContext(ctx, req, &rules)
+	if err != nil {
+		return nil, nil, resp, err
+	}
+
+	return rules.Rules, rules.Meta, resp, nil
+}
+
+// CreateRetentionRule creates a new container registry retention rule
+func (h *ContainerRegistryServiceHandler) CreateRetentionRule(ctx context.Context, vcrID string, ruleReq *ContainerRegistryRetentionRuleReq) (*ContainerRegistryRetentionRule, *http.Response, error) { //nolint:lll
+	url := fmt.Sprintf("%s/%s/retention/rules", vcrPath, vcrID)
+
+	req, err := h.client.NewRequest(ctx, http.MethodPost, url, ruleReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	rule := new(ContainerRegistryRetentionRule)
+
+	resp, err := h.client.DoWithContext(ctx, req, &rule)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return rule, resp, nil
+}
+
+// GetRetentionRule retrieves a container registry retention rule
+func (h *ContainerRegistryServiceHandler) GetRetentionRule(ctx context.Context, vcrID string, ruleID int) (*ContainerRegistryRetentionRule, *http.Response, error) { //nolint:lll
+	url := fmt.Sprintf("%s/%s/retention/rules/%d", vcrPath, vcrID, ruleID)
+
+	req, err := h.client.NewRequest(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	rule := new(ContainerRegistryRetentionRule)
+
+	resp, err := h.client.DoWithContext(ctx, req, &rule)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return rule, resp, nil
+}
+
+// UpdateRetentionRule updates a container registry retention rule
+func (h *ContainerRegistryServiceHandler) UpdateRetentionRule(ctx context.Context, vcrID string, ruleID int, disabled bool) (*ContainerRegistryRetentionRule, *http.Response, error) { //nolint:lll
+	url := fmt.Sprintf("%s/%s/retention/rules/%d", vcrPath, vcrID, ruleID)
+
+	req, err := h.client.NewRequest(ctx, http.MethodPut, url, &ContainerRegistryRetentionRuleUpdateReq{Disabled: disabled})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	rule := new(ContainerRegistryRetentionRule)
+
+	resp, err := h.client.DoWithContext(ctx, req, &rule)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return rule, resp, nil
+}
+
+// DeleteRetentionRule deletes a container registry retention rule
+func (h *ContainerRegistryServiceHandler) DeleteRetentionRule(ctx context.Context, vcrID string, ruleID int) error {
+	url := fmt.Sprintf("%s/%s/retention/rules/%d", vcrPath, vcrID, ruleID)
+
+	req, err := h.client.NewRequest(ctx, http.MethodDelete, url, nil)
+	if err != nil {
+		return err
+	}
+
+	if _, err := h.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (h *ContainerRegistryServiceHandler) ListRobots(ctx context.Context, vcrID string, options *ListOptions) ([]ContainerRegistryRobot, *Meta, *http.Response, error) { //nolint:lll,dupl
+	url := fmt.Sprintf("%s/%s/robots", vcrPath, vcrID)
+
+	req, err := h.client.NewRequest(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	qStrings, err := query.Values(options)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	req.URL.RawQuery = qStrings.Encode()
+
+	bots := new(containerRegistryRobotsBase)
+
+	resp, err := h.client.DoWithContext(ctx, req, &bots)
+	if err != nil {
+		return nil, nil, resp, err
+	}
+
+	return bots.Robots, bots.Meta, resp, nil
+}
+
+func (h *ContainerRegistryServiceHandler) GetRobot(ctx context.Context, vcrID, robotName string) (*ContainerRegistryRobot, *http.Response, error) { //nolint:lll
+	url := fmt.Sprintf("%s/%s/robot/%s", vcrPath, vcrID, robotName)
+
+	req, err := h.client.NewRequest(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	bot := new(ContainerRegistryRobot)
+
+	resp, err := h.client.DoWithContext(ctx, req, &bot)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return bot, resp, nil
+}
+
+func (h *ContainerRegistryServiceHandler) UpdateRobot(ctx context.Context, vcrID, robotName string, updateReq *ContainerRegistryRobotReq) (*ContainerRegistryRobot, *http.Response, error) { //nolint:lll
+	url := fmt.Sprintf("%s/%s/robot/%s", vcrPath, vcrID, robotName)
+
+	req, err := h.client.NewRequest(ctx, http.MethodPut, url, updateReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	bot := new(ContainerRegistryRobot)
+
+	resp, err := h.client.DoWithContext(ctx, req, &bot)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return bot, resp, nil
+}
+
+func (h *ContainerRegistryServiceHandler) DeleteRobot(ctx context.Context, vcrID, robotName string) error {
+	url := fmt.Sprintf("%s/%s/robot/%s", vcrPath, vcrID, robotName)
+
+	req, err := h.client.NewRequest(ctx, http.MethodDelete, url, nil)
+	if err != nil {
+		return err
+	}
+
+	if _, err := h.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (h *ContainerRegistryServiceHandler) ListArtifacts(ctx context.Context, vcrID, imageName string, options *ListOptions) ([]ContainerRegistryArtifact, *Meta, *http.Response, error) { //nolint:lll
+	url := fmt.Sprintf("%s/%s/repository/%s/artifacts", vcrPath, vcrID, imageName)
+
+	req, err := h.client.NewRequest(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	qStrings, err := query.Values(options)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	req.URL.RawQuery = qStrings.Encode()
+
+	artifacts := new(containerRegistryArtifactsBase)
+
+	resp, err := h.client.DoWithContext(ctx, req, &artifacts)
+	if err != nil {
+		return nil, nil, resp, err
+	}
+
+	return artifacts.Artifacts, artifacts.Meta, resp, nil
+}
+
+func (h *ContainerRegistryServiceHandler) GetArtifact(ctx context.Context, vcrID, imageName, artifactDigest string) (*ContainerRegistryArtifact, *http.Response, error) { //nolint:lll
+	url := fmt.Sprintf("%s/%s/repository/%s/artifact/%s", vcrPath, vcrID, imageName, artifactDigest)
+
+	req, err := h.client.NewRequest(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	artifact := new(ContainerRegistryArtifact)
+
+	resp, err := h.client.DoWithContext(ctx, req, &artifact)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return artifact, resp, nil
+}
+
+func (h *ContainerRegistryServiceHandler) DeleteArtifact(ctx context.Context, vcrID, imageName, artifactDigest string) error {
+	url := fmt.Sprintf("%s/%s/repository/%s/artifact/%s", vcrPath, vcrID, imageName, artifactDigest)
+
+	req, err := h.client.NewRequest(ctx, http.MethodDelete, url, nil)
+	if err != nil {
+		return err
+	}
+
+	if _, err := h.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
 	}
 
 	return nil
