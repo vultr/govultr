@@ -1,4 +1,13 @@
 # Change Log
+## [3.25.0](https://github.com/vultr/govultr/compare/v3.24.0...v3.25.0) (2025-11-21)
+### Enhancement
+* Bare Metal Server: Add vpc_only field [PR 404](https://github.com/vultr/govultr/pull/404)
+* Instance: Add vpc_only field [PR 404](https://github.com/vultr/govultr/pull/404)
+* Container Registry: Add support for artifact, robot, replication and retention endpoints [PR 406](https://github.com/vultr/govultr/pull/406)
+
+### New Contributors
+* @nathangoulding made their first contribution in [PR 404](https://github.com/vultr/govultr/pull/404)
+
 ## [3.24.0](https://github.com/vultr/govultr/compare/v3.23.0...v3.24.0) (2025-09-19)
 ### Enhancements
 * Logs: Added to library [PR 399](https://github.com/vultr/govultr/pull/399)
