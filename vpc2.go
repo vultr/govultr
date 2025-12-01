@@ -12,6 +12,7 @@ const vpc2Path = "/v2/vpc2"
 
 // VPC2Service is the interface to interact with the VPC 2.0 endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/vpc2
+//
 // Deprecated: VPC2 is no longer supported and functionality will cease in a
 // future release
 type VPC2Service interface {
@@ -39,6 +40,7 @@ type VPC2ServiceHandler struct {
 }
 
 // VPC2 represents a Vultr VPC 2.0
+//
 // Deprecated: VPC2 is no longer supported and functionality will cease in a
 // future release
 type VPC2 struct {
@@ -89,6 +91,7 @@ type vpc2NodesBase struct {
 }
 
 // Create creates a new VPC 2.0. A VPC 2.0 can only be used at the location for which it was created.
+//
 // Deprecated: VPC2 is no longer supported and functionality will cease in a
 // future release
 func (n *VPC2ServiceHandler) Create(ctx context.Context, createReq *VPC2Req) (*VPC2, *http.Response, error) {
@@ -107,6 +110,7 @@ func (n *VPC2ServiceHandler) Create(ctx context.Context, createReq *VPC2Req) (*V
 }
 
 // Get gets the VPC 2.0 of the requested ID
+//
 // Deprecated: VPC2 is no longer supported and functionality will cease in a
 // future release
 func (n *VPC2ServiceHandler) Get(ctx context.Context, vpcID string) (*VPC2, *http.Response, error) {
@@ -126,6 +130,7 @@ func (n *VPC2ServiceHandler) Get(ctx context.Context, vpcID string) (*VPC2, *htt
 }
 
 // Update updates a VPC 2.0
+//
 // Deprecated: VPC2 is no longer supported and functionality will cease in a
 // future release
 func (n *VPC2ServiceHandler) Update(ctx context.Context, vpcID, description string) error {
@@ -142,6 +147,7 @@ func (n *VPC2ServiceHandler) Update(ctx context.Context, vpcID, description stri
 }
 
 // Delete deletes a VPC 2.0. Before deleting, a VPC 2.0 must be disabled from all instances
+//
 // Deprecated: VPC2 is no longer supported and functionality will cease in a
 // future release
 func (n *VPC2ServiceHandler) Delete(ctx context.Context, vpcID string) error {
@@ -155,6 +161,7 @@ func (n *VPC2ServiceHandler) Delete(ctx context.Context, vpcID string) error {
 }
 
 // List lists all VPCs 2.0 on the current account
+//
 // Deprecated: VPC2 is no longer supported and functionality will cease in a
 // future release
 func (n *VPC2ServiceHandler) List(ctx context.Context, options *ListOptions) ([]VPC2, *Meta, *http.Response, error) { //nolint:dupl
@@ -180,6 +187,7 @@ func (n *VPC2ServiceHandler) List(ctx context.Context, options *ListOptions) ([]
 }
 
 // ListNodes lists all nodes attached to a VPC 2.0 network
+//
 // Deprecated: VPC2 is no longer supported and functionality will cease in a
 // future release
 func (n *VPC2ServiceHandler) ListNodes(ctx context.Context, vpc2ID string, options *ListOptions) ([]VPC2Node, *Meta, *http.Response, error) { //nolint:dupl,lll
@@ -207,6 +215,7 @@ func (n *VPC2ServiceHandler) ListNodes(ctx context.Context, vpc2ID string, optio
 }
 
 // Attach attaches nodes to a VPC 2.0 network
+//
 // Deprecated: VPC2 is no longer supported and functionality will cease in a
 // future release
 func (n *VPC2ServiceHandler) Attach(ctx context.Context, vpcID string, attachReq *VPC2AttachDetachReq) error {
@@ -222,6 +231,7 @@ func (n *VPC2ServiceHandler) Attach(ctx context.Context, vpcID string, attachReq
 }
 
 // Detach detaches nodes from a VPC 2.0 network
+//
 // Deprecated: VPC2 is no longer supported and functionality will cease in a
 // future release
 func (n *VPC2ServiceHandler) Detach(ctx context.Context, vpcID string, detachReq *VPC2AttachDetachReq) error {
