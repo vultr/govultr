@@ -8,6 +8,8 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
+const osPath = "/v2/object-storage"
+
 // ObjectStorageService is the interface to interact with the object storage endpoints on the Vultr API.
 // Link : https://www.vultr.com/api/#tag/s3
 type ObjectStorageService interface {
@@ -22,6 +24,9 @@ type ObjectStorageService interface {
 
 	ListTiers(ctx context.Context) ([]ObjectStorageTier, *http.Response, error)
 	ListClusterTiers(ctx context.Context, clusterID int) ([]ObjectStorageTier, *http.Response, error)
+
+	CreateBucket(ctx context.Context, osID string, bucketReq *ObjectStorageBucketReq) error
+	DeleteBucket(ctx context.Context, osID, bucketName string) error
 }
 
 // ObjectStorageServiceHandler handles interaction between the object storage service and the Vultr API.
@@ -78,6 +83,14 @@ type ObjectStorageTier struct {
 	Default           string                 `json:"is_default"`
 	Locations         []ObjectStorageCluster `json:"locations,omitempty"`
 	Slug              string                 `json:"slug"`
+}
+
+// ObjectStorageBucketReq represents a create request for an object storage
+// bucket
+type ObjectStorageBucketReq struct {
+	Name             string `json:"name"`
+	EnableVersioning bool   `json:"enable_bucket_versioning,omitempty"`
+	EnableLock       bool   `json:"enable_object_lock,omitempty"`
 }
 
 type objectStoragesBase struct {
@@ -257,4 +270,30 @@ func (o *ObjectStorageServiceHandler) ListClusterTiers(ctx context.Context, clus
 	}
 
 	return tiers.Tiers, resp, nil
+}
+
+// CreateBucket creates an object storage bucket
+func (o *ObjectStorageServiceHandler) CreateBucket(ctx context.Context, osID string, bucketReq *ObjectStorageBucketReq) error {
+	uri := fmt.Sprintf("%s/%s/bucket", osPath, osID)
+
+	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, bucketReq)
+	if err != nil {
+		return err
+	}
+
+	_, err = o.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// DeleteBucket deletes an object storage bucket by name
+func (o *ObjectStorageServiceHandler) DeleteBucket(ctx context.Context, osID, bucketName string) error {
+	uri := fmt.Sprintf("%s/%s/bucket/%s", osPath, osID, bucketName)
+
+	req, err := o.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = o.client.DoWithContext(ctx, req, nil)
+	return err
 }
