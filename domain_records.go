@@ -11,9 +11,9 @@ import (
 // DomainRecordService is the interface to interact with the DNS Records endpoints on the Vultr API
 // Link: https://www.vultr.com/api/#tag/dns
 type DomainRecordService interface {
-	Create(ctx context.Context, domain string, domainRecordReq *DomainRecordReq) (*DomainRecord, *http.Response, error)
+	Create(ctx context.Context, domain string, domainRecordCreateReq *DomainRecordCreateReq) (*DomainRecord, *http.Response, error)
 	Get(ctx context.Context, domain, recordID string) (*DomainRecord, *http.Response, error)
-	Update(ctx context.Context, domain, recordID string, domainRecordReq *DomainRecordReq) error
+	Update(ctx context.Context, domain, recordID string, domainRecordUpdateReq *DomainRecordUpdateReq) error
 	Delete(ctx context.Context, domain, recordID string) error
 	List(ctx context.Context, domain string, options *ListOptions) ([]DomainRecord, *Meta, *http.Response, error)
 }
@@ -33,8 +33,17 @@ type DomainRecord struct {
 	TTL      int    `json:"ttl,omitempty"`
 }
 
-// DomainRecordReq struct to use for create/update domain record calls.
-type DomainRecordReq struct {
+// DomainRecordCreateReq struct to use for create domain record calls.
+type DomainRecordCreateReq struct {
+	Name     string `json:"name"`
+	Type     string `json:"type"`
+	Data     string `json:"data"`
+	TTL      int    `json:"ttl,omitempty"`
+	Priority *int   `json:"priority,omitempty"`
+}
+
+// DomainRecordUpdateReq struct to use for update domain record calls.
+type DomainRecordUpdateReq struct {
 	Name     string `json:"name"`
 	Type     string `json:"type,omitempty"`
 	Data     string `json:"data,omitempty"`
@@ -52,8 +61,8 @@ type domainRecordBase struct {
 }
 
 // Create will add a DNS record.
-func (d *DomainRecordsServiceHandler) Create(ctx context.Context, domain string, domainRecordReq *DomainRecordReq) (*DomainRecord, *http.Response, error) { //nolint:lll
-	req, err := d.client.NewRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/records", domainPath, domain), domainRecordReq)
+func (d *DomainRecordsServiceHandler) Create(ctx context.Context, domain string, domainRecordCreateReq *DomainRecordCreateReq) (*DomainRecord, *http.Response, error) { //nolint:lll
+	req, err := d.client.NewRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/records", domainPath, domain), domainRecordCreateReq)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -84,8 +93,8 @@ func (d *DomainRecordsServiceHandler) Get(ctx context.Context, domain, recordID 
 }
 
 // Update will update a Domain record
-func (d *DomainRecordsServiceHandler) Update(ctx context.Context, domain, recordID string, domainRecordReq *DomainRecordReq) error {
-	req, err := d.client.NewRequest(ctx, http.MethodPatch, fmt.Sprintf("%s/%s/records/%s", domainPath, domain, recordID), domainRecordReq)
+func (d *DomainRecordsServiceHandler) Update(ctx context.Context, domain, recordID string, domainRecordUpdateReq *DomainRecordUpdateReq) error {
+	req, err := d.client.NewRequest(ctx, http.MethodPatch, fmt.Sprintf("%s/%s/records/%s", domainPath, domain, recordID), domainRecordUpdateReq)
 	if err != nil {
 		return err
 	}
