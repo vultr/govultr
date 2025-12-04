@@ -77,8 +77,9 @@ func TestDomainRecordsServiceHandler_Update(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 	p := 10
+	name := "*"
 	r := &DomainRecordUpdateReq{
-		Name:     "*",
+		Name:     &name,
 		Type:     "A",
 		Data:     "127.0.0.1",
 		TTL:      1200,

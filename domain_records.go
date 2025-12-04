@@ -44,11 +44,11 @@ type DomainRecordCreateReq struct {
 
 // DomainRecordUpdateReq struct to use for update domain record calls.
 type DomainRecordUpdateReq struct {
-	Name     string `json:"name"`
-	Type     string `json:"type,omitempty"`
-	Data     string `json:"data,omitempty"`
-	TTL      int    `json:"ttl,omitempty"`
-	Priority *int   `json:"priority,omitempty"`
+	Name     *string `json:"name,omitempty"`
+	Type     string  `json:"type,omitempty"`
+	Data     string  `json:"data,omitempty"`
+	TTL      int     `json:"ttl,omitempty"`
+	Priority *int    `json:"priority,omitempty"`
 }
 
 type domainRecordsBase struct {
