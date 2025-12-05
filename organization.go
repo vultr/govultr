@@ -482,15 +482,15 @@ type OrganizationRoleTrust struct {
 	UserName    string                         `json:"user_display"`
 	GroupID     string                         `json:"trusted_group_id"`
 	GroupName   string                         `json:"group_display"`
-	Conditions  OrganizationRoleTrustCondition `json:"conditions"`
+	Conditions  OrganizationRoleTrustCondition `json:"conditions,omitempty"`
 	DateExpires string                         `json:"valid_until"`
 	DateCreated string                         `json:"date_created"`
 }
 
 // OrganizationRoleTrustCondition represents a organization role trust condition
 type OrganizationRoleTrustCondition struct {
-	TimeOfDay OrganizationRoleTrustConditionTime `json:"time_of_day"`
-	IPRanges  []string                           `json:"ip_address"`
+	TimeOfDay OrganizationRoleTrustConditionTime `json:"time_of_day,omitempty"`
+	IPRanges  []string                           `json:"ip_address,omitempty"`
 }
 
 // OrganizationRoleTrustConditionTime represents a organization role trust condition time
