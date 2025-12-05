@@ -85,10 +85,10 @@ type OrganizationService interface {
 	AttachPolicyGroup(ctx context.Context, policyID, groupID string) error
 	DetachPolicyGroup(ctx context.Context, policyID, groupID string) error
 
-	CreateRoleTrust(ctx context.Context, roleTrustReq *OrganizationRoleTrustReq) (*OrganizationRoleTrust, *http.Response, error)
+	CreateRoleTrust(ctx context.Context, roleTrustReq *OrganizationRoleTrustCreateReq) (*OrganizationRoleTrust, *http.Response, error)
 	GetRoleTrust(ctx context.Context, roleTrustID string) (*OrganizationRoleTrust, *http.Response, error)
 	ListRoleTrusts(ctx context.Context, options *ListOptions) ([]OrganizationRoleTrust, *Meta, *http.Response, error)
-	UpdateRoleTrust(ctx context.Context, roleTrustID string, roleTrustReq *OrganizationRoleTrustReq) (*OrganizationRoleTrust, *http.Response, error) //nolint:lll
+	UpdateRoleTrust(ctx context.Context, roleTrustID string, roleTrustReq *OrganizationRoleTrustUpdateReq) (*OrganizationRoleTrust, *http.Response, error) //nolint:lll
 	DeleteRoleTrust(ctx context.Context, roleTrustID string) error
 	RestoreRoleTrust(ctx context.Context, roleTrustID string) (*OrganizationRoleTrust, *http.Response, error)
 	ListRoleTrustsByRole(ctx context.Context, roleID string) ([]OrganizationRoleTrust, *Meta, *http.Response, error)
@@ -482,15 +482,15 @@ type OrganizationRoleTrust struct {
 	UserName    string                         `json:"user_display"`
 	GroupID     string                         `json:"trusted_group_id"`
 	GroupName   string                         `json:"group_display"`
-	Conditions  OrganizationRoleTrustCondition `json:"conditions,omitempty"`
+	Conditions  OrganizationRoleTrustCondition `json:"conditions"`
 	DateExpires string                         `json:"valid_until"`
 	DateCreated string                         `json:"date_created"`
 }
 
 // OrganizationRoleTrustCondition represents a organization role trust condition
 type OrganizationRoleTrustCondition struct {
-	TimeOfDay OrganizationRoleTrustConditionTime `json:"time_of_day,omitempty"`
-	IPRanges  []string                           `json:"ip_address,omitempty"`
+	TimeOfDay *OrganizationRoleTrustConditionTime `json:"time_of_day,omitempty"`
+	IPRanges  []string                            `json:"ip_address,omitempty"`
 }
 
 // OrganizationRoleTrustConditionTime represents a organization role trust condition time
@@ -513,14 +513,24 @@ type organizationRoleTrustsAssumableBase struct {
 	Meta       *Meta                   `json:"meta"`
 }
 
-// OrganizationRoleTrustReq represents a organization role trust request
-type OrganizationRoleTrustReq struct {
-	RoleID      string                         `json:"role_id,omitempty"`
+// OrganizationRoleTrustCreatReq represents a organization role trust create request
+type OrganizationRoleTrustCreateReq struct {
+	RoleID      string                         `json:"role_id"`
 	UserID      string                         `json:"trusted_user_id,omitempty"`
 	GroupID     string                         `json:"trusted_group_id,omitempty"`
-	Type        string                         `json:"trust_type,omitempty"`
+	Type        string                         `json:"trust_type"`
 	Conditions  OrganizationRoleTrustCondition `json:"conditions,omitempty"`
 	DateExpires string                         `json:"valid_until,omitempty"`
+}
+
+// OrganizationRoleTrustUpdateReq represents a organization role trust update request
+type OrganizationRoleTrustUpdateReq struct {
+	RoleID      *string                         `json:"role_id,omitempty"`
+	UserID      *string                         `json:"trusted_user_id,omitempty"`
+	GroupID     *string                         `json:"trusted_group_id,omitempty"`
+	Type        *string                         `json:"trust_type,omitempty"`
+	Conditions  *OrganizationRoleTrustCondition `json:"conditions,omitempty"`
+	DateExpires *string                         `json:"valid_until,omitempty"`
 }
 
 // OrganizationRoleAssumedReq represents an organization assumed role
@@ -1876,7 +1886,7 @@ func (o *OrganizationServiceHandler) DetachPolicyGroup(ctx context.Context, poli
 }
 
 // CreateRoleTrust creates a role trust
-func (o *OrganizationServiceHandler) CreateRoleTrust(ctx context.Context, roleTrustReq *OrganizationRoleTrustReq) (*OrganizationRoleTrust, *http.Response, error) { //nolint:lll
+func (o *OrganizationServiceHandler) CreateRoleTrust(ctx context.Context, roleTrustReq *OrganizationRoleTrustCreateReq) (*OrganizationRoleTrust, *http.Response, error) { //nolint:lll
 	req, err := o.client.NewRequest(ctx, http.MethodPost, roleTrustPath, roleTrustReq)
 	if err != nil {
 		return nil, nil, err
@@ -1933,7 +1943,7 @@ func (o *OrganizationServiceHandler) ListRoleTrusts(ctx context.Context, options
 }
 
 // UpdateRoleTrust updates a role trust
-func (o *OrganizationServiceHandler) UpdateRoleTrust(ctx context.Context, roleTrustID string, roleTrustReq *OrganizationRoleTrustReq) (*OrganizationRoleTrust, *http.Response, error) { //nolint:lll
+func (o *OrganizationServiceHandler) UpdateRoleTrust(ctx context.Context, roleTrustID string, roleTrustReq *OrganizationRoleTrustUpdateReq) (*OrganizationRoleTrust, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s", roleTrustPath, roleTrustID)
 
 	req, err := o.client.NewRequest(ctx, http.MethodPut, uri, roleTrustReq)
