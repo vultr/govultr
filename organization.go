@@ -525,10 +525,10 @@ type OrganizationRoleTrustCreateReq struct {
 
 // OrganizationRoleTrustUpdateReq represents a organization role trust update request
 type OrganizationRoleTrustUpdateReq struct {
-	RoleID      *string                         `json:"role_id,omitempty"`
-	UserID      *string                         `json:"trusted_user_id,omitempty"`
-	GroupID     *string                         `json:"trusted_group_id,omitempty"`
-	Type        *string                         `json:"trust_type,omitempty"`
+	RoleID      string                          `json:"role_id,omitempty"`
+	UserID      string                          `json:"trusted_user_id,omitempty"`
+	GroupID     string                          `json:"trusted_group_id,omitempty"`
+	Type        string                          `json:"trust_type,omitempty"`
 	Conditions  *OrganizationRoleTrustCondition `json:"conditions,omitempty"`
 	DateExpires *string                         `json:"valid_until,omitempty"`
 }
