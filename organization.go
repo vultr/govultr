@@ -547,16 +547,16 @@ type OrganizationRoleTrustUpdateReq struct {
 
 // OrganizationRoleAssumedReq represents an organization assumed role
 type OrganizationRoleSessionReq struct {
-	UserID      string                            `json:"user_id"`
-	RoleID      string                            `json:"role_id"`
-	SessionName string                            `json:"session_name"`
-	Duration    int                               `json:"duration"`
-	Context     OrganizationRoleSessionReqContext `json:"context"`
+	UserID      string                             `json:"user_id"`
+	RoleID      string                             `json:"role_id"`
+	SessionName string                             `json:"session_name"`
+	Duration    int                                `json:"duration,omitzero"`
+	Context     *OrganizationRoleSessionReqContext `json:"context,omitempty"`
 }
 
 // OrganizationRoleAssumedContext represents an organization assumed role context
 type OrganizationRoleSessionReqContext struct {
-	IPAddress string `json:"ip_address"`
+	IPAddress *string `json:"ip_address,omitempty"`
 }
 
 // OrganizationRoleSession represents an organization role session
