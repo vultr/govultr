@@ -489,8 +489,8 @@ type OrganizationRoleTrust struct {
 
 // OrganizationRoleTrustCondition represents a organization role trust condition
 type OrganizationRoleTrustCondition struct {
-	TimeOfDay *OrganizationRoleTrustConditionTime `json:"time_of_day,omitempty"`
-	IPRanges  []string                            `json:"ip_address,omitempty"`
+	TimeOfDay OrganizationRoleTrustConditionTime `json:"time_of_day"`
+	IPRanges  []string                           `json:"ip_address"`
 }
 
 // OrganizationRoleTrustConditionTime represents a organization role trust condition time
@@ -515,12 +515,24 @@ type organizationRoleTrustsAssumableBase struct {
 
 // OrganizationRoleTrustCreatReq represents a organization role trust create request
 type OrganizationRoleTrustCreateReq struct {
-	RoleID      string                         `json:"role_id"`
-	UserID      string                         `json:"trusted_user_id,omitempty"`
-	GroupID     string                         `json:"trusted_group_id,omitempty"`
-	Type        string                         `json:"trust_type"`
-	Conditions  OrganizationRoleTrustCondition `json:"conditions,omitempty"`
-	DateExpires string                         `json:"valid_until,omitempty"`
+	RoleID      string                                   `json:"role_id"`
+	UserID      string                                   `json:"trusted_user_id,omitempty"`
+	GroupID     string                                   `json:"trusted_group_id,omitempty"`
+	Type        string                                   `json:"trust_type"`
+	Conditions  *OrganizationRoleTrustCreateReqCondition `json:"conditions,omitempty"`
+	DateExpires *string                                  `json:"valid_until,omitempty"`
+}
+
+// OrganizationRoleTrustCreateReqCondition represents a organization role trust create request condition
+type OrganizationRoleTrustCreateReqCondition struct {
+	TimeOfDay *OrganizationRoleTrustCreateReqConditionTime `json:"time_of_day,omitempty"`
+	IPRanges  []string                                     `json:"ip_address,omitempty"`
+}
+
+// OrganizationRoleTrustCreateReqConditionTime represents a organization role trust condition time
+type OrganizationRoleTrustCreateReqConditionTime struct {
+	Start int `json:"start,omitzero"`
+	End   int `json:"end,omitzero"`
 }
 
 // OrganizationRoleTrustUpdateReq represents a organization role trust update request
