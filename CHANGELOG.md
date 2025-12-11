@@ -1,4 +1,18 @@
 # Change Log
+## [3.26.0](https://github.com/vultr/govultr/compare/v3.25.0...3.26.0) (2025-12-11)
+### Enhancements
+* Kubernetes: Add specialized taints & labels functions [PR 415](https://github.com/vultr/govultr/pull/415)
+
+### Clean Up
+* Kubernetes: Resolve lint issues [PR 419](https://github.com/vultr/govultr/pull/419)
+* Domains: Resolve lint issues [PR 420](https://github.com/vultr/govultr/pull/420)
+
+### Bug Fix
+* Domains: Make request structs omit empty name field [PR 401](https://github.com/vultr/govultr/pull/401)
+
+### New Contributors
+* @pnx made their first contribution in [PR 401](https://github.com/vultr/govultr/pull/401)
+
 ## [3.25.0](https://github.com/vultr/govultr/compare/v3.24.0...v3.25.0) (2025-11-21)
 ### Enhancement
 * Bare Metal Server: Add vpc_only field [PR 404](https://github.com/vultr/govultr/pull/404)
