@@ -406,7 +406,7 @@ func (k *KubernetesHandler) DeleteNodePool(ctx context.Context, vkeID, nodePoolI
 	return err
 }
 
-// ListNodePoolLabels retireves a list of labels from a node pool
+// ListNodePoolLabels retrieves a list of labels from a node pool
 func (k *KubernetesHandler) ListNodePoolLabels(ctx context.Context, vkeID, nodePoolID string) ([]NodePoolLabel, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/node-pools/%s/labels", vkePath, vkeID, nodePoolID)
 
