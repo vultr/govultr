@@ -8,7 +8,7 @@
 * Domains: Resolve lint issues [PR 420](https://github.com/vultr/govultr/pull/420)
 
 ### Bug Fix
-* DNS: Make request structs omit empty name field [PR 401](https://github.com/vultr/govultr/pull/401)
+* Domains: Make request structs omit empty name field [PR 401](https://github.com/vultr/govultr/pull/401)
 
 ### New Contributors
 * @pnx made their first contribution in [PR 401](https://github.com/vultr/govultr/pull/401)
