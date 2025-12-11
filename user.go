@@ -29,21 +29,23 @@ type UserServiceHandler struct {
 
 // User represents an user on Vultr
 type User struct {
-	ID         string   `json:"id"`
-	Name       string   `json:"name"`
-	Email      string   `json:"email"`
-	APIEnabled *bool    `json:"api_enabled"`
-	APIKey     string   `json:"api_key,omitempty"`
-	ACL        []string `json:"acls,omitempty"`
+	ID          string   `json:"id"`
+	Name        string   `json:"name"`
+	Email       string   `json:"email"`
+	APIEnabled  *bool    `json:"api_enabled"`
+	APIKey      string   `json:"api_key,omitempty"`
+	ACL         []string `json:"acls,omitempty"`
+	ServiceUser bool     `json:"service_user"`
 }
 
 // UserReq is the user struct for create and update calls
 type UserReq struct {
-	Email      string   `json:"email,omitempty"`
-	Name       string   `json:"name,omitempty"`
-	APIEnabled *bool    `json:"api_enabled,omitempty"`
-	ACL        []string `json:"acls,omitempty"`
-	Password   string   `json:"password,omitempty"`
+	Email       string   `json:"email,omitempty"`
+	Name        string   `json:"name,omitempty"`
+	APIEnabled  *bool    `json:"api_enabled,omitempty"`
+	ACL         []string `json:"acls,omitempty"`
+	Password    string   `json:"password,omitempty"`
+	ServiceUser bool     `json:"service_user,omitempty"`
 }
 
 type usersBase struct {
