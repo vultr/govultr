@@ -3,7 +3,7 @@
 ### Enhancements
 * Kubernetes: Add specialized taints & labels functions [PR 415](https://github.com/vultr/govultr/pull/415)
 
-### Clean up
+### Clean Up
 * Kubernetes: Resolve lint issues [PR 419](https://github.com/vultr/govultr/pull/419)
 * Domains: Resolve lint issues [PR 420](https://github.com/vultr/govultr/pull/420)
 
