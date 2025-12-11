@@ -424,7 +424,7 @@ func (k *KubernetesHandler) ListNodePoolLabels(ctx context.Context, vkeID, nodeP
 	return labels.Labels, resp, nil
 }
 
-// CreateNodePoolLabel will create a label on a node pool
+// CreateNodePoolLabel creates a label on a node pool
 func (k *KubernetesHandler) CreateNodePoolLabel(ctx context.Context, vkeID, nodePoolID string, nodePoolLabelReq *NodePoolLabelReq) (*NodePoolLabel, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/node-pools/%s/labels", vkePath, vkeID, nodePoolID)
 
@@ -442,7 +442,7 @@ func (k *KubernetesHandler) CreateNodePoolLabel(ctx context.Context, vkeID, node
 	return label.Label, resp, nil
 }
 
-// GetNodePoolLabel will retrieve a label from a node pool
+// GetNodePoolLabel retrieves a label from a node pool
 func (k *KubernetesHandler) GetNodePoolLabel(ctx context.Context, vkeID, nodePoolID, nodePoolLabelID string) (*NodePoolLabel, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/node-pools/%s/labels/%s", vkePath, vkeID, nodePoolID, nodePoolLabelID)
 
@@ -460,7 +460,7 @@ func (k *KubernetesHandler) GetNodePoolLabel(ctx context.Context, vkeID, nodePoo
 	return label.Label, resp, nil
 }
 
-// DeleteNodePoolLabel will delete a label from a node pool
+// DeleteNodePoolLabel deletes a label from a node pool
 func (k *KubernetesHandler) DeleteNodePoolLabel(ctx context.Context, vkeID, nodePoolID, nodePoolLabelID string) error {
 	uri := fmt.Sprintf("%s/%s/node-pools/%s/labels/%s", vkePath, vkeID, nodePoolID, nodePoolLabelID)
 
