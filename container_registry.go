@@ -847,7 +847,7 @@ func (h *ContainerRegistryServiceHandler) DeleteRobot(ctx context.Context, vcrID
 	return nil
 }
 
-func (h *ContainerRegistryServiceHandler) ListArtifacts(ctx context.Context, vcrID, imageName string, options *ListOptions) ([]ContainerRegistryArtifact, *Meta, *http.Response, error) { //nolint:lll
+func (h *ContainerRegistryServiceHandler) ListArtifacts(ctx context.Context, vcrID, imageName string, options *ListOptions) ([]ContainerRegistryArtifact, *Meta, *http.Response, error) { //nolint:lll,dupl
 	url := fmt.Sprintf("%s/%s/repository/%s/artifacts", vcrPath, vcrID, imageName)
 
 	req, err := h.client.NewRequest(ctx, http.MethodGet, url, nil)
