@@ -93,8 +93,10 @@ func (d *DomainRecordsServiceHandler) Get(ctx context.Context, domain, recordID 
 }
 
 // Update will update a Domain record
-func (d *DomainRecordsServiceHandler) Update(ctx context.Context, domain, recordID string, domainRecordUpdateReq *DomainRecordUpdateReq) error {
-	req, err := d.client.NewRequest(ctx, http.MethodPatch, fmt.Sprintf("%s/%s/records/%s", domainPath, domain, recordID), domainRecordUpdateReq)
+func (d *DomainRecordsServiceHandler) Update(ctx context.Context, domain, recordID string, domainRecordUpdateReq *DomainRecordUpdateReq) error { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/records/%s", domainPath, domain, recordID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPatch, uri, domainRecordUpdateReq)
 	if err != nil {
 		return err
 	}
