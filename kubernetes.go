@@ -27,13 +27,13 @@ type KubernetesService interface {
 	DeleteNodePool(ctx context.Context, vkeID, nodePoolID string) error
 
 	ListNodePoolLabels(ctx context.Context, vkeID, nodePoolID string) ([]NodePoolLabel, *http.Response, error)
-	CreateNodePoolLabel(ctx context.Context, vkeID string, nodePoolID string, nodePoolLabelReq *NodePoolLabelReq) (*NodePoolLabel, *http.Response, error)
-	ReadNodePoolLabel(ctx context.Context, vkeID string, nodePoolID string, nodePoolLabelID string) (*NodePoolLabel, *http.Response, error)
+	CreateNodePoolLabel(ctx context.Context, vkeID string, nodePoolID string, nodePoolLabelReq *NodePoolLabelReq) (*NodePoolLabel, *http.Response, error) //nolint:lll
+	GetNodePoolLabel(ctx context.Context, vkeID string, nodePoolID string, nodePoolLabelID string) (*NodePoolLabel, *http.Response, error)
 	DeleteNodePoolLabel(ctx context.Context, vkeID string, nodePoolID string, nodePoolLabelID string) error
 
 	ListNodePoolTaints(ctx context.Context, vkeID, nodePoolID string) ([]NodePoolTaint, *http.Response, error)
-	CreateNodePoolTaint(ctx context.Context, vkeID string, nodePoolID string, nodePoolTaintReq *NodePoolTaintReq) (*NodePoolTaint, *http.Response, error)
-	ReadNodePoolTaint(ctx context.Context, vkeID string, nodePoolID string, nodePoolTaintID string) (*NodePoolTaint, *http.Response, error)
+	CreateNodePoolTaint(ctx context.Context, vkeID string, nodePoolID string, nodePoolTaintReq *NodePoolTaintReq) (*NodePoolTaint, *http.Response, error) //nolint:lll
+	GetNodePoolTaint(ctx context.Context, vkeID string, nodePoolID string, nodePoolTaintID string) (*NodePoolTaint, *http.Response, error)
 	DeleteNodePoolTaint(ctx context.Context, vkeID string, nodePoolID string, nodePoolTaintID string) error
 
 	ListWorkerNodes(ctx context.Context, vkeID, nodePoolID string, options *ListOptions) ([]Node, *Meta, *http.Response, error)
@@ -69,8 +69,7 @@ type Cluster struct {
 	NodePools       []NodePool `json:"node_pools"`
 }
 
-// Taint represents a Kubernetes taint that can be applied to nodes in a node pool
-// TODO: Deprecate
+// Taint represents a kubernetes taint that can be applied to nodes in a node pool
 type Taint struct {
 	Key    string `json:"key"`
 	Value  string `json:"value"`
@@ -147,10 +146,13 @@ type NodePoolReqUpdate struct {
 	MinNodes     int     `json:"min_nodes,omitempty"`
 	MaxNodes     int     `json:"max_nodes,omitempty"`
 	AutoScaler   *bool   `json:"auto_scaler,omitempty"`
-	// Deprecated: Use CreateNodePoolLabel, DeleteNodePoolLabel endpoints instead
+
+	// Deprecated: Use CreateNodePoolLabel, DeleteNodePoolLabel instead
 	Labels map[string]string `json:"labels,omitempty"`
-	// Deprecated: Use CreateNodePoolTaint, DeleteNodePoolTaint endpoints instead
-	Taints   []Taint `json:"taints,omitempty"`
+
+	// Deprecated: Use CreateNodePoolTaint, DeleteNodePoolTaint instead
+	Taints []Taint `json:"taints,omitempty"`
+
 	UserData *string `json:"user_data,omitempty"`
 }
 
@@ -404,9 +406,11 @@ func (k *KubernetesHandler) DeleteNodePool(ctx context.Context, vkeID, nodePoolI
 	return err
 }
 
-// ListNodePoolLabels will list labels on a nodepool
+// ListNodePoolLabels retrieves a list of labels from a node pool
 func (k *KubernetesHandler) ListNodePoolLabels(ctx context.Context, vkeID, nodePoolID string) ([]NodePoolLabel, *http.Response, error) {
-	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/node-pools/%s/labels", vkePath, vkeID, nodePoolID), nil)
+	uri := fmt.Sprintf("%s/%s/node-pools/%s/labels", vkePath, vkeID, nodePoolID)
+
+	req, err := k.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -420,9 +424,11 @@ func (k *KubernetesHandler) ListNodePoolLabels(ctx context.Context, vkeID, nodeP
 	return labels.Labels, resp, nil
 }
 
-// CreateNodePoolLabel will create a label on a nodepool
-func (k *KubernetesHandler) CreateNodePoolLabel(ctx context.Context, vkeID, nodePoolID string, nodePoolLabelReq *NodePoolLabelReq) (*NodePoolLabel, *http.Response, error) {
-	req, err := k.client.NewRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/node-pools/%s/labels", vkePath, vkeID, nodePoolID), nodePoolLabelReq)
+// CreateNodePoolLabel creates a label on a node pool
+func (k *KubernetesHandler) CreateNodePoolLabel(ctx context.Context, vkeID, nodePoolID string, nodePoolLabelReq *NodePoolLabelReq) (*NodePoolLabel, *http.Response, error) { //nolint:lll,dupl
+	uri := fmt.Sprintf("%s/%s/node-pools/%s/labels", vkePath, vkeID, nodePoolID)
+
+	req, err := k.client.NewRequest(ctx, http.MethodPost, uri, nodePoolLabelReq)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -436,9 +442,11 @@ func (k *KubernetesHandler) CreateNodePoolLabel(ctx context.Context, vkeID, node
 	return label.Label, resp, nil
 }
 
-// ReadNodePoolLabel will Read a label on a nodepool
-func (k *KubernetesHandler) ReadNodePoolLabel(ctx context.Context, vkeID, nodePoolID, nodePoolLabelID string) (*NodePoolLabel, *http.Response, error) {
-	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/node-pools/%s/labels/%s", vkePath, vkeID, nodePoolID, nodePoolLabelID), nil)
+// GetNodePoolLabel retrieves a label from a node pool
+func (k *KubernetesHandler) GetNodePoolLabel(ctx context.Context, vkeID, nodePoolID, nodePoolLabelID string) (*NodePoolLabel, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/node-pools/%s/labels/%s", vkePath, vkeID, nodePoolID, nodePoolLabelID)
+
+	req, err := k.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -452,9 +460,11 @@ func (k *KubernetesHandler) ReadNodePoolLabel(ctx context.Context, vkeID, nodePo
 	return label.Label, resp, nil
 }
 
-// DeleteNodePoolLabel will Delete a label on a nodepool
+// DeleteNodePoolLabel deletes a label from a node pool
 func (k *KubernetesHandler) DeleteNodePoolLabel(ctx context.Context, vkeID, nodePoolID, nodePoolLabelID string) error {
-	req, err := k.client.NewRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s/node-pools/%s/labels/%s", vkePath, vkeID, nodePoolID, nodePoolLabelID), nil)
+	uri := fmt.Sprintf("%s/%s/node-pools/%s/labels/%s", vkePath, vkeID, nodePoolID, nodePoolLabelID)
+
+	req, err := k.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return err
 	}
@@ -463,9 +473,11 @@ func (k *KubernetesHandler) DeleteNodePoolLabel(ctx context.Context, vkeID, node
 	return err
 }
 
-// ListNodePoolTaints will list taints on a nodepool
+// ListNodePoolTaints retrieves a list of taints from a node pool
 func (k *KubernetesHandler) ListNodePoolTaints(ctx context.Context, vkeID, nodePoolID string) ([]NodePoolTaint, *http.Response, error) {
-	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/node-pools/%s/taints", vkePath, vkeID, nodePoolID), nil)
+	uri := fmt.Sprintf("%s/%s/node-pools/%s/taints", vkePath, vkeID, nodePoolID)
+
+	req, err := k.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -479,9 +491,11 @@ func (k *KubernetesHandler) ListNodePoolTaints(ctx context.Context, vkeID, nodeP
 	return taints.Taints, resp, nil
 }
 
-// CreateNodePoolTaint will create a taint on a nodepool
-func (k *KubernetesHandler) CreateNodePoolTaint(ctx context.Context, vkeID, nodePoolID string, nodePoolTaintReq *NodePoolTaintReq) (*NodePoolTaint, *http.Response, error) {
-	req, err := k.client.NewRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/node-pools/%s/taints", vkePath, vkeID, nodePoolID), nodePoolTaintReq)
+// CreateNodePoolTaint creates a taint on a node pool
+func (k *KubernetesHandler) CreateNodePoolTaint(ctx context.Context, vkeID, nodePoolID string, nodePoolTaintReq *NodePoolTaintReq) (*NodePoolTaint, *http.Response, error) { //nolint:lll,dupl
+	uri := fmt.Sprintf("%s/%s/node-pools/%s/taints", vkePath, vkeID, nodePoolID)
+
+	req, err := k.client.NewRequest(ctx, http.MethodPost, uri, nodePoolTaintReq)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -495,9 +509,10 @@ func (k *KubernetesHandler) CreateNodePoolTaint(ctx context.Context, vkeID, node
 	return taint.Taint, resp, nil
 }
 
-// ReadNodePoolTaint will Read a taint on a nodepool
-func (k *KubernetesHandler) ReadNodePoolTaint(ctx context.Context, vkeID, nodePoolID, nodePoolTaintID string) (*NodePoolTaint, *http.Response, error) {
-	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/node-pools/%s/taints/%s", vkePath, vkeID, nodePoolID, nodePoolTaintID), nil)
+// GetNodePoolTaint retrieves a taint from a node pool
+func (k *KubernetesHandler) GetNodePoolTaint(ctx context.Context, vkeID, nodePoolID, nodePoolTaintID string) (*NodePoolTaint, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/node-pools/%s/taints/%s", vkePath, vkeID, nodePoolID, nodePoolTaintID)
+	req, err := k.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -511,9 +526,11 @@ func (k *KubernetesHandler) ReadNodePoolTaint(ctx context.Context, vkeID, nodePo
 	return taint.Taint, resp, nil
 }
 
-// DeleteNodePoolTaint will Delete a taint on a nodepool
+// DeleteNodePoolTaint deletes a taint on a node pool
 func (k *KubernetesHandler) DeleteNodePoolTaint(ctx context.Context, vkeID, nodePoolID, nodePoolTaintID string) error {
-	req, err := k.client.NewRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s/node-pools/%s/taints/%s", vkePath, vkeID, nodePoolID, nodePoolTaintID), nil)
+	uri := fmt.Sprintf("%s/%s/node-pools/%s/taints/%s", vkePath, vkeID, nodePoolID, nodePoolTaintID)
+
+	req, err := k.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return err
 	}
@@ -522,9 +539,11 @@ func (k *KubernetesHandler) DeleteNodePoolTaint(ctx context.Context, vkeID, node
 	return err
 }
 
-// ListWorkerNodes will return all worker nodes for a given nodepool with pagination
-func (k *KubernetesHandler) ListWorkerNodes(ctx context.Context, vkeID, nodePoolID string, options *ListOptions) ([]Node, *Meta, *http.Response, error) {
-	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/node-pools/%s/nodes", vkePath, vkeID, nodePoolID), nil)
+// ListWorkerNodes retrieves a list of all worker nodes for a given node pool
+func (k *KubernetesHandler) ListWorkerNodes(ctx context.Context, vkeID, nodePoolID string, options *ListOptions) ([]Node, *Meta, *http.Response, error) { //nolint:lll,dupl
+	uri := fmt.Sprintf("%s/%s/node-pools/%s/nodes", vkePath, vkeID, nodePoolID)
+
+	req, err := k.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, nil, nil, err
 	}
