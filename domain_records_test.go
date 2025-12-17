@@ -16,7 +16,7 @@ func TestDomainRecordsServiceHandler_Create(t *testing.T) {
 		fmt.Fprint(writer, response)
 	})
 	p := 300
-	r := &DomainRecordReq{
+	r := &DomainRecordCreateReq{
 		Name:     "www",
 		Type:     "A",
 		Data:     "127.0.0.1",
@@ -77,8 +77,9 @@ func TestDomainRecordsServiceHandler_Update(t *testing.T) {
 		fmt.Fprint(writer)
 	})
 	p := 10
-	r := &DomainRecordReq{
-		Name:     "*",
+	name := "*"
+	r := &DomainRecordUpdateReq{
+		Name:     &name,
 		Type:     "A",
 		Data:     "127.0.0.1",
 		TTL:      1200,
