@@ -1,4 +1,7 @@
 # Change Log
+## [3.26.1](https://github.com/vultr/govultr/compare/v3.26.0...v3.26.1) (2025-12-18)
+* User: Add service user create parameter [PR 418](https://github.com/vultr/govultr/pull/418)
+
 ## [3.26.0](https://github.com/vultr/govultr/compare/v3.25.0...3.26.0) (2025-12-11)
 ### Enhancements
 * Kubernetes: Add specialized taints & labels functions [PR 415](https://github.com/vultr/govultr/pull/415)
