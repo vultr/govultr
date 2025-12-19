@@ -550,7 +550,7 @@ type OrganizationRoleSessionReq struct {
 	UserID      string                             `json:"user_id"`
 	RoleID      string                             `json:"role_id"`
 	SessionName string                             `json:"session_name"`
-	Duration    int                                `json:"duration,omitzero"`
+	Duration    int                                `json:"duration,omitempty"`
 	Context     *OrganizationRoleSessionReqContext `json:"context,omitempty"`
 }
 
