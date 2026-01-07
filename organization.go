@@ -1105,7 +1105,7 @@ func (o *OrganizationServiceHandler) RemoveGroupMember(ctx context.Context, grou
 }
 
 // ListGroupPolicies retrieves the organization group policies
-func (o *OrganizationServiceHandler) ListGroupPolicies(ctx context.Context, groupID string) (*OrganizationGroupPolicies, *Meta, *http.Response, error) { //nolint:lll
+func (o *OrganizationServiceHandler) ListGroupPolicies(ctx context.Context, groupID string) (*OrganizationGroupPolicies, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/policies", groupPath, groupID)
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
