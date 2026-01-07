@@ -49,7 +49,7 @@ type OrganizationService interface {
 	AddGroupMember(ctx context.Context, groupID string, memberReq *OrganizationGroupMemberReq) error
 	RemoveGroupMember(ctx context.Context, groupID, userID string) error
 	ListGroupPolicies(ctx context.Context, groupID string) (*OrganizationGroupPolicies, *Meta, *http.Response, error)
-	ListGroupRoles(ctx context.Context, groupID string) ([]OrganizationGroupRole, *Meta, *http.Response, error)
+	ListGroupRoles(ctx context.Context, groupID string) (*OrganizationGroupRoles, *Meta, *http.Response, error)
 
 	CreateRole(ctx context.Context, roleReq *OrganizationRoleReq) (*OrganizationRole, *http.Response, error)
 	GetRole(ctx context.Context, roleID string) (*OrganizationRole, *http.Response, error)
@@ -289,8 +289,15 @@ type OrganizationGroupRole struct {
 }
 
 type organizationGroupRolesBase struct {
-	Roles []OrganizationGroupRole `json:"roles"` // TODO json case is wrong?
+	Roles *OrganizationGroupRoles `json:"roles"`
 	Meta  *Meta                   `json:"meta"`
+}
+
+// OrganizationGroupRoles represents all roles in a group
+type OrganizationGroupRoles struct {
+	All       []OrganizationGroupRole `json:"all"`
+	Inherited []OrganizationGroupRole `json:"inherited"`
+	Direct    []OrganizationGroupRole `json:"direct"`
 }
 
 // OrganizationPolicy represents an organization policy
@@ -1098,7 +1105,7 @@ func (o *OrganizationServiceHandler) RemoveGroupMember(ctx context.Context, grou
 }
 
 // ListGroupPolicies retrieves the organization group policies
-func (o *OrganizationServiceHandler) ListGroupPolicies(ctx context.Context, groupID string) (*OrganizationGroupPolicies, *Meta, *http.Response, error) { //nolint:lll
+func (o *OrganizationServiceHandler) ListGroupPolicies(ctx context.Context, groupID string) (*OrganizationGroupPolicies, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/policies", groupPath, groupID)
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -1116,7 +1123,7 @@ func (o *OrganizationServiceHandler) ListGroupPolicies(ctx context.Context, grou
 }
 
 // ListGroupRoles retrieves the organization group roles
-func (o *OrganizationServiceHandler) ListGroupRoles(ctx context.Context, groupID string) ([]OrganizationGroupRole, *Meta, *http.Response, error) { //nolint:lll,dupl
+func (o *OrganizationServiceHandler) ListGroupRoles(ctx context.Context, groupID string) (*OrganizationGroupRoles, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/roles", groupPath, groupID)
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
