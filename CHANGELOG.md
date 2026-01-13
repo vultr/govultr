@@ -1,4 +1,37 @@
 # Change Log
+## [3.26.1](https://github.com/vultr/govultr/compare/v3.26.0...v3.26.1) (2025-12-18)
+* User: Add service user create parameter [PR 418](https://github.com/vultr/govultr/pull/418)
+
+## [3.26.0](https://github.com/vultr/govultr/compare/v3.25.0...3.26.0) (2025-12-11)
+### Enhancements
+* Kubernetes: Add specialized taints & labels functions [PR 415](https://github.com/vultr/govultr/pull/415)
+
+### Clean Up
+* Kubernetes: Resolve lint issues [PR 419](https://github.com/vultr/govultr/pull/419)
+* Domains: Resolve lint issues [PR 420](https://github.com/vultr/govultr/pull/420)
+
+### Bug Fix
+* Domains: Make request structs omit empty name field [PR 401](https://github.com/vultr/govultr/pull/401)
+
+### New Contributors
+* @pnx made their first contribution in [PR 401](https://github.com/vultr/govultr/pull/401)
+
+## [3.25.0](https://github.com/vultr/govultr/compare/v3.24.0...v3.25.0) (2025-11-21)
+### Enhancement
+* Bare Metal Server: Add vpc_only field [PR 404](https://github.com/vultr/govultr/pull/404)
+* Instance: Add vpc_only field [PR 404](https://github.com/vultr/govultr/pull/404)
+* Container Registry: Add support for artifact, robot, replication and retention endpoints [PR 406](https://github.com/vultr/govultr/pull/406)
+
+### New Contributors
+* @nathangoulding made their first contribution in [PR 404](https://github.com/vultr/govultr/pull/404)
+
+## [3.24.0](https://github.com/vultr/govultr/compare/v3.23.0...v3.24.0) (2025-09-19)
+### Enhancements
+* Logs: Added to library [PR 399](https://github.com/vultr/govultr/pull/399)
+
+### Automation
+* Migrate golangci-lint config to v2 [PR 398](https://github.com/vultr/govultr/pull/398)
+
 ## [3.23.0](https://github.com/vultr/govultr/compare/v3.22.1...v3.23.0) (2025-08-27)
 ### Enhancements
 * Bare Metal Server: Add snapshot ID field [PR 396](https://github.com/vultr/govultr/pull/396)
