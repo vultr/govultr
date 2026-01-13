@@ -25,6 +25,7 @@ type ObjectStorageService interface {
 	ListTiers(ctx context.Context) ([]ObjectStorageTier, *http.Response, error)
 	ListClusterTiers(ctx context.Context, clusterID int) ([]ObjectStorageTier, *http.Response, error)
 
+	ListBuckets(ctx context.Context, osID string) ([]ObjectStorageBucket, *http.Response, error)
 	CreateBucket(ctx context.Context, osID string, bucketReq *ObjectStorageBucketReq) error
 	DeleteBucket(ctx context.Context, osID, bucketName string) error
 }
@@ -85,6 +86,12 @@ type ObjectStorageTier struct {
 	Slug              string                 `json:"slug"`
 }
 
+// ObjectStorageBucket represents an object storage bucket
+type ObjectStorageBucket struct {
+	Name        string `json:"name"`
+	DateCreated string `json:"date_created"`
+}
+
 // ObjectStorageBucketReq represents a create request for an object storage
 // bucket
 type ObjectStorageBucketReq struct {
@@ -113,6 +120,10 @@ type objectStorageTiersBase struct {
 
 type s3KeysBase struct {
 	S3Credentials *S3Keys `json:"s3_credentials"`
+}
+
+type objectStorageBucketsBase struct {
+	Buckets []ObjectStorageBucket `json:"buckets"`
 }
 
 // Create an object storage subscription
@@ -270,6 +281,24 @@ func (o *ObjectStorageServiceHandler) ListClusterTiers(ctx context.Context, clus
 	}
 
 	return tiers.Tiers, resp, nil
+}
+
+// ListBuckets retrieves a list of buckets in the object storage
+func (o *ObjectStorageServiceHandler) ListBuckets(ctx context.Context, osID string) ([]ObjectStorageBucket, *http.Response, error) {
+	uri := fmt.Sprintf("%s/%s/bucket", osPath, osID)
+
+	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	buckets := new(objectStorageBucketsBase)
+	resp, err := o.client.DoWithContext(ctx, req, buckets)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return buckets.Buckets, resp, nil
 }
 
 // CreateBucket creates an object storage bucket
