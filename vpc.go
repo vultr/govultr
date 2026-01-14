@@ -74,11 +74,11 @@ type NATGateway struct {
 	DateCreated string            `json:"date_created"`
 	Status      string            `json:"status"`
 	Label       string            `json:"label"`
-	Tags        []string          `json:"tags"`
-	Billing     NATGatewayBilling `json:"billing"`
+	Tag         string            `json:"tag"`
 	PublicIPs   []string          `json:"public_ips"`
-	PrivateIPs  []string          `json:"private_ips"`
 	PublicIPsV6 []string          `json:"public_ips_v6"`
+	PrivateIPs  []string          `json:"private_ips"`
+	Billing     NATGatewayBilling `json:"billing"`
 }
 
 // NATGatewayBilling represents a Vultr NAT Gateway
