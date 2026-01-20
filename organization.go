@@ -211,7 +211,7 @@ type OrganizationGroup struct {
 	ID           string             `json:"id"`
 	Name         string             `json:"display_name"`
 	Description  string             `json:"description"`
-	MemberCount  string             `json:"member_count,omitempty"`
+	MemberCount  int                `json:"member_count,omitempty"`
 	Members      []OrganizationUser `json:"members"`
 	DateCreated  string             `json:"date_created"`
 	DateAssigned string             `json:"assigned_date,omitempty"`
