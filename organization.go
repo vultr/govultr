@@ -65,7 +65,7 @@ type OrganizationService interface {
 	DeletePolicy(ctx context.Context, policyID string) error
 	RestorePolicy(ctx context.Context, policyID string) (*OrganizationPolicy, *http.Response, error)
 
-	ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationPolicy, *Meta, *http.Response, error)
+	ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRolePolicyAttachment, *Meta, *http.Response, error) //nolint:lll
 	AttachRolePolicy(ctx context.Context, roleID string, roleAttachReq *OrganizationRolePolicyReq) (*OrganizationRole, *http.Response, error)
 	DetachRolePolicy(ctx context.Context, roleID, policyID string) (*OrganizationRole, *http.Response, error)
 
@@ -337,6 +337,16 @@ type organizationPolicyUserBase struct {
 // OrganizationRolePolicyReq represents an organization role policy attach/detach request
 type OrganizationRolePolicyReq struct {
 	PolicyID string `json:"policy_id"`
+}
+
+// OrganizationRolePolicyAttachment represents a role policy attachment
+type OrganizationRolePolicyAttachment struct {
+	PolicyID string `json:"policy_id"`
+}
+
+type baseOrganizationRolePolicyAttachments struct {
+	Policies []OrganizationRolePolicyAttachment `json:"policies"`
+	Meta     *Meta                              `json:"meta"`
 }
 
 // OrganizationPolicyDocument represents a policy document
@@ -1608,7 +1618,7 @@ func (o *OrganizationServiceHandler) RestorePolicy(ctx context.Context, policyID
 }
 
 // ListRolePolicies retrieves a list of role policies
-func (o *OrganizationServiceHandler) ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationPolicy, *Meta, *http.Response, error) { //nolint:lll,dupl
+func (o *OrganizationServiceHandler) ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRolePolicyAttachment, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/policies", rolePath, roleID)
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -1623,7 +1633,7 @@ func (o *OrganizationServiceHandler) ListRolePolicies(ctx context.Context, roleI
 
 	req.URL.RawQuery = newValues.Encode()
 
-	policies := new(organizationPoliciesBase)
+	policies := new(baseOrganizationRolePolicyAttachments)
 	resp, err := o.client.DoWithContext(ctx, req, policies)
 	if err != nil {
 		return nil, nil, resp, err
