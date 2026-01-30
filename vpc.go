@@ -90,6 +90,7 @@ type NATGatewayBilling struct {
 // NATGatewayReq represents parameters to create/update a NAT Gateway resource
 type NATGatewayReq struct {
 	Label string `json:"label,omitempty"`
+	Tag   string `json:"tag,omitempty"`
 }
 
 type natGatewaysBase struct {
@@ -104,7 +105,6 @@ type natGatewayBase struct {
 // NATGatewayFirewallRule represents a firewall rule for a Vultr NAT Gateway
 type NATGatewayFirewallRule struct {
 	ID         string `json:"id"`
-	IPType     string `json:"ip_type"`
 	Action     string `json:"action"`
 	Protocol   string `json:"protocol"`
 	Port       string `json:"port"`
@@ -115,7 +115,6 @@ type NATGatewayFirewallRule struct {
 
 // NATGatewayFirewallRuleCreateReq represents parameters to create a NAT Gateway firewall rule resource
 type NATGatewayFirewallRuleCreateReq struct {
-	IPType     string `json:"ip_type,omitempty"`
 	Protocol   string `json:"protocol,omitempty"`
 	Port       string `json:"port,omitempty"`
 	Subnet     string `json:"subnet,omitempty"`
