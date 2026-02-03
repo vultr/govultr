@@ -146,8 +146,8 @@ type NATGatewayPortForwardingRule struct {
 	InternalPort int    `json:"internal_port"`
 	Enabled      *bool  `json:"enabled"`
 	Description  string `json:"description"`
-	CreatedAt    string `json:"created_at"`
-	UpdatedAt    string `json:"updated_at"`
+	DateCreated  string `json:"created_at"`
+	DateUpdated  string `json:"updated_at"`
 }
 
 // NATGatewayPortForwardingRuleReq represents parameters to create or update a NAT Gateway port forwarding rule resource
