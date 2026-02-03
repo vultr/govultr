@@ -744,8 +744,8 @@ func TestVPCServiceHandler_NATGatewayListPortForwardingRules(t *testing.T) {
 			InternalPort: 123,
 			Enabled:      BoolToBoolPtr(true),
 			Description:  "test",
-			CreatedAt:    "2025-10-16 15:09:26",
-			UpdatedAt:    "2025-10-16 15:09:26",
+			DateCreated:  "2025-10-16 15:09:26",
+			DateUpdated:  "2025-10-16 15:09:26",
 		},
 	}
 
@@ -804,8 +804,8 @@ func TestVPCServiceHandler_CreateNATGatewayPortForwardingRule(t *testing.T) {
 		InternalPort: 123,
 		Enabled:      BoolToBoolPtr(true),
 		Description:  "test",
-		CreatedAt:    "2025-10-16 15:09:26",
-		UpdatedAt:    "2025-10-16 15:09:26",
+		DateCreated:  "2025-10-16 15:09:26",
+		DateUpdated:  "2025-10-16 15:09:26",
 	}
 
 	if !reflect.DeepEqual(portForwardingRule, expected) {
@@ -852,8 +852,8 @@ func TestVPCServiceHandler_GetNATGatewayPortForwardingRule(t *testing.T) {
 		InternalPort: 123,
 		Enabled:      BoolToBoolPtr(true),
 		Description:  "test",
-		CreatedAt:    "2025-10-16 15:09:26",
-		UpdatedAt:    "2025-10-16 15:09:26",
+		DateCreated:  "2025-10-16 15:09:26",
+		DateUpdated:  "2025-10-16 15:09:26",
 	}
 
 	if !reflect.DeepEqual(portForwardingRule, expected) {
@@ -906,8 +906,8 @@ func TestVPCServiceHandler_UpdateNATGatewayPortForwardingRule(t *testing.T) {
 		InternalPort: 123,
 		Enabled:      BoolToBoolPtr(true),
 		Description:  "test updated",
-		CreatedAt:    "2025-10-16 15:09:26",
-		UpdatedAt:    "2025-10-16 15:09:26",
+		DateCreated:  "2025-10-16 15:09:26",
+		DateUpdated:  "2025-10-16 15:09:26",
 	}
 
 	if !reflect.DeepEqual(portForwardingRule, expected) {
