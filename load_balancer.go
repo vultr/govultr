@@ -63,7 +63,7 @@ type LoadBalancerReq struct {
 	Nodes              int              `json:"nodes,omitempty"`
 	HealthCheck        *HealthCheck     `json:"health_check,omitempty"`
 	StickySessions     *StickySessions  `json:"sticky_session,omitempty"`
-	ForwardingRules    []ForwardingRule `json:"forwarding_rules,omitempty"`
+	ForwardingRules    []ForwardingRule `json:"forwarding_rules"`
 	SSL                *SSL             `json:"ssl,omitempty"`
 	AutoSSL            *AutoSSL         `json:"auto_ssl,omitempty"`
 	SSLRedirect        *bool            `json:"ssl_redirect,omitempty"`
@@ -71,7 +71,7 @@ type LoadBalancerReq struct {
 	HTTP3              *bool            `json:"http3,omitempty"`
 	ProxyProtocol      *bool            `json:"proxy_protocol,omitempty"`
 	BalancingAlgorithm string           `json:"balancing_algorithm,omitempty"`
-	FirewallRules      []LBFirewallRule `json:"firewall_rules,omitempty"`
+	FirewallRules      []LBFirewallRule `json:"firewall_rules"`
 	Timeout            int              `json:"timeout,omitempty"`
 	VPC                *string          `json:"vpc,omitempty"`
 	GlobalRegions      []string         `json:"global_regions,omitempty"`

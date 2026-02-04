@@ -1,4 +1,7 @@
 # Change Log
+## [3.27.0](https://github.com/vultr/govultr/compare/v3.26.1...v3.27.0) (2026-02-03)
+* Loadbalancer: Removed `omitempty` for LoadbalancerReq's Struct [PR 418](https://github.com/vultr/govultr/pull/431)
+
 ## [3.26.1](https://github.com/vultr/govultr/compare/v3.26.0...v3.26.1) (2025-12-18)
 * User: Add service user create parameter [PR 418](https://github.com/vultr/govultr/pull/418)
 
