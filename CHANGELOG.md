@@ -1,5 +1,11 @@
 # Change Log
+## [3.27.0](https://github.com/vultr/govultr/compare/v3.26.1...v3.27.0) (2026-02-05)
+### Enhancements
+* Kubernetes: Add cluster OIDC config fields [PR 432](https://github.com/vultr/govultr/pull/432)
+* VPC: Add NAT gateways [PR 433](https://github.com/vultr/govultr/pull/433)
+
 ## [3.26.1](https://github.com/vultr/govultr/compare/v3.26.0...v3.26.1) (2025-12-18)
+### Enhancements
 * User: Add service user create parameter [PR 418](https://github.com/vultr/govultr/pull/418)
 
 ## [3.26.0](https://github.com/vultr/govultr/compare/v3.25.0...3.26.0) (2025-12-11)
