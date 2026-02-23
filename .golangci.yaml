@@ -49,6 +49,9 @@ linters:
         - style
     gocyclo:
       min-complexity: 15
+    gosec:
+      excludes:
+        - G117
     govet:
       disable:
         - fieldalignment
