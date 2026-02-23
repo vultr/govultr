@@ -38,6 +38,8 @@ type BlockStorage struct {
 	Label              string  `json:"label"`
 	MountID            string  `json:"mount_id"`
 	BlockType          string  `json:"block_type"`
+	OSID               int     `json:"os_id"`
+	Bootable           bool    `json:"bootable"`
 }
 
 // BlockStorageCreate struct is used for creating Block Storage.
@@ -46,6 +48,8 @@ type BlockStorageCreate struct {
 	SizeGB    int    `json:"size_gb"`
 	Label     string `json:"label,omitempty"`
 	BlockType string `json:"block_type,omitempty"`
+	OSID      int    `json:"os_id,omitempty"`
+	Bootable  *bool  `json:"bootable,omitempty"`
 }
 
 // BlockStorageUpdate struct is used to update Block Storage.

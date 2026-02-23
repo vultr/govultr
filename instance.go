@@ -241,6 +241,14 @@ type Upgrades struct {
 	Plans        []string      `json:"plans,omitempty"`
 }
 
+// InstanceBlockDevice represents an instance bootable block device
+type InstanceBlockDevice struct {
+	BlockID  string `json:"block_id,omitempty"`
+	Bootable bool   `json:"bootable,omitempty"`
+	DiskSize int    `json:"disk_size,omitempty"`
+	Label    string `json:"label,omitempty"`
+}
+
 // InstanceCreateReq struct used to create an instance.
 type InstanceCreateReq struct {
 	Region            string   `json:"region,omitempty"`
@@ -276,6 +284,8 @@ type InstanceCreateReq struct {
 
 	// Deprecated: VPC2 is no longer supported
 	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
+
+	BlockDevices []InstanceBlockDevice `json:"block_devices"`
 }
 
 // InstanceUpdateReq struct used to update an instance.
