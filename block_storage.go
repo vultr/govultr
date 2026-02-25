@@ -48,12 +48,13 @@ type BlockStorage struct {
 
 // BlockStorageCreate struct is used for creating Block Storage.
 type BlockStorageCreate struct {
-	Region    string `json:"region"`
-	SizeGB    int    `json:"size_gb"`
-	Label     string `json:"label,omitempty"`
-	BlockType string `json:"block_type,omitempty"`
-	OSID      int    `json:"os_id,omitempty"`
-	Bootable  *bool  `json:"bootable,omitempty"`
+	Region     string `json:"region"`
+	SizeGB     int    `json:"size_gb"`
+	Label      string `json:"label,omitempty"`
+	BlockType  string `json:"block_type,omitempty"`
+	SnapshotID string `json:"snapshot_id,omitempty"`
+	OSID       int    `json:"os_id,omitempty"`
+	Bootable   *bool  `json:"bootable,omitempty"`
 }
 
 // BlockStorageUpdate struct is used to update Block Storage.
