@@ -61,6 +61,7 @@ type Client struct {
 	Logs                     LogsService
 	Marketplace              MarketplaceService
 	ObjectStorage            ObjectStorageService
+	OIDC                     OIDCService
 	Organization             OrganizationService
 	OS                       OSService
 	Plan                     PlanService
@@ -139,6 +140,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.Logs = &LogsServiceHandler{client}
 	client.Marketplace = &MarketplaceServiceHandler{client}
 	client.ObjectStorage = &ObjectStorageServiceHandler{client}
+	client.OIDC = &OIDCServiceHandler{client}
 	client.Organization = &OrganizationServiceHandler{client}
 	client.OS = &OSServiceHandler{client}
 	client.Plan = &PlanServiceHandler{client}
