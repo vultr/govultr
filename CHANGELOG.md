@@ -1,4 +1,18 @@
 # Change Log
+## [3.28.0](https://github.com/vultr/govultr/compare/v3.27.0...v3.28.0) (2026-02-25)
+### Enhancements
+* Block Storage: Add fields for bootable block creation [PR 437](https://github.com/vultr/govultr/pull/437)
+* Instances: Add fields for bootable block storage creation [PR 437](https://github.com/vultr/govultr/pull/437)
+* Block Storage: Add additional bootable instance fields [PR 440](https://github.com/vultr/govultr/pull/440)
+* Database: Add pending charges field [PR 440](https://github.com/vultr/govultr/pull/440)
+* Regions: Add connectivity field [PR 440](https://github.com/vultr/govultr/pull/440)
+
+### Dependencies
+* Bump github.com/google/go-querystring from 1.1.0 to 1.2.0 [PR 426](https://github.com/vultr/govultr/pull/426)
+
+### Automation
+* Add golangci-lint exclusion for gosec g117 [PR 438](https://github.com/vultr/govultr/pull/438)
+
 ## [3.27.0](https://github.com/vultr/govultr/compare/v3.26.1...v3.27.0) (2026-02-05)
 ### Enhancements
 * Kubernetes: Add cluster OIDC config fields [PR 432](https://github.com/vultr/govultr/pull/432)
