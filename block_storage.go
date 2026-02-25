@@ -28,18 +28,22 @@ type BlockStorageServiceHandler struct {
 
 // BlockStorage represents Vultr Block-Storage
 type BlockStorage struct {
-	ID                 string  `json:"id"`
-	Cost               float32 `json:"cost"`
-	Status             string  `json:"status"`
-	SizeGB             int     `json:"size_gb"`
-	Region             string  `json:"region"`
-	DateCreated        string  `json:"date_created"`
-	AttachedToInstance string  `json:"attached_to_instance"`
-	Label              string  `json:"label"`
-	MountID            string  `json:"mount_id"`
-	BlockType          string  `json:"block_type"`
-	OSID               int     `json:"os_id"`
-	Bootable           bool    `json:"bootable"`
+	ID                      string  `json:"id"`
+	DateCreated             string  `json:"date_created"`
+	Cost                    float32 `json:"cost"`
+	PendingCharges          float32 `json:"pending_charges"`
+	Status                  string  `json:"status"`
+	SizeGB                  int     `json:"size_gb"`
+	Region                  string  `json:"region"`
+	AttachedToInstance      string  `json:"attached_to_instance"`
+	AttachedToInstanceIP    string  `json:"attached_to_instance_ip"`
+	AttachedToInstanceLabel string  `json:"attached_to_instance_label"`
+	Label                   string  `json:"label"`
+	MountID                 string  `json:"mount_id"`
+	BlockType               string  `json:"block_type"`
+	OSID                    int     `json:"os_id"`
+	SnapshotID              string  `json:"snapshot_id"`
+	Bootable                bool    `json:"bootable"`
 }
 
 // BlockStorageCreate struct is used for creating Block Storage.
