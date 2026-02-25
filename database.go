@@ -165,6 +165,7 @@ type Database struct {
 	Status                 string               `json:"status"`
 	Label                  string               `json:"label"`
 	Tag                    string               `json:"tag"`
+	PendingCharges         float32              `json:"pending_charges"`
 	DBName                 string               `json:"dbname,omitempty"`
 	FerretDBCredentials    *FerretDBCredentials `json:"ferretdb_credentials,omitempty"`
 	Host                   string               `json:"host"`
