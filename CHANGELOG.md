@@ -1,4 +1,8 @@
 # Change Log
+## [3.28.1](https://github.com/vultr/govultr/compare/v3.28.0...v3.28.1) (2026-02-25)
+### Enhancements
+* Block Storage: Add missing snapshot ID create param [PR 442](https://github.com/vultr/govultr/pull/442)
+
 ## [3.28.0](https://github.com/vultr/govultr/compare/v3.27.0...v3.28.0) (2026-02-25)
 ### Enhancements
 * Block Storage: Add fields for bootable block creation [PR 437](https://github.com/vultr/govultr/pull/437)
