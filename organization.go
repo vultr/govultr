@@ -67,7 +67,7 @@ type OrganizationService interface {
 
 	ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRolePolicyAttachment, *Meta, *http.Response, error) //nolint:lll
 	AttachRolePolicy(ctx context.Context, roleID string, roleAttachReq *OrganizationRolePolicyReq) (*OrganizationRole, *http.Response, error)
-	DetachRolePolicy(ctx context.Context, roleID, policyID string) (*OrganizationRole, *http.Response, error)
+	DetachRolePolicy(ctx context.Context, roleID, policyID string) error
 
 	ListRoleUsers(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRoleUserAssignment, *Meta, *http.Response, error)
 	AttachRoleUser(ctx context.Context, roleID, userID string) (*OrganizationRoleUserAssignment, *http.Response, error)
@@ -1661,21 +1661,19 @@ func (o *OrganizationServiceHandler) AttachRolePolicy(ctx context.Context, roleI
 }
 
 // DetachRolePolicy detaches a role policy
-func (o *OrganizationServiceHandler) DetachRolePolicy(ctx context.Context, roleID, policyID string) (*OrganizationRole, *http.Response, error) { //nolint:lll
+func (o *OrganizationServiceHandler) DetachRolePolicy(ctx context.Context, roleID, policyID string) error {
 	uri := fmt.Sprintf("%s/%s/policies/%s", rolePath, roleID, policyID)
 
 	req, err := o.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
-	role := new(OrganizationRole)
-	resp, err := o.client.DoWithContext(ctx, req, role)
-	if err != nil {
-		return nil, resp, err
+	if _, err := o.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
 	}
 
-	return role, resp, nil
+	return nil
 }
 
 // ListRoleUsers lists a role's users
