@@ -65,8 +65,8 @@ type OrganizationService interface {
 	DeletePolicy(ctx context.Context, policyID string) error
 	RestorePolicy(ctx context.Context, policyID string) (*OrganizationPolicy, *http.Response, error)
 
-	ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationPolicy, *Meta, *http.Response, error) //nolint:lll
-	AttachRolePolicy(ctx context.Context, roleID string, roleAttachReq *OrganizationRolePolicyReq) (*OrganizationRolePolicyAttachment, *http.Response, error)
+	ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationPolicy, *Meta, *http.Response, error)                           //nolint:lll
+	AttachRolePolicy(ctx context.Context, roleID string, roleAttachReq *OrganizationRolePolicyReq) (*OrganizationRolePolicyAttachment, *http.Response, error) //nolint:lll
 	DetachRolePolicy(ctx context.Context, roleID, policyID string) error
 
 	ListRoleUsers(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRoleUserAssignment, *Meta, *http.Response, error)
