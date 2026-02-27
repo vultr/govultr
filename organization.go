@@ -65,8 +65,8 @@ type OrganizationService interface {
 	DeletePolicy(ctx context.Context, policyID string) error
 	RestorePolicy(ctx context.Context, policyID string) (*OrganizationPolicy, *http.Response, error)
 
-	ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRolePolicyAttachment, *Meta, *http.Response, error) //nolint:lll
-	AttachRolePolicy(ctx context.Context, roleID string, roleAttachReq *OrganizationRolePolicyReq) (*OrganizationRole, *http.Response, error)
+	ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationPolicy, *Meta, *http.Response, error) //nolint:lll
+	AttachRolePolicy(ctx context.Context, roleID string, roleAttachReq *OrganizationRolePolicyReq) (*OrganizationRolePolicyAttachment, *http.Response, error)
 	DetachRolePolicy(ctx context.Context, roleID, policyID string) error
 
 	ListRoleUsers(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRoleUserAssignment, *Meta, *http.Response, error)
@@ -341,12 +341,18 @@ type OrganizationRolePolicyReq struct {
 
 // OrganizationRolePolicyAttachment represents a role policy attachment
 type OrganizationRolePolicyAttachment struct {
-	PolicyID string `json:"policy_id"`
+	PolicyID        string `json:"policy_id"`
+	PolicyName      string `json:"policy_name"`
+	RoleID          string `json:"role_id"`
+	RoleDescription string `json:"role_description"`
+	RoleType        string `json:"role_type"`
+	DateAssigned    string `json:"date_assigned"`
+	AssignedBy      string `json:"assigned_by"`
 }
 
-type baseOrganizationRolePolicyAttachments struct {
-	Policies []OrganizationRolePolicyAttachment `json:"policies"`
-	Meta     *Meta                              `json:"meta"`
+type organizationRolePolicyAttachmentsBase struct {
+	Policies []OrganizationPolicy `json:"policies"`
+	Meta     *Meta                `json:"meta"`
 }
 
 // OrganizationPolicyDocument represents a policy document
@@ -1618,7 +1624,7 @@ func (o *OrganizationServiceHandler) RestorePolicy(ctx context.Context, policyID
 }
 
 // ListRolePolicies retrieves a list of role policies
-func (o *OrganizationServiceHandler) ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRolePolicyAttachment, *Meta, *http.Response, error) { //nolint:lll,dupl
+func (o *OrganizationServiceHandler) ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationPolicy, *Meta, *http.Response, error) { //nolint:lll,dupl
 	uri := fmt.Sprintf("%s/%s/policies", rolePath, roleID)
 
 	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -1633,7 +1639,7 @@ func (o *OrganizationServiceHandler) ListRolePolicies(ctx context.Context, roleI
 
 	req.URL.RawQuery = newValues.Encode()
 
-	policies := new(baseOrganizationRolePolicyAttachments)
+	policies := new(organizationRolePolicyAttachmentsBase)
 	resp, err := o.client.DoWithContext(ctx, req, policies)
 	if err != nil {
 		return nil, nil, resp, err
@@ -1643,7 +1649,7 @@ func (o *OrganizationServiceHandler) ListRolePolicies(ctx context.Context, roleI
 }
 
 // AttachRolePolicy attaches a role policy
-func (o *OrganizationServiceHandler) AttachRolePolicy(ctx context.Context, roleID string, roleAttachReq *OrganizationRolePolicyReq) (*OrganizationRole, *http.Response, error) { //nolint:lll
+func (o *OrganizationServiceHandler) AttachRolePolicy(ctx context.Context, roleID string, roleAttachReq *OrganizationRolePolicyReq) (*OrganizationRolePolicyAttachment, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/policies", rolePath, roleID)
 
 	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, roleAttachReq)
@@ -1651,13 +1657,13 @@ func (o *OrganizationServiceHandler) AttachRolePolicy(ctx context.Context, roleI
 		return nil, nil, err
 	}
 
-	role := new(OrganizationRole)
-	resp, err := o.client.DoWithContext(ctx, req, role)
+	att := new(OrganizationRolePolicyAttachment)
+	resp, err := o.client.DoWithContext(ctx, req, att)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return role, resp, nil
+	return att, resp, nil
 }
 
 // DetachRolePolicy detaches a role policy
