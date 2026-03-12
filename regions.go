@@ -24,11 +24,12 @@ type RegionServiceHandler struct {
 
 // Region represents a Vultr region
 type Region struct {
-	ID        string   `json:"id"`
-	City      string   `json:"city"`
-	Country   string   `json:"country"`
-	Continent string   `json:"continent,omitempty"`
-	Options   []string `json:"options"`
+	ID           string   `json:"id"`
+	City         string   `json:"city"`
+	Country      string   `json:"country"`
+	Continent    string   `json:"continent,omitempty"`
+	Options      []string `json:"options"`
+	Connectivity []string `json:"connectivity"`
 }
 
 type regionBase struct {
