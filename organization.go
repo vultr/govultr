@@ -10,19 +10,18 @@ import (
 )
 
 const (
-	organizationPath   = "/v2/organizations"
-	invitationPath     = "/v2/invitation"
-	groupPath          = "/v2/groups"
-	rolePath           = "/v2/roles"
-	policyPath         = "/v2/policies"
-	roleTrustPath      = "/v2/role-trusts"
-	roleSessionPath    = "/v2/assumed-roles"
-	endpointActionPath = "/v2/endpoint-action-maps"
-	userPath           = "/v2/users"
+	organizationPath = "/v2/organizations"
+	invitationPath   = "/v2/invitation"
+	groupPath        = "/v2/groups"
+	rolePath         = "/v2/roles"
+	policyPath       = "/v2/policies"
+	roleTrustPath    = "/v2/role-trusts"
+	roleSessionPath  = "/v2/assumed-roles"
+	userPath         = "/v2/users"
 )
 
-// OrganizationsService is the interface to interact with organization endpoint on the Vultr API
-// TODO Link : https://www.vultr.com/api/#tag
+// OrganizationService is the interface to interact with organization access endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/iam
 type OrganizationService interface {
 	CreateOrganization(ctx context.Context, organizationReq *OrganizationReq) (*Organization, *http.Response, error)
 	GetOrganization(ctx context.Context, organizationID string) (*Organization, *http.Response, error)
@@ -99,10 +98,6 @@ type OrganizationService interface {
 	ListRoleSessions(ctx context.Context, userID string) ([]OrganizationRoleSession, *Meta, *http.Response, error)
 	RevokeRoleSession(ctx context.Context, token string) error
 
-	ListEndpointActionMaps(ctx context.Context, options *ListOptions) ([]OrganizationEndpointAction, *Meta, *http.Response, error)
-	ListEndpointActionMapActions(ctx context.Context) ([]OrganizationEndpointActionAvailable, *Meta, *http.Response, error)
-	GetEndpointActionMap(ctx context.Context, mapID string) (*OrganizationEndpointAction, *http.Response, error)
-
 	ListUserGroups(ctx context.Context, userID string, options *ListOptions) ([]OrganizationGroup, *Meta, *http.Response, error)
 	ListUserRoles(ctx context.Context, userID string, options *ListOptions) (*OrganizationRolesForUser, *Meta, *http.Response, error)
 	ListUserPolicies(ctx context.Context, userID string, options *ListOptions) (*OrganizationPoliciesForUser, *Meta, *http.Response, error)
@@ -110,22 +105,6 @@ type OrganizationService interface {
 	ListCurrentUserGroups(ctx context.Context, options *ListOptions) ([]OrganizationGroup, *Meta, *http.Response, error)
 	ListCurrentUserRoles(ctx context.Context, options *ListOptions) (*OrganizationRolesForUser, *Meta, *http.Response, error)
 	ListCurrentUserPolicies(ctx context.Context, options *ListOptions) (*OrganizationPoliciesForUser, *Meta, *http.Response, error)
-
-	GetSCIM(ctx context.Context, organizationID string) (*OrganizationSCIM, *http.Response, error)
-	EnableSCIM(ctx context.Context, organizationID string, scimReq *OrganizationSCIMReq) (*OrganizationSCIM, *http.Response, error)
-	DisableSCIM(ctx context.Context, organizationID string) (*OrganizationSCIM, *http.Response, error)
-	RotateSCIM(ctx context.Context, organizationID string) (*OrganizationSCIM, *http.Response, error)
-
-	CreateSCIMUser(ctx context.Context, scimUserReq *OrganizationSCIMUserReq) (*OrganizationSCIMUser, *http.Response, error)
-	GetSCIMUser(ctx context.Context, userID string) (*OrganizationSCIMUser, *http.Response, error)
-	ListSCIMUsers(ctx context.Context, scimOptions *OrganizationSCIMListOptions) (*OrganizationSCIMListResponse, *http.Response, error)
-
-	CreateSCIMGroup(ctx context.Context, scimGroupReq *OrganizationSCIMGroup) (*OrganizationSCIMGroup, *http.Response, error)
-	GetSCIMGroup(ctx context.Context, scimGroupID string) (*OrganizationSCIMGroup, *http.Response, error)
-	ListSCIMGroups(ctx context.Context, scimOptions *OrganizationSCIMListOptions) (*OrganizationSCIMListResponse, *http.Response, error)
-	ReplaceSCIMGroup(ctx context.Context, scimGroupID string, scimGroupReq *OrganizationSCIMGroup) (*OrganizationSCIMGroup, *http.Response, error)               //nolint:lll
-	UpdateSCIMGroup(ctx context.Context, scimGroupID string, scimGroupUpdateReq *OrganizationSCIMGroupUpdateReq) (*OrganizationSCIMGroup, *http.Response, error) //nolint:lll
-	DeleteSCIMGroup(ctx context.Context, scimGroupID string) error
 }
 
 // OrganizationServiceHandler handles interaction with the organization methods for the Vultr API
@@ -183,8 +162,6 @@ type OrganizationInvitationReq struct {
 
 // OrganizationInvitationPermission represents an organization invitation permission
 type OrganizationInvitationPermission struct {
-	// TODO when not specified, it only returns string, when the docs show multiple possible strings
-	// Roles      map[string]string `json:"roles"`
 	APIEnabled bool `json:"api_enabled"`
 }
 
@@ -223,7 +200,6 @@ type organizationGroupBase struct {
 
 // OrganizationGroupReq represents an organization group request
 type OrganizationGroupReq struct {
-	// ID   string `json:"id"` TODO: I think this is extraneous
 	Name        string `json:"display_name"`
 	Description string `json:"description"`
 }
@@ -440,12 +416,6 @@ type organizationGroupPoliciesBase struct {
 	Meta     *Meta                      `json:"meta"`
 }
 
-// TODO: not needed?
-// type organizationPolicyGroupsBase struct {
-// 	Groups []OrganizationGroup `json:"groups"`
-// 	Meta   *Meta               `json:"meta"`
-// }
-
 // OrganizationRoleUserAssignment represents an organization role user assignment
 type OrganizationRoleUserAssignment struct {
 	UserID          string `json:"user_id"`
@@ -599,159 +569,6 @@ type OrganizationRoleSession struct {
 type organizationRoleSessionsBase struct {
 	Sessions []OrganizationRoleSession `json:"sessions"`
 	Meta     *Meta                     `json:"meta"`
-}
-
-// OrganizationEndpointAction represents an organization endpoint action
-type OrganizationEndpointAction struct {
-	ID              string `json:"id"`
-	EndpointPattern string `json:"endpoint_pattern"`
-	HTTPMethod      string `json:"http_method"`
-	RequiredAction  string `json:"required_action"`
-	ResourceType    string `json:"resource_type"`
-	ResourcePattern string `json:"resource_pattern"`
-	Description     string `json:"description"`
-	DateCreated     string `json:"date_created"`
-}
-
-// OrganizationEndpointActionAvailable represents an available action
-type OrganizationEndpointActionAvailable struct {
-	Type        string `json:"resource_type,omitempty"`
-	Action      string `json:"action"`
-	Description string `json:"description"`
-}
-
-type organizationEndpointActionsBase struct {
-	Actions []OrganizationEndpointAction `json:"endpoint_action_maps"`
-	Meta    *Meta                        `json:"meta"`
-}
-
-type organizationEndpointActionBase struct {
-	Action *OrganizationEndpointAction `json:"endpoint_action_map"`
-}
-
-type organizationEndpointActionsAvailableBase struct {
-	Actions []OrganizationEndpointActionAvailable `json:"actions"`
-	Meta    *Meta                                 `json:"meta"`
-}
-
-// TODO: all SCIM functions are not working and probably will not be
-// implemented in this library
-
-// OrganizationSCIM represents an organization's SCIM details
-type OrganizationSCIM struct {
-	Enabled     bool   `json:"scim_enabled"`
-	AuthMethod  string `json:"auth_method"`
-	Token       string `json:"scim_token"`
-	DateAdded   string `json:"date_added"`
-	DateUpdated string `json:"date_updated"`
-}
-
-// OrganizationSCIMReq represents an organization SCIM request
-type OrganizationSCIMReq struct {
-	AuthMethod string `json:"auth_method"`
-}
-
-// OrganizationSCIMUser represents an organization SCIM user
-type OrganizationSCIMUser struct {
-	ID           string                            `json:"id"`
-	ExternalID   string                            `json:"external_id"` // TODO json case?
-	UserName     string                            `json:"user_name"`   // TODO json case?
-	Name         OrganizationSCIMUserName          `json:"name"`
-	DisplayName  string                            `json:"display_name"` // TODO json case?
-	Emails       []OrganizationSCIMUserEmail       `json:"emails"`
-	PhoneNumbers []OrganizationSCIMUserPhoneNumber `json:"phone_numbers"` // TODO json case?
-	Active       bool                              `json:"active"`
-	Groups       []OrganizationSCIMUserGroup       `json:"groups"`
-	Schemas      []string                          `json:"schemas"`
-	Meta         OrganizationSCIMMeta              `json:"meta,omitempty"` // TODO: omitempty?
-}
-
-// OrganizationSCIMUserName represents an organization SCIM user name
-type OrganizationSCIMUserName struct {
-	Formatted  string `json:"formatted"`
-	FamilyName string `json:"family_name"` // TODO json case?
-	GivenName  string `json:"given_name"`  // TODO json case?
-}
-
-// OrganizationSCIMUserEmail represents an organization SCIM user email
-type OrganizationSCIMUserEmail struct {
-	Email   string `json:"value"`
-	Type    string `json:"type"`
-	Primary bool   `json:"primary"`
-}
-
-// OrganizationSCIMUserPhoneNumber represents an organization SCIM user phone number
-type OrganizationSCIMUserPhoneNumber struct {
-	PhoneNumber string `json:"value"`
-	Type        string `json:"type"`
-}
-
-// OrganizationSCIMUserGroup represents an organization SCIM user group
-type OrganizationSCIMUserGroup struct {
-	Group string `json:"value"`
-	// TODO what is $ref???
-	Display string `json:"display"`
-}
-
-// OrganizationSCIMUserReq represents an organizationSCIM user request
-type OrganizationSCIMUserReq struct {
-	User OrganizationSCIMUser `json:"user"`
-}
-
-// OrganizationSCIMGroup represents an organization SCIM group
-// TODO all of these are wrong case in the docs
-type OrganizationSCIMGroup struct {
-	ID          string                        `json:"id"`
-	ExternalID  string                        `json:"external_id"`
-	DisplayName string                        `json:"display_name"`
-	Members     []OrganizationSCIMGroupMember `json:"members"`
-	Schemas     []string                      `json:"schemas"`
-	Meta        OrganizationSCIMMeta          `json:"meta"`
-}
-
-// OrganizationSCIMGroupMember represents an organization SCIM group members
-type OrganizationSCIMGroupMember struct {
-	Member string `json:"value"`
-	// TODO what is $ref???
-	Display string `json:"display"`
-}
-
-// OrganizationSCIMMeta represents meta fields of an SCIM struct
-type OrganizationSCIMMeta struct {
-	ResourceType string `json:"resource_type"`
-	Location     string `json:"location"`
-	DateCreated  string `json:"created"`
-	DateModified string `json:"last_modified"`
-}
-
-// OrganizationSCIMGroupUpdateReq represents an organization SCIM group update request
-type OrganizationSCIMGroupUpdateReq struct {
-	Schemas    []string                         `json:"schemas"`
-	Operations []OrganizationSCIMGroupOperation `json:"operations"`
-}
-
-// OrganizationSCIMGroupOperation represents an organization SCIM group operation
-type OrganizationSCIMGroupOperation struct {
-	Operation string `json:"op"`
-	Path      string `json:"path"`
-	Value     string `json:"value"`
-}
-
-// OrganizationSCIMListOptions represents the query params used to list SCIM groups
-type OrganizationSCIMListOptions struct {
-	Filter string `url:"filter,omitempty"`
-	Count  int    `url:"count,omitempty"`
-	Index  int    `url:"startIndex,omitempty"`
-}
-
-// OrganizationSCIMListResponse represents an organization SCIM group list
-// TODO all of these are wrong case in the docs
-type OrganizationSCIMListResponse struct {
-	Schemas []string `json:"schemas"`
-	Total   int      `json:"total_results"`
-	Index   int      `json:"start_index"`
-	PerPage int      `json:"items_per_page"`
-	// TODO Resources ... `json:"Resources"`
 }
 
 // Create an organization
@@ -1154,255 +971,6 @@ func (o *OrganizationServiceHandler) ListGroupRoles(ctx context.Context, groupID
 	}
 
 	return roles.Roles, roles.Meta, resp, nil
-}
-
-// GetSCIM retrieves the organization's SCIM details
-func (o *OrganizationServiceHandler) GetSCIM(ctx context.Context, organizationID string) (*OrganizationSCIM, *http.Response, error) {
-	uri := fmt.Sprintf("%s/%s/scim", organizationPath, organizationID)
-
-	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	scim := new(OrganizationSCIM)
-	resp, err := o.client.DoWithContext(ctx, req, scim)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return scim, resp, nil
-}
-
-// EnableSCIM enables SCIM for the organization
-func (o *OrganizationServiceHandler) EnableSCIM(ctx context.Context, organizationID string, scimReq *OrganizationSCIMReq) (*OrganizationSCIM, *http.Response, error) { //nolint:lll
-	uri := fmt.Sprintf("%s/%s/scim/enable", organizationPath, organizationID)
-
-	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	scim := new(OrganizationSCIM)
-	resp, err := o.client.DoWithContext(ctx, req, scim)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return scim, resp, nil
-}
-
-// DisableSCIM disables SCIM for the organization
-func (o *OrganizationServiceHandler) DisableSCIM(ctx context.Context, organizationID string) (*OrganizationSCIM, *http.Response, error) {
-	uri := fmt.Sprintf("%s/%s/scim/disable", organizationPath, organizationID)
-
-	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	scim := new(OrganizationSCIM)
-	resp, err := o.client.DoWithContext(ctx, req, scim)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return scim, resp, nil
-}
-
-// RotateSCIM regenerates the organization's SCIM token
-func (o *OrganizationServiceHandler) RotateSCIM(ctx context.Context, organizationID string) (*OrganizationSCIM, *http.Response, error) {
-	uri := fmt.Sprintf("%s/%s/scim/token", organizationPath, organizationID)
-
-	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	scim := new(OrganizationSCIM)
-	resp, err := o.client.DoWithContext(ctx, req, scim)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return scim, resp, nil
-}
-
-// CreateSCIMUser creates an SCIM user for an organization
-func (o *OrganizationServiceHandler) CreateSCIMUser(ctx context.Context, scimUserReq *OrganizationSCIMUserReq) (*OrganizationSCIMUser, *http.Response, error) { //nolint:lll
-	uri := fmt.Sprintf("%s/scim", userPath)
-
-	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, scimUserReq)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	user := new(OrganizationSCIMUser)
-	resp, err := o.client.DoWithContext(ctx, req, user)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return user, resp, nil
-}
-
-// GetSCIMUser retrieves an SCIM user
-// TODO what is the URI supposed to be?
-func (o *OrganizationServiceHandler) GetSCIMUser(ctx context.Context, userID string) (*OrganizationSCIMUser, *http.Response, error) {
-	uri := fmt.Sprintf("%s/%s/scim", userPath, userID)
-
-	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	user := new(OrganizationSCIMUser)
-	resp, err := o.client.DoWithContext(ctx, req, user)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return user, resp, nil
-}
-
-// ListSCIMUser retrieves a list of SCIM users
-// TODO what is this list?? it's just schemas? the options are different? this is broken for now
-func (o *OrganizationServiceHandler) ListSCIMUsers(ctx context.Context, scimOptions *OrganizationSCIMListOptions) (*OrganizationSCIMListResponse, *http.Response, error) { //nolint:lll,dupl
-	uri := fmt.Sprintf("%s/scim", userPath)
-
-	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	newValues, err := query.Values(scimOptions)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	req.URL.RawQuery = newValues.Encode()
-
-	users := new(OrganizationSCIMListResponse)
-	resp, err := o.client.DoWithContext(ctx, req, users)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return users, resp, nil
-}
-
-// CreateSCIMGroup creates an SCIM group
-func (o *OrganizationServiceHandler) CreateSCIMGroup(ctx context.Context, scimGroupReq *OrganizationSCIMGroup) (*OrganizationSCIMGroup, *http.Response, error) { //nolint:lll
-	uri := fmt.Sprintf("%s/scim", groupPath)
-
-	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, scimGroupReq)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	group := new(OrganizationSCIMGroup)
-	resp, err := o.client.DoWithContext(ctx, req, group)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return group, resp, nil
-}
-
-// GetSCIMGroup retrieves an SCIM group
-func (o *OrganizationServiceHandler) GetSCIMGroup(ctx context.Context, scimGroupID string) (*OrganizationSCIMGroup, *http.Response, error) {
-	uri := fmt.Sprintf("%s/scim/%s", groupPath, scimGroupID)
-
-	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	group := new(OrganizationSCIMGroup)
-	resp, err := o.client.DoWithContext(ctx, req, group)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return group, resp, nil
-}
-
-// ListSCIMGroups retrieves a list of SCIM groups
-func (o *OrganizationServiceHandler) ListSCIMGroups(ctx context.Context, scimOptions *OrganizationSCIMListOptions) (*OrganizationSCIMListResponse, *http.Response, error) { //nolint:lll,dupl
-	uri := fmt.Sprintf("%s/scim", groupPath)
-
-	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	newValues, err := query.Values(scimOptions)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	req.URL.RawQuery = newValues.Encode()
-
-	groups := new(OrganizationSCIMListResponse)
-	resp, err := o.client.DoWithContext(ctx, req, groups)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return groups, resp, nil
-}
-
-// ReplaceSCIMGroup replaces an SCIM group
-func (o *OrganizationServiceHandler) ReplaceSCIMGroup(ctx context.Context, scimGroupID string, scimGroupReq *OrganizationSCIMGroup) (*OrganizationSCIMGroup, *http.Response, error) { //nolint:lll
-	uri := fmt.Sprintf("%s/scim/%s", groupPath, scimGroupID)
-
-	req, err := o.client.NewRequest(ctx, http.MethodPut, uri, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	group := new(OrganizationSCIMGroup)
-	resp, err := o.client.DoWithContext(ctx, req, group)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return group, resp, nil
-}
-
-// UpdateSCIMGroup updates an SCIM group
-func (o *OrganizationServiceHandler) UpdateSCIMGroup(ctx context.Context, scimGroupID string, scimGroupUpdateReq *OrganizationSCIMGroupUpdateReq) (*OrganizationSCIMGroup, *http.Response, error) { //nolint:lll
-	uri := fmt.Sprintf("%s/scim/%s", groupPath, scimGroupID)
-
-	req, err := o.client.NewRequest(ctx, http.MethodPatch, uri, scimGroupUpdateReq)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	group := new(OrganizationSCIMGroup)
-	resp, err := o.client.DoWithContext(ctx, req, group)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return group, resp, nil
-}
-
-// DeleteSCIMGroup deletes an SCIM group
-func (o *OrganizationServiceHandler) DeleteSCIMGroup(ctx context.Context, scimGroupID string) error {
-	uri := fmt.Sprintf("%s/scim/%s", groupPath, scimGroupID)
-
-	req, err := o.client.NewRequest(ctx, http.MethodDelete, uri, nil)
-	if err != nil {
-		return err
-	}
-
-	_, err = o.client.DoWithContext(ctx, req, nil)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // CreateRole creates a role
@@ -2133,65 +1701,6 @@ func (o *OrganizationServiceHandler) RevokeRoleSession(ctx context.Context, toke
 	}
 
 	return nil
-}
-
-// ListEndpointActionMaps retrieves a list of endpoint action maps
-func (o *OrganizationServiceHandler) ListEndpointActionMaps(ctx context.Context, options *ListOptions) ([]OrganizationEndpointAction, *Meta, *http.Response, error) { //nolint:lll,dupl
-	req, err := o.client.NewRequest(ctx, http.MethodGet, endpointActionPath, nil)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	newValues, err := query.Values(options)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	req.URL.RawQuery = newValues.Encode()
-
-	actions := new(organizationEndpointActionsBase)
-	resp, err := o.client.DoWithContext(ctx, req, actions)
-	if err != nil {
-		return nil, nil, resp, err
-	}
-
-	return actions.Actions, actions.Meta, resp, nil
-}
-
-// ListEndpointActionMapActions retrieves a list of endpoint action map actions
-func (o *OrganizationServiceHandler) ListEndpointActionMapActions(ctx context.Context) ([]OrganizationEndpointActionAvailable, *Meta, *http.Response, error) { //nolint:lll
-	uri := fmt.Sprintf("%s/available-actions?view=kv", endpointActionPath)
-
-	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	actions := new(organizationEndpointActionsAvailableBase)
-	resp, err := o.client.DoWithContext(ctx, req, actions)
-	if err != nil {
-		return nil, nil, resp, err
-	}
-
-	return actions.Actions, actions.Meta, resp, nil
-}
-
-// GetEndpointActionMap retrieves an endpoint action map
-func (o *OrganizationServiceHandler) GetEndpointActionMap(ctx context.Context, mapID string) (*OrganizationEndpointAction, *http.Response, error) { //nolint:lll
-	uri := fmt.Sprintf("%s/%s", endpointActionPath, mapID)
-
-	req, err := o.client.NewRequest(ctx, http.MethodGet, uri, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	actions := new(organizationEndpointActionBase)
-	resp, err := o.client.DoWithContext(ctx, req, actions)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return actions.Action, resp, nil
 }
 
 // ListUserGroups retrieves a list of groups for a user
