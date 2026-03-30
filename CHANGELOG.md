@@ -1,4 +1,9 @@
 # Change Log
+## [3.29.0](https://github.com/vultr/govultr/compare/v3.28.1...v3.29.0) (2026-03-30)
+### Enhancements
+* Add IAM/Organization functionality [PR 446](https://github.com/vultr/govultr/pull/446)
+* Organization: Update role policy assign to use new endpoint [PR 447](https://github.com/vultr/govultr/pull/447)
+
 ## [3.28.1](https://github.com/vultr/govultr/compare/v3.28.0...v3.28.1) (2026-02-25)
 ### Enhancements
 * Block Storage: Add missing snapshot ID create param [PR 442](https://github.com/vultr/govultr/pull/442)
