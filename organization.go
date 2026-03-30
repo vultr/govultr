@@ -64,8 +64,8 @@ type OrganizationService interface {
 	DeletePolicy(ctx context.Context, policyID string) error
 	RestorePolicy(ctx context.Context, policyID string) (*OrganizationPolicy, *http.Response, error)
 
-	ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationPolicy, *Meta, *http.Response, error)                           //nolint:lll
-	AttachRolePolicy(ctx context.Context, roleID string, roleAttachReq *OrganizationRolePolicyReq) (*OrganizationRolePolicyAttachment, *http.Response, error) //nolint:lll
+	ListRolePolicies(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationPolicy, *Meta, *http.Response, error) //nolint:lll
+	AttachRolePolicy(ctx context.Context, roleID, policyID string) (*OrganizationRolePolicyAttachment, *http.Response, error)       //nolint:lll
 	DetachRolePolicy(ctx context.Context, roleID, policyID string) error
 
 	ListRoleUsers(ctx context.Context, roleID string, options *ListOptions) ([]OrganizationRoleUserAssignment, *Meta, *http.Response, error)
@@ -1217,10 +1217,10 @@ func (o *OrganizationServiceHandler) ListRolePolicies(ctx context.Context, roleI
 }
 
 // AttachRolePolicy attaches a role policy
-func (o *OrganizationServiceHandler) AttachRolePolicy(ctx context.Context, roleID string, roleAttachReq *OrganizationRolePolicyReq) (*OrganizationRolePolicyAttachment, *http.Response, error) { //nolint:lll
-	uri := fmt.Sprintf("%s/%s/policies", rolePath, roleID)
+func (o *OrganizationServiceHandler) AttachRolePolicy(ctx context.Context, roleID, policyID string) (*OrganizationRolePolicyAttachment, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/policies/%s", rolePath, roleID, policyID)
 
-	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, roleAttachReq)
+	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, nil)
 	if err != nil {
 		return nil, nil, err
 	}
