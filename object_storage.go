@@ -37,13 +37,14 @@ type ObjectStorageServiceHandler struct {
 
 // ObjectStorage represents a Vultr Object Storage subscription.
 type ObjectStorage struct {
-	ID                   string `json:"id"`
-	DateCreated          string `json:"date_created"`
-	ObjectStoreClusterID int    `json:"cluster_id"`
-	Region               string `json:"region"`
-	Location             string `json:"location"`
-	Label                string `json:"label"`
-	Status               string `json:"status"`
+	ID                   string                 `json:"id"`
+	DateCreated          string                 `json:"date_created"`
+	ObjectStoreClusterID int                    `json:"cluster_id"`
+	Region               string                 `json:"region"`
+	Location             string                 `json:"location"`
+	Label                string                 `json:"label"`
+	Status               string                 `json:"status"`
+	Tier                 *ObjectStorageListTier `json:"tier,omitempty"`
 	S3Keys
 }
 
@@ -74,6 +75,22 @@ type ObjectStorageCluster struct {
 // ObjectStorageTier represents the object storage tier data
 type ObjectStorageTier struct {
 	ID                int                    `json:"id"`
+	Name              string                 `json:"sales_name"`
+	Description       string                 `json:"sales_desc"`
+	Price             float32                `json:"price"`
+	PriceBandwidthGB  float32                `json:"bw_gb_price"`
+	PriceDiskGB       float32                `json:"disk_gb_price"`
+	RateLimitBytesSec int                    `json:"ratelimit_ops_bytes"`
+	RateLimitOpsSec   int                    `json:"ratelimit_ops_secs"`
+	Default           string                 `json:"is_default"`
+	Locations         []ObjectStorageCluster `json:"locations,omitempty"`
+	Slug              string                 `json:"slug"`
+}
+
+// ObjectStorageListTier represents the object storage tier data from the list
+// object storages endpoint (different ID json field)
+type ObjectStorageListTier struct {
+	ID                int                    `json:"OBJSTORETIERID"`
 	Name              string                 `json:"sales_name"`
 	Description       string                 `json:"sales_desc"`
 	Price             float32                `json:"price"`
