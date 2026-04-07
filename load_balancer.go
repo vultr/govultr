@@ -17,13 +17,16 @@ type LoadBalancerService interface {
 	Get(ctx context.Context, lbID string) (*LoadBalancer, *http.Response, error)
 	Update(ctx context.Context, lbID string, updateReq *LoadBalancerReq) error
 	Delete(ctx context.Context, lbID string) error
+	List(ctx context.Context, options *ListOptions) ([]LoadBalancer, *Meta, *http.Response, error)
+
 	DeleteSSL(ctx context.Context, lbID string) error
 	DeleteAutoSSL(ctx context.Context, lbID string) error
-	List(ctx context.Context, options *ListOptions) ([]LoadBalancer, *Meta, *http.Response, error)
+
 	CreateForwardingRule(ctx context.Context, lbID string, rule *ForwardingRule) (*ForwardingRule, *http.Response, error)
 	GetForwardingRule(ctx context.Context, lbID string, ruleID string) (*ForwardingRule, *http.Response, error)
 	DeleteForwardingRule(ctx context.Context, lbID string, RuleID string) error
 	ListForwardingRules(ctx context.Context, lbID string, options *ListOptions) ([]ForwardingRule, *Meta, *http.Response, error)
+
 	ListFirewallRules(ctx context.Context, lbID string, options *ListOptions) ([]LBFirewallRule, *Meta, *http.Response, error)
 	GetFirewallRule(ctx context.Context, lbID string, ruleID string) (*LBFirewallRule, *http.Response, error)
 }
