@@ -1,4 +1,16 @@
 # Change Log
+## [3.30.0](https://github.com/vultr/govultr/compare/v3.29.0...v3.30.0) (2026-04-08)
+### Enhancements
+* Object Storage: Add tier data storage list [PR 449](https://github.com/vultr/govultr/pull/449)
+* Load Balancer: Add firewall rules create/delete [PR 450](https://github.com/vultr/govultr/pull/450)
+
+### Bug Fixes
+* Bare Metal Server: Make bandwidth fields int64  [PR 451](https://github.com/vultr/govultr/pull/451)
+* Instance: Make bandwidth fields int64  [PR 451](https://github.com/vultr/govultr/pull/451)
+
+### Automation
+* Update releaser & gochecks actions [PR 452](https://github.com/vultr/govultr/pull/452)
+
 ## [3.29.0](https://github.com/vultr/govultr/compare/v3.28.1...v3.29.0) (2026-03-30)
 ### Enhancements
 * Add IAM/Organization functionality [PR 446](https://github.com/vultr/govultr/pull/446)
