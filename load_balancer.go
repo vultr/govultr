@@ -135,7 +135,8 @@ type LBFirewallRule struct {
 	Source string `json:"source,omitempty"`
 }
 
-// LBFirewallRules represents a list of firewall rules
+// LBFirewallRules represents a list of firewall rules.  This is only used when
+// sending the create firewall rules request
 type LBFirewallRules struct {
 	Rules []LBFirewallRule `json:"firewall_rules,omitempty"`
 }
