@@ -138,7 +138,7 @@ type LBFirewallRule struct {
 // LBFirewallRules represents a list of firewall rules.  This is only used when
 // sending the create firewall rules request
 type LBFirewallRules struct {
-	Rules []LBFirewallRule `json:"firewall_rules,omitempty"`
+	Rules []LBFirewallRule `json:"firewall_rules"`
 }
 
 // SSL represents valid SSL config
