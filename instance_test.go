@@ -368,8 +368,8 @@ func TestServerServiceHandler_GetBandwidth(t *testing.T) {
 
 	expected := &Bandwidth{
 		Bandwidth: map[string]struct {
-			IncomingBytes int `json:"incoming_bytes"`
-			OutgoingBytes int `json:"outgoing_bytes"`
+			IncomingBytes int64 `json:"incoming_bytes"`
+			OutgoingBytes int64 `json:"outgoing_bytes"`
 		}{
 			"2017-04-01": {
 				IncomingBytes: 91571055,
