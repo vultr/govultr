@@ -132,8 +132,8 @@ type Neighbors struct {
 // Bandwidth used on a given instance.
 type Bandwidth struct {
 	Bandwidth map[string]struct {
-		IncomingBytes int `json:"incoming_bytes"`
-		OutgoingBytes int `json:"outgoing_bytes"`
+		IncomingBytes int64 `json:"incoming_bytes"`
+		OutgoingBytes int64 `json:"outgoing_bytes"`
 	} `json:"bandwidth"`
 }
 
