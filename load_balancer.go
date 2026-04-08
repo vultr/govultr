@@ -27,7 +27,7 @@ type LoadBalancerService interface {
 	DeleteForwardingRule(ctx context.Context, lbID string, RuleID string) error
 	ListForwardingRules(ctx context.Context, lbID string, options *ListOptions) ([]ForwardingRule, *Meta, *http.Response, error)
 
-	CreateFirewallRule(ctx context.Context, lbID string, fwRule *LBFirewallRule) error
+	CreateFirewallRules(ctx context.Context, lbID string, fwRule []LBFirewallRule) error
 	GetFirewallRule(ctx context.Context, lbID string, ruleID string) (*LBFirewallRule, *http.Response, error)
 	DeleteFirewallRule(ctx context.Context, lbID, fwRuleID string) error
 	ListFirewallRules(ctx context.Context, lbID string, options *ListOptions) ([]LBFirewallRule, *Meta, *http.Response, error)
@@ -133,6 +133,11 @@ type LBFirewallRule struct {
 	Port   int    `json:"port,omitempty"`
 	IPType string `json:"ip_type,omitempty"`
 	Source string `json:"source,omitempty"`
+}
+
+// LBFirewallRules represents a list of firewall rules
+type LBFirewallRules struct {
+	Rules []LBFirewallRule `json:"firewall_rules,omitempty"`
 }
 
 // SSL represents valid SSL config
@@ -329,10 +334,10 @@ func (l *LoadBalancerHandler) DeleteForwardingRule(ctx context.Context, lbID, ru
 	return err
 }
 
-// CreateFirewallRule will create a firewall rule on your load balancer
-func (l *LoadBalancerHandler) CreateFirewallRule(ctx context.Context, lbID string, fwRule *LBFirewallRule) error {
+// CreateFirewallRules will create firewall rules on your load balancer
+func (l *LoadBalancerHandler) CreateFirewallRules(ctx context.Context, lbID string, fwRule []LBFirewallRule) error {
 	uri := fmt.Sprintf("%s/%s/firewall-rules", lbPath, lbID)
-	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, fwRule)
+	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, LBFirewallRules{Rules: fwRule})
 	if err != nil {
 		return err
 	}
