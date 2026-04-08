@@ -141,12 +141,6 @@ type BareMetalUpdate struct {
 	EnableVPC2 *bool `json:"enable_vpc2,omitempty"`
 }
 
-// BareMetalServerBandwidth represents bandwidth information for a Bare Metal server
-type BareMetalServerBandwidth struct {
-	IncomingBytes int `json:"incoming_bytes"`
-	OutgoingBytes int `json:"outgoing_bytes"`
-}
-
 type bareMetalsBase struct {
 	BareMetals []BareMetalServer `json:"bare_metals"`
 	Meta       *Meta             `json:"meta"`
@@ -154,11 +148,6 @@ type bareMetalsBase struct {
 
 type bareMetalBase struct {
 	BareMetal *BareMetalServer `json:"bare_metal"`
-}
-
-// BMBareMetalBase represents the base struct for a Bare Metal server
-type BMBareMetalBase struct {
-	BareMetalBandwidth map[string]BareMetalServerBandwidth `json:"bandwidth"`
 }
 
 type vncBase struct {
