@@ -1,7 +1,7 @@
 # Change Log
 ## [3.30.0](https://github.com/vultr/govultr/compare/v3.29.0...v3.30.0) (2026-04-08)
 ### Enhancements
-* Object Storage: Add tier data storage list [PR 449](https://github.com/vultr/govultr/pull/449)
+* Object Storage: Add tier data to storage list [PR 449](https://github.com/vultr/govultr/pull/449)
 * Load Balancer: Add firewall rules create/delete [PR 450](https://github.com/vultr/govultr/pull/450)
 
 ### Bug Fixes
