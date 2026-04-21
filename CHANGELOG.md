@@ -1,4 +1,7 @@
 # Change Log
+## [3.31.1](https://github.com/vultr/govultr/compare/v3.31.0...v3.31.1) (2026-04-21)
+* Inference: Fix image usage struct fields type [PR 456](https://github.com/vultr/govultr/pull/456)
+
 ## [3.31.0](https://github.com/vultr/govultr/compare/v3.30.0...v3.31.0) (2026-04-21)
 ### Enhancements
 * Inference: Update usage response [PR 454](https://github.com/vultr/govultr/pull/454)
