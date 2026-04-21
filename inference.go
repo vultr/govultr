@@ -70,8 +70,8 @@ type InferenceAudioUsage struct {
 
 // InferenceImageUsage represents image generation details for a Serverless Inference subscription
 type InferenceImageUsage struct {
-	Megapixels   int `json:"megapixels"`
-	SMMegapixels int `json:"sm_megapixels"`
+	Megapixels   float32 `json:"megapixels"`
+	SMMegapixels float32 `json:"sm_megapixels"`
 }
 
 // InferenceChatUsage represents chat/embeddings usage details for a Serverless Inference subscription
