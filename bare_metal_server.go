@@ -159,6 +159,14 @@ type VNCUrl struct {
 	URL string `json:"url"`
 }
 
+type bareMetalIDsReq struct {
+	IDs []string `json:"baremetal_ids"`
+}
+
+type bareMetalVPCReq struct {
+	VPCID string `json:"vpc_id"`
+}
+
 // Create a new Bare Metal server.
 func (b *BareMetalServerServiceHandler) Create(ctx context.Context, bmCreate *BareMetalCreate) (*BareMetalServer, *http.Response, error) {
 	req, err := b.client.NewRequest(ctx, http.MethodPost, bmPath, bmCreate)
@@ -406,7 +414,7 @@ func (b *BareMetalServerServiceHandler) Reinstall(ctx context.Context, serverID 
 func (b *BareMetalServerServiceHandler) MassStart(ctx context.Context, serverList []string) error {
 	uri := fmt.Sprintf("%s/start", bmPath)
 
-	reqBody := RequestBody{"baremetal_ids": serverList}
+	reqBody := bareMetalIDsReq{IDs: serverList}
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, reqBody)
 	if err != nil {
 		return err
@@ -419,7 +427,7 @@ func (b *BareMetalServerServiceHandler) MassStart(ctx context.Context, serverLis
 func (b *BareMetalServerServiceHandler) MassHalt(ctx context.Context, serverList []string) error {
 	uri := fmt.Sprintf("%s/halt", bmPath)
 
-	reqBody := RequestBody{"baremetal_ids": serverList}
+	reqBody := bareMetalIDsReq{IDs: serverList}
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, reqBody)
 	if err != nil {
 		return err
@@ -432,7 +440,7 @@ func (b *BareMetalServerServiceHandler) MassHalt(ctx context.Context, serverList
 func (b *BareMetalServerServiceHandler) MassReboot(ctx context.Context, serverList []string) error {
 	uri := fmt.Sprintf("%s/reboot", bmPath)
 
-	reqBody := RequestBody{"baremetal_ids": serverList}
+	reqBody := bareMetalIDsReq{IDs: serverList}
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, reqBody)
 	if err != nil {
 		return err
@@ -479,8 +487,8 @@ func (b *BareMetalServerServiceHandler) ListVPCInfo(ctx context.Context, serverI
 // AttachVPC serves to attach a VPC to a bare metal server.
 func (b *BareMetalServerServiceHandler) AttachVPC(ctx context.Context, serverID, vpcID string) error {
 	uri := fmt.Sprintf("%s/%s/vpcs/attach", bmPath, serverID)
-	body := RequestBody{"vpc_id": vpcID}
 
+	body := bareMetalVPCReq{VPCID: vpcID}
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, body)
 	if err != nil {
 		return err
@@ -493,8 +501,8 @@ func (b *BareMetalServerServiceHandler) AttachVPC(ctx context.Context, serverID,
 // DetachVPC will detach a VPC from a bare metal server.
 func (b *BareMetalServerServiceHandler) DetachVPC(ctx context.Context, serverID, vpcID string) error {
 	uri := fmt.Sprintf("%s/%s/vpcs/detach", bmPath, serverID)
-	body := RequestBody{"vpc_id": vpcID}
 
+	body := bareMetalVPCReq{VPCID: vpcID}
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, body)
 	if err != nil {
 		return err
@@ -543,8 +551,8 @@ func (b *BareMetalServerServiceHandler) AttachVPC2(ctx context.Context, serverID
 // Deprecated: VPC2 is no longer supported
 func (b *BareMetalServerServiceHandler) DetachVPC2(ctx context.Context, serverID, vpcID string) error {
 	uri := fmt.Sprintf("%s/%s/vpc2/detach", bmPath, serverID)
-	body := RequestBody{"vpc_id": vpcID}
 
+	body := bareMetalVPCReq{VPCID: vpcID}
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, body)
 	if err != nil {
 		return err
