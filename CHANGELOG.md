@@ -1,4 +1,12 @@
 # Change Log
+## [3.31.2](https://github.com/vultr/govultr/compare/v3.31.1...v3.31.2) (2026-05-12)
+### Bug Fixes
+* Organization: Remove member count on group [PR 458](https://github.com/vultr/govultr/pull/458)
+
+### Clean Up
+* Instance: Replace request body with type structs [PR 459](https://github.com/vultr/govultr/pull/459)
+* Bare Metal Server: Replace request body with type structs [PR 459](https://github.com/vultr/govultr/pull/459)
+
 ## [3.31.1](https://github.com/vultr/govultr/compare/v3.31.0...v3.31.1) (2026-04-21)
 * Inference: Fix image usage struct fields type [PR 456](https://github.com/vultr/govultr/pull/456)
 
