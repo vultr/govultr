@@ -338,7 +338,7 @@ type instanceIPReq struct {
 }
 
 type instanceRebootReq struct {
-	Reboot bool `json:"reboot"`
+	Reboot *bool `json:"reboot"`
 }
 
 // Create will create the server with the given parameters
@@ -749,7 +749,7 @@ func (i *InstanceServiceHandler) SetBackupSchedule(ctx context.Context, instance
 func (i *InstanceServiceHandler) CreateIPv4(ctx context.Context, instanceID string, reboot *bool) (*IPv4, *http.Response, error) {
 	uri := fmt.Sprintf("%s/%s/ipv4", instancePath, instanceID)
 
-	body := instanceRebootReq{Reboot: *reboot}
+	body := instanceRebootReq{Reboot: reboot}
 	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, body)
 	if err != nil {
 		return nil, nil, err
