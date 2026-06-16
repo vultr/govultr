@@ -110,6 +110,62 @@ func TestVPCServiceHandler_List(t *testing.T) {
 	}
 }
 
+func TestVPCServiceHandler_ListAttachments(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/vpcs/59d6c282-00a7-4a92-9a41-3adad396abcd/attachments", func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+		{
+			"meta": {
+				"total": 1,
+				"links": {
+					"next": "",
+					"prev": ""
+				}
+			},
+			"attachments": [
+				{
+					"id": "f45f4b9b-24c3-4a49-b288-e2a15f2abcd",
+					"type": "vps",
+					"mac_address": "52:e2:4b:90:0e:ab",
+					"date_added": "2026-05-14T11:37:04-04:00",
+					"ip": {
+						"v4": "10.99.0.1"
+					},
+					"linked_subscription": {
+						"type": "load_balancer",
+						"id": "b17f6195-f2d4-47c6-811c-75a6f2abcd"
+					}
+				}
+			]
+		}
+		`
+		fmt.Fprint(writer, response)
+	})
+
+	attachments, _, _, err := client.VPC.ListAttachments(ctx, "59d6c282-00a7-4a92-9a41-3adad396abcd", nil)
+
+	if err != nil {
+		t.Errorf("VPC.ListAttachments returned error: %v", err)
+	}
+
+	expected := []VPCAttachment{
+		{
+			ID:                 "f45f4b9b-24c3-4a49-b288-e2a15f2abcd",
+			Type:               "vps",
+			MACAddress:         "52:e2:4b:90:0e:ab",
+			DateAdded:          "2026-05-14T11:37:04-04:00",
+			IP:                 VPCAttachmentIP{V4: "10.99.0.1"},
+			LinkedSubscription: VPCAttachmentLinkedSubscription{Type: "load_balancer", ID: "b17f6195-f2d4-47c6-811c-75a6f2abcd"},
+		},
+	}
+
+	if !reflect.DeepEqual(attachments, expected) {
+		t.Errorf("VPC.ListAttachments returned %+v, expected %+v", attachments, expected)
+	}
+}
+
 func TestVPCServiceHandler_Update(t *testing.T) {
 	setup()
 	defer teardown()

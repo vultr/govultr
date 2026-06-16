@@ -18,6 +18,7 @@ type VPCService interface {
 	Update(ctx context.Context, vpcID string, description string) error
 	Delete(ctx context.Context, vpcID string) error
 	List(ctx context.Context, options *ListOptions) ([]VPC, *Meta, *http.Response, error)
+	ListAttachments(ctx context.Context, vpcID string, options *ListOptions) ([]VPCAttachment, *Meta, *http.Response, error)
 	CreateNATGateway(ctx context.Context, vpcID string, createReq *NATGatewayReq) (*NATGateway, *http.Response, error)
 	GetNATGateway(ctx context.Context, vpcID, gatewayID string) (*NATGateway, *http.Response, error)
 	UpdateNATGateway(ctx context.Context, vpcID, gatewayID string, updateReq *NATGatewayReq) (*NATGateway, *http.Response, error)
@@ -65,6 +66,29 @@ type vpcsBase struct {
 
 type vpcBase struct {
 	VPC *VPC `json:"vpc"`
+}
+
+type VPCAttachmentIP struct {
+	V4 string `json:"v4"`
+}
+
+type VPCAttachmentLinkedSubscription struct {
+	Type string `json:"type"`
+	ID   string `json:"id"`
+}
+
+type VPCAttachment struct {
+	ID                 string                          `json:"id"`
+	Type               string                          `json:"type"`
+	MACAddress         string                          `json:"mac_address"`
+	DateAdded          string                          `json:"date_added"`
+	IP                 VPCAttachmentIP                 `json:"ip"`
+	LinkedSubscription VPCAttachmentLinkedSubscription `json:"linked_subscription"`
+}
+
+type vpcAttachmentsBase struct {
+	Attachments []VPCAttachment `json:"attachments"`
+	Meta        *Meta           `json:"meta"`
 }
 
 // NATGateway represents a Vultr NAT Gateway
@@ -249,6 +273,30 @@ func (n *VPCServiceHandler) List(ctx context.Context, options *ListOptions) ([]V
 	}
 
 	return vpcs.VPCs, vpcs.Meta, resp, nil
+}
+
+// ListAttachments lists all attachments on the specified VPC network
+func (n *VPCServiceHandler) ListAttachments(ctx context.Context, vpcID string, options *ListOptions) ([]VPCAttachment, *Meta, *http.Response, error) { //nolint:dupl,lll
+	uri := fmt.Sprintf("%s/%s/attachments", vpcPath, vpcID)
+
+	req, err := n.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	newValues, err := query.Values(options)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	req.URL.RawQuery = newValues.Encode()
+
+	attachments := new(vpcAttachmentsBase)
+	resp, err := n.client.DoWithContext(ctx, req, attachments)
+	if err != nil {
+		return nil, nil, resp, err
+	}
+
+	return attachments.Attachments, attachments.Meta, resp, nil
 }
 
 // CreateNATGateway creates a new NAT Gateway under the given VPC network
