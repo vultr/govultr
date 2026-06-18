@@ -10,6 +10,10 @@ type ListOptions struct {
 	// https://www.vultr.com/api/#operation/list-applications
 	Type string `url:"type,omitempty"`
 
+	// Query params that can be used on the list backups call
+	// https://www.vultr.com/api/#operation/list-backups
+	InstanceID string `url:"instance_id,omitempty"`
+
 	// These three query params are currently used for the list instance call
 	// These may be extended to other list calls
 	// https://www.vultr.com/api/#operation/list-instances
