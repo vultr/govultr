@@ -6,6 +6,10 @@ type ListOptions struct {
 	PerPage int    `url:"per_page,omitempty"`
 	Cursor  string `url:"cursor,omitempty"`
 
+	// Query params that can be used on the list applications call
+	// https://www.vultr.com/api/#operation/list-applications
+	Type string `url:"type,omitempty"`
+
 	// These three query params are currently used for the list instance call
 	// These may be extended to other list calls
 	// https://www.vultr.com/api/#operation/list-instances
