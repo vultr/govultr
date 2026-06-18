@@ -20,7 +20,9 @@ func TestBackupServiceHandler_List(t *testing.T) {
 				"date_created": "2014-10-14 12:40:40",
 				"description": "Automatic server backup",
 				"size": 42949672960,
-				"status": "complete"
+				"status": "complete",
+				"os_id": 215,
+				"app_id": 0
 				}
 			],
 			"meta": {
@@ -48,6 +50,8 @@ func TestBackupServiceHandler_List(t *testing.T) {
 			Description: "Automatic server backup",
 			Size:        42949672960,
 			Status:      "complete",
+			OsID:        215,
+			AppID:       0,
 		},
 	}
 
@@ -122,7 +126,9 @@ func TestBackupServiceHandler_Get(t *testing.T) {
 				"date_created": "2014-10-14 12:40:40",
 				"description": "Automatic server backup",
 				"size": 42949672960,
-				"status": "complete"
+				"status": "complete",
+				"os_id": 215,
+				"app_id": 0
 			}
 		}
 		`
@@ -141,6 +147,8 @@ func TestBackupServiceHandler_Get(t *testing.T) {
 		Description: "Automatic server backup",
 		Size:        42949672960,
 		Status:      "complete",
+		OsID:        215,
+		AppID:       0,
 	}
 
 	if !reflect.DeepEqual(backup, expected) {
