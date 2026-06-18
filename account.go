@@ -199,7 +199,7 @@ func (a *AccountServiceHandler) AddBGPPrefixes(ctx context.Context, prefixes []s
 }
 
 // List BGP prefixes in a Vultr account
-func (a *AccountServiceHandler) ListBGPPrefixes(ctx context.Context, options *ListOptions) ([]AccountBGPPrefix, *Meta, *http.Response, error) {
+func (a *AccountServiceHandler) ListBGPPrefixes(ctx context.Context, options *ListOptions) ([]AccountBGPPrefix, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := "/v2/account/bgp/prefixes"
 
 	req, err := a.client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -223,7 +223,7 @@ func (a *AccountServiceHandler) ListBGPPrefixes(ctx context.Context, options *Li
 	return prefixes.Prefixes, prefixes.Meta, resp, nil
 }
 
-func (a *AccountServiceHandler) ListCustomSubscriptions(ctx context.Context, options *ListOptions) ([]AccountCustomSubscription, *Meta, *http.Response, error) {
+func (a *AccountServiceHandler) ListCustomSubscriptions(ctx context.Context, options *ListOptions) ([]AccountCustomSubscription, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := "/v2/account/custom-subscriptions"
 
 	req, err := a.client.NewRequest(ctx, http.MethodGet, uri, nil)

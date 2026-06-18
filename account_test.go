@@ -234,7 +234,6 @@ func TestAccountServiceHandler_AddBGPPrefixes(t *testing.T) {
 	if err != nil {
 		t.Errorf("Account.AddBGPPrefixes returned %+v, expected %+v", err, nil)
 	}
-
 }
 
 func TestAccountServiceHandler_ListBGPPrefixes(t *testing.T) {
