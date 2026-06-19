@@ -50,6 +50,7 @@ type Client struct {
 	Billing                  BillingService
 	BlockStorage             BlockStorageService
 	CDN                      CDNService
+	Cluster                  ClusterService
 	ContainerRegistry        ContainerRegistryService
 	Database                 DatabaseService
 	Domain                   DomainService
@@ -131,6 +132,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.BlockStorage = &BlockStorageServiceHandler{client}
 	client.ContainerRegistry = &ContainerRegistryServiceHandler{client}
 	client.CDN = &CDNServiceHandler{client}
+	client.Cluster = &ClusterServiceHandler{client}
 	client.Database = &DatabaseServiceHandler{client}
 	client.Domain = &DomainServiceHandler{client}
 	client.DomainRecord = &DomainRecordsServiceHandler{client}
