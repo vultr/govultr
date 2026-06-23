@@ -14,6 +14,14 @@ type ListOptions struct {
 	// https://www.vultr.com/api/#operation/list-backups
 	InstanceID string `url:"instance_id,omitempty"`
 
+	// Query params that can be used on the list calls in the container registry endpoints
+	// https://www.vultr.com/api/#tag/Container-Registry
+	RegistryID string `url:"registry-id,omitempty"`
+
+	// Query params that can be used on the list artifacts call
+	// https://www.vultr.com/api/#operation/list-registry-repository-artifacts
+	RepositoryImage string `url:"repository-image,omitempty"`
+
 	// These three query params are currently used for the list instance call
 	// These may be extended to other list calls
 	// https://www.vultr.com/api/#operation/list-instances
