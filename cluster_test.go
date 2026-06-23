@@ -249,7 +249,7 @@ func TestClusterServiceHandler_Update(t *testing.T) {
 
 	cluster, _, err := client.Cluster.Update(ctx, "7a1b2c3d-4e5f-6789-abcd-ef0123456789", options)
 	if err != nil {
-		t.Errorf("BareMetal.Update returned %+v, expected %+v", err, nil)
+		t.Errorf("Cluster.Update returned %+v, expected %+v", err, nil)
 	}
 
 	expected := &InstanceCluster{
