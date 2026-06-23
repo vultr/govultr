@@ -58,6 +58,7 @@ type Client struct {
 	FirewallGroup            FirewallGroupService
 	FirewallRule             FireWallRuleService
 	Instance                 InstanceService
+	InstanceTemplate         InstanceTemplateService
 	ISO                      ISOService
 	Kubernetes               KubernetesService
 	LoadBalancer             LoadBalancerService
@@ -139,6 +140,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.FirewallGroup = &FireWallGroupServiceHandler{client}
 	client.FirewallRule = &FireWallRuleServiceHandler{client}
 	client.Instance = &InstanceServiceHandler{client}
+	client.InstanceTemplate = &InstanceTemplateServiceHandler{client}
 	client.ISO = &ISOServiceHandler{client}
 	client.Kubernetes = &KubernetesHandler{client}
 	client.LoadBalancer = &LoadBalancerHandler{client}
