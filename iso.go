@@ -13,6 +13,7 @@ import (
 type ISOService interface {
 	Create(ctx context.Context, isoReq *ISOReq) (*ISO, *http.Response, error)
 	Get(ctx context.Context, isoID string) (*ISO, *http.Response, error)
+	Update(ctx context.Context, isoID string, options *ISOUpdate) error
 	Delete(ctx context.Context, isoID string) error
 	List(ctx context.Context, options *ListOptions) ([]ISO, *Meta, *http.Response, error)
 	ListPublic(ctx context.Context, options *ListOptions) ([]PublicISO, *Meta, *http.Response, error)
@@ -27,6 +28,7 @@ type ISOServiceHandler struct {
 type ISO struct {
 	ID          string `json:"id"`
 	DateCreated string `json:"date_created"`
+	Description string `json:"description"`
 	FileName    string `json:"filename"`
 	Size        int    `json:"size,omitempty"`
 	MD5Sum      string `json:"md5sum,omitempty"`
@@ -44,7 +46,13 @@ type PublicISO struct {
 
 // ISOReq is used for creating ISOs.
 type ISOReq struct {
-	URL string `json:"url"`
+	URL         string  `json:"url"`
+	Description *string `json:"description,omitempty"`
+}
+
+// ISOUpdate is used for updating ISOs.
+type ISOUpdate struct {
+	Description string `json:"description"`
 }
 
 type isosBase struct {
@@ -94,6 +102,18 @@ func (i *ISOServiceHandler) Get(ctx context.Context, isoID string) (*ISO, *http.
 		return nil, resp, err
 	}
 	return iso.ISO, resp, nil
+}
+
+func (i *ISOServiceHandler) Update(ctx context.Context, isoID string, options *ISOUpdate) error {
+	uri := fmt.Sprintf("/v2/iso/%s", isoID)
+
+	req, err := i.client.NewRequest(ctx, http.MethodPut, uri, options)
+	if err != nil {
+		return err
+	}
+
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Delete will delete an ISO image from your account
