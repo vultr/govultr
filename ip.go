@@ -2,11 +2,12 @@ package govultr
 
 // IPv4 struct
 type IPv4 struct {
-	IP      string `json:"ip,omitempty"`
-	Netmask string `json:"netmask,omitempty"`
-	Gateway string `json:"gateway,omitempty"`
-	Type    string `json:"type,omitempty"`
-	Reverse string `json:"reverse,omitempty"`
+	IP         string `json:"ip,omitempty"`
+	Netmask    string `json:"netmask,omitempty"`
+	Gateway    string `json:"gateway,omitempty"`
+	Type       string `json:"type,omitempty"`
+	Reverse    string `json:"reverse,omitempty"`
+	MACAddress string `json:"mac_address,omitempty"`
 }
 
 // IPv6 struct

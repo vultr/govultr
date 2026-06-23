@@ -39,6 +39,18 @@ const (
 			"firewall_group_id": "1234",
 			"features": [
 				"auto_backups", "ipv6"
+			],
+			"vpcs": [
+				{
+					"id": "775e26b3-f67d-46b7-87ed-1a0457fb3a5e",
+					"version": 1,
+					"subnet": "10.1.96.3"
+				},
+				{
+					"id": "090a49c0-a1a2-4aab-a263-5d58f180c905",
+					"version": 2,
+					"subnet": "10.1.128.3"
+				}
 			]
 		}
 	}`
@@ -224,11 +236,11 @@ func TestServerServiceHandler_ListIPv4(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/instances/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/ipv4", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{ "ipv4s": [{"ip": "123.123.123.123","netmask": "255.255.255.248","gateway": "123.123.123.1","type": "main_ip","reverse": "host1.example.com"}],"meta":{"total":1,"links":{"next":"thisismycusror","prev":""}}}`
+		response := `{ "ipv4s": [{"ip": "123.123.123.123","netmask": "255.255.255.248","gateway": "123.123.123.1","type": "main_ip","reverse": "host1.example.com", "mac_address": "aa:bb:cc:dd:ee:ff"}],"meta":{"total":1,"links":{"next":"thisismycusror","prev":""}}}`
 		fmt.Fprint(writer, response)
 	})
 
-	ipv4, meta, _, err := client.Instance.ListIPv4(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", nil)
+	ipv4, meta, _, err := client.Instance.ListIPv4(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", &ListOptions{PublicNetwork: true})
 
 	if err != nil {
 		t.Errorf("Instance.ListIPv4 returned %+v", err)
@@ -236,11 +248,12 @@ func TestServerServiceHandler_ListIPv4(t *testing.T) {
 
 	expected := []IPv4{
 		{
-			IP:      "123.123.123.123",
-			Netmask: "255.255.255.248",
-			Gateway: "123.123.123.1",
-			Type:    "main_ip",
-			Reverse: "host1.example.com",
+			IP:         "123.123.123.123",
+			Netmask:    "255.255.255.248",
+			Gateway:    "123.123.123.1",
+			Type:       "main_ip",
+			Reverse:    "host1.example.com",
+			MACAddress: "aa:bb:cc:dd:ee:ff",
 		},
 	}
 
@@ -551,6 +564,16 @@ func TestServerServiceHandler_Reinstall(t *testing.T) {
 		AppID:            0,
 		FirewallGroupID:  "1234",
 		Features:         []string{"auto_backups", "ipv6"},
+		VPCs: []InstanceVPCInfo{
+			{
+				ID:     "775e26b3-f67d-46b7-87ed-1a0457fb3a5e",
+				Subnet: "10.1.96.3",
+			},
+			{
+				ID:     "090a49c0-a1a2-4aab-a263-5d58f180c905",
+				Subnet: "10.1.128.3",
+			},
+		},
 	}
 
 	if !reflect.DeepEqual(instanceRes, expected) {
@@ -633,6 +656,16 @@ func TestServerServiceHandler_Create(t *testing.T) {
 		AppID:            0,
 		FirewallGroupID:  "1234",
 		Features:         []string{"auto_backups", "ipv6"},
+		VPCs: []InstanceVPCInfo{
+			{
+				ID:     "775e26b3-f67d-46b7-87ed-1a0457fb3a5e",
+				Subnet: "10.1.96.3",
+			},
+			{
+				ID:     "090a49c0-a1a2-4aab-a263-5d58f180c905",
+				Subnet: "10.1.128.3",
+			},
+		},
 	}
 
 	if !reflect.DeepEqual(server, expected) {
@@ -785,6 +818,16 @@ func TestServerServiceHandler_GetServer(t *testing.T) {
 		AppID:            0,
 		FirewallGroupID:  "1234",
 		Features:         []string{"auto_backups", "ipv6"},
+		VPCs: []InstanceVPCInfo{
+			{
+				ID:     "775e26b3-f67d-46b7-87ed-1a0457fb3a5e",
+				Subnet: "10.1.96.3",
+			},
+			{
+				ID:     "090a49c0-a1a2-4aab-a263-5d58f180c905",
+				Subnet: "10.1.128.3",
+			},
+		},
 	}
 
 	if !reflect.DeepEqual(server, expected) {
@@ -1021,6 +1064,16 @@ func TestServerServiceHandler_Update(t *testing.T) {
 		AppID:            0,
 		FirewallGroupID:  "1234",
 		Features:         []string{"auto_backups", "ipv6"},
+		VPCs: []InstanceVPCInfo{
+			{
+				ID:     "775e26b3-f67d-46b7-87ed-1a0457fb3a5e",
+				Subnet: "10.1.96.3",
+			},
+			{
+				ID:     "090a49c0-a1a2-4aab-a263-5d58f180c905",
+				Subnet: "10.1.128.3",
+			},
+		},
 	}
 
 	if !reflect.DeepEqual(server, expected) {

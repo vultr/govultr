@@ -77,38 +77,39 @@ type InstanceServiceHandler struct {
 
 // Instance represents a VPS
 type Instance struct {
-	ID               string   `json:"id"`
-	Os               string   `json:"os"`
-	RAM              int      `json:"ram"`
-	Disk             int      `json:"disk"`
-	Plan             string   `json:"plan"`
-	MainIP           string   `json:"main_ip"`
-	VPCOnly          bool     `json:"vpc_only"`
-	VCPUCount        int      `json:"vcpu_count"`
-	Region           string   `json:"region"`
-	DefaultPassword  string   `json:"default_password,omitempty"`
-	DateCreated      string   `json:"date_created"`
-	Status           string   `json:"status"`
-	AllowedBandwidth int      `json:"allowed_bandwidth"`
-	NetmaskV4        string   `json:"netmask_v4"`
-	GatewayV4        string   `json:"gateway_v4"`
-	PowerStatus      string   `json:"power_status"`
-	ServerStatus     string   `json:"server_status"`
-	V6Network        string   `json:"v6_network"`
-	V6MainIP         string   `json:"v6_main_ip"`
-	V6NetworkSize    int      `json:"v6_network_size"`
-	Label            string   `json:"label"`
-	InternalIP       string   `json:"internal_ip"`
-	KVM              string   `json:"kvm"`
-	OsID             int      `json:"os_id"`
-	AppID            int      `json:"app_id"`
-	ImageID          string   `json:"image_id"`
-	SnapshotID       string   `json:"snapshot_id"`
-	FirewallGroupID  string   `json:"firewall_group_id"`
-	Features         []string `json:"features"`
-	Hostname         string   `json:"hostname"`
-	Tags             []string `json:"tags"`
-	UserScheme       string   `json:"user_scheme"`
+	ID               string            `json:"id"`
+	Os               string            `json:"os"`
+	RAM              int               `json:"ram"`
+	Disk             int               `json:"disk"`
+	Plan             string            `json:"plan"`
+	MainIP           string            `json:"main_ip"`
+	VPCOnly          bool              `json:"vpc_only"`
+	VCPUCount        int               `json:"vcpu_count"`
+	Region           string            `json:"region"`
+	DefaultPassword  string            `json:"default_password,omitempty"`
+	DateCreated      string            `json:"date_created"`
+	Status           string            `json:"status"`
+	AllowedBandwidth int               `json:"allowed_bandwidth"`
+	NetmaskV4        string            `json:"netmask_v4"`
+	GatewayV4        string            `json:"gateway_v4"`
+	PowerStatus      string            `json:"power_status"`
+	ServerStatus     string            `json:"server_status"`
+	V6Network        string            `json:"v6_network"`
+	V6MainIP         string            `json:"v6_main_ip"`
+	V6NetworkSize    int               `json:"v6_network_size"`
+	Label            string            `json:"label"`
+	InternalIP       string            `json:"internal_ip"`
+	VPCs             []InstanceVPCInfo `json:"vpcs"`
+	KVM              string            `json:"kvm"`
+	OsID             int               `json:"os_id"`
+	AppID            int               `json:"app_id"`
+	ImageID          string            `json:"image_id"`
+	SnapshotID       string            `json:"snapshot_id"`
+	FirewallGroupID  string            `json:"firewall_group_id"`
+	Features         []string          `json:"features"`
+	Hostname         string            `json:"hostname"`
+	Tags             []string          `json:"tags"`
+	UserScheme       string            `json:"user_scheme"`
 }
 
 type instanceBase struct {
@@ -247,6 +248,12 @@ type InstanceBlockDevice struct {
 	Bootable bool   `json:"bootable,omitempty"`
 	DiskSize int    `json:"disk_size,omitempty"`
 	Label    string `json:"label,omitempty"`
+}
+
+// InstanceVPCInfo contains information about an instance's VPC attachment
+type InstanceVPCInfo struct {
+	ID     string `json:"id"`
+	Subnet string `json:"subnet"`
 }
 
 // InstanceCreateReq struct used to create an instance.
