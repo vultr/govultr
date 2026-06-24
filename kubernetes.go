@@ -19,6 +19,7 @@ type KubernetesService interface {
 	UpdateCluster(ctx context.Context, vkeID string, updateReq *ClusterReqUpdate) error
 	DeleteCluster(ctx context.Context, id string) error
 	DeleteClusterWithResources(ctx context.Context, id string) error
+	GetClusterResources(ctx context.Context, id string) (*VKEClusterResources, *http.Response, error)
 
 	CreateNodePool(ctx context.Context, vkeID string, nodePoolReq *NodePoolReq) (*NodePool, *http.Response, error)
 	ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, *http.Response, error)
@@ -68,6 +69,7 @@ type Cluster struct {
 	FirewallGroupID string            `json:"firewall_group_id"`
 	OIDCConfig      ClusterOIDCConfig `json:"oidc"`
 	NodePools       []NodePool        `json:"node_pools"`
+	VPCs            []VKEClusterVPC   `json:"vpcs"`
 }
 
 // NodePool represents a pool of nodes that are grouped by their label and plan type
@@ -106,7 +108,7 @@ type KubeConfig struct {
 
 // ClusterReq struct used to create a cluster
 type ClusterReq struct {
-	Label           string             `json:"label"`
+	Label           string             `json:"label,omitempty"`
 	Region          string             `json:"region"`
 	Version         string             `json:"version"`
 	HAControlPlanes bool               `json:"ha_controlplanes,omitempty"`
@@ -127,10 +129,10 @@ type NodePoolReq struct {
 	NodeQuantity int               `json:"node_quantity"`
 	Label        string            `json:"label"`
 	Plan         string            `json:"plan"`
-	Tag          string            `json:"tag"`
+	Tag          string            `json:"tag,omitempty"`
 	MinNodes     int               `json:"min_nodes,omitempty"`
 	MaxNodes     int               `json:"max_nodes,omitempty"`
-	AutoScaler   *bool             `json:"auto_scaler"`
+	AutoScaler   *bool             `json:"auto_scaler,omitempty"`
 	VPCOnly      *bool             `json:"vpc_only,omitempty"`
 	Labels       map[string]string `json:"labels,omitempty"`
 	Taints       []Taint           `json:"taints,omitempty"`
@@ -189,6 +191,30 @@ type Taint struct {
 	Effect string `json:"effect"`
 }
 
+// VKEClusterResources represents the resources associated with a VKE cluster
+type VKEClusterResources struct {
+	BlockStorage []VKEClusterResource `json:"block_storage"`
+	LoadBalancer []VKEClusterResource `json:"load_balancer"`
+}
+
+// VKEClusterResource represents the information about a resource associated with a VKE cluster
+type VKEClusterResource struct {
+	ID          string `json:"id"`
+	Label       string `json:"label"`
+	DateCreated string `json:"date_created"`
+	Status      string `json:"status"`
+}
+
+type vkeClusterResourcesBase struct {
+	Resources *VKEClusterResources `json:"resources"`
+}
+
+// VKEClusterVPC represents the information about a VPC associated with a VKE cluster
+type VKEClusterVPC struct {
+	ID     string `json:"id"`
+	Subnet string `json:"subnet,omitempty"`
+}
+
 type vkeClustersBase struct {
 	VKEClusters []Cluster `json:"vke_clusters"`
 	Meta        *Meta     `json:"meta"`
@@ -232,8 +258,8 @@ type vkeNodePoolBase struct {
 type ClusterOIDCConfig struct {
 	IssuerURL     string `json:"issuer_url"`
 	ClientID      string `json:"client_id"`
-	UserNameClaim string `json:"username_claim"`
-	GroupsClaim   string `json:"groups_claim"`
+	UserNameClaim string `json:"username_claim,omitempty"`
+	GroupsClaim   string `json:"groups_claim,omitempty"`
 }
 
 // Versions that are supported for VKE
@@ -335,6 +361,21 @@ func (k *KubernetesHandler) DeleteClusterWithResources(ctx context.Context, id s
 	}
 	_, err = k.client.DoWithContext(ctx, req, nil)
 	return err
+}
+
+func (k *KubernetesHandler) GetClusterResources(ctx context.Context, id string) (*VKEClusterResources, *http.Response, error) {
+	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/resources", vkePath, id), nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	n := new(vkeClusterResourcesBase)
+	resp, err := k.client.DoWithContext(ctx, req, n)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return n.Resources, resp, nil
 }
 
 // CreateNodePool creates a nodepool on a VKE cluster

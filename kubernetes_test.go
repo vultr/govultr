@@ -46,7 +46,14 @@ func TestKubernetesHandler_CreateCluster(t *testing.T) {
                     }
                 ]
             }
-        ]
+        ],
+		"vpcs": [
+			{
+				"id": "775e26b3-f67d-46b7-87ed-1a0457fb3a5e",
+				"version": 1,
+				"subnet": "10.1.96.3"
+			}
+		]
     }
 }`
 		fmt.Fprint(writer, response)
@@ -93,6 +100,12 @@ func TestKubernetesHandler_CreateCluster(t *testing.T) {
 						Status:      "pending",
 					},
 				},
+			},
+		},
+		VPCs: []VKEClusterVPC{
+			{
+				ID:     "775e26b3-f67d-46b7-87ed-1a0457fb3a5e",
+				Subnet: "10.1.96.3",
 			},
 		},
 	}
@@ -146,7 +159,14 @@ func TestKubernetesHandler_GetCluster(t *testing.T) {
                     }
                 ]
             }
-        ]
+        ],
+		"vpcs": [
+			{
+				"id": "775e26b3-f67d-46b7-87ed-1a0457fb3a5e",
+				"version": 1,
+				"subnet": "10.1.96.3"
+			}
+		]
     }
 }`
 		fmt.Fprint(writer, response)
@@ -187,6 +207,12 @@ func TestKubernetesHandler_GetCluster(t *testing.T) {
 						Status:      "pending",
 					},
 				},
+			},
+		},
+		VPCs: []VKEClusterVPC{
+			{
+				ID:     "775e26b3-f67d-46b7-87ed-1a0457fb3a5e",
+				Subnet: "10.1.96.3",
 			},
 		},
 	}
@@ -241,7 +267,14 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
                     }
                 ]
             }
-        ]
+        ],
+		"vpcs": [
+			{
+				"id": "775e26b3-f67d-46b7-87ed-1a0457fb3a5e",
+				"version": 1,
+				"subnet": "10.1.96.3"
+			}
+		]
     }
 ],
     "meta": {
@@ -292,6 +325,12 @@ func TestKubernetesHandler_ListClusters(t *testing.T) {
 							Status:      "pending",
 						},
 					},
+				},
+			},
+			VPCs: []VKEClusterVPC{
+				{
+					ID:     "775e26b3-f67d-46b7-87ed-1a0457fb3a5e",
+					Subnet: "10.1.96.3",
 				},
 			},
 		},
@@ -361,6 +400,78 @@ func TestKubernetesHandler_DeleteClusterWithResources(t *testing.T) {
 	}
 }
 
+func TestKubernetesHandler_GetClusterResources(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc(fmt.Sprintf("%s/%s/resources", vkePath, "014da059-21e3-47eb-acb5-91bf697c31aa"), func(writer http.ResponseWriter, request *http.Request) {
+		response := `
+		{
+		  "resources": {
+			"block_storage": [
+			  {
+				"id": "29479a12-6edd-48cf-a883-24eccafab094",
+				"label": "29479a12-6edd-48cf-a883-24eccafab094",
+				"date_created": "2021-07-29T16:41:07+00:00",
+				"status": "active"
+			  },
+			  {
+				"id": "0fa3097e-aef9-475e-958a-56f697ed3998",
+				"label": "0fa3097e-aef9-475e-958a-56f697ed3998",
+				"date_created": "2021-08-04T15:34:50+00:00",
+				"status": "pending"
+			  }
+			],
+			"load_balancer": [
+			  {
+				"id": "369ed902-2ec4-4a22-b959-cb1709394c3a",
+				"label": "369ed902-2ec4-4a22-b959-cb1709394c3a",
+				"date_created": "2021-07-29T16:46:12+00:00",
+				"status": "active"
+			  }
+			]
+		  }
+		}
+		`
+
+		fmt.Fprint(writer, response)
+	})
+
+	resources, _, err := client.Kubernetes.GetClusterResources(ctx, "014da059-21e3-47eb-acb5-91bf697c31aa")
+	if err != nil {
+		t.Errorf("GetClusterResources returned %v", err)
+	}
+
+	expected := &VKEClusterResources{
+		BlockStorage: []VKEClusterResource{
+			{
+				ID:          "29479a12-6edd-48cf-a883-24eccafab094",
+				Label:       "29479a12-6edd-48cf-a883-24eccafab094",
+				DateCreated: "2021-07-29T16:41:07+00:00",
+				Status:      "active",
+			},
+			{
+				ID:          "0fa3097e-aef9-475e-958a-56f697ed3998",
+				Label:       "0fa3097e-aef9-475e-958a-56f697ed3998",
+				DateCreated: "2021-08-04T15:34:50+00:00",
+				Status:      "pending",
+			},
+		},
+		LoadBalancer: []VKEClusterResource{
+			{
+				ID:          "369ed902-2ec4-4a22-b959-cb1709394c3a",
+				Label:       "369ed902-2ec4-4a22-b959-cb1709394c3a",
+				DateCreated: "2021-07-29T16:46:12+00:00",
+				Status:      "active",
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(resources, expected) {
+		t.Errorf("GetClusterResources returned %+v, expected %+v", resources, expected)
+	}
+}
+
 func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 	setup()
 	defer teardown()
@@ -372,7 +483,8 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
         "date_created": "2021-07-13T15:42:21+00:00",
         "label": "nodepool-48959140",
         "plan": "vc2-1c-2gb",
-        "status": "pending",
+        "vpc_only": true,
+		"status": "pending",
         "node_quantity": 1,
 		"min_nodes": 1,
 		"max_nodes": 2,
@@ -407,6 +519,7 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 		NodeQuantity: 1,
 		Label:        "nodepool-48959140",
 		Plan:         "vc2-1c-2gb",
+		VPCOnly:      true,
 		Tag:          "mytag",
 		VPCOnly:      BoolToBoolPtr(true),
 		Labels: map[string]string{
@@ -431,6 +544,7 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 		DateCreated:  "2021-07-13T15:42:21+00:00",
 		Label:        "nodepool-48959140",
 		Plan:         "vc2-1c-2gb",
+		VPCOnly:      true,
 		Status:       "pending",
 		NodeQuantity: 1,
 		MinNodes:     1,
