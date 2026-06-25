@@ -12,7 +12,7 @@ func TestLogsServiceHandler_List(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/logs", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"logs":[{"resource_id":"xb671a46-66ed-4dfb-b839-543f2c6c0b63","resource_type":"kubernetes","log_level":"Debug","message":"Success","timestamp":"2025-08-26T00:00:07+00:00","metadata":{"user_id":"765b8aa0-e134-4b62-88e1-22f40959ffe7","ip_address":"123.123.123.123","username":"","http_status_code":200,"method":"GET","request_path":"/v2/kubernetes/clusters/xb671a46-66ed-4dfb-b839-543f2c6c0b63/node-pools","request_body": "","query_parameters": ""}}],"meta":{"continue_time": "","returned_count":1,"unreturned_count":0,"total_count":1}}`
+		response := `{"logs":[{"resource_id":"xb671a46-66ed-4dfb-b839-543f2c6c0b63","resource_type":"kubernetes","log_level":"Debug","message":"Success","timestamp":"2025-08-26T00:00:07+00:00","metadata":{"user_id":"765b8aa0-e134-4b62-88e1-22f40959ffe7","ip_address":"123.123.123.123","username":"","http_status_code":200,"method":"GET","request_path":"/v2/kubernetes/clusters/xb671a46-66ed-4dfb-b839-543f2c6c0b63/node-pools","request_body": "","query_parameters": ""}}],"meta":{"continue_time": "","returned_count":1,"unreturned_count":0,"total_count":1,"next_page_url": "https://api.vultr.com/v2/logs?end_time=2025-09-18T10:21:20Z&start_time=2025-09-18T00:00:00Z&resource_type=kubernetes"}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -48,6 +48,7 @@ func TestLogsServiceHandler_List(t *testing.T) {
 		ReturnedCount:   1,
 		UnreturnedCount: 0,
 		TotalCount:      1,
+		NextPageURL:     "https://api.vultr.com/v2/logs?end_time=2025-09-18T10:21:20Z&start_time=2025-09-18T00:00:00Z&resource_type=kubernetes",
 	}
 
 	if !reflect.DeepEqual(logs, expectedLogs) {
