@@ -704,3 +704,51 @@ func TestDatabaseServiceHandler_Delete(t *testing.T) {
 		t.Errorf("Database.Delete returned %+v", err)
 	}
 }
+
+func TestDatabaseServiceHandler_GetAvailableServices(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/databases/available-services", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{
+  "kafka": [
+    "3.8",
+    "3.9",
+    "4.0",
+    "4.1"
+  ],
+  "mysql": [
+    "8",
+    "8.4"
+  ],
+  "pg": [
+    "14",
+    "15",
+    "16",
+    "17",
+    "18"
+  ],
+  "valkey": [
+    "8.1",
+    "9.0"
+  ]
+}`
+		fmt.Fprint(writer, response)
+	})
+
+	services, _, err := client.Database.GetAvailableServices(ctx)
+	if err != nil {
+		t.Errorf("Database.GetAvailableServices returned %+v", err)
+	}
+
+	expected := map[string][]string{
+		"kafka":  {"3.8", "3.9", "4.0", "4.1"},
+		"mysql":  {"8", "8.4"},
+		"pg":     {"14", "15", "16", "17", "18"},
+		"valkey": {"8.1", "9.0"},
+	}
+
+	if !reflect.DeepEqual(services, expected) {
+		t.Errorf("Database.GetAvailableServices returned %+v, expected %+v", services, expected)
+	}
+}

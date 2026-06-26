@@ -21,6 +21,7 @@ type DatabaseService interface {
 	Update(ctx context.Context, databaseID string, databaseReq *DatabaseUpdateReq) (*Database, *http.Response, error)
 	Delete(ctx context.Context, databaseID string) error
 
+	GetAvailableServices(ctx context.Context) (map[string][]string, *http.Response, error)
 	GetUsage(ctx context.Context, databaseID string) (*DatabaseUsage, *http.Response, error)
 
 	ListUsers(ctx context.Context, databaseID string) ([]DatabaseUser, *Meta, *http.Response, error)
@@ -444,7 +445,7 @@ type DatabaseQuotaCreateReq struct {
 
 // DatabaseQuotaUpdateReq struct used to update a Kafka quota within a Managed Database
 type DatabaseQuotaUpdateReq struct {
-	ConsumerByteRate  int `json:"consumer_byte_rate"`
+	ConsumerByteRate  int `json:"consumer_byte_rvate"`
 	ProducerByteRate  int `json:"producer_byte_rate"`
 	RequestPercentage int `json:"request_percentage"`
 }
@@ -625,6 +626,7 @@ type DatabaseForkReq struct {
 	Label  string `json:"label,omitempty"`
 	Region string `json:"region,omitempty"`
 	Plan   string `json:"plan,omitempty"`
+	VPCID  string `json:"vpc_id,omitempty"`
 	Type   string `json:"type,omitempty"`
 	Date   string `json:"date,omitempty"`
 	Time   string `json:"time,omitempty"`
@@ -990,6 +992,23 @@ func (d *DatabaseServiceHandler) Delete(ctx context.Context, databaseID string) 
 
 	_, err = d.client.DoWithContext(ctx, req, nil)
 	return err
+}
+
+func (d *DatabaseServiceHandler) GetAvailableServices(ctx context.Context) (map[string][]string, *http.Response, error) {
+	uri := fmt.Sprintf("%s/available-services", databasePath)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	services := make(map[string][]string)
+	resp, err := d.client.DoWithContext(ctx, req, &services)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return services, resp, nil
 }
 
 // GetUsage retrieves disk, memory, and CPU usage information for a Managed Database
