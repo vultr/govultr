@@ -22,6 +22,11 @@ type ReservedIPService interface {
 	Convert(ctx context.Context, ripConvert *ReservedIPConvertReq) (*ReservedIP, *http.Response, error)
 	Attach(ctx context.Context, id, instance string) error
 	Detach(ctx context.Context, id string) error
+
+	CreateReverseDNS(ctx context.Context, id string, rdnsCreate *ReservedIPReverseDNSCreateReq) error
+	UpdateReverseDNS(ctx context.Context, id string, rdnsUpdate *ReservedIPReverseDNSUpdateReq) error
+	GetReverseDNS(ctx context.Context, id string) (*ReservedIPReverseDNS, *http.Response, error)
+	DeleteReverseDNS(ctx context.Context, id string, ipv6 string) error
 }
 
 // ReservedIPServiceHandler handles interaction with the reserved IP methods for the Vultr API
@@ -67,6 +72,28 @@ type reservedIPBase struct {
 type ReservedIPConvertReq struct {
 	IPAddress string `json:"ip_address,omitempty"`
 	Label     string `json:"label,omitempty"`
+}
+
+// ReservedIPReverseDNS represents the reverse DNS information for a Reserved IP
+type ReservedIPReverseDNS struct {
+	IPv4 string                     `json:"ipv4"`
+	IPv6 []ReservedIPReverseDNSIPv6 `json:"ipv6"`
+}
+
+// ReservedIPReverseDNSIPv6 represents the reverse DNS information for a Reserved IPv6
+type ReservedIPReverseDNSIPv6 struct {
+	IP     string `json:"ip"`
+	Domain string `json:"domain"`
+}
+
+// ReservedIPReverseDNSCreateReq is the struct used for create reverse DNS calls.
+type ReservedIPReverseDNSCreateReq struct {
+	V6 []ReservedIPReverseDNSIPv6 `json:"v6"`
+}
+
+// ReservedIPReverseDNSUpdateReq is the struct used for update reverse DNS calls.
+type ReservedIPReverseDNSUpdateReq struct {
+	V4 string `json:"v4"`
 }
 
 // Create adds the specified reserved IP to your Vultr account
@@ -191,6 +218,59 @@ func (r *ReservedIPServiceHandler) Detach(ctx context.Context, id string) error 
 	if err != nil {
 		return err
 	}
+	_, err = r.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// CreateReverseDNS creates reverse DNS information for a reserved IPv6
+func (r *ReservedIPServiceHandler) CreateReverseDNS(ctx context.Context, id string, rdnsCreate *ReservedIPReverseDNSCreateReq) error {
+	uri := fmt.Sprintf("%s/%s/reverse-dns/ipv6", ripPath, id)
+	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, rdnsCreate)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// UpdateReverseDNS updates reverse DNS information for a reserved IPv4
+func (r *ReservedIPServiceHandler) UpdateReverseDNS(ctx context.Context, id string, rdnsUpdate *ReservedIPReverseDNSUpdateReq) error {
+	uri := fmt.Sprintf("%s/%s/reverse-dns/ipv4", ripPath, id)
+	req, err := r.client.NewRequest(ctx, http.MethodPut, uri, rdnsUpdate)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// GetReverseDNS gets reverse DNS information for a reserved IP
+func (r *ReservedIPServiceHandler) GetReverseDNS(ctx context.Context, id string) (*ReservedIPReverseDNS, *http.Response, error) {
+	uri := fmt.Sprintf("%s/%s/reverse-dns", ripPath, id)
+	req, err := r.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	rdns := new(ReservedIPReverseDNS)
+	resp, err := r.client.DoWithContext(ctx, req, rdns)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return rdns, resp, nil
+}
+
+// DeleteReverseDNS deletes reverse DNS information for a reserved IP
+func (r *ReservedIPServiceHandler) DeleteReverseDNS(ctx context.Context, id, ipv6 string) error {
+	uri := fmt.Sprintf("%s/%s/reverse-dns/ipv6/%s", ripPath, id, ipv6)
+	req, err := r.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
 	_, err = r.client.DoWithContext(ctx, req, nil)
 	return err
 }
