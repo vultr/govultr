@@ -77,7 +77,7 @@ func TestSnapshotServiceHandler_Get(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/snapshots/5359435d28b9a", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"snapshot":{"id": "5359435d28b9a","date_created": "2014-04-18 12:40:40","description": "Test snapshot","size": 42949672960,"compressed_size": 1078864689,"status": "complete","os_id": 127,"app_id": 0}}`
+		response := `{"snapshot":{"id": "5359435d28b9a","date_created": "2014-04-18 12:40:40","date_expires": "0000-00-00T00:00:00+00:00","description": "Test snapshot","size": 42949672960,"compressed_size": 1078864689,"status": "complete","os_id": 127,"app_id": 0,"pending_charges": 0.33}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -89,16 +89,36 @@ func TestSnapshotServiceHandler_Get(t *testing.T) {
 	expected := &Snapshot{
 		ID:             "5359435d28b9a",
 		DateCreated:    "2014-04-18 12:40:40",
+		DateExpires:    "0000-00-00T00:00:00+00:00",
 		Description:    "Test snapshot",
 		Size:           42949672960,
 		CompressedSize: 1078864689,
 		Status:         "complete",
 		OsID:           127,
 		AppID:          0,
+		PendingCharges: 0.33,
 	}
 
 	if !reflect.DeepEqual(snapshot, expected) {
 		t.Errorf("Snapshot.Get returned %+v, expected %+v", snapshot, expected)
+	}
+}
+
+func TestSnapshotServiceHandler_Update(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/snapshots/5359435d28b9a", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	snap := &SnapshotUpdateReq{
+		Description: "Example Snapshot",
+	}
+
+	err := client.Snapshot.Update(ctx, "5359435d28b9a", snap)
+	if err != nil {
+		t.Errorf("Snapshot.Update returned error: %v", err)
 	}
 }
 
