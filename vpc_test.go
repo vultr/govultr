@@ -81,7 +81,11 @@ func TestVPCServiceHandler_List(t *testing.T) {
 				"region": "ewr",
 				"description": "test1",
 				"v4_subnet": "10.99.0.0",
-				"v4_subnet_mask": 24
+				"v4_subnet_mask": 24,
+				"internet": {
+					"connectivity": false,
+					"types": []
+				}
 			}]
 		}
 		`
@@ -102,6 +106,10 @@ func TestVPCServiceHandler_List(t *testing.T) {
 			V4Subnet:     "10.99.0.0",
 			V4SubnetMask: 24,
 			DateCreated:  "2017-08-25 12:23:45",
+			Internet: &VPCInternetConnectivity{
+				Connectivity: false,
+				Types:        []string{},
+			},
 		},
 	}
 
