@@ -19,9 +19,12 @@ type OIDCService interface {
 	ListOIDCProviders(ctx context.Context) ([]OIDCProvider, *http.Response, error)
 	DeleteOIDCProvider(ctx context.Context, oidcProviderID string) error
 
+	CreateOIDCProviderToken(ctx context.Context, oidcProviderID string, oidcProviderTokenReq *OIDCProviderTokenReq) (*OIDCProviderToken, *http.Response, error) //nolint:lll
+
 	CreateOIDCIssuer(ctx context.Context, oidcIssuerReq *OIDCIssuerReq) (*OIDCIssuer, *http.Response, error)
 	GetOIDCIssuer(ctx context.Context, oidcIssuerID string) (*OIDCIssuer, *http.Response, error)
 	ListOIDCIssuers(ctx context.Context) ([]OIDCIssuer, *http.Response, error)
+	UpdateOIDCIssuer(ctx context.Context, oidcIssuerID string, oidcIssuerReq *OIDCIssuerUpdate) (*OIDCIssuer, *http.Response, error)
 	DeleteOIDCIssuer(ctx context.Context, oidcIssuerID string) error
 
 	CreateOIDCToken(ctx context.Context, oidcTokenReq *OIDCTokenReq) (*OIDCToken, *http.Response, error)
@@ -53,7 +56,23 @@ type oidcProviderBase struct {
 
 // OIDCProviderReq represnts a request for OIDC provider creation
 type OIDCProviderReq struct {
-	Name string `json:"name"`
+	Name       string `json:"name,omitempty"`
+	IssuerID   string `json:"issuer_id,omitempty"`
+	PrivateKey []byte `json:"private_key_b64,omitempty"`
+}
+
+// OIDCProviderTokenReq represents a request for creating an OIDC token via the specified provider
+type OIDCProviderTokenReq struct {
+	GrantType        string `json:"grant_type,omitempty"`
+	SubjectToken     string `json:"subject_token,omitempty"`
+	SubjectTokenType string `json:"subject_token_type,omitempty"`
+}
+
+// OIDCProviderToken represents an OIDC token created via the specified provider
+type OIDCProviderToken struct {
+	AccessToken    string `json:"access_token"`
+	TokenType      string `json:"token_type"`
+	ExpiresSeconds int    `json:"expires_in"`
 }
 
 // OIDCIssuer represents an OIDC issuer
@@ -82,6 +101,12 @@ type oidcIssuerBase struct {
 // OIDCIssuerReq represents a request for an OIDC issuer creation
 type OIDCIssuerReq struct {
 	Issuer OIDCIssuerReqDetail `json:"issuer"`
+}
+
+// OIDCIssuerUpdate represents a request for an OIDC issuer update
+type OIDCIssuerUpdate struct {
+	Source string `url:"source,omitempty"`
+	URI    string `url:"uri,omitempty"`
 }
 
 // OIDCIssuerReqDetail represents the detail for the OIDC issuer request
@@ -236,6 +261,23 @@ func (o *OIDCServiceHandler) DeleteOIDCProvider(ctx context.Context, oidcProvide
 	return nil
 }
 
+func (o *OIDCServiceHandler) CreateOIDCProviderToken(ctx context.Context, oidcProviderID string, oidcProviderTokenReq *OIDCProviderTokenReq) (*OIDCProviderToken, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/provider/%s/token", oidcPath, oidcProviderID)
+
+	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, oidcProviderTokenReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	token := new(OIDCProviderToken)
+	resp, err := o.client.DoWithContext(ctx, req, token)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return token, resp, nil
+}
+
 func (o *OIDCServiceHandler) CreateOIDCIssuer(ctx context.Context, oidcIssuerReq *OIDCIssuerReq) (*OIDCIssuer, *http.Response, error) {
 	uri := fmt.Sprintf("%s/issuer", oidcPath)
 
@@ -285,6 +327,23 @@ func (o *OIDCServiceHandler) ListOIDCIssuers(ctx context.Context) ([]OIDCIssuer,
 	}
 
 	return issuers.Issuers, resp, nil
+}
+
+func (o *OIDCServiceHandler) UpdateOIDCIssuer(ctx context.Context, oidcIssuerID string, oidcIssuerReq *OIDCIssuerUpdate) (*OIDCIssuer, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/issuer/%s", oidcPath, oidcIssuerID)
+
+	req, err := o.client.NewRequest(ctx, http.MethodPatch, uri, oidcIssuerReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	issuer := new(oidcIssuerBase)
+	resp, err := o.client.DoWithContext(ctx, req, issuer)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return issuer.Issuer, resp, nil
 }
 
 func (o *OIDCServiceHandler) DeleteOIDCIssuer(ctx context.Context, oidcIssuerID string) error {
