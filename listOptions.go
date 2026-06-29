@@ -40,4 +40,8 @@ type ListOptions struct {
 	// Query params that can be used on the list snapshots call
 	// https://www.vultr.com/api/#operation/list-snapshots
 	Description string `url:"description,omitempty"`
+
+	// Query params that can be used on the list plans call
+	// https://www.vultr.com/api/#operation/list-plans
+	OS string `url:"os,omitempty"`
 }
