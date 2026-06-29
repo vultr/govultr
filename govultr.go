@@ -76,6 +76,7 @@ type Client struct {
 	SSHKey                   SSHKeyService
 	StartupScript            StartupScriptService
 	SubAccount               SubAccountService
+	Ticket                   TicketService
 	User                     UserService
 	VirtualFileSystemStorage VirtualFileSystemStorageService
 	VPC                      VPCService
@@ -158,6 +159,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.SSHKey = &SSHKeyServiceHandler{client}
 	client.StartupScript = &StartupScriptServiceHandler{client}
 	client.SubAccount = &SubAccountServiceHandler{client}
+	client.Ticket = &TicketServiceHandler{client}
 	client.User = &UserServiceHandler{client}
 	client.VirtualFileSystemStorage = &VirtualFileSystemStorageServiceHandler{client}
 	client.VPC = &VPCServiceHandler{client}
