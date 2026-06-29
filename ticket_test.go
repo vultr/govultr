@@ -215,7 +215,7 @@ func TestTicketServiceHandler_CreateReply(t *testing.T) {
 		Attachments: []TicketAttachmentReq{
 			{
 				FileName: "upload_file.txt",
-				File:     []byte{},
+				File:     "",
 			},
 		},
 	}
@@ -386,7 +386,7 @@ func TestTicketServiceHandler_RequestTaxExemption(t *testing.T) {
 		Attachments: []TicketAttachmentReq{
 			{
 				FileName: "tax-exempt.pdf",
-				File:     []byte{},
+				File:     "",
 			},
 		},
 	}

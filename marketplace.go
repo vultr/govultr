@@ -102,7 +102,7 @@ type MarketplaceAppVariableV2Update struct {
 
 // MarketplaceAppImageCreate is used to create a marketplace app image
 type MarketplaceAppImageCreate struct {
-	Image []byte `json:"b64_image"`
+	Image string `json:"b64_image"`
 }
 
 // MarketplaceAppImage represents a marketplace app image

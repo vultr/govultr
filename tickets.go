@@ -57,7 +57,7 @@ type ticketsBase struct {
 // TicketAttachment represents a file attached to a ticket reply
 type TicketAttachment struct {
 	ContextType string `json:"context_type"`
-	File        []byte `json:"file"`
+	File        string `json:"file"`
 	FileName    string `json:"filename"`
 	FileSize    int    `json:"filesize"`
 }
@@ -127,7 +127,7 @@ type TicketReplyRatingReq struct {
 // TicketAttachmentReq represents a file to attach to a ticket
 type TicketAttachmentReq struct {
 	FileName string `json:"filename"`
-	File     []byte `json:"file"`
+	File     string `json:"file"`
 }
 
 // TicketSMTPUnblockReq is used for creating a request to unblock SMTP

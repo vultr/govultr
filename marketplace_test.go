@@ -309,7 +309,7 @@ func TestMarketplaceServiceHandler_CreateAppImage(t *testing.T) {
 	})
 
 	req := &MarketplaceAppImageCreate{
-		Image: []byte{},
+		Image: "",
 	}
 
 	img, _, err := client.Marketplace.CreateAppImage(ctx, 468, req)

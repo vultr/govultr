@@ -58,7 +58,7 @@ type oidcProviderBase struct {
 type OIDCProviderReq struct {
 	Name       string `json:"name,omitempty"`
 	IssuerID   string `json:"issuer_id,omitempty"`
-	PrivateKey []byte `json:"private_key_b64,omitempty"`
+	PrivateKey string `json:"private_key_b64,omitempty"`
 }
 
 // OIDCProviderTokenReq represents a request for creating an OIDC token via the specified provider

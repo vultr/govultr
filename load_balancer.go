@@ -67,7 +67,7 @@ type LoadBalancer struct {
 	GlobalRegions     []string         `json:"global_regions,omitempty"`
 	GlobalChildrenIDs []string         `json:"global_children_ids,omitempty"`
 	GlobalCNAME       string           `json:"global_cname,omitempty"`
-	SSLCert           []byte           `json:"ssl_cert_b64,omitempty"`
+	SSLCert           string           `json:"ssl_cert_b64,omitempty"`
 	PendingCharges    int              `json:"pending_charges,omitempty"`
 	CNAME             string           `json:"cname,omitempty"`
 }
