@@ -109,7 +109,7 @@ type MarketplaceAppImageCreate struct {
 type MarketplaceAppImage struct {
 	ID       int    `json:"id"`
 	AppID    string `json:"app_id"`
-	Filename string `json:"filename"`
+	FileName string `json:"filename"`
 	URL      string `json:"url"`
 }
 

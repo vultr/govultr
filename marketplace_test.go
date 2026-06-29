@@ -320,7 +320,7 @@ func TestMarketplaceServiceHandler_CreateAppImage(t *testing.T) {
 	expected := &MarketplaceAppImage{
 		ID:       150,
 		AppID:    "1234",
-		Filename: "testvendor-gallery_image-12345ac-6789-01c2-3c4c-56a789bf012a-3456789012.png",
+		FileName: "testvendor-gallery_image-12345ac-6789-01c2-3c4c-56a789bf012a-3456789012.png",
 		URL:      "http://www.vultr.com/marketplace-assets-dev/testvendor-gallery_image-12345ac-6789-01c2-3c4c-56a789bf012a-3456789012.png",
 	}
 
