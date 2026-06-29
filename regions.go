@@ -39,7 +39,8 @@ type regionBase struct {
 
 // PlanAvailability contains all available plans.
 type PlanAvailability struct {
-	AvailablePlans []string `json:"available_plans"`
+	AvailablePlans        []string `json:"available_plans"`
+	AvailableVPCOnlyPlans []string `json:"available_vpc_only_plans"`
 }
 
 // List returns all available regions
