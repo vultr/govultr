@@ -75,6 +75,7 @@ type Client struct {
 	Snapshot                 SnapshotService
 	SSHKey                   SSHKeyService
 	StartupScript            StartupScriptService
+	StorageGateway           StorageGatewayService
 	SubAccount               SubAccountService
 	Ticket                   TicketService
 	User                     UserService
@@ -156,6 +157,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.ReservedIP = &ReservedIPServiceHandler{client}
 	client.Inference = &InferenceServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
+	client.StorageGateway = &StorageGatewayServiceHandler{client}
 	client.SSHKey = &SSHKeyServiceHandler{client}
 	client.StartupScript = &StartupScriptServiceHandler{client}
 	client.SubAccount = &SubAccountServiceHandler{client}
