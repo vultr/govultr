@@ -445,7 +445,7 @@ type DatabaseQuotaCreateReq struct {
 
 // DatabaseQuotaUpdateReq struct used to update a Kafka quota within a Managed Database
 type DatabaseQuotaUpdateReq struct {
-	ConsumerByteRate  int `json:"consumer_byte_rvate"`
+	ConsumerByteRate  int `json:"consumer_byte_rate"`
 	ProducerByteRate  int `json:"producer_byte_rate"`
 	RequestPercentage int `json:"request_percentage"`
 }
