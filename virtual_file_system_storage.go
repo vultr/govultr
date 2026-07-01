@@ -24,6 +24,8 @@ type VirtualFileSystemStorageService interface {
 	AttachmentGet(ctx context.Context, vfsID, targetID string) (*VirtualFileSystemStorageAttachment, *http.Response, error)
 	Attach(ctx context.Context, vfsID, targetID string) (*VirtualFileSystemStorageAttachment, *http.Response, error)
 	Detach(ctx context.Context, vfsID, targetID string) error
+
+	ListRegions(ctx context.Context) ([]VirtualFileSystemStorageRegion, *http.Response, error)
 }
 
 // VirtualFileSystemStorageServiceHandler handles interaction with the virtual
@@ -93,6 +95,32 @@ type VirtualFileSystemStorageAttachment struct {
 
 type virtualFileSystemStorageAttachmentsBase struct {
 	Attachments []VirtualFileSystemStorageAttachment `json:"attachments"`
+}
+
+// VirtualFileSystemStorageRegion represents a region where virtual file system storage can be deployed
+type VirtualFileSystemStorageRegion struct {
+	ID          string                              `json:"id"`
+	Country     string                              `json:"country"`
+	Continent   string                              `json:"continent"`
+	Description string                              `json:"description"`
+	PricePerGB  VirtualFileSystemStorageRegionPrice `json:"price_per_gb"`
+	MinSizeGB   VirtualFileSystemStorageRegionSize  `json:"min_size_gb"`
+}
+
+type virtualFileSystemStorageRegionsBase struct {
+	Regions []VirtualFileSystemStorageRegion `json:"regions"`
+}
+
+// VirtualFileSystemStorageRegionPrice represents the pricing information for a VFS region
+type VirtualFileSystemStorageRegionPrice struct {
+	NVME float64 `json:"nvme"`
+	HDD  float64 `json:"hdd"`
+}
+
+// VirtualFileSystemStorageRegionSize represents the storage size information for a VFS region
+type VirtualFileSystemStorageRegionSize struct {
+	NVME int `json:"nvme"`
+	HDD  int `json:"hdd"`
 }
 
 // Create sends a create request for a virtual file system storage.
@@ -252,4 +280,22 @@ func (f *VirtualFileSystemStorageServiceHandler) Detach(ctx context.Context, vfs
 	}
 
 	return nil
+}
+
+// ListRegions retrieves a list of regions where virtual file system storage can be deployed
+func (f *VirtualFileSystemStorageServiceHandler) ListRegions(ctx context.Context) ([]VirtualFileSystemStorageRegion, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/regions", virtualFileSystemStoragePath)
+
+	req, err := f.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	regions := new(virtualFileSystemStorageRegionsBase)
+	resp, err := f.client.DoWithContext(ctx, req, regions)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return regions.Regions, resp, err
 }
