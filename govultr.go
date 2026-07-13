@@ -12,6 +12,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 	"time"
 
@@ -159,15 +160,15 @@ func NewClient(httpClient *http.Client) *Client {
 	return client
 }
 
-// NewRequest creates an API Request
+// NewRequest creates an API request
 func (c *Client) NewRequest(ctx context.Context, method, uri string, body interface{}) (*http.Request, error) {
 	resolvedURL, err := c.BaseURL.Parse(uri)
 	if err != nil {
 		return nil, err
 	}
 
-	buf := new(bytes.Buffer)
-	if body != nil {
+	buf := &bytes.Buffer{}
+	if !isNilInterface(body) {
 		if err2 := json.NewEncoder(buf).Encode(body); err2 != nil {
 			return nil, err2
 		}
@@ -185,9 +186,10 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 	return req, nil
 }
 
-// DoWithContext sends an API Request and returns back the response. The API response is checked  to see if it was
-// a successful call. A successful call is then checked to see if we need to unmarshal since some resources
-// have their own implements of unmarshal.
+// DoWithContext sends an API request and returns back the response. The API
+// response is checked to see if it was a successful call. A successful call is
+// then checked to see if we need to unmarshal since some resources have their
+// own implements of unmarshal.
 func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) (*http.Response, error) {
 	rreq, err := retryablehttp.FromRequest(r)
 	if err != nil {
@@ -278,6 +280,21 @@ func (c *Client) vultrErrorHandler(resp *http.Response, err error, numTries int)
 		return nil, fmt.Errorf("gave up after %d attempts, last error unavailable (error reading response body: %v)", numTries, err)
 	}
 	return nil, fmt.Errorf("gave up after %d attempts, last error: %#v", numTries, strings.TrimSpace(string(buf)))
+}
+
+func isNilInterface(i interface{}) bool {
+	v := reflect.ValueOf(i)
+
+	if !v.IsValid() {
+		return true
+	}
+
+	switch v.Kind() {
+	case reflect.Pointer, reflect.Slice, reflect.Map, reflect.Func, reflect.Interface:
+		return v.IsNil()
+	default:
+		return false
+	}
 }
 
 // BoolToBoolPtr helper function that returns a pointer from your bool value
