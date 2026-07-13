@@ -8,6 +8,8 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
+const blockStoragePath = "/v2/blocks"
+
 // BlockStorageService is the interface to interact with Block-Storage endpoint on the Vultr API
 // Link : https://www.vultr.com/api/#tag/block
 type BlockStorageService interface {
@@ -85,9 +87,7 @@ type blockStorageBase struct {
 
 // Create builds out a block storage
 func (b *BlockStorageServiceHandler) Create(ctx context.Context, blockReq *BlockStorageCreate) (*BlockStorage, *http.Response, error) {
-	uri := "/v2/blocks"
-
-	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, blockReq)
+	req, err := b.client.NewRequest(ctx, http.MethodPost, blockStoragePath, blockReq)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -103,7 +103,7 @@ func (b *BlockStorageServiceHandler) Create(ctx context.Context, blockReq *Block
 
 // Get returns a single block storage instance based ony our blockID you provide from your Vultr Account
 func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID string) (*BlockStorage, *http.Response, error) {
-	uri := fmt.Sprintf("/v2/blocks/%s", blockID)
+	uri := fmt.Sprintf("%s/%s", blockStoragePath, blockID)
 
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -121,7 +121,7 @@ func (b *BlockStorageServiceHandler) Get(ctx context.Context, blockID string) (*
 
 // Update a block storage subscription.
 func (b *BlockStorageServiceHandler) Update(ctx context.Context, blockID string, blockReq *BlockStorageUpdate) error {
-	uri := fmt.Sprintf("/v2/blocks/%s", blockID)
+	uri := fmt.Sprintf("%s/%s", blockStoragePath, blockID)
 
 	req, err := b.client.NewRequest(ctx, http.MethodPatch, uri, blockReq)
 	if err != nil {
@@ -133,7 +133,7 @@ func (b *BlockStorageServiceHandler) Update(ctx context.Context, blockID string,
 
 // Delete a block storage subscription from your Vultr account
 func (b *BlockStorageServiceHandler) Delete(ctx context.Context, blockID string) error {
-	uri := fmt.Sprintf("/v2/blocks/%s", blockID)
+	uri := fmt.Sprintf("%s/%s", blockStoragePath, blockID)
 
 	req, err := b.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
@@ -145,9 +145,7 @@ func (b *BlockStorageServiceHandler) Delete(ctx context.Context, blockID string)
 
 // List returns a list of all block storage instances on your Vultr Account
 func (b *BlockStorageServiceHandler) List(ctx context.Context, options *ListOptions) ([]BlockStorage, *Meta, *http.Response, error) { //nolint:dupl,lll
-	uri := "/v2/blocks"
-
-	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	req, err := b.client.NewRequest(ctx, http.MethodGet, blockStoragePath, nil)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -171,7 +169,7 @@ func (b *BlockStorageServiceHandler) List(ctx context.Context, options *ListOpti
 // Attach will link a given block storage to a given Vultr instance
 // If Live is set to true the block storage will be attached without reloading the instance
 func (b *BlockStorageServiceHandler) Attach(ctx context.Context, blockID string, attach *BlockStorageAttach) error {
-	uri := fmt.Sprintf("/v2/blocks/%s/attach", blockID)
+	uri := fmt.Sprintf("%s/%s/attach", blockStoragePath, blockID)
 
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, attach)
 	if err != nil {
@@ -184,12 +182,13 @@ func (b *BlockStorageServiceHandler) Attach(ctx context.Context, blockID string,
 // Detach will de-link a given block storage to the Vultr instance it is attached to
 // If Live is set to true the block storage will be detached without reloading the instance
 func (b *BlockStorageServiceHandler) Detach(ctx context.Context, blockID string, detach *BlockStorageDetach) error {
-	uri := fmt.Sprintf("/v2/blocks/%s/detach", blockID)
+	uri := fmt.Sprintf("%s/%s/detach", blockStoragePath, blockID)
 
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, detach)
 	if err != nil {
 		return err
 	}
+
 	_, err = b.client.DoWithContext(ctx, req, nil)
 	return err
 }
