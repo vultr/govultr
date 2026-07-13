@@ -168,7 +168,7 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 	}
 
 	buf := &bytes.Buffer{}
-	if !reflect.ValueOf(body).IsNil() {
+	if !isNilInterface(body) {
 		if err2 := json.NewEncoder(buf).Encode(body); err2 != nil {
 			return nil, err2
 		}
@@ -279,6 +279,21 @@ func (c *Client) vultrErrorHandler(resp *http.Response, err error, numTries int)
 		return nil, fmt.Errorf("gave up after %d attempts, last error unavailable (error reading response body: %v)", numTries, err)
 	}
 	return nil, fmt.Errorf("gave up after %d attempts, last error: %#v", numTries, strings.TrimSpace(string(buf)))
+}
+
+func isNilInterface(i interface{}) bool {
+	v := reflect.ValueOf(i)
+
+	if !v.IsValid() {
+		return true
+	}
+
+	switch v.Kind() {
+	case reflect.Ptr, reflect.Slice, reflect.Map, reflect.Func, reflect.Interface:
+		return v.IsNil()
+	default:
+		return false
+	}
 }
 
 // BoolToBoolPtr helper function that returns a pointer from your bool value
