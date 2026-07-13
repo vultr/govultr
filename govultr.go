@@ -12,6 +12,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 	"time"
 
@@ -166,8 +167,8 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 		return nil, err
 	}
 
-	buf := new(bytes.Buffer)
-	if body != nil {
+	buf := &bytes.Buffer{}
+	if !reflect.ValueOf(body).IsNil() {
 		if err2 := json.NewEncoder(buf).Encode(body); err2 != nil {
 			return nil, err2
 		}
