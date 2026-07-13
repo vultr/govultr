@@ -289,7 +289,7 @@ func isNilInterface(i interface{}) bool {
 	}
 
 	switch v.Kind() {
-	case reflect.Ptr, reflect.Slice, reflect.Map, reflect.Func, reflect.Interface:
+	case reflect.Pointer, reflect.Slice, reflect.Map, reflect.Func, reflect.Interface:
 		return v.IsNil()
 	default:
 		return false
