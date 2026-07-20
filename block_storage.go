@@ -21,6 +21,12 @@ type BlockStorageService interface {
 
 	Attach(ctx context.Context, blockID string, attach *BlockStorageAttach) error
 	Detach(ctx context.Context, blockID string, detach *BlockStorageDetach) error
+
+	ListSnapshots(ctx context.Context, options *ListOptions) ([]BlockStorageSnapshot, *Meta, *http.Response, error)
+	GetSnapshot(ctx context.Context, snapshotID string) (*BlockStorageSnapshot, *http.Response, error)
+	CreateSnapshot(ctx context.Context, snapshotReq *BlockStorageSnapshotReq) (*BlockStorageSnapshot, *http.Response, error)
+	UpdateSnapshot(ctx context.Context, snapshotID string, snapshotReq *BlockStorageSnapshotReq) error
+	DeleteSnapshot(ctx context.Context, snapshotID string) error
 }
 
 // BlockStorageServiceHandler handles interaction with the block-storage methods for the Vultr API
@@ -83,6 +89,31 @@ type blockStoragesBase struct {
 
 type blockStorageBase struct {
 	Block *BlockStorage `json:"block"`
+}
+
+// BlockStorageSnapshotReq represents the create and update request body for a
+// block storage snapshot
+type BlockStorageSnapshotReq struct {
+	BlockID     string `json:"block_id,omitempty"`
+	Description string `json:"description"`
+}
+
+// BlockStorageSnapshot represents the details for a block storage snapshot
+type BlockStorageSnapshot struct {
+	ID               string `json:"id"`
+	Description      string `json:"description"`
+	BlockID          string `json:"block_id"`
+	State            string `json:"state"`
+	DateCreated      string `json:"added_at"`
+	DateUpdated      string `json:"updated_at"`
+	InvoiceNextDate  string `json:"next_invoice_date"`
+	InvoiceNextPrice string `json:"next_invoice_price"`
+	Size             int    `json:"size"`
+}
+
+type blockStorageSnapshotsBase struct {
+	Snapshots []BlockStorageSnapshot `json:"snapshots"`
+	Meta      *Meta                  `json:"meta"`
 }
 
 // Create builds out a block storage
@@ -191,4 +222,99 @@ func (b *BlockStorageServiceHandler) Detach(ctx context.Context, blockID string,
 
 	_, err = b.client.DoWithContext(ctx, req, nil)
 	return err
+}
+
+// ListSnapshots returns a list of all block storage snapshots
+func (b *BlockStorageServiceHandler) ListSnapshots(ctx context.Context, options *ListOptions) ([]BlockStorageSnapshot, *Meta, *http.Response, error) { //nolint:dupl,lll
+	uri := fmt.Sprintf("%s/snapshots", blockStoragePath)
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	newValues, err := query.Values(options)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	req.URL.RawQuery = newValues.Encode()
+
+	snaps := new(blockStorageSnapshotsBase)
+	resp, err := b.client.DoWithContext(ctx, req, snaps)
+	if err != nil {
+		return nil, nil, resp, err
+	}
+
+	return snaps.Snapshots, snaps.Meta, resp, nil
+}
+
+// GetSnapshot returns the specified block storage snapshot
+func (b *BlockStorageServiceHandler) GetSnapshot(ctx context.Context, snapshotID string) (*BlockStorageSnapshot, *http.Response, error) {
+	uri := fmt.Sprintf("%s/snapshots/%s", blockStoragePath, snapshotID)
+
+	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	snap := new(BlockStorageSnapshot)
+	resp, err := b.client.DoWithContext(ctx, req, snap)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return snap, resp, nil
+}
+
+// CreateSnapshot creates a snapshot for the specified block storage
+func (b *BlockStorageServiceHandler) CreateSnapshot(ctx context.Context, snapshotReq *BlockStorageSnapshotReq) (*BlockStorageSnapshot, *http.Response, error) { // nolint:lll
+	uri := fmt.Sprintf("%s/snapshots", blockStoragePath)
+
+	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, snapshotReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	snap := new(BlockStorageSnapshot)
+	resp, err := b.client.DoWithContext(ctx, req, snap)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return snap, resp, nil
+}
+
+// UpdateSnapshot updates a specified block storage snapshot
+func (b *BlockStorageServiceHandler) UpdateSnapshot(ctx context.Context, snapshotID string, snapshotReq *BlockStorageSnapshotReq) error {
+	uri := fmt.Sprintf("%s/snapshots/%s", blockStoragePath, snapshotID)
+
+	req, err := b.client.NewRequest(ctx, http.MethodPut, uri, snapshotReq)
+	if err != nil {
+		return err
+	}
+
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DeleteSnapshot deletes a specified block storage snapshot
+func (b *BlockStorageServiceHandler) DeleteSnapshot(ctx context.Context, snapshotID string) error {
+	uri := fmt.Sprintf("%s/snapshots/%s", blockStoragePath, snapshotID)
+
+	req, err := b.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = b.client.DoWithContext(ctx, req, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
