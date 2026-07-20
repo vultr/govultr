@@ -268,7 +268,7 @@ func (b *BlockStorageServiceHandler) GetSnapshot(ctx context.Context, snapshotID
 }
 
 // CreateSnapshot creates a snapshot for the specified block storage
-func (b *BlockStorageServiceHandler) CreateSnapshot(ctx context.Context, snapshotReq *BlockStorageSnapshotReq) (*BlockStorageSnapshot, *http.Response, error) { // nolint:lll
+func (b *BlockStorageServiceHandler) CreateSnapshot(ctx context.Context, snapshotReq *BlockStorageSnapshotReq) (*BlockStorageSnapshot, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/snapshots", blockStoragePath)
 
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, snapshotReq)
