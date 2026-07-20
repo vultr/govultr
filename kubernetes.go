@@ -84,6 +84,7 @@ type NodePool struct {
 	AutoScaler   bool              `json:"auto_scaler"`
 	UserData     string            `json:"user_data"`
 	Tag          string            `json:"tag"`
+	VPCOnly      bool              `json:"vpc_only"`
 	Labels       map[string]string `json:"labels"`
 	Taints       []Taint           `json:"taints"`
 	Nodes        []Node            `json:"nodes"`
@@ -130,6 +131,7 @@ type NodePoolReq struct {
 	MinNodes     int               `json:"min_nodes,omitempty"`
 	MaxNodes     int               `json:"max_nodes,omitempty"`
 	AutoScaler   *bool             `json:"auto_scaler"`
+	VPCOnly      *bool             `json:"vpc_only,omitempty"`
 	Labels       map[string]string `json:"labels,omitempty"`
 	Taints       []Taint           `json:"taints,omitempty"`
 	UserData     string            `json:"user_data"`

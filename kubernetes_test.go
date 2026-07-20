@@ -378,6 +378,7 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 		"max_nodes": 2,
 		"auto_scaler": true,
 		"tag": "mytag",
+		"vpc_only": true,
 		"labels": {
 			"vultr.com/label1": "value1",
 			"vultr.com/label2": "value2"
@@ -407,6 +408,7 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 		Label:        "nodepool-48959140",
 		Plan:         "vc2-1c-2gb",
 		Tag:          "mytag",
+		VPCOnly:      BoolToBoolPtr(true),
 		Labels: map[string]string{
 			"vultr.com/label1": "value1",
 			"vultr.com/label2": "value2",
@@ -435,6 +437,7 @@ func TestKubernetesHandler_CreateNodePool(t *testing.T) {
 		MaxNodes:     2,
 		AutoScaler:   true,
 		Tag:          "mytag",
+		VPCOnly:      true,
 		Labels: map[string]string{
 			"vultr.com/label1": "value1",
 			"vultr.com/label2": "value2",
