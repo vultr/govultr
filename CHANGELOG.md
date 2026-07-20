@@ -1,4 +1,16 @@
 # Change Log
+## [3.32.0](https://github.com/vultr/govultr/compare/v3.31.2...v3.32.0) (2026-07-20)
+### Enhancements
+* Kubernetes: Add vpc_only to node pools [PR 465](https://github.com/vultr/govultr/pull/465)
+* Block Storage: Add snapshot functions [PR 466](https://github.com/vultr/govultr/pull/466)
+* VPC: Add list attachments function [PR 462](https://github.com/vultr/govultr/pull/462)
+
+### Bug Fixes
+* Fix invalid nil interface check on NewRequest [PR 464](https://github.com/vultr/govultr/pull/464)
+
+### New Contributors
+* @lucasaffonso0 made their first contribution in [PR 465](https://github.com/vultr/govultr/pull/465)
+
 ## [3.31.2](https://github.com/vultr/govultr/compare/v3.31.1...v3.31.2) (2026-05-12)
 ### Bug Fixes
 * Organization: Remove member count on group [PR 458](https://github.com/vultr/govultr/pull/458)
