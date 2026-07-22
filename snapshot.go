@@ -14,6 +14,7 @@ type SnapshotService interface {
 	Create(ctx context.Context, snapshotReq *SnapshotReq) (*Snapshot, *http.Response, error)
 	CreateFromURL(ctx context.Context, snapshotURLReq *SnapshotURLReq) (*Snapshot, *http.Response, error)
 	Get(ctx context.Context, snapshotID string) (*Snapshot, *http.Response, error)
+	Update(ctx context.Context, snapshotID string, snapshotReq *SnapshotUpdateReq) error
 	Delete(ctx context.Context, snapshotID string) error
 	List(ctx context.Context, options *ListOptions) ([]Snapshot, *Meta, *http.Response, error)
 }
@@ -25,20 +26,27 @@ type SnapshotServiceHandler struct {
 
 // Snapshot represents a Vultr snapshot
 type Snapshot struct {
-	ID             string `json:"id"`
-	DateCreated    string `json:"date_created"`
-	Description    string `json:"description"`
-	Size           int    `json:"size"`
-	CompressedSize int    `json:"compressed_size"`
-	Status         string `json:"status"`
-	OsID           int    `json:"os_id"`
-	AppID          int    `json:"app_id"`
+	ID             string  `json:"id"`
+	DateCreated    string  `json:"date_created"`
+	DateExpires    string  `json:"date_expires"`
+	Description    string  `json:"description"`
+	Size           int     `json:"size"`
+	CompressedSize int     `json:"compressed_size"`
+	Status         string  `json:"status"`
+	OsID           int     `json:"os_id"`
+	AppID          int     `json:"app_id"`
+	PendingCharges float32 `json:"pending_charges"`
 }
 
 // SnapshotReq struct is used to create snapshots.
 type SnapshotReq struct {
 	InstanceID  string `json:"instance_id,omitempty"`
 	Description string `json:"description,omitempty"`
+}
+
+// SnapshotUpdateReq struct is used to update snapshots.
+type SnapshotUpdateReq struct {
+	Description string `json:"description"`
 }
 
 // SnapshotURLReq struct is used to create snapshots from a URL.
@@ -109,6 +117,19 @@ func (s *SnapshotServiceHandler) Get(ctx context.Context, snapshotID string) (*S
 	}
 
 	return snapshot.Snapshot, resp, nil
+}
+
+// Update a snapshot.
+func (s *SnapshotServiceHandler) Update(ctx context.Context, snapshotID string, snapshotReq *SnapshotUpdateReq) error {
+	uri := fmt.Sprintf("/v2/snapshots/%s", snapshotID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPut, uri, snapshotReq)
+	if err != nil {
+		return err
+	}
+
+	_, err = s.client.DoWithContext(ctx, req, nil)
+	return err
 }
 
 // Delete a snapshot.

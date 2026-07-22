@@ -24,6 +24,7 @@ func TestBareMetalServerServiceHandler_GetServer(t *testing.T) {
 				"region": "ewr",
 				"date_created": "2017-04-12 18:45:41",
 				"status": "active",
+				"power_status": "running",
 				"netmask_v4": "255.255.255.0",
 				"gateway_v4": "203.0.113.1",
 				"plan": "vbm-4c-32gb",
@@ -32,6 +33,14 @@ func TestBareMetalServerServiceHandler_GetServer(t *testing.T) {
 				"v6_network_size": 64,
 				"mac_address": 2199756823533,
 				"label": "my label",
+				"internal_ip": "10.1.96.3",
+				"vpcs": [
+					{
+						"id": "775e26b3-f67d-46b7-87ed-1a0457fb3a5e",
+						"version": 1,
+						"subnet": "10.1.96.3"
+					}
+				],
 				"tags": ["my tag"],
 				"os_id": 127,
 				"app_id": 0
@@ -47,18 +56,26 @@ func TestBareMetalServerServiceHandler_GetServer(t *testing.T) {
 	}
 
 	expected := &BareMetalServer{
-		ID:            "abc123",
-		Os:            "CentOS 6 x64",
-		RAM:           "65536 MB",
-		Disk:          "2x 240 GB SSD",
-		MainIP:        "203.0.113.10",
-		CPUCount:      1,
-		Region:        "ewr",
-		DateCreated:   "2017-04-12 18:45:41",
-		Status:        "active",
-		NetmaskV4:     "255.255.255.0",
-		GatewayV4:     "203.0.113.1",
-		Plan:          "vbm-4c-32gb",
+		ID:          "abc123",
+		Os:          "CentOS 6 x64",
+		RAM:         "65536 MB",
+		Disk:        "2x 240 GB SSD",
+		MainIP:      "203.0.113.10",
+		CPUCount:    1,
+		Region:      "ewr",
+		DateCreated: "2017-04-12 18:45:41",
+		Status:      "active",
+		PowerStatus: "running",
+		NetmaskV4:   "255.255.255.0",
+		GatewayV4:   "203.0.113.1",
+		Plan:        "vbm-4c-32gb",
+		InternalIP:  "10.1.96.3",
+		VPCs: []BareMetalVPCInfo{
+			{
+				ID:     "775e26b3-f67d-46b7-87ed-1a0457fb3a5e",
+				Subnet: "10.1.96.3",
+			},
+		},
 		V6Network:     "2001:DB8:9000::",
 		V6MainIP:      "2001:DB8:9000::100",
 		V6NetworkSize: 64,
@@ -797,5 +814,67 @@ func TestBareMetalServerServiceHandler_CreateMarketplaceImage(t *testing.T) {
 
 	if !reflect.DeepEqual(bm, expected) {
 		t.Errorf("BareMetalServer.Create returned %+v, expected %+v", bm, expected)
+	}
+}
+
+func TestBareMetalServerServiceHandler_DefaultReverseIPv4(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/bare-metals/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/ipv4/reverse/default", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	if err := client.BareMetalServer.DefaultReverseIPv4(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", "129.123.123.1"); err != nil {
+		t.Errorf("BareMetalServer.DefaultReverseIPv4 returned %+v", err)
+	}
+}
+
+func TestBareMetalServerServiceHandler_DeleteReverseIPv6(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/bare-metals/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/ipv6/reverse/2001:19f0:8001:1480:5400:2ff:fe00:8228", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	if err := client.BareMetalServer.DeleteReverseIPv6(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", "2001:19f0:8001:1480:5400:2ff:fe00:8228"); err != nil {
+		t.Errorf("BareMetalServer.DeleteReverseIPv6 returned %+v", err)
+	}
+}
+
+func TestBareMetalServerServiceHandler_CreateReverseIPv4(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/bare-metals/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/ipv4/reverse", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	reverseReq := &ReverseIP{
+		IP:      "192.168.0.1",
+		Reverse: "test.com",
+	}
+
+	if err := client.BareMetalServer.CreateReverseIPv4(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", reverseReq); err != nil {
+		t.Errorf("BareMetalServer.CreateReverseIPv4 returned %+v", err)
+	}
+}
+
+func TestBareMetalServerServiceHandler_CreateReverseIPv6(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/bare-metals/14b3e7d6-ffb5-4994-8502-57fcd9db3b33/ipv6/reverse", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	reverseReq := &ReverseIP{
+		IP:      "192.168.0.1",
+		Reverse: "test.com",
+	}
+
+	if err := client.BareMetalServer.CreateReverseIPv6(ctx, "14b3e7d6-ffb5-4994-8502-57fcd9db3b33", reverseReq); err != nil {
+		t.Errorf("BareMetalServer.CreateReverseIPv6 returned %+v", err)
 	}
 }

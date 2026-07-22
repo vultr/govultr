@@ -28,6 +28,8 @@ type ObjectStorageService interface {
 	ListBuckets(ctx context.Context, osID string) ([]ObjectStorageBucket, *http.Response, error)
 	CreateBucket(ctx context.Context, osID string, bucketReq *ObjectStorageBucketReq) error
 	DeleteBucket(ctx context.Context, osID, bucketName string) error
+
+	UpdateBucketArchival(ctx context.Context, osID, bucketName string, archivalReq *ObjectStorageBucketArchivalRequest) error
 }
 
 // ObjectStorageServiceHandler handles interaction between the object storage service and the Vultr API.
@@ -45,6 +47,7 @@ type ObjectStorage struct {
 	Label                string                 `json:"label"`
 	Status               string                 `json:"status"`
 	Tier                 *ObjectStorageListTier `json:"tier,omitempty"`
+	PendingCharges       float64                `json:"pending_charges"`
 	S3Keys
 }
 
@@ -74,17 +77,18 @@ type ObjectStorageCluster struct {
 
 // ObjectStorageTier represents the object storage tier data
 type ObjectStorageTier struct {
-	ID                int                    `json:"id"`
-	Name              string                 `json:"sales_name"`
-	Description       string                 `json:"sales_desc"`
-	Price             float32                `json:"price"`
-	PriceBandwidthGB  float32                `json:"bw_gb_price"`
-	PriceDiskGB       float32                `json:"disk_gb_price"`
-	RateLimitBytesSec int                    `json:"ratelimit_ops_bytes"`
-	RateLimitOpsSec   int                    `json:"ratelimit_ops_secs"`
-	Default           string                 `json:"is_default"`
-	Locations         []ObjectStorageCluster `json:"locations,omitempty"`
-	Slug              string                 `json:"slug"`
+	ID                 int                    `json:"id"`
+	Name               string                 `json:"sales_name"`
+	Description        string                 `json:"sales_desc"`
+	Price              float32                `json:"price"`
+	PriceArchiveDiskGB float32                `json:"archive_disk_gb_price"`
+	PriceBandwidthGB   float32                `json:"bw_gb_price"`
+	PriceDiskGB        float32                `json:"disk_gb_price"`
+	RateLimitBytesSec  int                    `json:"ratelimit_ops_bytes"`
+	RateLimitOpsSec    int                    `json:"ratelimit_ops_secs"`
+	Default            string                 `json:"is_default"`
+	Locations          []ObjectStorageCluster `json:"locations,omitempty"`
+	Slug               string                 `json:"slug"`
 }
 
 // ObjectStorageListTier represents the object storage tier data from the list
@@ -115,6 +119,11 @@ type ObjectStorageBucketReq struct {
 	Name             string `json:"name"`
 	EnableVersioning bool   `json:"enable_bucket_versioning,omitempty"`
 	EnableLock       bool   `json:"enable_object_lock,omitempty"`
+}
+
+// ObjectStorageBucketArchivalRequest represents an update request for an object storage bucket archival setting
+type ObjectStorageBucketArchivalRequest struct {
+	Archival bool `json:"archival"`
 }
 
 type objectStoragesBase struct {
@@ -336,6 +345,19 @@ func (o *ObjectStorageServiceHandler) DeleteBucket(ctx context.Context, osID, bu
 	uri := fmt.Sprintf("%s/%s/bucket/%s", osPath, osID, bucketName)
 
 	req, err := o.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = o.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// UpdateBucketArchival sets the archival status of a Bucket
+func (o *ObjectStorageServiceHandler) UpdateBucketArchival(ctx context.Context, osID, bucketName string, archivalReq *ObjectStorageBucketArchivalRequest) error { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/bucket/%s/archival", osPath, osID, bucketName)
+
+	req, err := o.client.NewRequest(ctx, http.MethodPost, uri, archivalReq)
 	if err != nil {
 		return err
 	}

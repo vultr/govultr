@@ -201,3 +201,20 @@ func TestObjectStorageServiceHandler_RegenerateKeys(t *testing.T) {
 		t.Errorf("ObjectStorage.RegenerateKeys returned %+v, expected %+v", s3Keys, expected)
 	}
 }
+
+func TestObjectStorageServiceHandler_UpdateBucketArchival(t *testing.T) {
+	setup()
+	defer teardown()
+	mux.HandleFunc("/v2/object-storage/1234/bucket/example/archival", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	req := &ObjectStorageBucketArchivalRequest{
+		Archival: true,
+	}
+
+	err := client.ObjectStorage.UpdateBucketArchival(ctx, "1234", "example", req)
+	if err != nil {
+		t.Errorf("ObjectStorage.UpdateBucketArchival returned %+v", err)
+	}
+}

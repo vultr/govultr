@@ -12,11 +12,11 @@ func TestIsoServiceHandler_Create(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/iso", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"iso":{"id":"9931","date_created":"2020-07-0917:15:27","filename":"CentOS-8.1.1911-x86_64-dvd1.iso","status":"pending"}}`
+		response := `{"iso":{"id":"9931","date_created":"2020-07-0917:15:27","description": "My ISO","filename":"CentOS-8.1.1911-x86_64-dvd1.iso","status":"pending"}}`
 		fmt.Fprint(writer, response)
 	})
 
-	isoReq := &ISOReq{URL: "http://centos.com/CentOS-8.1.1911-x86_64-dvd1.iso"}
+	isoReq := &ISOReq{URL: "http://centos.com/CentOS-8.1.1911-x86_64-dvd1.iso", Description: StringToStringPtr("My ISO")}
 	iso, _, err := client.ISO.Create(ctx, isoReq)
 	if err != nil {
 		t.Errorf("Iso.Create returned %+v, expected %+v", err, nil)
@@ -25,6 +25,7 @@ func TestIsoServiceHandler_Create(t *testing.T) {
 	expected := &ISO{
 		ID:          "9931",
 		DateCreated: "2020-07-0917:15:27",
+		Description: "My ISO",
 		FileName:    "CentOS-8.1.1911-x86_64-dvd1.iso",
 		Size:        0,
 		MD5Sum:      "",
@@ -42,7 +43,7 @@ func TestIsoServiceHandler_Get(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/iso/9931", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"iso":{"id":"9931","date_created":"2020-07-0917:15:27","filename":"CentOS-8.1.1911-x86_64-dvd1.iso","status":"pending"}}`
+		response := `{"iso":{"id":"9931","date_created":"2020-07-0917:15:27","description": "My ISO","filename":"CentOS-8.1.1911-x86_64-dvd1.iso","status":"pending"}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -54,6 +55,7 @@ func TestIsoServiceHandler_Get(t *testing.T) {
 	expected := &ISO{
 		ID:          "9931",
 		DateCreated: "2020-07-0917:15:27",
+		Description: "My ISO",
 		FileName:    "CentOS-8.1.1911-x86_64-dvd1.iso",
 		Size:        0,
 		MD5Sum:      "",
@@ -63,6 +65,25 @@ func TestIsoServiceHandler_Get(t *testing.T) {
 
 	if !reflect.DeepEqual(iso, expected) {
 		t.Errorf("Iso.Get returned %+v, expected %+v", iso, expected)
+	}
+}
+
+func TestISOServiceHandler_Update(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/iso/24", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	options := &ISOUpdate{
+		Description: "Example ISO",
+	}
+
+	err := client.ISO.Update(ctx, "24", options)
+
+	if err != nil {
+		t.Errorf("Iso.Update returned %+v, expected %+v", err, nil)
 	}
 }
 
@@ -86,7 +107,7 @@ func TestIsoServiceHandler_List(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/iso", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"isos":[{"id":"9931","date_created":"2020-07-0917:15:27","filename":"CentOS-8.1.1911-x86_64-dvd1.iso","status":"pending"}],"meta":{"total":8,"links":{"next":"","prev":""}}}`
+		response := `{"isos":[{"id":"9931","date_created":"2020-07-0917:15:27","description": "My ISO","filename":"CentOS-8.1.1911-x86_64-dvd1.iso","status":"pending"}],"meta":{"total":8,"links":{"next":"","prev":""}}}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -99,6 +120,7 @@ func TestIsoServiceHandler_List(t *testing.T) {
 		{
 			ID:          "9931",
 			DateCreated: "2020-07-0917:15:27",
+			Description: "My ISO",
 			FileName:    "CentOS-8.1.1911-x86_64-dvd1.iso",
 			Size:        0,
 			MD5Sum:      "",

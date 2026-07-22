@@ -31,6 +31,11 @@ type LoadBalancerService interface {
 	GetFirewallRule(ctx context.Context, lbID string, ruleID string) (*LBFirewallRule, *http.Response, error)
 	DeleteFirewallRule(ctx context.Context, lbID, fwRuleID string) error
 	ListFirewallRules(ctx context.Context, lbID string, options *ListOptions) ([]LBFirewallRule, *Meta, *http.Response, error)
+
+	CreateReverseDNS(ctx context.Context, lbID string, revDNS *LBReverseDNSCreate) error
+	GetReverseDNS(ctx context.Context, lbID string) (*LBReverseDNS, *http.Response, error)
+	UpdateReverseDNS(ctx context.Context, lbID string, revDNS *LBReverseDNSUpdate) error
+	DeleteReverseDNS(ctx context.Context, lbID string) error
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -40,24 +45,31 @@ type LoadBalancerHandler struct {
 
 // LoadBalancer represent the structure of a load balancer
 type LoadBalancer struct {
-	ID              string           `json:"id,omitempty"`
-	DateCreated     string           `json:"date_created,omitempty"`
-	Region          string           `json:"region,omitempty"`
-	Label           string           `json:"label,omitempty"`
-	Status          string           `json:"status,omitempty"`
-	IPV4            string           `json:"ipv4,omitempty"`
-	IPV6            string           `json:"ipv6,omitempty"`
-	Instances       []string         `json:"instances,omitempty"`
-	Nodes           int              `json:"nodes,omitempty"`
-	HealthCheck     *HealthCheck     `json:"health_check,omitempty"`
-	GenericInfo     *GenericInfo     `json:"generic_info,omitempty"`
-	SSLInfo         *bool            `json:"has_ssl,omitempty"`
-	AutoSSL         *AutoSSL         `json:"auto_ssl,omitempty"`
-	HTTP2           *bool            `json:"http2,omitempty"`
-	HTTP3           *bool            `json:"http3,omitempty"`
-	ForwardingRules []ForwardingRule `json:"forwarding_rules,omitempty"`
-	FirewallRules   []LBFirewallRule `json:"firewall_rules,omitempty"`
-	GlobalRegions   []string         `json:"global_regions,omitempty"`
+	ID                string           `json:"id,omitempty"`
+	DateCreated       string           `json:"date_created,omitempty"`
+	Region            string           `json:"region,omitempty"`
+	Label             string           `json:"label,omitempty"`
+	Status            string           `json:"status,omitempty"`
+	IPV4              string           `json:"ipv4,omitempty"`
+	IPV6              string           `json:"ipv6,omitempty"`
+	Instances         []string         `json:"instances,omitempty"`
+	Nodes             int              `json:"nodes,omitempty"`
+	HealthCheck       *HealthCheck     `json:"health_check,omitempty"`
+	GenericInfo       *GenericInfo     `json:"generic_info,omitempty"`
+	SSLInfo           *bool            `json:"has_ssl,omitempty"`
+	AutoSSL           *AutoSSL         `json:"auto_ssl,omitempty"`
+	HTTP2             *bool            `json:"http2,omitempty"`
+	HTTP3             *bool            `json:"http3,omitempty"`
+	ForwardingRules   []ForwardingRule `json:"forwarding_rules,omitempty"`
+	FirewallRules     []LBFirewallRule `json:"firewall_rules,omitempty"`
+	NodeIPs           LBNodeIPs        `json:"node_ips,omitempty"`
+	GlobalParentID    string           `json:"global_parent_id,omitempty"`
+	GlobalRegions     []string         `json:"global_regions,omitempty"`
+	GlobalChildrenIDs []string         `json:"global_children_ids,omitempty"`
+	GlobalCNAME       string           `json:"global_cname,omitempty"`
+	SSLCert           string           `json:"ssl_cert_b64,omitempty"`
+	PendingCharges    int              `json:"pending_charges,omitempty"`
+	CNAME             string           `json:"cname,omitempty"`
 }
 
 // LoadBalancerReq gives options for creating or updating a load balancer
@@ -139,6 +151,35 @@ type LBFirewallRule struct {
 // sending the create firewall rules request
 type LBFirewallRules struct {
 	Rules []LBFirewallRule `json:"firewall_rules"`
+}
+
+// LBNodeIPs represents a list of IP addresses for the load balancer nodes
+type LBNodeIPs struct {
+	V4      []string `json:"v4"`
+	V6      []string `json:"v6"`
+	Private []string `json:"private"`
+}
+
+// LBReverseDNS represents a list of reverse DNS records for the load balancer
+type LBReverseDNS struct {
+	IPv4 string   `json:"ipv4"`
+	IPv6 []string `json:"ipv6"`
+}
+
+// LBReverseDNSCreate gives options for creating IPv6 reverse DNS records for the Load Balancer
+type LBReverseDNSCreate struct {
+	V6 []LBReverseDNSv6 `json:"v6"`
+}
+
+// LBReverseDNSUpdate gives options for updating IPv4 reverse DNS records for the Load Balancer
+type LBReverseDNSUpdate struct {
+	V4 string `json:"v4"`
+}
+
+// LBReverseDNSv6 represents an IPv6 reverse DNS record
+type LBReverseDNSv6 struct {
+	Domain string `json:"domain"`
+	IP     string `json:"ip"`
 }
 
 // SSL represents valid SSL config
@@ -421,6 +462,60 @@ func (l *LoadBalancerHandler) DeleteSSL(ctx context.Context, lbID string) error 
 // DeleteAutoSSL removes the AutoSSL configuration from a load balancer subscription.
 func (l *LoadBalancerHandler) DeleteAutoSSL(ctx context.Context, lbID string) error {
 	uri := fmt.Sprintf("%s/%s/auto_ssl", lbPath, lbID)
+	req, err := l.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = l.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+func (l *LoadBalancerHandler) CreateReverseDNS(ctx context.Context, lbID string, revDNS *LBReverseDNSCreate) error {
+	uri := fmt.Sprintf("%s/%s/reverse-dns", lbPath, lbID)
+	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, revDNS)
+	if err != nil {
+		return err
+	}
+
+	if _, err := l.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetReverseDNS returns the reverse DNS information for a load balancer.
+func (l *LoadBalancerHandler) GetReverseDNS(ctx context.Context, lbID string) (*LBReverseDNS, *http.Response, error) {
+	uri := fmt.Sprintf("%s/%s/reverse-dns", lbPath, lbID)
+	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	reverseDNS := new(LBReverseDNS)
+	resp, err := l.client.DoWithContext(ctx, req, reverseDNS)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return reverseDNS, resp, nil
+}
+
+func (l *LoadBalancerHandler) UpdateReverseDNS(ctx context.Context, lbID string, revDNS *LBReverseDNSUpdate) error {
+	uri := fmt.Sprintf("%s/%s/reverse-dns", lbPath, lbID)
+	req, err := l.client.NewRequest(ctx, http.MethodPut, uri, revDNS)
+	if err != nil {
+		return err
+	}
+
+	_, err = l.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// DeleteReverseDNS removes the IPv6 reverse DNS entry from a load balancer.
+func (l *LoadBalancerHandler) DeleteReverseDNS(ctx context.Context, lbID string) error {
+	uri := fmt.Sprintf("%s/%s/reverse-dns", lbPath, lbID)
 	req, err := l.client.NewRequest(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return err

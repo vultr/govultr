@@ -168,7 +168,7 @@ func (b *BillingServiceHandler) ListInvoiceItems(ctx context.Context, invoiceID 
 }
 
 // ListPendingCharges retrieves a list of all pending charges on the current account
-func (b *BillingServiceHandler) ListPendingCharges(ctx context.Context, options *ListOptions) ([]InvoiceItem, *http.Response, error) {
+func (b *BillingServiceHandler) ListPendingCharges(ctx context.Context, options *ListOptions) ([]InvoiceItem, *http.Response, error) { //nolint:dupl,lll
 	uri := "/v2/billing/pending-charges"
 	req, err := b.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {

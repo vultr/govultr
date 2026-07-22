@@ -21,32 +21,45 @@ type PlanServiceHandler struct {
 
 // BareMetalPlan represents bare metal plans
 type BareMetalPlan struct {
-	ID          string   `json:"id"`
-	CPUCount    int      `json:"cpu_count"`
-	CPUModel    string   `json:"cpu_model"`
-	CPUThreads  int      `json:"cpu_threads"`
-	RAM         int      `json:"ram"`
-	Disk        int      `json:"disk"`
-	DiskCount   int      `json:"disk_count"`
-	Bandwidth   int      `json:"bandwidth"`
-	MonthlyCost float32  `json:"monthly_cost"`
-	Type        string   `json:"type"`
-	Locations   []string `json:"locations"`
+	ID                     string   `json:"id"`
+	CPUCount               int      `json:"cpu_count"`
+	CPUModel               string   `json:"cpu_model"`
+	CPUThreads             int      `json:"cpu_threads"`
+	RAM                    int      `json:"ram"`
+	Disk                   int      `json:"disk"`
+	DiskCount              int      `json:"disk_count"`
+	Bandwidth              int      `json:"bandwidth"`
+	InvoiceType            string   `json:"invoice_type"`
+	MonthlyCost            float32  `json:"monthly_cost"`
+	HourlyCost             float32  `json:"hourly_cost"`
+	MonthlyCostPreemptible float32  `json:"monthly_cost_preemptible"`
+	HourlyCostPreemptible  float32  `json:"hourly_cost_preemptible"`
+	Type                   string   `json:"type"`
+	GPUVRAM                int      `json:"gpu_vram_gb,omitempty"`
+	GPUType                string   `json:"gpu_type,omitempty"`
+	GPUBrand               string   `json:"gpu_brand,omitempty"`
+	Locations              []string `json:"locations"`
 }
 
 // Plan represents vc2, vdc, or vhf
 type Plan struct {
-	ID          string   `json:"id"`
-	VCPUCount   int      `json:"vcpu_count"`
-	RAM         int      `json:"ram"`
-	Disk        int      `json:"disk"`
-	DiskCount   int      `json:"disk_count"`
-	Bandwidth   int      `json:"bandwidth"`
-	MonthlyCost float32  `json:"monthly_cost"`
-	Type        string   `json:"type"`
-	GPUVRAM     int      `json:"gpu_vram_gb,omitempty"`
-	GPUType     string   `json:"gpu_type,omitempty"`
-	Locations   []string `json:"locations"`
+	ID                     string                      `json:"id"`
+	VCPUCount              int                         `json:"vcpu_count"`
+	RAM                    int                         `json:"ram"`
+	Disk                   int                         `json:"disk"`
+	DiskCount              int                         `json:"disk_count"`
+	Bandwidth              int                         `json:"bandwidth"`
+	InvoiceType            string                      `json:"invoice_type"`
+	MonthlyCost            float32                     `json:"monthly_cost"`
+	HourlyCost             float32                     `json:"hourly_cost"`
+	MonthlyCostPreemptible float32                     `json:"monthly_cost_preemptible"`
+	HourlyCostPreemptible  float32                     `json:"hourly_cost_preemptible"`
+	Type                   string                      `json:"type"`
+	GPUVRAM                int                         `json:"gpu_vram_gb,omitempty"`
+	GPUType                string                      `json:"gpu_type,omitempty"`
+	GPUBrand               string                      `json:"gpu_brand,omitempty"`
+	Locations              []string                    `json:"locations"`
+	LocationCost           map[string]PlanLocationCost `json:"location_cost"`
 }
 
 type plansBase struct {
@@ -57,6 +70,14 @@ type plansBase struct {
 type bareMetalPlansBase struct {
 	Plans []BareMetalPlan `json:"plans_metal"`
 	Meta  *Meta           `json:"meta"`
+}
+
+// PlanLocationCost represents a location specific pricing for a plan
+type PlanLocationCost struct {
+	MonthlyCost            float32 `json:"monthly_cost"`
+	HourlyCost             float32 `json:"hourly_cost"`
+	MonthlyCostPreemptible float32 `json:"monthly_cost_preemptible"`
+	HourlyCostPreemptible  float32 `json:"hourly_cost_preemptible"`
 }
 
 // List retrieves a list of all active plans.

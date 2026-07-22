@@ -53,6 +53,7 @@ type LogsMeta struct {
 	ReturnedCount   int    `json:"returned_count"`
 	UnreturnedCount int    `json:"unreturned_count"`
 	TotalCount      int    `json:"total_count"`
+	NextPageURL     string `json:"next_page_url"`
 }
 
 // LogsOptions represents the query params for the logs list

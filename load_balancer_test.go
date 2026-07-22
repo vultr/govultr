@@ -658,3 +658,87 @@ func TestLoadBalancerHandler_GetFirewallRule(t *testing.T) {
 		t.Errorf("LoadBalancer.GetFirewallRule returned %+v, expected %+v", rule, expected)
 	}
 }
+
+func TestLoadBalancerHandler_CreateReverseDNS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	uri := fmt.Sprintf("%s/%d/reverse-dns", lbPath, 1317575)
+	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	revDNS := &LBReverseDNSCreate{
+		V6: []LBReverseDNSv6{
+			{
+				IP:     "2001:0db8:0000:0000:34f4:0000:0000:f3dd",
+				Domain: "test.com",
+			},
+		},
+	}
+
+	err := client.LoadBalancer.CreateReverseDNS(ctx, "1317575", revDNS)
+	if err != nil {
+		t.Errorf("LoadBalancer.CreateReverseDNS returned %+v", err)
+	}
+}
+
+func TestLoadBalancerHandler_GetReverseDNS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	uri := fmt.Sprintf("%s/%s/reverse-dns", lbPath, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141")
+	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
+		req := `{
+  "ipv4": "172.17.11.98.vultrusercontent.com",
+  "ipv6": []
+}`
+		fmt.Fprint(writer, req)
+	})
+
+	rule, _, err := client.LoadBalancer.GetReverseDNS(ctx, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141")
+	if err != nil {
+		t.Errorf("LoadBalancer.GetReverseDNS returned %+v", err)
+	}
+
+	expected := &LBReverseDNS{
+		IPv4: "172.17.11.98.vultrusercontent.com",
+		IPv6: []string{},
+	}
+
+	if !reflect.DeepEqual(rule, expected) {
+		t.Errorf("LoadBalancer.GetReverseDNS returned %+v, expected %+v", rule, expected)
+	}
+}
+
+func TestLoadBalancerHandler_UpdateReverseDNS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	uri := fmt.Sprintf("%s/%s/reverse-dns", lbPath, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141")
+	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	revDNS := &LBReverseDNSUpdate{
+		V4: "test.com",
+	}
+
+	if err := client.LoadBalancer.UpdateReverseDNS(ctx, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", revDNS); err != nil {
+		t.Errorf("LoadBalancer.UpdateReverseDNS returned %+v", err)
+	}
+}
+
+func TestLoadBalancerHandler_DeleteReverseDNS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	uri := fmt.Sprintf("%s/%s/reverse-dns", lbPath, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141")
+	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	if err := client.LoadBalancer.DeleteReverseDNS(ctx, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141"); err != nil {
+		t.Errorf("LoadBalancer.DeleteReverseDNS returned %+v", err)
+	}
+}

@@ -113,6 +113,7 @@ type ContainerRegistryMetadata struct {
 // registry.
 type ContainerRegistrySubscription struct {
 	Billing ContainerRegistrySubscriptionBilling `json:"billing"`
+	Plan    string                               `json:"plan"`
 }
 
 // ContainerRegistrySubscriptionBilling represents the subscription billing
@@ -524,7 +525,7 @@ func (h *ContainerRegistryServiceHandler) GetRepository(ctx context.Context, vcr
 
 // UpdateRepository allows updating the repository with the specified registry
 // ID and image name
-func (h *ContainerRegistryServiceHandler) UpdateRepository(ctx context.Context, vcrID, imageName string, updateReq *ContainerRegistryRepoUpdateReq) (*ContainerRegistryRepo, *http.Response, error) { //nolint: lll
+func (h *ContainerRegistryServiceHandler) UpdateRepository(ctx context.Context, vcrID, imageName string, updateReq *ContainerRegistryRepoUpdateReq) (*ContainerRegistryRepo, *http.Response, error) { //nolint:lll
 	req, errReq := h.client.NewRequest(ctx, http.MethodPut, fmt.Sprintf("%s/%s/repository/%s", vcrPath, vcrID, imageName), updateReq)
 	if errReq != nil {
 		return nil, nil, errReq

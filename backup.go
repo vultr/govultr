@@ -27,6 +27,8 @@ type Backup struct {
 	Description string `json:"description"`
 	Size        int    `json:"size"`
 	Status      string `json:"status"`
+	OsID        int    `json:"os_id,omitempty"`
+	AppID       int    `json:"app_id,omitempty"`
 }
 
 type backupsBase struct {

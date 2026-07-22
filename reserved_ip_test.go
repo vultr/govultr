@@ -276,3 +276,99 @@ func TestReservedIPServiceHandler_List(t *testing.T) {
 		t.Errorf("ReservedIP.List returned %+v, expected %+v", ips, expected)
 	}
 }
+
+func TestReservedIPServiceHandler_GetReverseDNS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/reserved-ips/1313044/reverse-dns", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{
+		  "ipv6": [
+			{
+			  "ip": "2001:19f0:5401:98b::",
+			  "domain": "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.b.8.9.0.1.0.4.5.0.f.9.1.1.0.0.2.ip6.arpa"
+			},
+			{
+			  "ip": "2001:19f0:5401:98b:ffff:ffff:ffff:ffff",
+			  "domain": "f.f.f.f.f.f.f.f.f.f.f.f.f.f.f.f.b.8.9.0.1.0.4.5.0.f.9.1.1.0.0.2.ip6.arpa"
+			}
+		  ]
+		}`
+		fmt.Fprint(writer, response)
+	})
+
+	rdns, _, err := client.ReservedIP.GetReverseDNS(ctx, "1313044")
+	if err != nil {
+		t.Errorf("ReservedIP.GetReverseDNS returned error: %v", err)
+	}
+
+	expected := &ReservedIPReverseDNS{
+		IPv6: []ReservedIPReverseDNSIPv6{
+			{
+				IP:     "2001:19f0:5401:98b::",
+				Domain: "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.b.8.9.0.1.0.4.5.0.f.9.1.1.0.0.2.ip6.arpa",
+			},
+			{
+				IP:     "2001:19f0:5401:98b:ffff:ffff:ffff:ffff",
+				Domain: "f.f.f.f.f.f.f.f.f.f.f.f.f.f.f.f.b.8.9.0.1.0.4.5.0.f.9.1.1.0.0.2.ip6.arpa",
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(rdns, expected) {
+		t.Errorf("ReservedIP.GetReverseDNS returned %+v, expected %+v", rdns, expected)
+	}
+}
+
+func TestReservedIPServiceHandler_UpdateReverseDNS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/reserved-ips/1313044/reverse-dns/ipv4", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	req := &ReservedIPReverseDNSUpdateReq{
+		V4: "test.com",
+	}
+	err := client.ReservedIP.UpdateReverseDNS(ctx, "1313044", req)
+	if err != nil {
+		t.Errorf("ReservedIP.UpdateReverseDNS returned error: %v", err)
+	}
+}
+
+func TestReservedIPServiceHandler_CreateReverseDNS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/reserved-ips/1313044/reverse-dns/ipv6", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	req := &ReservedIPReverseDNSCreateReq{
+		V6: []ReservedIPReverseDNSIPv6{
+			{
+				IP:     "2001:19f0:5401:98b::",
+				Domain: "test.com",
+			},
+		},
+	}
+	err := client.ReservedIP.CreateReverseDNS(ctx, "1313044", req)
+	if err != nil {
+		t.Errorf("ReservedIP.CreateReverseDNS returned error: %v", err)
+	}
+}
+
+func TestReservedIPServiceHandler_DeleteReverseDNS(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/reserved-ips/1313044/reverse-dns/ipv6/2001:19f0:5401:98b::", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.ReservedIP.DeleteReverseDNS(ctx, "1313044", "2001:19f0:5401:98b::")
+	if err != nil {
+		t.Errorf("ReservedIP.DeleteReverseDNS returned error: %v", err)
+	}
+}

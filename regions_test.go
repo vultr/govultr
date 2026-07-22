@@ -52,7 +52,7 @@ func TestRegionServiceHandler_Availability(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/v2/regions/ewr/availability", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"available_plans":["vc2-1c-1gb","vc2-1c-2gb","vc2-2c-4gb"]}`
+		response := `{"available_plans":["vc2-1c-1gb","vc2-1c-2gb","vc2-2c-4gb"], "available_vpc_only_plans": ["vhp-1c-1gb"]}`
 		fmt.Fprint(writer, response)
 	})
 
@@ -62,7 +62,7 @@ func TestRegionServiceHandler_Availability(t *testing.T) {
 		t.Errorf("Region.Availability returned error: %v", err)
 	}
 
-	expected := &PlanAvailability{AvailablePlans: []string{"vc2-1c-1gb", "vc2-1c-2gb", "vc2-2c-4gb"}}
+	expected := &PlanAvailability{AvailablePlans: []string{"vc2-1c-1gb", "vc2-1c-2gb", "vc2-2c-4gb"}, AvailableVPCOnlyPlans: []string{"vhp-1c-1gb"}}
 	if !reflect.DeepEqual(region, expected) {
 		t.Errorf("Region.Availability returned %+v, expected %+v", region, expected)
 	}

@@ -43,12 +43,18 @@ type VPCServiceHandler struct {
 
 // VPC represents a Vultr VPC
 type VPC struct {
-	ID           string `json:"id"`
-	Region       string `json:"region"`
-	Description  string `json:"description"`
-	V4Subnet     string `json:"v4_subnet"`
-	V4SubnetMask int    `json:"v4_subnet_mask"`
-	DateCreated  string `json:"date_created"`
+	ID           string                   `json:"id"`
+	Region       string                   `json:"region"`
+	Description  string                   `json:"description"`
+	V4Subnet     string                   `json:"v4_subnet"`
+	V4SubnetMask int                      `json:"v4_subnet_mask"`
+	DateCreated  string                   `json:"date_created"`
+	Internet     *VPCInternetConnectivity `json:"internet"`
+}
+
+type VPCInternetConnectivity struct {
+	Connectivity bool     `json:"connectivity"`
+	Types        []string `json:"types"`
 }
 
 // VPCReq represents parameters to create or update a VPC resource

@@ -41,6 +41,11 @@ type BareMetalServerService interface {
 	AttachVPC(ctx context.Context, serverID, vpcID string) error
 	DetachVPC(ctx context.Context, serverID, vpcID string) error
 
+	CreateReverseIPv4(ctx context.Context, serverID string, reverseReq *ReverseIP) error
+	CreateReverseIPv6(ctx context.Context, serverID string, reverseReq *ReverseIP) error
+	DefaultReverseIPv4(ctx context.Context, serverID, ip string) error
+	DeleteReverseIPv6(ctx context.Context, serverID, ip string) error
+
 	// Deprecated: VPC2 is no longer supported
 	ListVPC2Info(ctx context.Context, serverID string) ([]VPC2Info, *http.Response, error)
 
@@ -58,31 +63,34 @@ type BareMetalServerServiceHandler struct {
 
 // BareMetalServer represents a Bare Metal server on Vultr
 type BareMetalServer struct {
-	ID              string   `json:"id"`
-	Os              string   `json:"os"`
-	RAM             string   `json:"ram"`
-	Disk            string   `json:"disk"`
-	MainIP          string   `json:"main_ip"`
-	CPUCount        int      `json:"cpu_count"`
-	Region          string   `json:"region"`
-	DefaultPassword string   `json:"default_password"`
-	DateCreated     string   `json:"date_created"`
-	Status          string   `json:"status"`
-	NetmaskV4       string   `json:"netmask_v4"`
-	GatewayV4       string   `json:"gateway_v4"`
-	Plan            string   `json:"plan"`
-	V6Network       string   `json:"v6_network"`
-	V6MainIP        string   `json:"v6_main_ip"`
-	V6NetworkSize   int      `json:"v6_network_size"`
-	MacAddress      int      `json:"mac_address"`
-	Label           string   `json:"label"`
-	OsID            int      `json:"os_id"`
-	AppID           int      `json:"app_id"`
-	ImageID         string   `json:"image_id"`
-	SnapshotID      string   `json:"snapshot_id"`
-	Features        []string `json:"features"`
-	Tags            []string `json:"tags"`
-	UserScheme      string   `json:"user_scheme"`
+	ID              string             `json:"id"`
+	Os              string             `json:"os"`
+	RAM             string             `json:"ram"`
+	Disk            string             `json:"disk"`
+	MainIP          string             `json:"main_ip"`
+	CPUCount        int                `json:"cpu_count"`
+	Region          string             `json:"region"`
+	DefaultPassword string             `json:"default_password"`
+	DateCreated     string             `json:"date_created"`
+	Status          string             `json:"status"`
+	PowerStatus     string             `json:"power_status"`
+	NetmaskV4       string             `json:"netmask_v4"`
+	GatewayV4       string             `json:"gateway_v4"`
+	Plan            string             `json:"plan"`
+	V6Network       string             `json:"v6_network"`
+	V6MainIP        string             `json:"v6_main_ip"`
+	V6NetworkSize   int                `json:"v6_network_size"`
+	MacAddress      int                `json:"mac_address"`
+	Label           string             `json:"label"`
+	InternalIP      string             `json:"internal_ip"`
+	VPCs            []BareMetalVPCInfo `json:"vpcs"`
+	OsID            int                `json:"os_id"`
+	AppID           int                `json:"app_id"`
+	ImageID         string             `json:"image_id"`
+	SnapshotID      string             `json:"snapshot_id"`
+	Features        []string           `json:"features"`
+	Tags            []string           `json:"tags"`
+	UserScheme      string             `json:"user_scheme"`
 }
 
 // BareMetalCreate represents the optional parameters that can be set when creating a Bare Metal server
@@ -104,6 +112,8 @@ type BareMetalCreate struct {
 	ReservedIPv4    string            `json:"reserved_ipv4,omitempty"`
 	PersistentPxe   *bool             `json:"persistent_pxe,omitempty"`
 	IPXEChainURL    string            `json:"ipxe_chain_url,omitempty"`
+	AttachVPC       []string          `json:"attach_vpc,omitempty"`
+	EnableVPC       *bool             `json:"enable_vpc,omitempty"`
 	Tags            []string          `json:"tags,omitempty"`
 	UserScheme      string            `json:"user_scheme,omitempty"`
 	AppVariables    map[string]string `json:"app_variables,omitempty"`
@@ -165,6 +175,12 @@ type bareMetalIDsReq struct {
 
 type bareMetalVPCReq struct {
 	VPCID string `json:"vpc_id"`
+}
+
+// BareMetalVPCInfo contains information about a Bare Metal server's VPC attachment
+type BareMetalVPCInfo struct {
+	ID     string `json:"id"`
+	Subnet string `json:"subnet"`
 }
 
 // Create a new Bare Metal server.
@@ -559,5 +575,51 @@ func (b *BareMetalServerServiceHandler) DetachVPC2(ctx context.Context, serverID
 	}
 
 	_, err = b.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// CreateReverseIPv4 for a given IP on a given bare metal server.
+func (i *BareMetalServerServiceHandler) CreateReverseIPv4(ctx context.Context, serverID string, reverseReq *ReverseIP) error {
+	uri := fmt.Sprintf("%s/%s/ipv4/reverse", bmPath, serverID)
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, reverseReq)
+	if err != nil {
+		return err
+	}
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// CreateReverseIPv6 for a given bare metal server.
+func (i *BareMetalServerServiceHandler) CreateReverseIPv6(ctx context.Context, serverID string, reverseReq *ReverseIP) error {
+	uri := fmt.Sprintf("%s/%s/ipv6/reverse", bmPath, serverID)
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, reverseReq)
+	if err != nil {
+		return err
+	}
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// DefaultReverseIPv4 will set the IPs reverse setting back to the original one supplied by Vultr.
+func (i *BareMetalServerServiceHandler) DefaultReverseIPv4(ctx context.Context, serverID, ip string) error {
+	uri := fmt.Sprintf("%s/%s/ipv4/reverse/default", bmPath, serverID)
+
+	reqBody := instanceIPReq{IP: ip}
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, reqBody)
+	if err != nil {
+		return err
+	}
+	_, err = i.client.DoWithContext(ctx, req, nil)
+	return err
+}
+
+// DeleteReverseIPv6 a given reverse IPv6.
+func (i *BareMetalServerServiceHandler) DeleteReverseIPv6(ctx context.Context, serverID, ip string) error {
+	uri := fmt.Sprintf("%s/%s/ipv6/reverse/%s", bmPath, serverID, ip)
+	req, err := i.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+	_, err = i.client.DoWithContext(ctx, req, nil)
 	return err
 }

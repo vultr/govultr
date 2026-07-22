@@ -43,12 +43,14 @@ type Client struct {
 
 	// Services used to interact with the API
 	Account                  AccountService
+	APIKey                   APIKeyService
 	Application              ApplicationService
 	Backup                   BackupService
 	BareMetalServer          BareMetalServerService
 	Billing                  BillingService
 	BlockStorage             BlockStorageService
 	CDN                      CDNService
+	Cluster                  ClusterService
 	ContainerRegistry        ContainerRegistryService
 	Database                 DatabaseService
 	Domain                   DomainService
@@ -56,6 +58,7 @@ type Client struct {
 	FirewallGroup            FirewallGroupService
 	FirewallRule             FireWallRuleService
 	Instance                 InstanceService
+	InstanceTemplate         InstanceTemplateService
 	ISO                      ISOService
 	Kubernetes               KubernetesService
 	LoadBalancer             LoadBalancerService
@@ -72,7 +75,9 @@ type Client struct {
 	Snapshot                 SnapshotService
 	SSHKey                   SSHKeyService
 	StartupScript            StartupScriptService
+	StorageGateway           StorageGatewayService
 	SubAccount               SubAccountService
+	Ticket                   TicketService
 	User                     UserService
 	VirtualFileSystemStorage VirtualFileSystemStorageService
 	VPC                      VPCService
@@ -122,6 +127,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.SetRateLimit(rateLimit)
 
 	client.Account = &AccountServiceHandler{client}
+	client.APIKey = &APIKeyServiceHandler{client}
 	client.Application = &ApplicationServiceHandler{client}
 	client.Backup = &BackupServiceHandler{client}
 	client.BareMetalServer = &BareMetalServerServiceHandler{client}
@@ -129,12 +135,14 @@ func NewClient(httpClient *http.Client) *Client {
 	client.BlockStorage = &BlockStorageServiceHandler{client}
 	client.ContainerRegistry = &ContainerRegistryServiceHandler{client}
 	client.CDN = &CDNServiceHandler{client}
+	client.Cluster = &ClusterServiceHandler{client}
 	client.Database = &DatabaseServiceHandler{client}
 	client.Domain = &DomainServiceHandler{client}
 	client.DomainRecord = &DomainRecordsServiceHandler{client}
 	client.FirewallGroup = &FireWallGroupServiceHandler{client}
 	client.FirewallRule = &FireWallRuleServiceHandler{client}
 	client.Instance = &InstanceServiceHandler{client}
+	client.InstanceTemplate = &InstanceTemplateServiceHandler{client}
 	client.ISO = &ISOServiceHandler{client}
 	client.Kubernetes = &KubernetesHandler{client}
 	client.LoadBalancer = &LoadBalancerHandler{client}
@@ -149,9 +157,11 @@ func NewClient(httpClient *http.Client) *Client {
 	client.ReservedIP = &ReservedIPServiceHandler{client}
 	client.Inference = &InferenceServiceHandler{client}
 	client.Snapshot = &SnapshotServiceHandler{client}
+	client.StorageGateway = &StorageGatewayServiceHandler{client}
 	client.SSHKey = &SSHKeyServiceHandler{client}
 	client.StartupScript = &StartupScriptServiceHandler{client}
 	client.SubAccount = &SubAccountServiceHandler{client}
+	client.Ticket = &TicketServiceHandler{client}
 	client.User = &UserServiceHandler{client}
 	client.VirtualFileSystemStorage = &VirtualFileSystemStorageServiceHandler{client}
 	client.VPC = &VPCServiceHandler{client}

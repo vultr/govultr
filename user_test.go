@@ -70,9 +70,16 @@ func TestUserServiceHandler_List(t *testing.T) {
         {
             "id": "f255efc9700d9",
             "name": "test api",
+			"first_name": "Example",
+			"last_name": "User",
             "email": "newmanapi@vultr.com",
             "api_enabled": true,
-            "acls": []
+            "acls": [],
+			"invited_by": "admin@example.com",
+			"invited_on": "2026-01-01T12:00:00+00:00",
+			"invite_accepted": true,
+			"status": "active",
+			"last_activity": "2024-10-15T12:34:56+00:00"
         }
     ],
     "meta": {
@@ -98,11 +105,18 @@ func TestUserServiceHandler_List(t *testing.T) {
 
 	expected := []User{
 		{
-			ID:         "f255efc9700d9",
-			Name:       "test api",
-			Email:      "newmanapi@vultr.com",
-			APIEnabled: BoolToBoolPtr(true),
-			ACL:        []string{},
+			ID:             "f255efc9700d9",
+			Name:           "test api",
+			FirstName:      "Example",
+			LastName:       "User",
+			Email:          "newmanapi@vultr.com",
+			APIEnabled:     BoolToBoolPtr(true),
+			ACL:            []string{},
+			InvitedBy:      "admin@example.com",
+			InvitedOn:      "2026-01-01T12:00:00+00:00",
+			InviteAccepted: true,
+			Status:         "active",
+			LastActivity:   "2024-10-15T12:34:56+00:00",
 		},
 	}
 
@@ -170,5 +184,130 @@ func TestUserServiceHandler_Get(t *testing.T) {
 
 	if !reflect.DeepEqual(user, expected) {
 		t.Errorf("User.List users returned %+v, expected %+v", user, expected)
+	}
+}
+func TestUserServiceHandler_CreateAPIKey(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/users/abc123/apikeys", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{
+		  "api_key": {
+			"id": "cb676a46-66fd-4dfb-b839-443f2e6c0b60",
+			"api_key": "*******************************00000",
+			"name": "Default",
+			"expire": true,
+			"date_expire": "2030-01-01T00:00:00Z"
+		  }
+		}`
+		fmt.Fprint(writer, response)
+	})
+
+	req := &APIKeyCreate{
+		Name:       "Default",
+		Expire:     true,
+		DateExpire: "2030-01-01T00:00:00Z",
+	}
+
+	apiKey, _, err := client.User.CreateAPIKey(ctx, "abc123", req)
+	if err != nil {
+		t.Errorf("User.CreateAPIKey returned error: %v", err)
+	}
+	expected := &APIKey{
+		ID:         "cb676a46-66fd-4dfb-b839-443f2e6c0b60",
+		APIKey:     "*******************************00000",
+		Name:       "Default",
+		Expire:     true,
+		DateExpire: "2030-01-01T00:00:00Z",
+	}
+
+	if !reflect.DeepEqual(apiKey, expected) {
+		t.Errorf("User.CreateAPIKey returned %+v, expected %+v", apiKey, expected)
+	}
+}
+
+func TestUserServiceHandler_GetAPIKey(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/users/abc123/apikeys/cb676a46-66fd-4dfb-b839-443f2e6c0b60", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{
+		  "api_key": {
+			"id": "cb676a46-66fd-4dfb-b839-443f2e6c0b60",
+			"api_key": "*******************************00000",
+			"name": "Default",
+			"expire": true,
+			"date_expire": "2030-01-01T00:00:00Z"
+		  }
+		}`
+		fmt.Fprint(writer, response)
+	})
+
+	apiKey, _, err := client.User.GetAPIKey(ctx, "abc123", "cb676a46-66fd-4dfb-b839-443f2e6c0b60")
+	if err != nil {
+		t.Errorf("User.GetAPIKey returned error: %v", err)
+	}
+	expected := &APIKey{
+		ID:         "cb676a46-66fd-4dfb-b839-443f2e6c0b60",
+		APIKey:     "*******************************00000",
+		Name:       "Default",
+		Expire:     true,
+		DateExpire: "2030-01-01T00:00:00Z",
+	}
+
+	if !reflect.DeepEqual(apiKey, expected) {
+		t.Errorf("User.GetAPIKey returned %+v, expected %+v", apiKey, expected)
+	}
+}
+
+func TestUserServiceHandler_DeleteAPIKey(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/users/abc123/apikeys/cb676a46-66fd-4dfb-b839-443f2e6c0b60", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer)
+	})
+
+	err := client.User.DeleteAPIKey(ctx, "abc123", "cb676a46-66fd-4dfb-b839-443f2e6c0b60")
+	if err != nil {
+		t.Errorf("User.DeleteAPIKey returned error: %v", err)
+	}
+}
+
+func TestUserServiceHandler_ListAPIKeys(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/users/abc123/apikeys", func(writer http.ResponseWriter, request *http.Request) {
+		response := `{
+		  "api_keys": [
+			{
+			  "id": "cb676a46-66fd-4dfb-b839-443f2e6c0b60",
+			  "api_key": "*******************************00000",
+			  "name": "Default",
+			  "expire": true,
+			  "date_expire": "2030-01-01T00:00:00Z"
+			}
+		  ]
+		}`
+		fmt.Fprint(writer, response)
+	})
+
+	apiKeys, _, err := client.User.ListAPIKeys(ctx, "abc123")
+	if err != nil {
+		t.Errorf("User.ListAPIKeys returned error: %v", err)
+	}
+	expected := []APIKey{
+		{
+			ID:         "cb676a46-66fd-4dfb-b839-443f2e6c0b60",
+			APIKey:     "*******************************00000",
+			Name:       "Default",
+			Expire:     true,
+			DateExpire: "2030-01-01T00:00:00Z",
+		},
+	}
+
+	if !reflect.DeepEqual(apiKeys, expected) {
+		t.Errorf("User.ListAPIKeys returned %+v, expected %+v", apiKeys, expected)
 	}
 }
