@@ -227,7 +227,7 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 			return res, nil
 		}
 
-		switch res.Header.Get("Content-Type") {
+		switch res.Header.Get("Content-Type") { //nolint:gocritic
 		case "application/json":
 			if err := json.Unmarshal(body, data); err != nil {
 				return nil, err
