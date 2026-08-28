@@ -57,7 +57,7 @@ type LoadBalancer struct {
 	HTTP3           *bool            `json:"http3,omitempty"`
 	ForwardingRules []ForwardingRule `json:"forwarding_rules,omitempty"`
 	FirewallRules   []LBFirewallRule `json:"firewall_rules,omitempty"`
-	GlobalRegions   []string         `json:"global_regions,omitempty"`
+	GlobalRegions   []LBGlobalRegion `json:"global_regions,omitempty"`
 }
 
 // LoadBalancerReq gives options for creating or updating a load balancer
@@ -79,7 +79,7 @@ type LoadBalancerReq struct {
 	FirewallRules      []LBFirewallRule `json:"firewall_rules,omitempty"`
 	Timeout            int              `json:"timeout,omitempty"`
 	VPC                *string          `json:"vpc,omitempty"`
-	GlobalRegions      []string         `json:"global_regions,omitempty"`
+	GlobalRegions      []LBGlobalRegion `json:"global_regions,omitempty"`
 }
 
 // InstanceList represents instances that are attached to your load balancer
@@ -139,6 +139,12 @@ type LBFirewallRule struct {
 // sending the create firewall rules request
 type LBFirewallRules struct {
 	Rules []LBFirewallRule `json:"firewall_rules"`
+}
+
+// LBGlobalRegion represents a global load balancer region
+type LBGlobalRegion struct {
+	RegionID string `json:"region_id"`
+	VPCID    string `json:"vpc_id"`
 }
 
 // SSL represents valid SSL config
