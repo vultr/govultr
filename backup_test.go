@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,30 +10,25 @@ func TestBackupServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/backups", func(w http.ResponseWriter, r *http.Request) {
-		response := `
+	mux.HandleFunc("/v2/backups", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"backups": [
 		{
-			"backups": [
-				{
-				"id": "543d34149403a",
-				"date_created": "2014-10-14 12:40:40",
-				"description": "Automatic server backup",
-				"size": 42949672960,
-				"status": "complete"
-				}
-			],
-			"meta": {
-				"total":8,
-				"links": {
-					"next":"",
-					"prev":""
-				}
-			}
+		"id": "543d34149403a",
+		"date_created": "2014-10-14 12:40:40",
+		"description": "Automatic server backup",
+		"size": 42949672960,
+		"status": "complete"
 		}
-		`
-
-		fmt.Fprint(w, response)
-	})
+	],
+	"meta": {
+		"total":8,
+		"links": {
+			"next":"",
+			"prev":""
+		}
+	}
+}`))
 
 	backups, meta, _, err := client.Backup.List(ctx, nil)
 	if err != nil {
@@ -69,22 +63,17 @@ func TestBackupServiceHandler_ListEmpty(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/backups", func(w http.ResponseWriter, r *http.Request) {
-		response := `
-		{
-			"backups": [],
-			"meta": {
-				"total":0,
-				"links": {
-					"next":"",
-					"prev":""
-				}
-			}
+	mux.HandleFunc("/v2/backups", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"backups": [],
+	"meta": {
+		"total":0,
+		"links": {
+			"next":"",
+			"prev":""
 		}
-		`
-
-		fmt.Fprint(w, response)
-	})
+	}
+}`))
 
 	backups, meta, _, err := client.Backup.List(ctx, nil)
 	if err != nil {
@@ -114,21 +103,16 @@ func TestBackupServiceHandler_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/backups/543d34149403a", func(w http.ResponseWriter, r *http.Request) {
-		response := `
-		{
-			"backup": {
-				"id": "543d34149403a",
-				"date_created": "2014-10-14 12:40:40",
-				"description": "Automatic server backup",
-				"size": 42949672960,
-				"status": "complete"
-			}
-		}
-		`
-
-		fmt.Fprint(w, response)
-	})
+	mux.HandleFunc("/v2/backups/543d34149403a", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"backup": {
+		"id": "543d34149403a",
+		"date_created": "2014-10-14 12:40:40",
+		"description": "Automatic server backup",
+		"size": 42949672960,
+		"status": "complete"
+	}
+}`))
 
 	backup, _, err := client.Backup.Get(ctx, "543d34149403a")
 	if err != nil {
@@ -152,15 +136,10 @@ func TestBackupServiceHandler_GetEmpty(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/backups/543d34149403a", func(w http.ResponseWriter, r *http.Request) {
-		response := `
-			{
-				"backup": {}
-			}
-		`
-
-		fmt.Fprint(w, response)
-	})
+	mux.HandleFunc("/v2/backups/543d34149403a", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"backup": {}
+}`))
 
 	backup, _, err := client.Backup.Get(ctx, "543d34149403a")
 	if err != nil {

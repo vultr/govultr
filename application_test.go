@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,32 +10,27 @@ func TestApplicationServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/applications", func(w http.ResponseWriter, r *http.Request) {
-		response := `
+	mux.HandleFunc("/v2/applications", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"applications": [
 		{
-		"applications": [
-			{
-            	"id": 1,
-            	"name": "LEMP",
-            	"short_name": "lemp",
-            	"deploy_name": "LEMP on CentOS 6 x64",
-				"type": "one-click",
-				"vendor": "",
-				"image_id": ""
-        	}
-    	],
-    	"meta": {
-        	"total": 29,
-        	"links": {
-            	"next": "bmV4dF9fNDM=",
-            	"prev": ""
-        		}
-    		}
+			"id": 1,
+			"name": "LEMP",
+			"short_name": "lemp",
+			"deploy_name": "LEMP on CentOS 6 x64",
+			"type": "one-click",
+			"vendor": "",
+			"image_id": ""
 		}
-		`
-
-		fmt.Fprint(w, response)
-	})
+	],
+	"meta": {
+		"total": 29,
+		"links": {
+			"next": "bmV4dF9fNDM=",
+			"prev": ""
+			}
+	}
+}`))
 
 	options := &ListOptions{
 		PerPage: 1,

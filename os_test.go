@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,10 +10,24 @@ func TestOSServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/os", func(w http.ResponseWriter, r *http.Request) {
-		response := `{"os":[{"id":124,"name":"Windows 2012 R2 x64","arch":"x64","family":"windows"}],"meta":{"total":27,"links":{"next":"","prev":""}}}`
-		fmt.Fprint(w, response)
-	})
+	mux.HandleFunc("/v2/os", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"os": [
+		{
+			"id": 124,
+			"name": "Windows 2012 R2 x64",
+			"arch": "x64",
+			"family": "windows"
+		}
+	],
+	"meta": {
+		"total": 27,
+		"links": {
+			"next": "",
+			"prev": ""
+		}
+	}
+}`))
 
 	os, meta, _, err := client.OS.List(ctx, nil)
 	if err != nil {

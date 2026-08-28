@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,10 +10,21 @@ func TestFireWallRuleServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/firewalls/abc123/rules", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"firewall_rule":{"id":1,"type":"v4","ip_type":"v4","action":"accept","protocol":"tcp","port":"80","subnet":"127.0.0.1","subnet_size":32,"source":"","notes":"thisisanote"}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/firewalls/abc123/rules", testJSONResponseHandlerFunc(http.StatusCreated, `
+{
+	"firewall_rule": {
+		"id": 1,
+		"type": "v4",
+		"ip_type": "v4",
+		"action": "accept",
+		"protocol": "tcp",
+		"port": "80",
+		"subnet": "127.0.0.1",
+		"subnet_size": 32,
+		"source": "",
+		"notes": "thisisanote"
+	}
+}`))
 
 	rule := &FirewallRuleReq{
 		IPType:     "v4",
@@ -51,9 +61,7 @@ func TestFireWallRuleServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/firewalls/abc123/rules/1", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/firewalls/abc123/rules/1", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.FirewallRule.Delete(ctx, "abc123", 1)
 
@@ -66,10 +74,30 @@ func TestFireWallRuleServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/firewalls/abc123/rules", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"firewall_rules":[{"id":1,"type":"v4","ip_type":"v4","action":"accept","protocol":"tcp","port":"22","subnet":"0.0.0.0","subnet_size":0,"source":"","notes":""}],"meta":{"total":5,"links":{"next":"","prev":""}}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/firewalls/abc123/rules", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"firewall_rules": [
+		{
+			"id": 1,
+			"type": "v4",
+			"ip_type": "v4",
+			"action": "accept",
+			"protocol": "tcp",
+			"port": "22",
+			"subnet": "0.0.0.0",
+			"subnet_size": 0,
+			"source": "",
+			"notes": ""
+		}
+	],
+	"meta": {
+		"total": 5,
+		"links": {
+			"next": "",
+			"prev": ""
+		}
+	}
+}`))
 
 	firewallRule, meta, _, err := client.FirewallRule.List(ctx, "abc123", nil)
 	if err != nil {
@@ -108,10 +136,21 @@ func TestFireWallRuleServiceHandler_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/firewalls/abc123/rules/1", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"firewall_rule":{"id":1,"type":"v4","ip_type":"v4","action":"accept","protocol":"tcp","port":"22","subnet":"0.0.0.0","subnet_size":0,"source":"","notes":""}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/firewalls/abc123/rules/1", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"firewall_rule": {
+		"id": 1,
+		"type": "v4",
+		"ip_type": "v4",
+		"action": "accept",
+		"protocol": "tcp",
+		"port": "22",
+		"subnet": "0.0.0.0",
+		"subnet_size": 0,
+		"source": "",
+		"notes": ""
+	}
+}`))
 
 	firewallRule, _, err := client.FirewallRule.Get(ctx, "abc123", 1)
 	if err != nil {

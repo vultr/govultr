@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,10 +10,18 @@ func TestFireWallGroupServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/firewalls", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"firewall_group":{"id":"44d0f934","description":"govultr test","date_created":"2020-07-0913:53:34","date_modified":"2020-07-0913:53:34","instance_count":15,"rule_count":6,"max_rule_count":999}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/firewalls", testJSONResponseHandlerFunc(http.StatusCreated, `
+{
+	"firewall_group": {
+		"id": "44d0f934",
+		"description": "govultr test",
+		"date_created": "2020-10-10T01:56:20+00:00",
+		"date_modified": "2020-10-10T01:56:20+00:00",
+		"instance_count": 15,
+		"rule_count": 6,
+		"max_rule_count": 999
+	}
+}`))
 
 	group := &FirewallGroupReq{Description: "govultr test"}
 	firewallGroup, _, err := client.FirewallGroup.Create(ctx, group)
@@ -25,8 +32,8 @@ func TestFireWallGroupServiceHandler_Create(t *testing.T) {
 	expected := &FirewallGroup{
 		ID:            "44d0f934",
 		Description:   "govultr test",
-		DateCreated:   "2020-07-0913:53:34",
-		DateModified:  "2020-07-0913:53:34",
+		DateCreated:   "2020-10-10T01:56:20+00:00",
+		DateModified:  "2020-10-10T01:56:20+00:00",
 		InstanceCount: 15,
 		RuleCount:     6,
 		MaxRuleCount:  999,
@@ -41,10 +48,18 @@ func TestFireWallGroupServiceHandler_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/firewalls/44d0f934", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"firewall_group":{"id":"44d0f934","description":"govultr test","date_created":"2020-07-0913:53:34","date_modified":"2020-07-0913:53:34","instance_count":15,"rule_count":6,"max_rule_count":999}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/firewalls/44d0f934", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"firewall_group": {
+		"id": "44d0f934",
+		"description": "govultr test",
+		"date_created": "2020-10-10T01:56:20+00:00",
+		"date_modified": "2020-10-10T01:56:20+00:00",
+		"instance_count": 15,
+		"rule_count": 6,
+		"max_rule_count": 999
+	}
+}`))
 
 	firewallGroup, _, err := client.FirewallGroup.Get(ctx, "44d0f934")
 	if err != nil {
@@ -54,8 +69,8 @@ func TestFireWallGroupServiceHandler_Get(t *testing.T) {
 	expected := &FirewallGroup{
 		ID:            "44d0f934",
 		Description:   "govultr test",
-		DateCreated:   "2020-07-0913:53:34",
-		DateModified:  "2020-07-0913:53:34",
+		DateCreated:   "2020-10-10T01:56:20+00:00",
+		DateModified:  "2020-10-10T01:56:20+00:00",
 		InstanceCount: 15,
 		RuleCount:     6,
 		MaxRuleCount:  999,
@@ -70,9 +85,7 @@ func TestFireWallGroupServiceHandler_ChangeDescription(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/firewalls/abc123", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/firewalls/abc123", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	put := &FirewallGroupReq{Description: "test"}
 	err := client.FirewallGroup.Update(ctx, "abc123", put)
@@ -85,9 +98,7 @@ func TestFireWallGroupServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/firewalls/abc123", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/firewalls/abc123", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.FirewallGroup.Delete(ctx, "abc123")
 
@@ -100,10 +111,27 @@ func TestFireWallGroupServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/firewalls", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"firewall_groups":[{"id":"44d0f934","description":"govultr test","date_created":"2020-07-0913:53:34","date_modified":"2020-07-0913:53:34","instance_count":15,"rule_count":6,"max_rule_count":999}],"meta":{"total":5,"links":{"next":"","prev":""}}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/firewalls", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"firewall_groups": [
+		{
+			"id": "44d0f934",
+			"description": "govultr test",
+			"date_created": "2020-10-10T01:56:20+00:00",
+			"date_modified": "2020-10-10T01:56:20+00:00",
+			"instance_count": 15,
+			"rule_count": 6,
+			"max_rule_count": 999
+		}
+	],
+	"meta": {
+		"total": 5,
+		"links": {
+			"next": "",
+			"prev": ""
+		}
+	}
+}`))
 
 	firewallGroup, meta, _, err := client.FirewallGroup.List(ctx, nil)
 	if err != nil {
@@ -114,8 +142,8 @@ func TestFireWallGroupServiceHandler_List(t *testing.T) {
 		{
 			ID:            "44d0f934",
 			Description:   "govultr test",
-			DateCreated:   "2020-07-0913:53:34",
-			DateModified:  "2020-07-0913:53:34",
+			DateCreated:   "2020-10-10T01:56:20+00:00",
+			DateModified:  "2020-10-10T01:56:20+00:00",
 			InstanceCount: 15,
 			RuleCount:     6,
 			MaxRuleCount:  999,

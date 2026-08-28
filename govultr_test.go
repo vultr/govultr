@@ -35,6 +35,26 @@ func teardown() {
 	server.Close()
 }
 
+// testJSONResponseHandlerFunc is used to build a http handler func for
+// mocking endpoint responses with JSON bodies
+func testJSONResponseHandlerFunc(statusCode int, body string) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(statusCode)
+		fmt.Fprint(w, body)
+	}
+}
+
+// testYAMLResponseHandlerFunc is used to build a http handler func for
+// mocking endpoint responses with YAML bodies
+func testYAMLResponseHandlerFunc(statusCode int, body string) func(http.ResponseWriter, *http.Request) { //nolint:unused
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/yaml")
+		w.WriteHeader(statusCode)
+		fmt.Fprint(w, body)
+	}
+}
+
 func TestNewClient(t *testing.T) {
 	setup()
 	defer teardown()
@@ -66,14 +86,16 @@ func TestClient_DoWithContext(t *testing.T) {
 	defer teardown()
 
 	type vultr struct {
-		Bird string
+		Bird string `json:"bird"`
 	}
 
 	mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		if method := http.MethodGet; method != request.Method {
 			t.Errorf("Request method = %v, expecting %v", request.Method, method)
 		}
-		fmt.Fprint(writer, `{"Bird":"vultr"}`)
+		writer.Header().Add("Content-Type", "application/json")
+		writer.WriteHeader(http.StatusOK)
+		fmt.Fprint(writer, `{"bird": "vultr"}`)
 	})
 
 	req, _ := client.NewRequest(ctx, http.MethodGet, "/", nil)
@@ -307,10 +329,7 @@ func TestRequest_InvalidResponseBody(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/wrong", func(writer http.ResponseWriter, request *http.Request) {
-		writer.WriteHeader(http.StatusOK)
-		fmt.Fprint(writer, `{`)
-	})
+	mux.HandleFunc("/wrong", testJSONResponseHandlerFunc(http.StatusOK, "{"))
 
 	req, _ := client.NewRequest(ctx, http.MethodGet, "/wrong", nil)
 	if _, err := client.DoWithContext(ctx, req, struct{}{}); err == nil {

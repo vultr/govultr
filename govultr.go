@@ -94,7 +94,6 @@ func NewClient(httpClient *http.Client) *Client {
 				DialContext: (&net.Dialer{
 					Timeout:   90 * time.Second,
 					KeepAlive: 90 * time.Second,
-					DualStack: true,
 				}).DialContext,
 				MaxIdleConns:          100,
 				IdleConnTimeout:       90 * time.Second,
@@ -221,16 +220,27 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 
 	res.Body = io.NopCloser(bytes.NewBuffer(body))
 
-	if res.StatusCode >= http.StatusOK && res.StatusCode <= http.StatusNoContent {
-		if data != nil {
+	switch res.StatusCode {
+	case http.StatusOK, http.StatusCreated, http.StatusAccepted, http.StatusNonAuthoritativeInfo, http.StatusPartialContent:
+		if res.ContentLength == 0 || isNilInterface(data) {
+			return res, nil
+		}
+
+		switch res.Header.Get("Content-Type") { //nolint:gocritic
+		case "application/json":
 			if err := json.Unmarshal(body, data); err != nil {
 				return nil, err
 			}
 		}
-		return res, nil
-	}
 
-	return res, errors.New(string(body))
+		return res, nil
+
+	case http.StatusNoContent, http.StatusResetContent:
+		return res, nil
+
+	default:
+		return res, errors.New(string(body))
+	}
 }
 
 // SetBaseURL Overrides the default BaseUrl

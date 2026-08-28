@@ -13,8 +13,8 @@ func TestVCRServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc(vcrPath, func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
+	mux.HandleFunc(vcrPath, testJSONResponseHandlerFunc(http.StatusCreated, `
+{
     "id": "e1d6be16-2b0c-4d76-a3eb-f28bf6ea5fe0",
     "name": "govultrtest",
     "region": "sjc",
@@ -71,9 +71,7 @@ func TestVCRServiceHandler_Create(t *testing.T) {
             }
         }
     }
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	req := &ContainerRegistryReq{
 		Name:   "govultrtest",
@@ -162,8 +160,8 @@ func TestVCRServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc(vcrListPath, func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
+	mux.HandleFunc(vcrListPath, testJSONResponseHandlerFunc(http.StatusOK, `
+{
     "registries": [
         {
             "id": "297cfaff-cb5a-4b7c-ac2e-407fcdbd643e",
@@ -289,9 +287,7 @@ func TestVCRServiceHandler_List(t *testing.T) {
             "prev": ""
         }
     }
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	vcrs, meta, _, err := client.ContainerRegistry.List(ctx, nil)
 	if err != nil {
@@ -446,8 +442,8 @@ func TestVCRServiceHandler_Get(t *testing.T) {
 
 	vcrID := "e1d6be16-2b0c-4d76-a3eb-f28bf6ea5fe0"
 
-	mux.HandleFunc(fmt.Sprintf("%s/%s", vcrPath, vcrID), func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
+	mux.HandleFunc(fmt.Sprintf("%s/%s", vcrPath, vcrID), testJSONResponseHandlerFunc(http.StatusOK, `
+{
     "id": "e1d6be16-2b0c-4d76-a3eb-f28bf6ea5fe0",
     "name": "govultrtest",
     "region": "sjc",
@@ -504,9 +500,7 @@ func TestVCRServiceHandler_Get(t *testing.T) {
             }
         }
     }
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	vcr, _, err := client.ContainerRegistry.Get(ctx, vcrID)
 	if err != nil {
@@ -590,8 +584,8 @@ func TestVCRServiceHandler_Update(t *testing.T) {
 
 	vcrID := "e1d6be16-2b0c-4d76-a3eb-f28bf6ea5fe0"
 
-	mux.HandleFunc(fmt.Sprintf("%s/%s", vcrPath, vcrID), func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
+	mux.HandleFunc(fmt.Sprintf("%s/%s", vcrPath, vcrID), testJSONResponseHandlerFunc(http.StatusOK, `
+{
     "id": "e1d6be16-2b0c-4d76-a3eb-f28bf6ea5fe0",
     "name": "govultrtest",
     "region": "sjc",
@@ -648,9 +642,7 @@ func TestVCRServiceHandler_Update(t *testing.T) {
             }
         }
     }
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	req := &ContainerRegistryUpdateReq{
 		Public: BoolToBoolPtr(true),
@@ -738,9 +730,7 @@ func TestVCRServiceHandler_Delete(t *testing.T) {
 
 	vcrID := "e1d6be16-2b0c-4d76-a3eb-f28bf6ea5fe0"
 
-	mux.HandleFunc(fmt.Sprintf("%s/%s", vcrPath, vcrID), func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc(fmt.Sprintf("%s/%s", vcrPath, vcrID), testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.ContainerRegistry.Delete(ctx, vcrID)
 	if err != nil {
@@ -755,8 +745,8 @@ func TestVCRServiceHandler_GetRepository(t *testing.T) {
 	vcrID := "e1d6be16-2b0c-4d76-a3eb-f28bf6ea5fe0"
 	vcrImage := "vultr-csi"
 
-	mux.HandleFunc(fmt.Sprintf("%s/%s/repository/%s", vcrPath, vcrID, vcrImage), func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
+	mux.HandleFunc(fmt.Sprintf("%s/%s/repository/%s", vcrPath, vcrID, vcrImage), testJSONResponseHandlerFunc(http.StatusOK, `
+{
     "name": "govultrtest/vultr-csi",
     "image": "vultr-csi",
     "description": "",
@@ -764,9 +754,7 @@ func TestVCRServiceHandler_GetRepository(t *testing.T) {
     "updated_at": "2023-10-27T23:26:09.369Z",
     "pull_count": 9,
     "artifact_count": 7
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	vcrRepo, _, err := client.ContainerRegistry.GetRepository(ctx, vcrID, vcrImage)
 	if err != nil {
@@ -800,8 +788,8 @@ func TestVCRServiceHandler_ListRepositories(t *testing.T) {
 
 	vcrID := "e1d6be16-2b0c-4d76-a3eb-f28bf6ea5fe0"
 
-	mux.HandleFunc(fmt.Sprintf("%s/%s/repositories", vcrPath, vcrID), func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
+	mux.HandleFunc(fmt.Sprintf("%s/%s/repositories", vcrPath, vcrID), testJSONResponseHandlerFunc(http.StatusOK, `
+{
     "repositories": [
         {
             "name": "govultrtest/vultr-csi",
@@ -820,9 +808,7 @@ func TestVCRServiceHandler_ListRepositories(t *testing.T) {
             "prev": ""
         }
     }
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	vcrRepos, meta, _, err := client.ContainerRegistry.ListRepositories(ctx, vcrID, nil)
 	if err != nil {
@@ -871,8 +857,8 @@ func TestVCRServiceHandler_UpdateRepository(t *testing.T) {
 	vcrID := "e1d6be16-2b0c-4d76-a3eb-f28bf6ea5fe0"
 	vcrImage := "vultr-csi"
 
-	mux.HandleFunc(fmt.Sprintf("%s/%s/repository/%s", vcrPath, vcrID, vcrImage), func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
+	mux.HandleFunc(fmt.Sprintf("%s/%s/repository/%s", vcrPath, vcrID, vcrImage), testJSONResponseHandlerFunc(http.StatusOK, `
+{
     "name": "govultrtest/vultr-csi",
     "image": "vultr-csi",
     "description": "test",
@@ -880,9 +866,7 @@ func TestVCRServiceHandler_UpdateRepository(t *testing.T) {
     "updated_at": "2023-10-27T23:26:09.369Z",
     "pull_count": 9,
     "artifact_count": 7
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	req := &ContainerRegistryRepoUpdateReq{
 		Description: "test",
@@ -921,9 +905,7 @@ func TestVCRServiceHandler_DeleteRepository(t *testing.T) {
 	vcrID := "e1d6be16-2b0c-4d76-a3eb-f28bf6ea5fe0"
 	vcrImage := "vultr-csi"
 
-	mux.HandleFunc(fmt.Sprintf("%s/%s/repository/%s", vcrPath, vcrID, vcrImage), func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc(fmt.Sprintf("%s/%s/repository/%s", vcrPath, vcrID, vcrImage), testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.ContainerRegistry.DeleteRepository(ctx, vcrID, vcrImage)
 	if err != nil {
@@ -935,8 +917,8 @@ func TestVCRServiceHandler_ListRegions(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc(fmt.Sprintf("%s/region/list", vcrPath), func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
+	mux.HandleFunc(fmt.Sprintf("%s/region/list", vcrPath), testJSONResponseHandlerFunc(http.StatusOK, `
+{
     "regions": [
         {
             "id": 3,
@@ -965,9 +947,7 @@ func TestVCRServiceHandler_ListRegions(t *testing.T) {
             "prev": ""
         }
     }
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	vcrRegions, meta, _, err := client.ContainerRegistry.ListRegions(ctx)
 	if err != nil {
@@ -1024,8 +1004,8 @@ func TestVCRServiceHandler_ListPlans(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc(fmt.Sprintf("%s/plan/list", vcrPath), func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
+	mux.HandleFunc(fmt.Sprintf("%s/plan/list", vcrPath), testJSONResponseHandlerFunc(http.StatusOK, `
+{
     "plans": {
         "start_up": {
             "vanity_name": "Start Up",
@@ -1048,9 +1028,7 @@ func TestVCRServiceHandler_ListPlans(t *testing.T) {
             "monthly_price": 20
         }
     }
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	vcrPlans, _, err := client.ContainerRegistry.ListPlans(ctx)
 	if err != nil {

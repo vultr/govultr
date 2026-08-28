@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,19 +10,17 @@ func TestInferenceServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/inference", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
-			"subscriptions": [
-				{
-					"id": "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5",
-					"date_created": "2024-06-05T10:13:31+00:00",
-					"label": "example-inference",
-					"api_key": "ABCD7PQSLLGS6XDHQY4CMHUL55T5YO63EFGH"
-				}
-			]
-		}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/inference", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"subscriptions": [
+		{
+			"id": "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5",
+			"date_created": "2024-06-05T10:13:31+00:00",
+			"label": "example-inference",
+			"api_key": "ABCD7PQSLLGS6XDHQY4CMHUL55T5YO63EFGH"
+		}
+	]
+}`))
 
 	inference, _, err := client.Inference.List(ctx)
 	if err != nil {
@@ -48,17 +45,15 @@ func TestInferenceServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/inference", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
-			"subscription": {
-				"id": "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5",
-				"date_created": "2024-06-05T10:13:31+00:00",
-				"label": "example-inference",
-				"api_key": "ABCD7PQSLLGS6XDHQY4CMHUL55T5YO63EFGH"
-			}
-		}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/inference", testJSONResponseHandlerFunc(http.StatusCreated, `
+{
+	"subscription": {
+		"id": "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5",
+		"date_created": "2024-06-05T10:13:31+00:00",
+		"label": "example-inference",
+		"api_key": "ABCD7PQSLLGS6XDHQY4CMHUL55T5YO63EFGH"
+	}
+}`))
 
 	options := &InferenceCreateUpdateReq{
 		Label: "example-inference",
@@ -85,17 +80,15 @@ func TestInferenceServiceHandler_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/inference/999c4ed0-f2e4-4f2a-a951-de358ceb9ab5", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
-			"subscription": {
-				"id": "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5",
-				"date_created": "2024-06-05T10:13:31+00:00",
-				"label": "example-inference",
-				"api_key": "ABCD7PQSLLGS6XDHQY4CMHUL55T5YO63EFGH"
-			}
-		}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/inference/999c4ed0-f2e4-4f2a-a951-de358ceb9ab5", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"subscription": {
+		"id": "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5",
+		"date_created": "2024-06-05T10:13:31+00:00",
+		"label": "example-inference",
+		"api_key": "ABCD7PQSLLGS6XDHQY4CMHUL55T5YO63EFGH"
+	}
+}`))
 
 	inference, _, err := client.Inference.Get(ctx, "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5")
 	if err != nil {
@@ -118,17 +111,15 @@ func TestInferenceServiceHandler_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/inference/999c4ed0-f2e4-4f2a-a951-de358ceb9ab5", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
-			"subscription": {
-				"id": "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5",
-				"date_created": "2024-06-05T10:13:31+00:00",
-				"label": "example-inference-updated",
-				"api_key": "ABCD7PQSLLGS6XDHQY4CMHUL55T5YO63EFGH"
-			}
-		}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/inference/999c4ed0-f2e4-4f2a-a951-de358ceb9ab5", testJSONResponseHandlerFunc(http.StatusAccepted, `
+{
+	"subscription": {
+		"id": "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5",
+		"date_created": "2024-06-05T10:13:31+00:00",
+		"label": "example-inference-updated",
+		"api_key": "ABCD7PQSLLGS6XDHQY4CMHUL55T5YO63EFGH"
+	}
+}`))
 
 	options := &InferenceCreateUpdateReq{
 		Label: "example-inference-updated",
@@ -155,9 +146,7 @@ func TestInferenceServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/inference/999c4ed0-f2e4-4f2a-a951-de358ceb9ab5", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/inference/999c4ed0-f2e4-4f2a-a951-de358ceb9ab5", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.Inference.Delete(ctx, "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5")
 
@@ -170,22 +159,20 @@ func TestInferenceServiceHandler_GetUsage(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/inference/999c4ed0-f2e4-4f2a-a951-de358ceb9ab5/usage", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
-			"usage": {
-				"chat": {
-					"current_tokens": 654732,
-					"monthly_allotment": 50000000,
-					"overage": 0
-				},
-				"audio": {
-					"tts_characters": 5678,
-					"tts_sm_characters": 1234
-				}
-			}
-		}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/inference/999c4ed0-f2e4-4f2a-a951-de358ceb9ab5/usage", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"usage": {
+		"chat": {
+			"current_tokens": 654732,
+			"monthly_allotment": 50000000,
+			"overage": 0
+		},
+		"audio": {
+			"tts_characters": 5678,
+			"tts_sm_characters": 1234
+		}
+	}
+}`))
 
 	usage, _, err := client.Inference.GetUsage(ctx, "999c4ed0-f2e4-4f2a-a951-de358ceb9ab5")
 	if err != nil {
