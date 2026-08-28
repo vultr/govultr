@@ -59,15 +59,6 @@ type InstanceService interface {
 	GetUserData(ctx context.Context, instanceID string) (*UserData, *http.Response, error)
 
 	GetUpgrades(ctx context.Context, instanceID string) (*Upgrades, *http.Response, error)
-
-	// Deprecated: VPC2 is no longer supported
-	ListVPC2Info(ctx context.Context, instanceID string, options *ListOptions) ([]VPC2Info, *Meta, *http.Response, error)
-
-	// Deprecated: VPC2 is no longer supported
-	AttachVPC2(ctx context.Context, instanceID string, vpc2Req *AttachVPC2Req) error
-
-	// Deprecated: VPC2 is no longer supported
-	DetachVPC2(ctx context.Context, instanceID, vpcID string) error
 }
 
 // InstanceServiceHandler handles interaction with the server methods for the Vultr API
@@ -147,28 +138,6 @@ type VPCInfo struct {
 	ID         string `json:"id"`
 	MacAddress string `json:"mac_address"`
 	IPAddress  string `json:"ip_address"`
-}
-
-type vpc2InfoBase struct {
-	VPCs []VPC2Info `json:"vpcs"`
-	Meta *Meta      `json:"meta"`
-}
-
-// VPC2Info information for a given instance.
-//
-// Deprecated: VPC2 is no longer supported
-type VPC2Info struct {
-	ID         string `json:"id"`
-	MacAddress string `json:"mac_address"`
-	IPAddress  string `json:"ip_address"`
-}
-
-// AttachVPC2Req parameters for attaching a VPC 2.0 network
-//
-// Deprecated: VPC2 is no longer supported
-type AttachVPC2Req struct {
-	VPCID     string  `json:"vpc_id,omitempty"`
-	IPAddress *string `json:"ip_address,omitempty"`
 }
 
 type isoStatusBase struct {
@@ -270,22 +239,15 @@ type InstanceCreateReq struct {
 	AttachVPC         []string `json:"attach_vpc,omitempty"`
 	VPCOnly           *bool    `json:"vpc_only,omitempty"`
 
-	SSHKeys         []string          `json:"sshkey_id,omitempty"`
-	Backups         string            `json:"backups,omitempty"`
-	DDOSProtection  *bool             `json:"ddos_protection,omitempty"`
-	UserData        string            `json:"user_data,omitempty"`
-	ReservedIPv4    string            `json:"reserved_ipv4,omitempty"`
-	ActivationEmail *bool             `json:"activation_email,omitempty"`
-	UserScheme      string            `json:"user_scheme,omitempty"`
-	AppVariables    map[string]string `json:"app_variables,omitempty"`
-
-	// Deprecated: VPC2 is no longer supported
-	EnableVPC2 *bool `json:"enable_vpc2,omitempty"`
-
-	// Deprecated: VPC2 is no longer supported
-	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
-
-	BlockDevices []InstanceBlockDevice `json:"block_devices"`
+	SSHKeys         []string              `json:"sshkey_id,omitempty"`
+	Backups         string                `json:"backups,omitempty"`
+	DDOSProtection  *bool                 `json:"ddos_protection,omitempty"`
+	UserData        string                `json:"user_data,omitempty"`
+	ReservedIPv4    string                `json:"reserved_ipv4,omitempty"`
+	ActivationEmail *bool                 `json:"activation_email,omitempty"`
+	UserScheme      string                `json:"user_scheme,omitempty"`
+	AppVariables    map[string]string     `json:"app_variables,omitempty"`
+	BlockDevices    []InstanceBlockDevice `json:"block_devices"`
 }
 
 // InstanceUpdateReq struct used to update an instance.
@@ -305,15 +267,6 @@ type InstanceUpdateReq struct {
 	UserData        string   `json:"user_data,omitempty"`
 	FirewallGroupID string   `json:"firewall_group_id,omitempty"`
 	UserScheme      string   `json:"user_scheme,omitempty"`
-
-	// Deprecated: VPC2 is no longer supported
-	EnableVPC2 *bool `json:"enable_vpc2,omitempty"`
-
-	// Deprecated: VPC2 is no longer supported
-	AttachVPC2 []string `json:"attach_vpc2,omitempty"`
-
-	// Deprecated: VPC2 is no longer supported
-	DetachVPC2 []string `json:"detach_vpc2,omitempty"`
 }
 
 // ReinstallReq struct used to allow changes during a reinstall
@@ -614,63 +567,6 @@ func (i *InstanceServiceHandler) DetachVPC(ctx context.Context, instanceID, vpcI
 	if err != nil {
 		return err
 	}
-	_, err = i.client.DoWithContext(ctx, req, nil)
-	return err
-}
-
-// ListVPC2Info currently attached to an instance.
-//
-// Deprecated: VPC2 is no longer supported
-func (i *InstanceServiceHandler) ListVPC2Info(ctx context.Context, instanceID string, options *ListOptions) ([]VPC2Info, *Meta, *http.Response, error) { //nolint:lll,dupl
-	uri := fmt.Sprintf("%s/%s/vpc2", instancePath, instanceID)
-	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	newValues, err := query.Values(options)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	req.URL.RawQuery = newValues.Encode()
-
-	vpcs := new(vpc2InfoBase)
-	resp, err := i.client.DoWithContext(ctx, req, vpcs)
-	if err != nil {
-		return nil, nil, resp, err
-	}
-
-	return vpcs.VPCs, vpcs.Meta, resp, nil
-}
-
-// AttachVPC2 to an instance
-//
-// Deprecated: VPC2 is no longer supported
-func (i *InstanceServiceHandler) AttachVPC2(ctx context.Context, instanceID string, vpc2Req *AttachVPC2Req) error {
-	uri := fmt.Sprintf("%s/%s/vpc2/attach", instancePath, instanceID)
-
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, vpc2Req)
-	if err != nil {
-		return err
-	}
-
-	_, err = i.client.DoWithContext(ctx, req, nil)
-	return err
-}
-
-// DetachVPC2 from an instance.
-//
-// Deprecated: VPC2 is no longer supported
-func (i *InstanceServiceHandler) DetachVPC2(ctx context.Context, instanceID, vpcID string) error {
-	uri := fmt.Sprintf("%s/%s/vpc2/detach", instancePath, instanceID)
-
-	body := instanceVPCReq{VPCID: vpcID}
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, body)
-	if err != nil {
-		return err
-	}
-
 	_, err = i.client.DoWithContext(ctx, req, nil)
 	return err
 }

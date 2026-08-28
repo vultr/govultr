@@ -76,8 +76,6 @@ type Client struct {
 	User                     UserService
 	VirtualFileSystemStorage VirtualFileSystemStorageService
 	VPC                      VPCService
-	// Deprecated: VPC2 is no longer supported
-	VPC2 VPC2Service
 
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
@@ -154,7 +152,6 @@ func NewClient(httpClient *http.Client) *Client {
 	client.User = &UserServiceHandler{client}
 	client.VirtualFileSystemStorage = &VirtualFileSystemStorageServiceHandler{client}
 	client.VPC = &VPCServiceHandler{client}
-	client.VPC2 = &VPC2ServiceHandler{client}
 
 	return client
 }
