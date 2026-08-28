@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,10 +10,14 @@ func TestDomainServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/domains", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"domain": {"domain": "vultr.com","date_created": "2020-05-08 19:09:07"}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/domains", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"domain": {
+		"domain": "vultr.com",
+		"date_created": "2020-05-08 19:09:07",
+		"dns_sec": "enabled"
+	}
+}`))
 
 	req := &DomainReq{
 		Domain: "vultr.com",
@@ -27,6 +30,7 @@ func TestDomainServiceHandler_Create(t *testing.T) {
 	expected := &Domain{
 		Domain:      "vultr.com",
 		DateCreated: "2020-05-08 19:09:07",
+		DNSSec:      "enabled",
 	}
 
 	if !reflect.DeepEqual(domain, expected) {
@@ -38,10 +42,14 @@ func TestDomainServiceHandler_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/domains/vultr.com", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"domain": {"domain": "vultr.com","date_created": "2020-05-08 19:09:07"}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/domains/vultr.com", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"domain": {
+		"domain": "vultr.com",
+		"date_created": "2020-05-08 19:09:07",
+		"dns_sec": "enabled"
+	}
+}`))
 
 	domain, _, err := client.Domain.Get(ctx, "vultr.com")
 	if err != nil {
@@ -51,6 +59,7 @@ func TestDomainServiceHandler_Get(t *testing.T) {
 	expected := &Domain{
 		Domain:      "vultr.com",
 		DateCreated: "2020-05-08 19:09:07",
+		DNSSec:      "enabled",
 	}
 
 	if !reflect.DeepEqual(domain, expected) {
@@ -61,9 +70,7 @@ func TestDomainServiceHandler_Get(t *testing.T) {
 func TestDomainServiceHandler_Update(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/v2/domains/vultr.com", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/domains/vultr.com", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.Domain.Update(ctx, "vultr.com", "enabled")
 	if err != nil {
@@ -75,9 +82,7 @@ func TestDomainServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/domains/domain.com", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/domains/domain.com", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.Domain.Delete(ctx, "domain.com")
 	if err != nil {
@@ -89,10 +94,22 @@ func TestDNSDomainServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/domains", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"domains":[{"domain":"vultr.com","date_created":"2020-05-0819:09:07"}],"meta":{"total":1,"links":{"next":"thisismycusror","prev":""}}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/domains", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"domains": [
+		{
+			"domain": "vultr.com",
+			"date_created": "2020-05-0819:09:07"
+		}
+	],
+	"meta": {
+		"total": 1,
+		"links": {
+			"next": "thisismycusror",
+			"prev": ""
+		}
+	}
+}`))
 
 	options := &ListOptions{
 		PerPage: 1,
@@ -130,10 +147,13 @@ func TestDomainServiceHandler_GetSoa(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/domains/vultr.com/soa", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"dns_soa":{"nsprimary":"ns1.vultr.com","email":"dnsadm@vultr.com"}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/domains/vultr.com/soa", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"dns_soa": {
+		"nsprimary": "ns1.vultr.com",
+		"email": "dnsadm@vultr.com"
+	}
+}`))
 
 	soa, _, err := client.Domain.GetSoa(ctx, "vultr.com")
 	if err != nil {
@@ -151,9 +171,7 @@ func TestDNSDomainServiceHandler_UpdateSoa(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/domains/vultr.com/soa", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/domains/vultr.com/soa", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	r := &Soa{
 		NSPrimary: "ns4.vultr.com",
@@ -169,14 +187,14 @@ func TestDNSDomainServiceHandler_UpdateSoa(t *testing.T) {
 func TestDNSDomainServiceHandler_DNSSecInfo(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/v2/domains/vultr.com/dnssec", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"dns_sec":[
+	mux.HandleFunc("/v2/domains/vultr.com/dnssec", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"dns_sec":[
 		"example.com IN DNSKEY 257 3 13 kRrxANp7YTGqVbaWtMy8hhsK0jcG4ajjICZKMb4fKv79Vx/RSn76vNjzIT7/Uo0BXil01Fk8RRQc4nWZctGJBA==",
 		"example.com IN DS 27933 13 1 2d9ac457e5c11a104e25d971d0a6254562bddde7",
 		"example.com IN DS 27933 13 2 8858e7b0dfb881280ce2ca1e0eafcd93d5b53687c21da284d4f8799ba82208a9"
-]}`
-		fmt.Fprint(writer, response)
-	})
+	]
+}`))
 
 	dnsSec, _, err := client.Domain.GetDNSSec(ctx, "vultr.com")
 	if err != nil {

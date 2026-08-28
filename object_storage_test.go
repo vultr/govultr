@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,12 +10,24 @@ func TestObjectStorageServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/object-storage", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"object_storage":{"id":"39239784","date_created":"2020-07-1414:07:28","cluster_id":2,"region":"ewr","location":"New Jersey","label":"api-obj-storage2","status":"pending","s3_hostname":"","s3_access_key":"","s3_secret_key":""}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/object-storage", testJSONResponseHandlerFunc(http.StatusAccepted, `
+{
+	"object_storage": {
+		"id":"39239784",
+		"date_created": "2020-07-1414:07:28",
+		"cluster_id": 2,
+		"region": "ewr",
+		"location": "New Jersey",
+		"label": "api-obj-storage2",
+		"status": "pending",
+		"s3_hostname": "",
+		"s3_access_key": "",
+		"s3_secret_key": ""
+	}
+}`))
 
-	objectStorage, _, err := client.ObjectStorage.Create(ctx, &ObjectStorageReq{ClusterID: 2, Label: "api-obj-storage2"})
+	req := &ObjectStorageReq{ClusterID: 2, Label: "api-obj-storage2"}
+	os, _, err := client.ObjectStorage.Create(ctx, req)
 	if err != nil {
 		t.Errorf("ObjectStorage.Create returned %+v", err)
 	}
@@ -32,21 +43,30 @@ func TestObjectStorageServiceHandler_Create(t *testing.T) {
 		S3Keys:               S3Keys{},
 	}
 
-	if !reflect.DeepEqual(objectStorage, expected) {
-		t.Errorf("ObjectStorage.Create returned %+v, expected %+v", objectStorage, expected)
+	if !reflect.DeepEqual(os, expected) {
+		t.Errorf("ObjectStorage.Create returned %+v, expected %+v", os, expected)
 	}
 }
 
 func TestObjectStorageServiceHandler_Get(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/v2/object-storage/39239784", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"object_storage":{"id":"39239784","date_created":"2020-07-1414:07:28","cluster_id":2,"region":"ewr","label":"","status":"active","s3_hostname":"ewr1.vultrobjects.com","s3_access_key":"F123","s3_secret_key":"F1234"}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/object-storage/39239784", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"object_storage": {
+		"id":"39239784",
+		"date_created": "2020-07-1414:07:28",
+		"cluster_id": 2,
+		"region": "ewr",
+		"label": "api-obj-storage2",
+		"status": "active",
+		"s3_hostname": "ewr1.vultrobjects.com",
+		"s3_access_key": "F123",
+		"s3_secret_key": "F1234"
+	}
+}`))
 
-	s3, _, err := client.ObjectStorage.Get(ctx, "39239784")
-
+	os, _, err := client.ObjectStorage.Get(ctx, "39239784")
 	if err != nil {
 		t.Errorf("ObjectStorage.Get returned %+v", err)
 	}
@@ -56,7 +76,7 @@ func TestObjectStorageServiceHandler_Get(t *testing.T) {
 		DateCreated:          "2020-07-1414:07:28",
 		ObjectStoreClusterID: 2,
 		Region:               "ewr",
-		Label:                "",
+		Label:                "api-obj-storage2",
 		Status:               "active",
 		S3Keys: S3Keys{
 			S3Hostname:  "ewr1.vultrobjects.com",
@@ -64,8 +84,9 @@ func TestObjectStorageServiceHandler_Get(t *testing.T) {
 			S3SecretKey: "F1234",
 		},
 	}
-	if !reflect.DeepEqual(s3, expected) {
-		t.Errorf("ObjectStorage.Get returned %+v, expected %+v", s3, expected)
+
+	if !reflect.DeepEqual(os, expected) {
+		t.Errorf("ObjectStorage.Get returned %+v, expected %+v", os, expected)
 	}
 }
 
@@ -73,9 +94,7 @@ func TestObjectStorageServiceHandler_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/object-storage/1234", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/object-storage/1234", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.ObjectStorage.Update(ctx, "1234", &ObjectStorageReq{Label: "s3 label"})
 	if err != nil {
@@ -87,9 +106,7 @@ func TestObjectStorageServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/object-storage/1234", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/object-storage/1234", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.ObjectStorage.Delete(ctx, "1234")
 	if err != nil {
@@ -100,12 +117,31 @@ func TestObjectStorageServiceHandler_Delete(t *testing.T) {
 func TestObjectStorageServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/v2/object-storage", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"object_storages":[{"id":"39240368","date_created":"2020-07-1414:22:38","cluster_id":2,"region":"ewr","label":"govultr","status":"active","s3_hostname":"ewr1.vultrobjects.com","s3_access_key":"n1234","s3_secret_key":"b1234"}],"meta":{"total":1,"links":{"next":"","prev":""}}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/object-storage", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"object_storages": [
+		{
+			"id": "39240368",
+			"date_created": "2020-07-1414:22:38",
+			"cluster_id": 2,
+			"region": "ewr",
+			"label": "govultr",
+			"status": "active", 
+			"s3_hostname": "ewr1.vultrobjects.com",
+			"s3_access_key": "n1234",
+			"s3_secret_key": "b1234"
+		}
+	],
+	"meta": {
+		"total": 1,
+		"links": {
+			"next":"",
+			"prev":""
+		}
+	}
+}`))
 
-	s3s, meta, _, err := client.ObjectStorage.List(ctx, nil)
+	oss, meta, _, err := client.ObjectStorage.List(ctx, nil)
 	if err != nil {
 		t.Errorf("ObjectStorage.List returned %+v", err)
 	}
@@ -126,8 +162,8 @@ func TestObjectStorageServiceHandler_List(t *testing.T) {
 		},
 	}
 
-	if !reflect.DeepEqual(s3s, expectedObject) {
-		t.Errorf("ObjectStorage.List object returned %+v, expected %+v", s3s, expectedObject)
+	if !reflect.DeepEqual(oss, expectedObject) {
+		t.Errorf("ObjectStorage.List object returned %+v, expected %+v", oss, expectedObject)
 	}
 
 	expectedmeta := &Meta{
@@ -143,13 +179,27 @@ func TestObjectStorageServiceHandler_List(t *testing.T) {
 func TestObjectStorageServiceHandler_ListCluster(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/v2/object-storage/clusters", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"clusters":[{"id":2,"region":"ewr","hostname":"ewr1.vultrobjects.com","deploy":"yes"}],"meta":{"total":1,"links":{"next":"","prev":""}}}`
-		fmt.Fprint(writer, response)
-	})
+
+	mux.HandleFunc("/v2/object-storage/clusters", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"clusters": [
+		{
+			"id": 2,
+			"region": "ewr",
+			"hostname": "ewr1.vultrobjects.com",
+			"deploy": "yes"
+		}
+	],
+	"meta": {
+		"total": 1,
+		"links": {
+			"next": "",
+			"prev": ""
+		}
+	}
+}`))
 
 	clusters, meta, _, err := client.ObjectStorage.ListCluster(ctx, nil)
-
 	if err != nil {
 		t.Errorf("ObjectStorage.ListCluster returned %+v", err)
 	}
@@ -180,13 +230,16 @@ func TestObjectStorageServiceHandler_ListCluster(t *testing.T) {
 func TestObjectStorageServiceHandler_RegenerateKeys(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/v2/object-storage/1234/regenerate-keys", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"s3_credentials":{"s3_hostname":"ewr1.vultrobjects.com","s3_access_key":"f1234","s3_secret_key":"g1234"}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/object-storage/1234/regenerate-keys", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"s3_credentials": {
+		"s3_hostname": "ewr1.vultrobjects.com",
+		"s3_access_key": "f1234",
+		"s3_secret_key": "g1234"
+	}
+}`))
 
-	s3Keys, _, err := client.ObjectStorage.RegenerateKeys(ctx, "1234")
-
+	keys, _, err := client.ObjectStorage.RegenerateKeys(ctx, "1234")
 	if err != nil {
 		t.Errorf("ObjectStorage.RegenerateKeys returned %+v", err)
 	}
@@ -197,7 +250,7 @@ func TestObjectStorageServiceHandler_RegenerateKeys(t *testing.T) {
 		S3SecretKey: "g1234",
 	}
 
-	if !reflect.DeepEqual(s3Keys, expected) {
-		t.Errorf("ObjectStorage.RegenerateKeys returned %+v, expected %+v", s3Keys, expected)
+	if !reflect.DeepEqual(keys, expected) {
+		t.Errorf("ObjectStorage.RegenerateKeys returned %+v, expected %+v", keys, expected)
 	}
 }

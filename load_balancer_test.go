@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,81 +10,76 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc(lbPath, func(writer http.ResponseWriter, request *http.Request) {
-		response := `
+	mux.HandleFunc(lbPath, testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"load_balancers" : [
 		{
-			"load_balancers" : [
+			"id": "ebfc2020-8be8-485f-8e01-74f75b24e390",
+			"date_created": "2020-01-07 17:24:23",
+			"region": "ewr",
+			"label": "my label",
+			"status": "active",
+			"ipv4": "123.123.123.123",
+			"ipv6": "2001:DB8:1000::100",
+			"generic_info": {
+				"balancing_algorithm": "roundrobin",
+				"ssl_redirect": false,
+				"proxy_protocol": false,
+				"vpc": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
+				"sticky_sessions": {
+					"cookie_name": "my-cookie"
+				}
+			},
+			"health_check": {
+				"protocol": "http",
+				"port": 80,
+				"path": "/",
+				"check_interval": 15,
+				"response_timeout": 5,
+				"unhealthy_threshold": 5,
+				"healthy_threshold": 5
+			},
+			"has_ssl": false,
+			"forwarding_rules": [
 				{
-					"id": "1317575",
-					"date_created": "2020-01-07 17:24:23",
-					"region": "ewr",
-					"label": "my label",
-					"status": "active",
-					"ipv4": "123.123.123.123",
-					"ipv6": "2001:DB8:1000::100",
-					"generic_info": {
-						"balancing_algorithm": "roundrobin",
-						"ssl_redirect": false,
-						"proxy_protocol": false,
-						"vpc": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
-						"sticky_sessions": {
-							"cookie_name": "my-cookie"
-						}
-					},
-					"health_check": {
-						"protocol": "http",
-						"port": 80,
-						"path": "/",
-						"check_interval": 15,
-						"response_timeout": 5,
-						"unhealthy_threshold": 5,
-						"healthy_threshold": 5
-					},
-					"has_ssl": false,
-					"forwarding_rules": [
-						{
-							"id": "abcd12345",
-							"frontend_protocol": "http",
-							"frontend_port": 80,
-							"backend_protocol": "http",
-							"backend_port": 80
-						}
-					],
-					"firewall_rules": [
-						{
-							"id": "abcd12345",
-							"port": 80,
-							"source": "0.0.0.0/0",
-							"ip_type": "v4"
-						}
-					],
-					"nodes": 3,
-					"instances": [
-						"12345"
-					]
+					"id": "abcd12345",
+					"frontend_protocol": "http",
+					"frontend_port": 80,
+					"backend_protocol": "http",
+					"backend_port": 80
 				}
 			],
-			"meta": {
-				"total":8,
-				"links": {
-					"next":"",
-					"prev":""
+			"firewall_rules": [
+				{
+					"id": "abcd12345",
+					"port": 80,
+					"source": "0.0.0.0/0",
+					"ip_type": "v4"
 				}
-			}
+			],
+			"nodes": 3,
+			"instances": [
+				"12345"
+			]
 		}
-		`
-		fmt.Fprint(writer, response)
-	})
+	],
+	"meta": {
+		"total":8,
+		"links": {
+			"next":"",
+			"prev":""
+		}
+	}
+}`))
 
 	list, meta, _, err := client.LoadBalancer.List(ctx, nil)
-
 	if err != nil {
 		t.Errorf("LoadBalancer.List returned %+v", err)
 	}
 
 	expected := []LoadBalancer{
 		{
-			ID:          "1317575",
+			ID:          "ebfc2020-8be8-485f-8e01-74f75b24e390",
 			DateCreated: "2020-01-07 17:24:23",
 			Label:       "my label",
 			Status:      "active",
@@ -147,90 +141,70 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 	}
 }
 
-func TestLoadBalancerHandler_Delete(t *testing.T) {
-	setup()
-	defer teardown()
-
-	uri := fmt.Sprintf("%s/%d", lbPath, 1317575)
-	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
-
-	if err := client.LoadBalancer.Delete(ctx, "1317575"); err != nil {
-		t.Errorf("LoadBalancer.Delete returned %+v", err)
-	}
-}
-
 func TestLoadBalancerHandler_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	uri := fmt.Sprintf("%s/%d", lbPath, 1317575)
-	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-		{
-			"load_balancer" : {
-				"id": "1317575",
-				"date_created": "2020-01-07 17:24:23",
-				"region": "ewr",
-				"label": "my label",
-				"status": "active",
-				"ipv4": "123.123.123.123",
-				"ipv6": "2001:DB8:1000::100",
-				"generic_info": {
-					"balancing_algorithm": "roundrobin",
-					"ssl_redirect": false,
-					"proxy_protocol": false,
-					"vpc": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
-					"sticky_sessions": {
-						"cookie_name": "my-cookie"
-					}
-				},
-				"health_check": {
-					"protocol": "http",
-					"port": 80,
-					"path": "/",
-					"check_interval": 15,
-					"response_timeout": 5,
-					"unhealthy_threshold": 5,
-					"healthy_threshold": 5
-				},
-				"has_ssl": false,
-				"forwarding_rules": [
-					{
-						"id": "abcd12345",
-						"frontend_protocol": "http",
-						"frontend_port": 80,
-						"backend_protocol": "http",
-						"backend_port": 80
-					}
-				],
-				"firewall_rules": [
-					{
-						"id": "abcd12345",
-						"port": 80,
-						"source": "0.0.0.0/0",
-						"ip_type": "v4"
-					}
-				],
-				"nodes": 3,
-				"instances": [
-					"12345"
-				]
+	mux.HandleFunc("/v2/load-balancers/ebfc2020-8be8-485f-8e01-74f75b24e390", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"load_balancer" : {
+		"id": "ebfc2020-8be8-485f-8e01-74f75b24e390",
+		"date_created": "2020-01-07 17:24:23",
+		"region": "ewr",
+		"label": "my label",
+		"status": "active",
+		"ipv4": "123.123.123.123",
+		"ipv6": "2001:DB8:1000::100",
+		"generic_info": {
+			"balancing_algorithm": "roundrobin",
+			"ssl_redirect": false,
+			"proxy_protocol": false,
+			"vpc": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
+			"sticky_sessions": {
+				"cookie_name": "my-cookie"
 			}
-		}
-		`
-		fmt.Fprint(writer, response)
-	})
+		},
+		"health_check": {
+			"protocol": "http",
+			"port": 80,
+			"path": "/",
+			"check_interval": 15,
+			"response_timeout": 5,
+			"unhealthy_threshold": 5,
+			"healthy_threshold": 5
+		},
+		"has_ssl": false,
+		"forwarding_rules": [
+			{
+				"id": "abcd12345",
+				"frontend_protocol": "http",
+				"frontend_port": 80,
+				"backend_protocol": "http",
+				"backend_port": 80
+			}
+		],
+		"firewall_rules": [
+			{
+				"id": "abcd12345",
+				"port": 80,
+				"source": "0.0.0.0/0",
+				"ip_type": "v4"
+			}
+		],
+		"nodes": 3,
+		"instances": [
+			"12345"
+		]
+	}
+}`))
 
-	info, _, err := client.LoadBalancer.Get(ctx, "1317575")
-
+	info, _, err := client.LoadBalancer.Get(ctx, "ebfc2020-8be8-485f-8e01-74f75b24e390")
 	if err != nil {
 		t.Errorf("LoadBalancer.Get returned %+v", err)
 	}
 
 	expected := &LoadBalancer{
-		ID:          "1317575",
+		ID:          "ebfc2020-8be8-485f-8e01-74f75b24e390",
 		DateCreated: "2020-01-07 17:24:23",
 		Label:       "my label",
 		Status:      "active",
@@ -282,191 +256,69 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 	}
 }
 
-func TestLoadBalancerHandler_ListForwardingRules(t *testing.T) {
-	setup()
-	defer teardown()
-	uri := fmt.Sprintf("%s/%d/forwarding-rules", lbPath, 12345)
-	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
-			"forwarding_rules":[
-				{
-					"id":"0690a322c25890bc",
-					"frontend_protocol":"http",
-					"frontend_port":80,
-					"backend_protocol":"http",
-					"backend_port":80
-				}
-			],
-			"meta": {
-				"total":8,
-				"links": {
-					"next":"",
-					"prev":""
-				}
-			}
-		}
-		`
-		fmt.Fprint(writer, response)
-	})
-
-	list, meta, _, err := client.LoadBalancer.ListForwardingRules(ctx, "12345", nil)
-
-	if err != nil {
-		t.Errorf("LoadBalancer.ListForwardingRules returned %+v", err)
-	}
-
-	expected := []ForwardingRule{
-		{
-			RuleID:           "0690a322c25890bc",
-			FrontendProtocol: "http",
-			FrontendPort:     80,
-			BackendProtocol:  "http",
-			BackendPort:      80,
-		},
-	}
-
-	expectedMeta := &Meta{
-		Total: 8,
-		Links: &Links{},
-	}
-
-	if !reflect.DeepEqual(list, expected) {
-		t.Errorf("LoadBalancer.ListForwardingRules returned %+v, expected %+v", list, expected)
-	}
-
-	if !reflect.DeepEqual(meta, expectedMeta) {
-		t.Errorf("LoadBalancer.ListForwardingRules returned %+v, expected %+v", meta, expectedMeta)
-	}
-}
-
-func TestLoadBalancerHandler_DeleteForwardingRule(t *testing.T) {
-	setup()
-	defer teardown()
-
-	uri := fmt.Sprintf("%s/%d/forwarding-rules/%s", lbPath, 12345, "abcde1234")
-	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
-
-	if err := client.LoadBalancer.DeleteForwardingRule(ctx, "12345", "abcde1234"); err != nil {
-		t.Errorf("LoadBalancer.DeleteForwardingRule returned %+v", err)
-	}
-}
-
-func TestLoadBalancerHandler_CreateForwardingRule(t *testing.T) {
-	setup()
-	defer teardown()
-
-	uri := fmt.Sprintf("%s/%d/forwarding-rules", lbPath, 1317575)
-	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-		{
-			"forwarding_rule" : {
-				"id":"0690a322c25890bc",
-				"frontend_protocol":"http",
-				"frontend_port":80,
-				"backend_protocol":"http",
-				"backend_port":80
-			}
-		}
-		`
-		fmt.Fprint(writer, response)
-	})
-
-	rule := &ForwardingRule{
-		RuleID:           "0690a322c25890bc",
-		FrontendProtocol: "http",
-		FrontendPort:     80,
-		BackendProtocol:  "http",
-		BackendPort:      80,
-	}
-
-	ruleID, _, err := client.LoadBalancer.CreateForwardingRule(ctx, "1317575", rule)
-	if err != nil {
-		t.Errorf("LoadBalancer.CreateForwardingRule returned %+v", err)
-	}
-
-	expected := &ForwardingRule{
-		RuleID:           "0690a322c25890bc",
-		FrontendProtocol: "http",
-		FrontendPort:     80,
-		BackendProtocol:  "http",
-		BackendPort:      80,
-	}
-
-	if !reflect.DeepEqual(ruleID, expected) {
-		t.Errorf("LoadBalancer.CreateForwardingRule returned %+v, expected %+v", ruleID, expected)
-	}
-}
-
 func TestLoadBalancerHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc(lbPath, func(writer http.ResponseWriter, request *http.Request) {
-		response := `
+	mux.HandleFunc("/v2/load-balancers", testJSONResponseHandlerFunc(http.StatusAccepted, `
+{
+	"load_balancer" :
 		{
-			"load_balancer" :
-				{
-					"id": "1317575",
-					"date_created": "2020-01-07 17:24:23",
-					"region": "ewr",
-					"label": "my label",
-					"status": "active",
-					"ipv4": "123.123.123.123",
-					"ipv6": "2001:DB8:1000::100",
-					"generic_info": {
-						"balancing_algorithm": "roundrobin",
-						"ssl_redirect": false,
-						"proxy_protocol": false,
-						"vpc": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
-						"sticky_sessions": {
-							"cookie_name": "my-cookie"
-						}
-					},
-					"health_check": {
-						"protocol": "http",
-						"port": 80,
-						"path": "/",
-						"check_interval": 15,
-						"response_timeout": 5,
-						"unhealthy_threshold": 5,
-						"healthy_threshold": 5
-					},
-					"has_ssl": false,
-					"forwarding_rules": [
-						{
-							"id": "abcd12345",
-							"frontend_protocol": "http",
-							"frontend_port": 80,
-							"backend_protocol": "http",
-							"backend_port": 80
-						}
-					],
-					"firewall_rules": [
-						{
-							"id": "abcd12345",
-							"port": 80,
-							"source": "0.0.0.0/0",
-							"ip_type": "v4"
-						}
-					],
-					"nodes": 3,
-					"instances": [
-						"1234"
-					]
+			"id": "ebfc2020-8be8-485f-8e01-74f75b24e390",
+			"date_created": "2020-01-07 17:24:23",
+			"region": "ewr",
+			"label": "my label",
+			"status": "active",
+			"ipv4": "123.123.123.123",
+			"ipv6": "2001:DB8:1000::100",
+			"generic_info": {
+				"balancing_algorithm": "roundrobin",
+				"ssl_redirect": false,
+				"proxy_protocol": false,
+				"vpc": "8d5bdbdb-3324-4d0c-b303-03e1315e1c02",
+				"sticky_sessions": {
+					"cookie_name": "my-cookie"
 				}
+			},
+			"health_check": {
+				"protocol": "http",
+				"port": 80,
+				"path": "/",
+				"check_interval": 15,
+				"response_timeout": 5,
+				"unhealthy_threshold": 5,
+				"healthy_threshold": 5
+			},
+			"has_ssl": false,
+			"forwarding_rules": [
+				{
+					"id": "abcd123",
+					"frontend_protocol": "http",
+					"frontend_port": 80,
+					"backend_protocol": "http",
+					"backend_port": 80
+				}
+			],
+			"firewall_rules": [
+				{
+					"id": "abcd123",
+					"port": 80,
+					"source": "0.0.0.0/0",
+					"ip_type": "v4"
+				}
+			],
+			"nodes": 3,
+			"instances": [
+				"1234"
+			]
 		}
-		`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	lbCreate := &LoadBalancerReq{
 		Label:  "my label",
 		Region: "ewr",
 		ForwardingRules: []ForwardingRule{
 			{
-				RuleID:           "abcd12345",
 				FrontendProtocol: "http",
 				FrontendPort:     80,
 				BackendProtocol:  "http",
@@ -495,7 +347,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 	}
 
 	expected := &LoadBalancer{
-		ID:          "1317575",
+		ID:          "ebfc2020-8be8-485f-8e01-74f75b24e390",
 		DateCreated: "2020-01-07 17:24:23",
 		Label:       "my label",
 		Status:      "active",
@@ -505,7 +357,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		SSLInfo:     BoolToBoolPtr(false),
 		ForwardingRules: []ForwardingRule{
 			{
-				RuleID:           "abcd12345",
+				RuleID:           "abcd123",
 				FrontendProtocol: "http",
 				FrontendPort:     80,
 				BackendProtocol:  "http",
@@ -534,7 +386,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		Nodes:     3,
 		FirewallRules: []LBFirewallRule{
 			{
-				RuleID: "abcd12345",
+				RuleID: "abcd123",
 				Port:   80,
 				Source: "0.0.0.0/0",
 				IPType: "v4",
@@ -550,12 +402,10 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 func TestLoadBalancerHandler_Update(t *testing.T) {
 	setup()
 	defer teardown()
-	uri := fmt.Sprintf("%s/%s", lbPath, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141")
-	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
 
-	lbCreate := &LoadBalancerReq{
+	mux.HandleFunc("/v2/load-balancers/ebfc2020-8be8-485f-8e01-74f75b24e390", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
+
+	lbUpdate := &LoadBalancerReq{
 		Label:  "my label",
 		Region: "ewr",
 		ForwardingRules: []ForwardingRule{
@@ -583,9 +433,73 @@ func TestLoadBalancerHandler_Update(t *testing.T) {
 		},
 	}
 
-	err := client.LoadBalancer.Update(ctx, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", lbCreate)
+	err := client.LoadBalancer.Update(ctx, "ebfc2020-8be8-485f-8e01-74f75b24e390", lbUpdate)
 	if err != nil {
 		t.Errorf("LoadBalancer.Update returned %+v", err)
+	}
+}
+
+func TestLoadBalancerHandler_Delete(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/load-balancers/ebfc2020-8be8-485f-8e01-74f75b24e390", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
+
+	if err := client.LoadBalancer.Delete(ctx, "ebfc2020-8be8-485f-8e01-74f75b24e390"); err != nil {
+		t.Errorf("LoadBalancer.Delete returned %+v", err)
+	}
+}
+
+func TestLoadBalancerHandler_ListForwardingRules(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/load-balancers/ebfc2020-8be8-485f-8e01-74f75b24e390/forwarding-rules", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"forwarding_rules":[
+		{
+			"id":"0690a322c25890bc",
+			"frontend_protocol":"http",
+			"frontend_port":80,
+			"backend_protocol":"http",
+			"backend_port":80
+		}
+	],
+	"meta": {
+		"total":8,
+		"links": {
+			"next":"",
+			"prev":""
+		}
+	}
+}`))
+
+	list, meta, _, err := client.LoadBalancer.ListForwardingRules(ctx, "ebfc2020-8be8-485f-8e01-74f75b24e390", nil)
+	if err != nil {
+		t.Errorf("LoadBalancer.ListForwardingRules returned %+v", err)
+	}
+
+	expected := []ForwardingRule{
+		{
+			RuleID:           "0690a322c25890bc",
+			FrontendProtocol: "http",
+			FrontendPort:     80,
+			BackendProtocol:  "http",
+			BackendPort:      80,
+		},
+	}
+
+	expectedMeta := &Meta{
+		Total: 8,
+		Links: &Links{},
+	}
+
+	if !reflect.DeepEqual(list, expected) {
+		t.Errorf("LoadBalancer.ListForwardingRules returned %+v, expected %+v", list, expected)
+	}
+
+	if !reflect.DeepEqual(meta, expectedMeta) {
+		t.Errorf("LoadBalancer.ListForwardingRules returned %+v, expected %+v", meta, expectedMeta)
 	}
 }
 
@@ -593,27 +507,26 @@ func TestLoadBalancerHandler_GetFowardingRule(t *testing.T) {
 	setup()
 	defer teardown()
 
-	uri := fmt.Sprintf("%s/%s/forwarding-rules/%s", lbPath, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", "d42585eb85b1f69d")
-	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
-		req := `{
-  "forwarding_rule": {
-    "id": "d42585eb85b1f69d",
-    "frontend_protocol": "http",
-    "frontend_port": 8080,
-    "backend_protocol": "http",
-    "backend_port": 80
-  }
-}`
-		fmt.Fprint(writer, req)
-	})
+	mux.HandleFunc(
+		"/v2/load-balancers/ebfc2020-8be8-485f-8e01-74f75b24e390/forwarding-rules/abc123",
+		testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"forwarding_rule": {
+		"id": "abc123",
+		"frontend_protocol": "http",
+		"frontend_port": 8080,
+		"backend_protocol": "http",
+		"backend_port": 80
+	}
+}`))
 
-	rule, _, err := client.LoadBalancer.GetForwardingRule(ctx, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", "d42585eb85b1f69d")
+	rule, _, err := client.LoadBalancer.GetForwardingRule(ctx, "ebfc2020-8be8-485f-8e01-74f75b24e390", "abc123")
 	if err != nil {
 		t.Errorf("LoadBalancer.GetForwardingRule returned %+v", err)
 	}
 
 	expected := &ForwardingRule{
-		RuleID:           "d42585eb85b1f69d",
+		RuleID:           "abc123",
 		FrontendProtocol: "http",
 		FrontendPort:     8080,
 		BackendProtocol:  "http",
@@ -625,30 +538,84 @@ func TestLoadBalancerHandler_GetFowardingRule(t *testing.T) {
 	}
 }
 
+func TestLoadBalancerHandler_CreateForwardingRule(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/load-balancers/ebfc2020-8be8-485f-8e01-74f75b24e390/forwarding-rules", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"forwarding_rule" : {
+		"id":"0690a322c25890bc",
+		"frontend_protocol":"http",
+		"frontend_port":80,
+		"backend_protocol":"http",
+		"backend_port":80
+	}
+}`))
+
+	rule := &ForwardingRule{
+		RuleID:           "0690a322c25890bc",
+		FrontendProtocol: "http",
+		FrontendPort:     80,
+		BackendProtocol:  "http",
+		BackendPort:      80,
+	}
+
+	ruleID, _, err := client.LoadBalancer.CreateForwardingRule(ctx, "ebfc2020-8be8-485f-8e01-74f75b24e390", rule)
+	if err != nil {
+		t.Errorf("LoadBalancer.CreateForwardingRule returned %+v", err)
+	}
+
+	expected := &ForwardingRule{
+		RuleID:           "0690a322c25890bc",
+		FrontendProtocol: "http",
+		FrontendPort:     80,
+		BackendProtocol:  "http",
+		BackendPort:      80,
+	}
+
+	if !reflect.DeepEqual(ruleID, expected) {
+		t.Errorf("LoadBalancer.CreateForwardingRule returned %+v, expected %+v", ruleID, expected)
+	}
+}
+
+func TestLoadBalancerHandler_DeleteForwardingRule(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc(
+		"/v2/load-balancers/ebfc2020-8be8-485f-8e01-74f75b24e390/forwarding-rules/abcde123",
+		testJSONResponseHandlerFunc(http.StatusNoContent, ""),
+	)
+
+	if err := client.LoadBalancer.DeleteForwardingRule(ctx, "ebfc2020-8be8-485f-8e01-74f75b24e390", "abcde123"); err != nil {
+		t.Errorf("LoadBalancer.DeleteForwardingRule returned %+v", err)
+	}
+}
+
 func TestLoadBalancerHandler_GetFirewallRule(t *testing.T) {
 	setup()
 	defer teardown()
 
-	uri := fmt.Sprintf("%s/%s/firewall-rules/%s", lbPath, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", "d42585eb85b1f69d")
-	mux.HandleFunc(uri, func(writer http.ResponseWriter, request *http.Request) {
-		req := `{
-  "firewall_rule": {
-    "id": "d42585eb85b1f69d",
-    "port": 80,
-    "source": "0.0.0.0/0",
-    "ip_type": "v4"
-  }
-}`
-		fmt.Fprint(writer, req)
-	})
+	mux.HandleFunc(
+		"/v2/load-balancers/ebfc2020-8be8-485f-8e01-74f75b24e390/firewall-rules/abc123",
+		testJSONResponseHandlerFunc(http.StatusOK, `
+{
+		"firewall_rule": {
+		"id": "abc123",
+		"port": 80,
+		"source": "0.0.0.0/0",
+		"ip_type": "v4"
+	}
+}`))
 
-	rule, _, err := client.LoadBalancer.GetFirewallRule(ctx, "d9dbc01c-aaca-4d4b-8c4a-bbb24c946141", "d42585eb85b1f69d")
+	rule, _, err := client.LoadBalancer.GetFirewallRule(ctx, "ebfc2020-8be8-485f-8e01-74f75b24e390", "abc123")
 	if err != nil {
 		t.Errorf("LoadBalancer.GetFirewallRule returned %+v", err)
 	}
 
 	expected := &LBFirewallRule{
-		RuleID: "d42585eb85b1f69d",
+		RuleID: "abc123",
 		Port:   80,
 		Source: "0.0.0.0/0",
 		IPType: "v4",

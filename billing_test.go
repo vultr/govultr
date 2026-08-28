@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,31 +10,26 @@ func TestBillingServiceHandler_ListHistory(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/billing/history", func(w http.ResponseWriter, r *http.Request) {
-		response := `
+	mux.HandleFunc("/v2/billing/history", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"billing_history": [
 		{
-			"billing_history": [
-				{
-					"id": 5317720,
-					"date": "2018-04-01T00:30:05+00:00",
-					"type": "invoice",
-					"description": "Invoice #5317720",
-					"amount": 2.35,
-					"balance": -497.65
-				  }
-			],
-			"meta": {
-				"total":1,
-				"links": {
-					"next":"",
-					"prev":""
-				}
-			}
+			"id": 5317720,
+			"date": "2018-04-01T00:30:05+00:00",
+			"type": "invoice",
+			"description": "Invoice #5317720",
+			"amount": 2.35,
+			"balance": -497.65
+		  }
+	],
+	"meta": {
+		"total":1,
+		"links": {
+			"next":"",
+			"prev":""
 		}
-		`
-
-		fmt.Fprint(w, response)
-	})
+	}
+}`))
 
 	history, meta, _, err := client.Billing.ListHistory(ctx, nil)
 	if err != nil {
@@ -71,30 +65,25 @@ func TestBillingServiceHandler_ListInvoices(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/billing/invoices", func(w http.ResponseWriter, r *http.Request) {
-		response := `
+	mux.HandleFunc("/v2/billing/invoices", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"billing_invoices": [
 		{
-			"billing_invoices": [
-				{
-					"id": 5317720,
-					"date": "2018-04-01T00:30:05+00:00",
-					"description": "Invoice #5317720",
-					"amount": 2.35,
-					"balance": -497.65
-				  }
-			],
-			"meta": {
-				"total":1,
-				"links": {
-					"next":"",
-					"prev":""
-				}
-			}
+			"id": 5317720,
+			"date": "2018-04-01T00:30:05+00:00",
+			"description": "Invoice #5317720",
+			"amount": 2.35,
+			"balance": -497.65
+		  }
+	],
+	"meta": {
+		"total":1,
+		"links": {
+			"next":"",
+			"prev":""
 		}
-		`
-
-		fmt.Fprint(w, response)
-	})
+	}
+}`))
 
 	invoices, meta, _, err := client.Billing.ListInvoices(ctx, nil)
 	if err != nil {
@@ -129,22 +118,17 @@ func TestBillingServiceHandler_ListHistoryEmpty(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/billing/history", func(w http.ResponseWriter, r *http.Request) {
-		response := `
-		{
-			"billing_history": [],
-			"meta": {
-				"total":0,
-				"links": {
-					"next":"",
-					"prev":""
-				}
-			}
+	mux.HandleFunc("/v2/billing/history", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"billing_history": [],
+	"meta": {
+		"total":0,
+		"links": {
+			"next":"",
+			"prev":""
 		}
-		`
-
-		fmt.Fprint(w, response)
-	})
+	}
+}`))
 
 	history, meta, _, err := client.Billing.ListHistory(ctx, nil)
 	if err != nil {
@@ -174,22 +158,17 @@ func TestBillingServiceHandler_ListInvoicesEmpty(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/billing/invoices", func(w http.ResponseWriter, r *http.Request) {
-		response := `
-		{
-			"billing_invoices": [],
-			"meta": {
-				"total":0,
-				"links": {
-					"next":"",
-					"prev":""
-				}
-			}
+	mux.HandleFunc("/v2/billing/invoices", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"billing_invoices": [],
+	"meta": {
+		"total":0,
+		"links": {
+			"next":"",
+			"prev":""
 		}
-		`
-
-		fmt.Fprint(w, response)
-	})
+	}
+}`))
 
 	invoices, meta, _, err := client.Billing.ListInvoices(ctx, nil)
 	if err != nil {
@@ -219,21 +198,16 @@ func TestBillingServiceHandler_GetInvoice(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/billing/invoices/123456", func(w http.ResponseWriter, r *http.Request) {
-		response := `
-		{
-			"billing_invoice": {
-				"id": 123456,
-				"date": "2018-04-01T00:30:05+00:00",
-				"description": "Invoice #5317782",
-				"amount": 2.35,
-				"balance": -497.65
-			  }
-		}
-		`
-
-		fmt.Fprint(w, response)
-	})
+	mux.HandleFunc("/v2/billing/invoices/123456", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"billing_invoice": {
+		"id": 123456,
+		"date": "2018-04-01T00:30:05+00:00",
+		"description": "Invoice #5317782",
+		"amount": 2.35,
+		"balance": -497.65
+	  }
+}`))
 
 	invoice, _, err := client.Billing.GetInvoice(ctx, "123456")
 	if err != nil {
@@ -257,33 +231,29 @@ func TestBillingServiceHandler_ListInvoiceItems(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/billing/invoices/123456/items", func(w http.ResponseWriter, r *http.Request) {
-		response := `
+	mux.HandleFunc("/v2/billing/invoices/123456/items", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"invoice_items": [
 		{
-			"invoice_items": [
-				{
-					"description": "1.1.1.1 (1024 MB)",
-					"product": "Vultr Cloud Compute",
-					"start_date": "2018-03-18T21:57:58+00:00",
-					"end_date": "2018-04-01T00:00:00+00:00",
-					"units": 315,
-					"unit_type": "hours",
-					"unit_price": 0.0074,
-					"total": 2.35
-				}
-			],
-			"meta": {
-				"total":1,
-				"links": {
-					"next":"",
-					"prev":""
-				}
-			}
+			"description": "1.1.1.1 (1024 MB)",
+			"product": "Vultr Cloud Compute",
+			"start_date": "2018-03-18T21:57:58+00:00",
+			"end_date": "2018-04-01T00:00:00+00:00",
+			"units": 315,
+			"unit_type": "hours",
+			"unit_price": 0.0074,
+			"total": 2.35
 		}
-		`
+	],
+	"meta": {
+		"total":1,
+		"links": {
+			"next":"",
+			"prev":""
+		}
+	}
+}`))
 
-		fmt.Fprint(w, response)
-	})
 	invoices, meta, _, err := client.Billing.ListInvoiceItems(ctx, 123456, nil)
 	if err != nil {
 		t.Errorf("Billing.ListInvoiceItems returned error: %v", err)
@@ -320,26 +290,22 @@ func TestBillingServiceHandler_ListPendingCharges(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/billing/pending-charges", func(w http.ResponseWriter, r *http.Request) {
-		response := `
+	mux.HandleFunc("/v2/billing/pending-charges", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"pending_charges": [
 		{
-			"pending_charges": [
-				{
-					"description": "Load Balancer (my-loadbalancer)",
-					"start_date": "2020-10-10T01:56:20+00:00",
-					"end_date": "2020-10-10T01:56:20+00:00",
-					"units": 720,
-					"unit_type": "hours",
-					"unit_price": 0.0149,
-					"total": 10,
-					"product": "Load Balancer"
-				}
-			]
+			"description": "Load Balancer (my-loadbalancer)",
+			"start_date": "2020-10-10T01:56:20+00:00",
+			"end_date": "2020-10-10T01:56:20+00:00",
+			"units": 720,
+			"unit_type": "hours",
+			"unit_price": 0.0149,
+			"total": 10,
+			"product": "Load Balancer"
 		}
-		`
+	]
+}`))
 
-		fmt.Fprint(w, response)
-	})
 	invoices, _, err := client.Billing.ListPendingCharges(ctx, nil)
 	if err != nil {
 		t.Errorf("Billing.ListPendingCharges returned error: %v", err)

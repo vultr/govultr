@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,10 +10,18 @@ func TestDomainRecordsServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/domains/vultr.com/records", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"record":{"id":"dev-preview-abc123","type":"A","name":"www","data":"127.0.0.1","priority":0,"ttl":300}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/domains/vultr.com/records", testJSONResponseHandlerFunc(http.StatusCreated, `
+{
+	"record": {
+		"id":"dev-preview-abc123",
+		"type":"A",
+		"name":"www",
+		"data":"127.0.0.1",
+		"priority":0,
+		"ttl":300
+	}
+}`))
+
 	p := 300
 	r := &DomainRecordCreateReq{
 		Name:     "www",
@@ -22,6 +29,7 @@ func TestDomainRecordsServiceHandler_Create(t *testing.T) {
 		Data:     "127.0.0.1",
 		Priority: &p,
 	}
+
 	record, _, err := client.DomainRecord.Create(ctx, "vultr.com", r)
 	if err != nil {
 		t.Errorf("DomainRecord.Create returned %+v, expected %+v", err, nil)
@@ -45,10 +53,17 @@ func TestDomainRecordsServiceHandler_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/domains/vultr.com/records/dev-preview-abc123", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"record":{"id":"dev-preview-abc123","type":"A","name":"www","data":"127.0.0.1","priority":0,"ttl":300}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/domains/vultr.com/records/dev-preview-abc123", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"record": {
+		"id": "dev-preview-abc123",
+		"type": "A",
+		"name": "www",
+		"data": "127.0.0.1",
+		"priority": 0,
+		"ttl": 300
+	}
+}`))
 
 	record, _, err := client.DomainRecord.Get(ctx, "vultr.com", "dev-preview-abc123")
 	if err != nil {
@@ -73,9 +88,8 @@ func TestDomainRecordsServiceHandler_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/domains/vultr.com/records/abc123", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/domains/vultr.com/records/abc123", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
+
 	p := 10
 	name := "*"
 	r := &DomainRecordUpdateReq{
@@ -85,6 +99,7 @@ func TestDomainRecordsServiceHandler_Update(t *testing.T) {
 		TTL:      1200,
 		Priority: &p,
 	}
+
 	err := client.DomainRecord.Update(ctx, "vultr.com", "abc123", r)
 	if err != nil {
 		t.Errorf("DNSRecord.Update returned %+v, expected %+v", err, nil)
@@ -95,9 +110,7 @@ func TestDomainRecordsServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/domains/vultr.com/records/abc123", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/domains/vultr.com/records/abc123", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.DomainRecord.Delete(ctx, "vultr.com", "abc123")
 	if err != nil {
@@ -109,10 +122,26 @@ func TestDomainRecordsServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/domains/vultr.com/records", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"records":[{"id":"abc123","type":"A","name":"test","data":"127.0.0.1","priority":0,"ttl":300}],"meta":{"total":1,"links":{"next":"thisismycursor","prev":""}}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/domains/vultr.com/records", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"records":  [
+		{
+			"id": "abc123",
+			"type": "A",
+			"name": "test",
+			"data": "127.0.0.1",
+			"priority": 0,
+			"ttl": 300
+		}
+	],
+	"meta":  {
+		"total": 1,
+		"links": {
+			"next": "thisismycursor",
+			"prev": ""
+		}
+	}
+}`))
 
 	options := &ListOptions{
 		PerPage: 1,

@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,28 +10,23 @@ func TestAccountServiceHandler_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/account", func(w http.ResponseWriter, r *http.Request) {
-		response := `
-		{
-		"account" : {
-			"balance": -5519.11,
-			"pending_charges": 57.03,
-			"last_payment_date": "2014-07-18 15:31:01",
-			"last_payment_amount": -1.00,
-			"name": "Test Tester",
-			"email" : "example@vultr.com",
-			"acls": [
-				"subscriptions",
-				"billing",
-				"support",
-				"provisioning"
-			]
-		}
-		}
-		`
-
-		fmt.Fprint(w, response)
-	})
+	mux.HandleFunc("/v2/account", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"account" : {
+		"balance": -5519.11,
+		"pending_charges": 57.03,
+		"last_payment_date": "2014-07-18 15:31:01",
+		"last_payment_amount": -1.00,
+		"name": "Test Tester",
+		"email" : "example@vultr.com",
+		"acls": [
+			"subscriptions",
+			"billing",
+			"support",
+			"provisioning"
+		]
+	}
+}`))
 
 	account, _, err := client.Account.Get(ctx)
 	if err != nil {
@@ -50,8 +44,7 @@ func TestAccountServiceHandler_GetBandwidth(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/account/bandwidth", func(w http.ResponseWriter, r *http.Request) {
-		response := `
+	mux.HandleFunc("/v2/account/bandwidth", testJSONResponseHandlerFunc(http.StatusOK, `
 		{
 			"bandwidth": {
 				"previous_month": {
@@ -98,10 +91,7 @@ func TestAccountServiceHandler_GetBandwidth(t *testing.T) {
 				}
 			}
 		}
-		`
-
-		fmt.Fprint(w, response)
-	})
+	`))
 
 	accountBandwidth, _, err := client.Account.GetBandwidth(ctx)
 	if err != nil {

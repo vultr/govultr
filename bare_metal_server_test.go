@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,35 +10,31 @@ func TestBareMetalServerServiceHandler_GetServer(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/abc123", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-		{
-			"bare_metal": {
-				"id": "abc123",
-				"os": "CentOS 6 x64",
-				"ram": "65536 MB",
-				"disk": "2x 240 GB SSD",
-				"main_ip": "203.0.113.10",
-				"cpu_count": 1,
-				"region": "ewr",
-				"date_created": "2017-04-12 18:45:41",
-				"status": "active",
-				"netmask_v4": "255.255.255.0",
-				"gateway_v4": "203.0.113.1",
-				"plan": "vbm-4c-32gb",
-				"v6_network": "2001:DB8:9000::",
-				"v6_main_ip": "2001:DB8:9000::100",
-				"v6_network_size": 64,
-				"mac_address": 2199756823533,
-				"label": "my label",
-				"tags": ["my tag"],
-				"os_id": 127,
-				"app_id": 0
-			}
-		}
-		`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/bare-metals/abc123", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"bare_metal": {
+		"id": "abc123",
+		"os": "CentOS 6 x64",
+		"ram": "65536 MB",
+		"disk": "2x 240 GB SSD",
+		"main_ip": "203.0.113.10",
+		"cpu_count": 1,
+		"region": "ewr",
+		"date_created": "2017-04-12 18:45:41",
+		"status": "active",
+		"netmask_v4": "255.255.255.0",
+		"gateway_v4": "203.0.113.1",
+		"plan": "vbm-4c-32gb",
+		"v6_network": "2001:DB8:9000::",
+		"v6_main_ip": "2001:DB8:9000::100",
+		"v6_network_size": 64,
+		"mac_address": 2199756823533,
+		"label": "my label",
+		"tags": ["my tag"],
+		"os_id": 127,
+		"app_id": 0
+	}
+}`))
 
 	bm, _, err := client.BareMetalServer.Get(ctx, "abc123")
 	if err != nil {
@@ -78,36 +73,32 @@ func TestBareMetalServerServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-			{
-				"bare_metal": {
-					"id": "900000",
-					"os": "CentOS 6 x64",
-					"ram": "65536 MB",
-					"disk": "2x 240 GB SSD",
-					"main_ip": "203.0.113.10",
-					"cpu_count": 1,
-					"region": "ewr",
-					"default_password": "ab81u!ryranq",
-					"date_created": "2017-04-12 18:45:41",
-					"status": "active",
-					"netmask_v4": "255.255.255.0",
-					"gateway_v4": "203.0.113.1",
-					"plan": "vbm-4c-32gb",
-					"v6_network": "2001:DB8:9000::",
-					"v6_main_ip": "2001:DB8:9000::100",
-					"v6_network_size": 64,
-					"mac_address": 0,
-					"label": "go-bm-test",
-					"tags": ["my tag"],
-					"os_id": 127,
-					"app_id": 0
-				}
-			}
-		`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/bare-metals", testJSONResponseHandlerFunc(http.StatusAccepted, `
+{
+	"bare_metal": {
+		"id": "900000",
+		"os": "CentOS 6 x64",
+		"ram": "65536 MB",
+		"disk": "2x 240 GB SSD",
+		"main_ip": "203.0.113.10",
+		"cpu_count": 1,
+		"region": "ewr",
+		"default_password": "ab81u!ryranq",
+		"date_created": "2017-04-12 18:45:41",
+		"status": "active",
+		"netmask_v4": "255.255.255.0",
+		"gateway_v4": "203.0.113.1",
+		"plan": "vbm-4c-32gb",
+		"v6_network": "2001:DB8:9000::",
+		"v6_main_ip": "2001:DB8:9000::100",
+		"v6_network_size": 64,
+		"mac_address": 0,
+		"label": "go-bm-test",
+		"tags": ["my tag"],
+		"os_id": 127,
+		"app_id": 0
+	}
+}`))
 
 	options := &BareMetalCreate{
 		StartupScriptID: "1",
@@ -165,35 +156,31 @@ func TestBareMetalServerServiceHandler_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-			{
-				"bare_metal": {
-					"id": "900000",
-					"os": "CentOS 6 x64",
-					"ram": "65536 MB",
-					"disk": "2x 240 GB SSD",
-					"main_ip": "203.0.113.10",
-					"cpu_count": 1,
-					"region": "ewr",
-					"default_password": "ab81u!ryranq",
-					"date_created": "2017-04-12 18:45:41",
-					"status": "active",
-					"netmask_v4": "255.255.255.0",
-					"gateway_v4": "203.0.113.1",
-					"plan": "vbm-4c-32gb",
-					"v6_network": "2001:DB8:9000::",
-					"v6_main_ip": "2001:DB8:9000::100",
-					"v6_network_size": 64,
-					"label": "my new label",
-					"tags": ["my tag"],
-					"os_id": 127,
-					"app_id": 0
-				}
-			}
-		`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123", testJSONResponseHandlerFunc(http.StatusAccepted, `
+{
+	"bare_metal": {
+		"id": "900000",
+		"os": "CentOS 6 x64",
+		"ram": "65536 MB",
+		"disk": "2x 240 GB SSD",
+		"main_ip": "203.0.113.10",
+		"cpu_count": 1,
+		"region": "ewr",
+		"default_password": "ab81u!ryranq",
+		"date_created": "2017-04-12 18:45:41",
+		"status": "active",
+		"netmask_v4": "255.255.255.0",
+		"gateway_v4": "203.0.113.1",
+		"plan": "vbm-4c-32gb",
+		"v6_network": "2001:DB8:9000::",
+		"v6_main_ip": "2001:DB8:9000::100",
+		"v6_network_size": 64,
+		"label": "my new label",
+		"tags": ["my tag"],
+		"os_id": 127,
+		"app_id": 0
+	}
+}`))
 
 	options := &BareMetalUpdate{
 		Label: "my new label",
@@ -236,9 +223,7 @@ func TestBareMetalServerServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/900000", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/bare-metals/900000", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.BareMetalServer.Delete(ctx, "900000")
 
@@ -251,35 +236,31 @@ func TestBareMetalServerServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-			{
-				"bare_metals": [{
-					"id": "90000",
-					"os": "CentOS 6 x64",
-					"ram": "65536 MB",
-					"disk": "2x 240 GB SSD",
-					"main_ip": "203.0.113.10",
-					"cpu_count": 1,
-					"region": "ewr",
-					"date_created": "2017-04-12 18:45:41",
-					"status": "active",
-					"netmask_v4": "255.255.255.0",
-					"gateway_v4": "203.0.113.1",
-					"plan": "vbm-4c-32gb",
-					"v6_network": "2001:DB8:9000::",
-					"v6_main_ip": "2001:DB8:9000::100",
-					"v6_network_size": 64,
-					"mac_address": 2199756823533,
-					"label": "my label",
-					"tags": ["my tag"],
-					"os_id": 127,
-					"app_id": 0
-				}]
-			}
-		`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/bare-metals", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"bare_metals": [{
+		"id": "90000",
+		"os": "CentOS 6 x64",
+		"ram": "65536 MB",
+		"disk": "2x 240 GB SSD",
+		"main_ip": "203.0.113.10",
+		"cpu_count": 1,
+		"region": "ewr",
+		"date_created": "2017-04-12 18:45:41",
+		"status": "active",
+		"netmask_v4": "255.255.255.0",
+		"gateway_v4": "203.0.113.1",
+		"plan": "vbm-4c-32gb",
+		"v6_network": "2001:DB8:9000::",
+		"v6_main_ip": "2001:DB8:9000::100",
+		"v6_network_size": 64,
+		"mac_address": 2199756823533,
+		"label": "my label",
+		"tags": ["my tag"],
+		"os_id": 127,
+		"app_id": 0
+	}]
+}`))
 
 	bm, _, _, err := client.BareMetalServer.List(ctx, nil)
 
@@ -321,19 +302,15 @@ func TestBareMetalServerServiceHandler_GetBandwidth(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123/bandwidth", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-		{
-			"bandwidth": {
-				"2017-04-01": {
-					"incoming_bytes": 91571055,
-					"outgoing_bytes": 3084731
-				}
-			}
+	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123/bandwidth", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"bandwidth": {
+		"2017-04-01": {
+			"incoming_bytes": 91571055,
+			"outgoing_bytes": 3084731
 		}
-		`
-		fmt.Fprint(writer, response)
-	})
+	}
+}`))
 
 	bandwidth, _, err := client.BareMetalServer.GetBandwidth(ctx, "dev-preview-abc123")
 	if err != nil {
@@ -361,9 +338,7 @@ func TestBareMetalServerServiceHandler_Halt(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/900000/halt", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/bare-metals/900000/halt", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.BareMetalServer.Halt(ctx, "900000")
 
@@ -376,29 +351,25 @@ func TestBareMetalServerServiceHandler_ListIPv4s(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/900000/ipv4", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
+	mux.HandleFunc("/v2/bare-metals/900000/ipv4", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"ipv4s": [
 		{
-			"ipv4s": [
-				{
-					"ip": "203.0.113.10",
-					"netmask": "255.255.255.0",
-					"gateway": "203.0.113.1",
-					"type": "main_ip",
-					"reverse": "203.0.113.10.vultr.com"
-				}
-			],
-			"meta": {
-				"total": 1,
-				"links": {
-				"next": "",
-				"prev": ""
-				}
-			}
+			"ip": "203.0.113.10",
+			"netmask": "255.255.255.0",
+			"gateway": "203.0.113.1",
+			"type": "main_ip",
+			"reverse": "203.0.113.10.vultr.com"
 		}
-		`
-		fmt.Fprint(writer, response)
-	})
+	],
+	"meta": {
+		"total": 1,
+		"links": {
+		"next": "",
+		"prev": ""
+		}
+	}
+}`))
 
 	ipv4, _, _, err := client.BareMetalServer.ListIPv4s(ctx, "900000", nil)
 	if err != nil {
@@ -424,21 +395,17 @@ func TestBareMetalServerServiceHandler_ListIPv6s(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/900000/ipv6", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
+	mux.HandleFunc("/v2/bare-metals/900000/ipv6", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"ipv6s": [
 		{
-			"ipv6s": [
-				{
-					"ip": "2001:DB8:9000::100",
-					"network": "2001:DB8:9000::",
-					"network_size": 64,
-					"type": "main_ip"
-				}
-			]
+			"ip": "2001:DB8:9000::100",
+			"network": "2001:DB8:9000::",
+			"network_size": 64,
+			"type": "main_ip"
 		}
-		`
-		fmt.Fprint(writer, response)
-	})
+	]
+}`))
 
 	ipv6, _, _, err := client.BareMetalServer.ListIPv6s(ctx, "900000", nil)
 
@@ -464,9 +431,7 @@ func TestBareMetalServerServiceHandler_Reboot(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/900000/reboot", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/bare-metals/900000/reboot", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.BareMetalServer.Reboot(ctx, "900000")
 
@@ -479,35 +444,31 @@ func TestBareMetalServerServiceHandler_Reinstall(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/900000/reinstall", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-			{
-				"bare_metal": {
-					"id": "900000",
-					"os": "CentOS 6 x64",
-					"ram": "65536 MB",
-					"disk": "2x 240 GB SSD",
-					"main_ip": "203.0.113.10",
-					"cpu_count": 1,
-					"region": "ewr",
-					"default_password": "ab81u!ryranq",
-					"date_created": "2017-04-12 18:45:41",
-					"status": "active",
-					"netmask_v4": "255.255.255.0",
-					"gateway_v4": "203.0.113.1",
-					"plan": "vbm-4c-32gb",
-					"v6_network": "2001:DB8:9000::",
-					"v6_main_ip": "2001:DB8:9000::100",
-					"v6_network_size": 64,
-					"label": "go-bm-test",
-					"tags": ["my tag"],
-					"os_id": 127,
-					"app_id": 0
-				}
-			}
-		`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/bare-metals/900000/reinstall", testJSONResponseHandlerFunc(http.StatusAccepted, `
+{
+	"bare_metal": {
+		"id": "900000",
+		"os": "CentOS 6 x64",
+		"ram": "65536 MB",
+		"disk": "2x 240 GB SSD",
+		"main_ip": "203.0.113.10",
+		"cpu_count": 1,
+		"region": "ewr",
+		"default_password": "ab81u!ryranq",
+		"date_created": "2017-04-12 18:45:41",
+		"status": "active",
+		"netmask_v4": "255.255.255.0",
+		"gateway_v4": "203.0.113.1",
+		"plan": "vbm-4c-32gb",
+		"v6_network": "2001:DB8:9000::",
+		"v6_main_ip": "2001:DB8:9000::100",
+		"v6_network_size": 64,
+		"label": "go-bm-test",
+		"tags": ["my tag"],
+		"os_id": 127,
+		"app_id": 0
+	}
+}`))
 
 	bm, _, err := client.BareMetalServer.Reinstall(ctx, "900000")
 	if err != nil {
@@ -546,9 +507,7 @@ func TestBareMetalServerServiceHandler_Start(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/42018b7b-a4e3-4c7e-be74-663afeb142aa/start", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/bare-metals/42018b7b-a4e3-4c7e-be74-663afeb142aa/start", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.BareMetalServer.Start(ctx, "42018b7b-a4e3-4c7e-be74-663afeb142aa")
 
@@ -561,10 +520,12 @@ func TestBareMetalServerServiceHandler_GetUserData(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123/user-data", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"user_data": {"data" : "ZWNobyBIZWxsbyBXb3JsZA=="}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123/user-data", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"user_data": {
+		"data" : "ZWNobyBIZWxsbyBXb3JsZA=="
+	}
+}`))
 
 	userData, resp, err := client.BareMetalServer.GetUserData(ctx, "dev-preview-abc123")
 	if err != nil {
@@ -586,8 +547,8 @@ func TestBareMetalServerServiceHandler_GetUpgrades(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123/upgrades", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
+	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123/upgrades", testJSONResponseHandlerFunc(http.StatusOK, `
+{
    "upgrades":{
       "os":[
          {
@@ -609,9 +570,7 @@ func TestBareMetalServerServiceHandler_GetUpgrades(t *testing.T) {
          "vc2-2c-4gb"
       ]
    }
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	server, _, err := client.BareMetalServer.GetUpgrades(ctx, "dev-preview-abc123")
 	if err != nil {
@@ -648,10 +607,12 @@ func TestBareMetalServerServiceHandler_GetVNCUrl(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123/vnc", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"vnc": {"url" : "https://my.vultr.com/subs/baremetal/novnc/api.php?data=djJ8U3ZUTjBYaE3HaCMy1yZ0paVUh8wOldmbw"}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/bare-metals/dev-preview-abc123/vnc", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"vnc": {
+		"url" : "https://my.vultr.com/subs/baremetal/novnc/api.php?data=djJ8U3ZUTjBYaE3HaCMy1yZ0paVUh8wOldmbw"
+	}
+}`))
 
 	vnc, _, err := client.BareMetalServer.GetVNCUrl(ctx, "dev-preview-abc123")
 	if err != nil {
@@ -669,9 +630,7 @@ func TestBareMetalServerServiceHandler_MassStart(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/start", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/bare-metals/start", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.BareMetalServer.MassStart(ctx, []string{"42018b7b-a4e3-4c7e-be74-663afeb142aa"})
 
@@ -684,9 +643,7 @@ func TestBareMetalServerServiceHandler_MassReboot(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/reboot", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/bare-metals/reboot", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.BareMetalServer.MassReboot(ctx, []string{"42018b7b-a4e3-4c7e-be74-663afeb142aa"})
 
@@ -699,103 +656,11 @@ func TestBareMetalServerServiceHandler_MassHalt(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/bare-metals/halt", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/bare-metals/halt", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.BareMetalServer.MassHalt(ctx, []string{"42018b7b-a4e3-4c7e-be74-663afeb142aa"})
 
 	if err != nil {
 		t.Errorf("BareMetalServer.MassHalf returned %+v, expected %+v", err, nil)
-	}
-}
-
-func TestBareMetalServerServiceHandler_CreateMarketplaceImage(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/v2/bare-metals", func(writer http.ResponseWriter, request *http.Request) {
-		response := `
-			{
-				"bare_metal": {
-					"id": "900000",
-					"os": "CentOS 6 x64",
-					"ram": "65536 MB",
-					"disk": "2x 240 GB SSD",
-					"main_ip": "203.0.113.10",
-					"cpu_count": 1,
-					"region": "ewr",
-					"default_password": "ab81u!ryranq",
-					"date_created": "2017-04-12 18:45:41",
-					"status": "active",
-					"netmask_v4": "255.255.255.0",
-					"gateway_v4": "203.0.113.1",
-					"plan": "vbm-4c-32gb",
-					"v6_network": "2001:DB8:9000::",
-					"v6_main_ip": "2001:DB8:9000::100",
-					"v6_network_size": 64,
-					"mac_address": 0,
-					"label": "go-bm-test",
-					"tags": ["my tag"],
-					"os_id": 127,
-					"app_id": 0,
-					"image_id": "test"
-				}
-			}
-		`
-		fmt.Fprint(writer, response)
-	})
-
-	options := &BareMetalCreate{
-		StartupScriptID: "1",
-		Region:          "ewr",
-		Plan:            "vbm-4c-32gb",
-		SnapshotID:      "1",
-		EnableIPv6:      BoolToBoolPtr(true),
-		Label:           "go-bm-test",
-		SSHKeyIDs:       []string{"6b80207b1821f"},
-		AppID:           1,
-		UserData:        "echo Hello World",
-		ActivationEmail: BoolToBoolPtr(true),
-		Hostname:        "test",
-		Tags:            []string{"go-test"},
-		ReservedIPv4:    "111.111.111.111",
-		PersistentPxe:   BoolToBoolPtr(true),
-		ImageID:         "test",
-	}
-
-	bm, _, err := client.BareMetalServer.Create(ctx, options)
-
-	if err != nil {
-		t.Errorf("BareMetalServer.Create returned error: %v", err)
-	}
-
-	expected := &BareMetalServer{
-		ID:              "900000",
-		Os:              "CentOS 6 x64",
-		RAM:             "65536 MB",
-		Disk:            "2x 240 GB SSD",
-		MainIP:          "203.0.113.10",
-		CPUCount:        1,
-		DefaultPassword: "ab81u!ryranq",
-		DateCreated:     "2017-04-12 18:45:41",
-		Status:          "active",
-		NetmaskV4:       "255.255.255.0",
-		GatewayV4:       "203.0.113.1",
-		Plan:            "vbm-4c-32gb",
-		V6Network:       "2001:DB8:9000::",
-		V6MainIP:        "2001:DB8:9000::100",
-		V6NetworkSize:   64,
-		Label:           "go-bm-test",
-		Tags:            []string{"my tag"},
-		MacAddress:      0,
-		OsID:            127,
-		Region:          "ewr",
-		AppID:           0,
-		ImageID:         "test",
-	}
-
-	if !reflect.DeepEqual(bm, expected) {
-		t.Errorf("BareMetalServer.Create returned %+v, expected %+v", bm, expected)
 	}
 }

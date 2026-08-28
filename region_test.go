@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,13 +10,28 @@ func TestRegionServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/regions", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"regions":[{"id":"ams","city": "test", "country":"NL","continent":"Europe","options":["ddos_protection"],"connectivity":["public_ip","nat_gateway"]}],"meta":{"total":1,"links":{"next":"","prev":""}}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/regions", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"regions": [
+		{
+			"id":"ams",
+			"city": "test",
+			"country": "NL",
+			"continent": "Europe",
+			"options": ["ddos_protection"],
+			"connectivity": ["public_ip", "nat_gateway"]
+		}
+	],
+	"meta": {
+		"total":1,
+		"links": {
+			"next":"",
+			"prev":""
+		}
+	}
+}`))
 
 	region, meta, _, err := client.Region.List(ctx, nil)
-
 	if err != nil {
 		t.Errorf("Region.List returned error: %v", err)
 	}
@@ -51,13 +65,16 @@ func TestRegionServiceHandler_Availability(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/regions/ewr/availability", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"available_plans":["vc2-1c-1gb","vc2-1c-2gb","vc2-2c-4gb"]}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/regions/ewr/availability", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"available_plans": [
+		"vc2-1c-1gb",
+		"vc2-1c-2gb", 
+		"vc2-2c-4gb"
+	]
+}`))
 
 	region, _, err := client.Region.Availability(ctx, "ewr", "")
-
 	if err != nil {
 		t.Errorf("Region.Availability returned error: %v", err)
 	}

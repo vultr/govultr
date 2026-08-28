@@ -13,8 +13,7 @@ func TestCDNPullZoneServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc(cdnPullPath, func(writer http.ResponseWriter, request *http.Request) {
-		response := `
+	mux.HandleFunc(cdnPullPath, testJSONResponseHandlerFunc(http.StatusCreated, `
 {
 	"pull_zone": {
 		"id": "ef4d95d5-98dc-4710-94f5-0ee97e70a9a5",
@@ -39,9 +38,7 @@ func TestCDNPullZoneServiceHandler_Create(t *testing.T) {
 		  "ord"
 		]
 	}
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	pzReq := &CDNZoneReq{
 		Label:        "my-pullzone",
@@ -90,8 +87,7 @@ func TestCDNPullZoneServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc(cdnPullPath, func(writer http.ResponseWriter, request *http.Request) {
-		response := `
+	mux.HandleFunc(cdnPullPath, testJSONResponseHandlerFunc(http.StatusOK, `
 {
 	"pull_zones": [
 		{
@@ -125,9 +121,7 @@ func TestCDNPullZoneServiceHandler_List(t *testing.T) {
 			"prev": ""
 		}
 	}
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	pzs, meta, _, err := client.CDN.ListPullZones(ctx)
 	if err != nil {
@@ -180,8 +174,7 @@ func TestCDNPullZoneServiceHandler_Update(t *testing.T) {
 	defer teardown()
 
 	path := fmt.Sprintf("%s/%s", cdnPullPath, "ef4d95d5-98dc-4710-94f5-0ee97e70a9a5")
-	mux.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
-		response := `
+	mux.HandleFunc(path, testJSONResponseHandlerFunc(http.StatusOK, `
 {
 	"pull_zone": {
 		"id": "ef4d95d5-98dc-4710-94f5-0ee97e70a9a5",
@@ -206,9 +199,7 @@ func TestCDNPullZoneServiceHandler_Update(t *testing.T) {
 		  "ord"
 		]
 	}
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	pzUpdateReq := &CDNZoneReq{
 		Label:   "new-label",
@@ -254,8 +245,7 @@ func TestCDNPushZoneServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc(cdnPushPath, func(writer http.ResponseWriter, request *http.Request) {
-		response := `
+	mux.HandleFunc(cdnPushPath, testJSONResponseHandlerFunc(http.StatusCreated, `
 {
   "push_zone": {
     "id": "ef4d95d5-98dc-4710-94f5-0ee97e70a9a5",
@@ -277,9 +267,7 @@ func TestCDNPushZoneServiceHandler_Create(t *testing.T) {
       "yto"
     ]
   }
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	pzReq := &CDNZoneReq{
 		Label:        "my-pushzone",
@@ -323,8 +311,7 @@ func TestCDNPushZoneServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc(cdnPushPath, func(writer http.ResponseWriter, request *http.Request) {
-		response := `
+	mux.HandleFunc(cdnPushPath, testJSONResponseHandlerFunc(http.StatusOK, `
 {
 	"push_zones": [
 		{
@@ -355,9 +342,7 @@ func TestCDNPushZoneServiceHandler_List(t *testing.T) {
 			"prev": ""
 		}
 	}
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	pzs, meta, _, err := client.CDN.ListPushZones(ctx)
 	if err != nil {
@@ -407,8 +392,7 @@ func TestCDNPushZoneServiceHandler_Update(t *testing.T) {
 	defer teardown()
 
 	path := fmt.Sprintf("%s/%s", cdnPushPath, "ef4d95d5-98dc-4710-94f5-0ee97e70a9a5")
-	mux.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
-		response := `
+	mux.HandleFunc(path, testJSONResponseHandlerFunc(http.StatusOK, `
 {
 	"push_zone": {
 		"id": "ef4d95d5-98dc-4710-94f5-0ee97e70a9a5",
@@ -430,9 +414,7 @@ func TestCDNPushZoneServiceHandler_Update(t *testing.T) {
 		  "yto"
 		]
 	}
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	pzUpdateReq := &CDNZoneReq{
 		Label:   "new-label",
@@ -474,8 +456,7 @@ func TestCDNPushZoneServiceHandler_CreateFileEndpoint(t *testing.T) {
 	defer teardown()
 
 	path := fmt.Sprintf("%s/%s/files", cdnPushPath, "ef4d95d5-98dc-4710-94f5-0ee97e70a9a5")
-	mux.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
-		response := `
+	mux.HandleFunc(path, testJSONResponseHandlerFunc(http.StatusCreated, `
 {
   "upload_endpoint": {
     "URL": "https://cdn.s3-ewr-000.vultr.dev/v-cdn-agent-assets",
@@ -488,9 +469,7 @@ func TestCDNPushZoneServiceHandler_CreateFileEndpoint(t *testing.T) {
       "X-Amz-Signature": "8cc2328bf9bd9531ccae5f8b156e7f578f3ee4414bb60f5eac97bbb62a0f2536"
     }
   }
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	endReq := &CDNZoneEndpointReq{
 		Name: "my-image.jpg",
@@ -524,8 +503,7 @@ func TestCDNPushZoneServiceHandler_ListFiles(t *testing.T) {
 	defer teardown()
 
 	path := fmt.Sprintf("%s/%s/files", cdnPushPath, "ef4d95d5-98dc-4710-94f5-0ee97e70a9a5")
-	mux.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
-		response := `
+	mux.HandleFunc(path, testJSONResponseHandlerFunc(http.StatusOK, `
 {
   "files": [
     {
@@ -536,9 +514,7 @@ func TestCDNPushZoneServiceHandler_ListFiles(t *testing.T) {
   ],
   "count": 1,
   "total_size": 857773
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	files, _, err := client.CDN.ListPushZoneFiles(ctx, "ef4d95d5-98dc-4710-94f5-0ee97e70a9a5")
 	if err != nil {

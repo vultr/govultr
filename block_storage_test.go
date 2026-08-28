@@ -1,7 +1,6 @@
 package govultr
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -11,10 +10,28 @@ func TestBlockStorageServiceHandler_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/blocks", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"block":{"id":"123456","cost":10,"pending_charges":2.5,"status":"active","size_gb":100,"region":"ewr","attached_to_instance":"","attached_to_instance_ip":"","attached_to_instance_label":"","date_created":"01-01-1960","label":"mylabel", "mount_id": "ewr-123abc", "block_type": "test", "os_id": 0, "snapshot_id": "", "bootable": false}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/blocks", testJSONResponseHandlerFunc(http.StatusAccepted, `
+{
+	"block": {
+		"id": "123456",
+		"cost": 10,
+		"pending_charges": 2.5,
+		"status": "active",
+		"size_gb": 100,
+		"region": "ewr",
+		"attached_to_instance": "",
+		"attached_to_instance_ip": "",
+		"attached_to_instance_label": "",
+		"date_created": "2020-10-10T01:56:20+00:00",
+		"label": "mylabel", 
+		"mount_id": "ewr-123abc", 
+		"block_type": "test", 
+		"os_id": 0, 
+		"snapshot_id": "", 
+		"bootable": false
+	}
+}`))
+
 	blockReq := &BlockStorageCreate{
 		Region:    "ewr",
 		SizeGB:    100,
@@ -33,7 +50,7 @@ func TestBlockStorageServiceHandler_Create(t *testing.T) {
 		Status:                  "active",
 		SizeGB:                  100,
 		Region:                  "ewr",
-		DateCreated:             "01-01-1960",
+		DateCreated:             "2020-10-10T01:56:20+00:00",
 		AttachedToInstance:      "",
 		AttachedToInstanceIP:    "",
 		AttachedToInstanceLabel: "",
@@ -54,10 +71,27 @@ func TestBlockStorageServiceHandler_Get(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/blocks/123456", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"block":{"id":"123456","cost":10,"pending_charges":2.5,"status":"active","size_gb":100,"region":"ewr","attached_to_instance":"","attached_to_instance_ip":"","attached_to_instance_label":"","date_created":"01-01-1960","label":"mylabel", "mount_id": "ewr-123abc", "block_type": "test", "os_id": 0, "snapshot_id": "", "bootable": false}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/blocks/123456", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"block": {
+		"id": "123456",
+		"cost": 10,
+		"pending_charges": 2.5,
+		"status": "active",
+		"size_gb": 100,
+		"region": "ewr",
+		"attached_to_instance": "",
+		"attached_to_instance_ip": "",
+		"attached_to_instance_label": "",
+		"date_created": "2020-10-10T01:56:20+00:00",
+		"label": "mylabel",
+		"mount_id": "ewr-123abc",
+		"block_type": "test",
+		"os_id": 0,
+		"snapshot_id": "",
+		"bootable": false
+	}
+}`))
 
 	blockStorage, _, err := client.BlockStorage.Get(ctx, "123456")
 	if err != nil {
@@ -71,7 +105,7 @@ func TestBlockStorageServiceHandler_Get(t *testing.T) {
 		Status:                  "active",
 		SizeGB:                  100,
 		Region:                  "ewr",
-		DateCreated:             "01-01-1960",
+		DateCreated:             "2020-10-10T01:56:20+00:00",
 		AttachedToInstance:      "",
 		AttachedToInstanceIP:    "",
 		AttachedToInstanceLabel: "",
@@ -92,9 +126,7 @@ func TestBlockStorageServiceHandler_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/blocks/123456", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/blocks/123456", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	blockUpdate := &BlockStorageUpdate{
 		Label: "unit-test-label-setter",
@@ -109,9 +141,7 @@ func TestBlockStorageServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/blocks/123456", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/blocks/123456", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	err := client.BlockStorage.Delete(ctx, "123456")
 	if err != nil {
@@ -123,10 +153,36 @@ func TestBlockStorageServiceHandler_List(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/blocks", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{"blocks":[{"id":"123456","cost":10,"pending_charges":2.5,"status":"active","size_gb":100,"region":"ewr","attached_to_instance":"","attached_to_instance_ip":"","attached_to_instance_label":"","date_created":"01-01-1960","label":"mylabel", "mount_id": "ewr-123abc", "block_type": "test", "os_id": 0, "snapshot_id": "", "bootable": false}],"meta":{"total":1,"links":{"next":"thisismycusror","prev":""}}}`
-		fmt.Fprint(writer, response)
-	})
+	mux.HandleFunc("/v2/blocks", testJSONResponseHandlerFunc(http.StatusOK, `
+{
+	"blocks": [
+		{
+			"id": "123456",
+			"cost": 10,
+			"pending_charges": 2.5,
+			"status": "active",
+			"size_gb": 100,
+			"region": "ewr",
+			"attached_to_instance": "",
+			"attached_to_instance_ip": "",
+			"attached_to_instance_label": "",
+			"date_created": "2020-10-10T01:56:20+00:00", 
+			"label": "mylabel", 
+			"mount_id": "ewr-123abc", 
+			"block_type": "test", 
+			"os_id": 0, 
+			"snapshot_id": "", 
+			"bootable": false
+		}
+	],
+	"meta": {
+		"total": 1,
+		"links": {
+			"next": "thisismycusror",
+			"prev": ""
+		}
+	}
+}`))
 
 	blockStorage, meta, _, err := client.BlockStorage.List(ctx, nil)
 	if err != nil {
@@ -141,7 +197,7 @@ func TestBlockStorageServiceHandler_List(t *testing.T) {
 			Status:                  "active",
 			SizeGB:                  100,
 			Region:                  "ewr",
-			DateCreated:             "01-01-1960",
+			DateCreated:             "2020-10-10T01:56:20+00:00",
 			AttachedToInstance:      "",
 			AttachedToInstanceIP:    "",
 			AttachedToInstanceLabel: "",
@@ -175,9 +231,7 @@ func TestBlockStorageServiceHandler_Attach(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/blocks/12345/attach", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/blocks/12345/attach", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	attach := &BlockStorageAttach{
 		InstanceID: "1234",
@@ -193,9 +247,8 @@ func TestBlockStorageServiceHandler_Detach(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/blocks/123456/detach", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/blocks/123456/detach", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
+
 	detach := &BlockStorageDetach{Live: BoolToBoolPtr(true)}
 	err := client.BlockStorage.Detach(ctx, "123456", detach)
 	if err != nil {
@@ -207,8 +260,8 @@ func TestBlockStorageServiceHandler_ListSnapshots(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/blocks/snapshots", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
+	mux.HandleFunc("/v2/blocks/snapshots", testJSONResponseHandlerFunc(http.StatusOK, `
+{
 	"snapshots": [
 		{
 			"id": "cb676a46-66fd-4dfb-b839-443f2e6c0b60",
@@ -240,9 +293,7 @@ func TestBlockStorageServiceHandler_ListSnapshots(t *testing.T) {
 				"prev": ""
 		}
 	}
-}`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	snapshots, meta, _, err := client.BlockStorage.ListSnapshots(ctx, nil)
 	if err != nil {
@@ -295,8 +346,8 @@ func TestBlockStorageServiceHandler_GetSnapshot(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/blocks/snapshots/cb676a46-66fd-4dfb-b839-443f2e6c0b60", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
+	mux.HandleFunc("/v2/blocks/snapshots/cb676a46-66fd-4dfb-b839-443f2e6c0b60", testJSONResponseHandlerFunc(http.StatusOK, `
+{
 	"id": "cb676a46-66fd-4dfb-b839-443f2e6c0b60",
 	"block_id": "ay2c5b1a-66fd-4dfb-b839-443f2e6c0b60",
 	"description": "block storage snapshot",
@@ -306,10 +357,7 @@ func TestBlockStorageServiceHandler_GetSnapshot(t *testing.T) {
 	"size": 10737418240,
 	"next_invoice_date": "",
 	"next_invoice_price": ""
-}
-`
-		fmt.Fprint(writer, response)
-	})
+}`))
 
 	snapshot, _, err := client.BlockStorage.GetSnapshot(ctx, "cb676a46-66fd-4dfb-b839-443f2e6c0b60")
 	if err != nil {
@@ -337,8 +385,8 @@ func TestBlockStorageServiceHandler_CreateSnapshot(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/blocks/snapshots", func(writer http.ResponseWriter, request *http.Request) {
-		response := `{
+	mux.HandleFunc("/v2/blocks/snapshots", testJSONResponseHandlerFunc(http.StatusCreated, `
+{
 	"id": "cb676a46-66fd-4dfb-b839-443f2e6c0b60",
 	"block_id": "ay2c5b1a-66fd-4dfb-b839-443f2e6c0b60",
 	"description": "block storage snapshot",
@@ -348,10 +396,8 @@ func TestBlockStorageServiceHandler_CreateSnapshot(t *testing.T) {
 	"size": 10737418240,
 	"next_invoice_date": "",
 	"next_invoice_price": ""
-}
-`
-		fmt.Fprint(writer, response)
-	})
+}`))
+
 	snapshotReq := &BlockStorageSnapshotReq{
 		BlockID:     "ay2c5b1a-66fd-4dfb-b839-443f2e6c0b60",
 		Description: "block storage snapshot",
@@ -382,9 +428,7 @@ func TestBlockStorageServiceHandler_UpdateSnapshot(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/blocks/snapshots/cb676a46-66fd-4dfb-b839-443f2e6c0b60", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/blocks/snapshots/cb676a46-66fd-4dfb-b839-443f2e6c0b60", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	snapshotReq := &BlockStorageSnapshotReq{
 		Description: "block storage snapshot updated",
@@ -399,9 +443,7 @@ func TestBlockStorageServiceHandler_DeleteSnapshot(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/blocks/snapshots/cb676a46-66fd-4dfb-b839-443f2e6c0b60", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer)
-	})
+	mux.HandleFunc("/v2/blocks/snapshots/cb676a46-66fd-4dfb-b839-443f2e6c0b60", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	if err := client.BlockStorage.DeleteSnapshot(ctx, "cb676a46-66fd-4dfb-b839-443f2e6c0b60"); err != nil {
 		t.Errorf("BlockStorage.DeleteSnapshot returned %+v, expected %+v", err, nil)
