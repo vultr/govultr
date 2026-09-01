@@ -58,6 +58,7 @@ type LoadBalancer struct {
 	ForwardingRules []ForwardingRule `json:"forwarding_rules,omitempty"`
 	FirewallRules   []LBFirewallRule `json:"firewall_rules,omitempty"`
 	GlobalRegions   []LBGlobalRegion `json:"global_regions,omitempty"`
+	NodeIPs         LBNodeIPs        `json:"node_ips,omitempty"`
 }
 
 // LoadBalancerReq gives options for creating or updating a load balancer
@@ -145,6 +146,13 @@ type LBFirewallRules struct {
 type LBGlobalRegion struct {
 	RegionID string `json:"region_id"`
 	VPCID    string `json:"vpc_id"`
+}
+
+// LBNodeIPs represents lists of LoadBalancer node IPs
+type LBNodeIPs struct {
+	V4      []string `json:"v4,omitempty"`
+	V6      []string `json:"v6,omitempty"`
+	Private []string `json:"private,omitempty"`
 }
 
 // SSL represents valid SSL config
