@@ -11,11 +11,12 @@ import (
 // SnapshotService is the interface to interact with Snapshot endpoints on the Vultr API
 // Link : https://www.vultr.com/api/#tag/snapshot
 type SnapshotService interface {
+	List(ctx context.Context, options *ListOptions) ([]Snapshot, *Meta, *http.Response, error)
+	Get(ctx context.Context, snapshotID string) (*Snapshot, *http.Response, error)
 	Create(ctx context.Context, snapshotReq *SnapshotReq) (*Snapshot, *http.Response, error)
 	CreateFromURL(ctx context.Context, snapshotURLReq *SnapshotURLReq) (*Snapshot, *http.Response, error)
-	Get(ctx context.Context, snapshotID string) (*Snapshot, *http.Response, error)
+	Update(ctx context.Context, snapshotID string, snapshotReq *SnapshotUpdateReq) error
 	Delete(ctx context.Context, snapshotID string) error
-	List(ctx context.Context, options *ListOptions) ([]Snapshot, *Meta, *http.Response, error)
 }
 
 // SnapshotServiceHandler handles interaction with the snapshot methods for the Vultr API
@@ -37,8 +38,13 @@ type Snapshot struct {
 
 // SnapshotReq struct is used to create snapshots.
 type SnapshotReq struct {
-	InstanceID  string `json:"instance_id,omitempty"`
+	InstanceID  string `json:"instance_id"`
 	Description string `json:"description,omitempty"`
+}
+
+// SnapshotUpdateReq struct is used to update snapshots.
+type SnapshotUpdateReq struct {
+	Description string `json:"description"`
 }
 
 // SnapshotURLReq struct is used to create snapshots from a URL.
@@ -109,6 +115,22 @@ func (s *SnapshotServiceHandler) Get(ctx context.Context, snapshotID string) (*S
 	}
 
 	return snapshot.Snapshot, resp, nil
+}
+
+// Update modifies an existing snapshot
+func (s *SnapshotServiceHandler) Update(ctx context.Context, snapshotID string, snapshotReq *SnapshotUpdateReq) error {
+	uri := fmt.Sprintf("/v2/snapshots/%s", snapshotID)
+
+	req, err := s.client.NewRequest(ctx, http.MethodPut, uri, snapshotReq)
+	if err != nil {
+		return err
+	}
+
+	if _, err := s.client.DoWithContext(ctx, req, nil); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Delete a snapshot.

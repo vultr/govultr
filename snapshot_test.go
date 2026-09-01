@@ -188,6 +188,21 @@ func TestSnapshotServiceHandler_CreateFromURL(t *testing.T) {
 	}
 }
 
+func TestSnapshotServiceHandler_Update(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/v2/snapshots/ecaa1663-0167-4879-8ab2-9c2c66aec368", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
+
+	snap := &SnapshotUpdateReq{
+		Description: "Test snapshot update",
+	}
+
+	if err := client.Snapshot.Update(ctx, "ecaa1663-0167-4879-8ab2-9c2c66aec368", snap); err != nil {
+		t.Errorf("Snapshot.Update returned error: %v", err)
+	}
+}
+
 func TestSnapshotServiceHandler_Delete(t *testing.T) {
 	setup()
 	defer teardown()
