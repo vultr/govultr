@@ -1,4 +1,19 @@
 # Change Log
+## [3.33.0](https://github.com/vultr/govultr/compare/v3.32.0...v3.33.0) (2026-09-01)
+### Enhancements
+* Snapshot: Add update for description [PR 472](https://github.com/vultr/govultr/pull/472)
+
+### Bug Fixes
+* Fix nil interface check on API response body [PR 468](https://github.com/vultr/govultr/pull/468)
+* Load Balancer: Move global regions to struct [PR 469](https://github.com/vultr/govultr/pull/469)
+* Load Balancer: Add Node IPs [PR 471](https://github.com/vultr/govultr/pull/471)
+
+### Clean Up
+* Remove VPC2 data and functions [PR 470](https://github.com/vultr/govultr/pull/470)
+
+### New Contributors
+* @jmdesign3d made their first contribution in [PR 471](https://github.com/vultr/govultr/pull/471)
+
 ## [3.32.0](https://github.com/vultr/govultr/compare/v3.31.2...v3.32.0) (2026-07-20)
 ### Enhancements
 * Kubernetes: Add vpc_only to node pools [PR 465](https://github.com/vultr/govultr/pull/465)
