@@ -192,7 +192,7 @@ func TestSnapshotServiceHandler_Update(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/v2/snapshots", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
+	mux.HandleFunc("/v2/snapshots/ecaa1663-0167-4879-8ab2-9c2c66aec368", testJSONResponseHandlerFunc(http.StatusNoContent, ""))
 
 	snap := &SnapshotUpdateReq{
 		Description: "Test snapshot update",
