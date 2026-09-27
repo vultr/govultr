@@ -346,6 +346,7 @@ type trackedResponseBody struct {
 
 func (b *trackedResponseBody) Close() error {
 	b.closes++
+	b.Reader = iotest.ErrReader(errors.New("read on closed body"))
 	return nil
 }
 
