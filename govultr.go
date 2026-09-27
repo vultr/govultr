@@ -204,8 +204,9 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 		return nil, errDo
 	}
 
+	originalBody := res.Body
 	defer func() {
-		if rerr := res.Body.Close(); err == nil {
+		if rerr := originalBody.Close(); err == nil {
 			err = rerr
 		}
 	}()

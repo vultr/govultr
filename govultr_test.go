@@ -12,6 +12,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"testing/iotest"
 	"time"
 )
 
@@ -334,5 +335,79 @@ func TestRequest_InvalidResponseBody(t *testing.T) {
 	req, _ := client.NewRequest(ctx, http.MethodGet, "/wrong", nil)
 	if _, err := client.DoWithContext(ctx, req, struct{}{}); err == nil {
 		t.Error("Expected response body to be invalid")
+	}
+}
+
+// trackedResponseBody records closure of the underlying transport body.
+type trackedResponseBody struct {
+	io.Reader
+	closes int
+}
+
+func (b *trackedResponseBody) Close() error {
+	b.closes++
+	return nil
+}
+
+// responseBodyTransport supplies a response with an observable body lifetime.
+type responseBodyTransport struct {
+	status int
+	body   *trackedResponseBody
+}
+
+func (tr responseBodyTransport) RoundTrip(*http.Request) (*http.Response, error) {
+	return &http.Response{StatusCode: tr.status, Header: http.Header{"Content-Type": {"application/json"}}, Body: tr.body, ContentLength: -1}, nil
+}
+
+func TestDoWithContextClosesOriginalBody(t *testing.T) {
+	for _, tc := range []struct {
+		name                           string
+		status                         int
+		body                           string
+		noDecode, readError, wantError bool
+	}{
+		{name: "decoded_success", status: 200, body: `{"bird":"vultr"}`},
+		{name: "without_decode", status: 200, body: `{"bird":"vultr"}`, noDecode: true},
+		{name: "no_content", status: 204},
+		{name: "api_error", status: 400, body: `{"error":"invalid request"}`, wantError: true},
+		{name: "invalid_json", status: 200, body: `{`, wantError: true},
+		{name: "read_error", status: 200, readError: true, wantError: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			body := &trackedResponseBody{Reader: strings.NewReader(tc.body)}
+			if tc.readError {
+				body.Reader = iotest.ErrReader(errors.New("read failed"))
+			}
+			testClient := NewClient(&http.Client{Transport: responseBodyTransport{status: tc.status, body: body}})
+			req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://example.invalid/", http.NoBody)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var decoded map[string]string
+			var target interface{} = &decoded
+			if tc.noDecode {
+				target = nil
+			}
+			res, err := testClient.DoWithContext(context.Background(), req, target)
+			if (err != nil) != tc.wantError {
+				t.Fatalf("error = %v, wantError = %t", err, tc.wantError)
+			}
+			if body.closes != 1 {
+				t.Errorf("original body closed %d times, want 1", body.closes)
+			}
+			if res != nil {
+				defer res.Body.Close()
+				retained, err := io.ReadAll(res.Body)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if string(retained) != tc.body {
+					t.Errorf("retained body = %q, want %q", retained, tc.body)
+				}
+			}
+			if tc.name == "decoded_success" && decoded["bird"] != "vultr" {
+				t.Errorf("decoded = %v", decoded)
+			}
+		})
 	}
 }
