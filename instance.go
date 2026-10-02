@@ -264,7 +264,7 @@ type InstanceUpdateReq struct {
 	DetachVPC       []string `json:"detach_vpc,omitempty"`
 	Backups         string   `json:"backups,omitempty"`
 	DDOSProtection  *bool    `json:"ddos_protection"`
-	UserData        string   `json:"user_data,omitempty"`
+	UserData        *string  `json:"user_data,omitempty"`
 	FirewallGroupID string   `json:"firewall_group_id,omitempty"`
 	UserScheme      string   `json:"user_scheme,omitempty"`
 }
