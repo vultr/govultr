@@ -1,4 +1,9 @@
 # Change Log
+## [3.33.1](https://github.com/vultr/govultr/compare/v3.33.0...v3.33.1) (2026-10-02)
+### Bug Fixes
+* Bare Metal Server: Allow empty user data update/delete  [PR 475](https://github.com/vultr/govultr/pull/475)
+* Instance: Allow empty user data update/delete  [PR 475](https://github.com/vultr/govultr/pull/475)
+
 ## [3.33.0](https://github.com/vultr/govultr/compare/v3.32.0...v3.33.0) (2026-09-01)
 ### Enhancements
 * Snapshot: Add update for description [PR 472](https://github.com/vultr/govultr/pull/472)
