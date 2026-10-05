@@ -252,7 +252,7 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 		return res, nil
 
 	default:
-		return res, errors.New(string(body))
+		return nil, errors.New(string(body))
 	}
 }
 
