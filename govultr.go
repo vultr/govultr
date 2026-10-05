@@ -207,11 +207,19 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 	}
 
 	if errDo != nil {
+		if err := res.Body.Close(); err != nil {
+			return nil, fmt.Errorf("error closing request body : %v", err)
+		}
+
 		return nil, errDo
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
+		if err := res.Body.Close(); err != nil {
+			return nil, fmt.Errorf("error closing request body : %v", err)
+		}
+
 		return nil, err
 	}
 
