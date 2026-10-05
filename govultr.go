@@ -210,18 +210,16 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 		return nil, errDo
 	}
 
-	defer func() {
-		if rerr := res.Body.Close(); err == nil {
-			err = rerr
-		}
-	}()
-
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	res.Body = io.NopCloser(bytes.NewBuffer(body))
+	if err := res.Body.Close(); err != nil {
+		return nil, fmt.Errorf("error closing request body : %v", err)
+	}
+
+	res.Body = io.NopCloser(bytes.NewReader(body))
 
 	// the api can return a json error response so check that before continuing
 	if len(body) > 0 {
