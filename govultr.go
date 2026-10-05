@@ -30,7 +30,7 @@ const (
 // RequestBody is used to create JSON bodies for one off calls
 type RequestBody map[string]interface{}
 
-// apiError is a common body found in some server error API responses
+// apiError is a generic JSON body found in some server error API responses
 type apiError struct {
 	Status  int    `json:"status"`
 	Message string `json:"error"`
