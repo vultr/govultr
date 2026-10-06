@@ -202,7 +202,9 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 
 	res, errDo := c.client.Do(rreq)
 
-	defer closeResponseBody(res)
+	defer func() {
+		err = errors.Join(err, closeResponseBody(res))
+	}()
 
 	if c.onRequestCompleted != nil {
 		c.onRequestCompleted(r, res)
@@ -265,7 +267,7 @@ func closeResponseBody(res *http.Response) error {
 	}
 
 	if err := res.Body.Close(); err != nil {
-		return fmt.Errorf("error closing response body : %v", err)
+		return fmt.Errorf("error closing response body : %w", err)
 	}
 
 	return nil
