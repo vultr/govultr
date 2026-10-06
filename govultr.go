@@ -202,28 +202,23 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 
 	res, errDo := c.client.Do(rreq)
 
+	defer closeResponseBody(res)
+
 	if c.onRequestCompleted != nil {
 		c.onRequestCompleted(r, res)
 	}
 
-	// running tally of errors because we always want to close the request
-	var reqErrors []error
-
 	if errDo != nil {
-		reqErrors = append(reqErrors, errDo)
+		return nil, errDo
 	}
 
 	body, errRead := io.ReadAll(res.Body)
 	if errRead != nil {
-		reqErrors = append(reqErrors, errRead)
+		return nil, errRead
 	}
 
 	if errClose := res.Body.Close(); errClose != nil {
-		reqErrors = append(reqErrors, errClose)
-	}
-
-	if len(reqErrors) > 0 {
-		return nil, errors.Join(reqErrors...)
+		return nil, errClose
 	}
 
 	// replace response body with in-memory bytes
@@ -262,6 +257,18 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 	default:
 		return nil, errors.New(string(body))
 	}
+}
+
+func closeResponseBody(res *http.Response) error {
+	if _, err := res.Body.Read(nil); err != http.ErrBodyReadAfterClose {
+		return err
+	}
+
+	if err := res.Body.Close(); err != nil {
+		return fmt.Errorf("error closing response body : %v", err)
+	}
+
+	return nil
 }
 
 // SetBaseURL Overrides the default BaseUrl
