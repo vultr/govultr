@@ -206,27 +206,27 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 		c.onRequestCompleted(r, res)
 	}
 
+	// running tally of errors because we always want to close the request
+	var reqErrors []error
+
 	if errDo != nil {
-		if err := res.Body.Close(); err != nil {
-			return nil, fmt.Errorf("error closing response body after request : %v", err)
-		}
-
-		return nil, errDo
+		reqErrors = append(reqErrors, errDo)
 	}
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		if err := res.Body.Close(); err != nil {
-			return nil, fmt.Errorf("error closing response body during reading : %v", err)
-		}
-
-		return nil, err
+	body, errRead := io.ReadAll(res.Body)
+	if errRead != nil {
+		reqErrors = append(reqErrors, errRead)
 	}
 
-	if err := res.Body.Close(); err != nil {
-		return nil, fmt.Errorf("error closing request body after reading : %v", err)
+	if errClose := res.Body.Close(); errClose != nil {
+		reqErrors = append(reqErrors, errClose)
 	}
 
+	if len(reqErrors) > 0 {
+		return nil, errors.Join(reqErrors...)
+	}
+
+	// replace response body with in-memory bytes
 	res.Body = io.NopCloser(bytes.NewReader(body))
 
 	// the api can return a json error response so check that before continuing
