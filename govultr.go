@@ -202,6 +202,10 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 
 	res, errDo := c.client.Do(rreq)
 
+	defer func() {
+		err = errors.Join(err, closeResponseBody(res))
+	}()
+
 	if c.onRequestCompleted != nil {
 		c.onRequestCompleted(r, res)
 	}
@@ -210,18 +214,17 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 		return nil, errDo
 	}
 
-	defer func() {
-		if rerr := res.Body.Close(); err == nil {
-			err = rerr
-		}
-	}()
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
+	body, errRead := io.ReadAll(res.Body)
+	if errRead != nil {
+		return nil, errRead
 	}
 
-	res.Body = io.NopCloser(bytes.NewBuffer(body))
+	if errClose := res.Body.Close(); errClose != nil {
+		return nil, errClose
+	}
+
+	// replace response body with in-memory bytes
+	res.Body = io.NopCloser(bytes.NewReader(body))
 
 	// the api can return a json error response so check that before continuing
 	if len(body) > 0 {
@@ -254,8 +257,24 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 		return res, nil
 
 	default:
-		return res, errors.New(string(body))
+		return nil, errors.New(string(body))
 	}
+}
+
+func closeResponseBody(res *http.Response) error {
+	if res == nil {
+		return fmt.Errorf("response is invalid, can not close")
+	}
+
+	if _, err := res.Body.Read(nil); err != http.ErrBodyReadAfterClose {
+		return err
+	}
+
+	if err := res.Body.Close(); err != nil {
+		return fmt.Errorf("error closing response body : %w", err)
+	}
+
+	return nil
 }
 
 // SetBaseURL Overrides the default BaseUrl
