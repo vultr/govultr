@@ -3,6 +3,7 @@
 ### Bug Fixes
 * Handle generic JSON error body during request [PR 477](https://github.com/vultr/govultr/pull/477)
 * Close HTTP response reader after reading body [PR 478](https://github.com/vultr/govultr/pull/478)
+* Handle nil response when closing body [PR 480](https://github.com/vultr/govultr/pull/480)
 
 ## [3.33.1](https://github.com/vultr/govultr/compare/v3.33.0...v3.33.1) (2026-10-02)
 ### Bug Fixes
