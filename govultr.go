@@ -262,6 +262,10 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 }
 
 func closeResponseBody(res *http.Response) error {
+	if res == nil {
+		return fmt.Errorf("response is invalid, can not close")
+	}
+
 	if _, err := res.Body.Read(nil); err != http.ErrBodyReadAfterClose {
 		return err
 	}
