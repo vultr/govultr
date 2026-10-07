@@ -341,31 +341,36 @@ func TestRequest_InvalidResponseBody(t *testing.T) {
 // trackedResponseBody records closure of the underlying transport body.
 type trackedResponseBody struct {
 	io.Reader
-	closes int
+	closes     int
+	closeError error
 }
 
 func (b *trackedResponseBody) Close() error {
 	b.closes++
 	b.Reader = iotest.ErrReader(errors.New("read on closed body"))
-	return nil
+	return b.closeError
 }
 
 // responseBodyTransport supplies a response with an observable body lifetime.
 type responseBodyTransport struct {
 	status int
 	body   *trackedResponseBody
+	err    error
 }
 
 func (tr responseBodyTransport) RoundTrip(*http.Request) (*http.Response, error) {
+	if tr.err != nil {
+		return nil, tr.err
+	}
 	return &http.Response{StatusCode: tr.status, Header: http.Header{"Content-Type": {"application/json"}}, Body: tr.body, ContentLength: -1}, nil
 }
 
 func TestDoWithContextClosesOriginalBody(t *testing.T) {
 	for _, tc := range []struct {
-		name                           string
-		status                         int
-		body                           string
-		noDecode, readError, wantError bool
+		name                                       string
+		status                                     int
+		body                                       string
+		noDecode, readError, closeError, wantError bool
 	}{
 		{name: "decoded_success", status: 200, body: `{"bird":"vultr"}`},
 		{name: "without_decode", status: 200, body: `{"bird":"vultr"}`, noDecode: true},
@@ -373,11 +378,18 @@ func TestDoWithContextClosesOriginalBody(t *testing.T) {
 		{name: "api_error", status: 400, body: `{"error":"invalid request"}`, wantError: true},
 		{name: "invalid_json", status: 200, body: `{`, wantError: true},
 		{name: "read_error", status: 200, readError: true, wantError: true},
+		{name: "close_error", status: 200, body: `{"bird":"vultr"}`, closeError: true, wantError: true},
+		{name: "read_and_close_error", status: 200, readError: true, closeError: true, wantError: true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			body := &trackedResponseBody{Reader: strings.NewReader(tc.body)}
+			readError := errors.New("read failed")
+			closeError := errors.New("close failed")
+			if tc.closeError {
+				body.closeError = closeError
+			}
 			if tc.readError {
-				body.Reader = iotest.ErrReader(errors.New("read failed"))
+				body.Reader = iotest.ErrReader(readError)
 			}
 			testClient := NewClient(&http.Client{Transport: responseBodyTransport{status: tc.status, body: body}})
 			req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://example.invalid/", http.NoBody)
@@ -392,6 +404,12 @@ func TestDoWithContextClosesOriginalBody(t *testing.T) {
 			res, err := testClient.DoWithContext(context.Background(), req, target)
 			if (err != nil) != tc.wantError {
 				t.Fatalf("error = %v, wantError = %t", err, tc.wantError)
+			}
+			if tc.readError && !errors.Is(err, readError) {
+				t.Errorf("error = %v, want read error", err)
+			}
+			if tc.closeError && !tc.readError && !errors.Is(err, closeError) {
+				t.Errorf("error = %v, want close error", err)
 			}
 			if body.closes != 1 {
 				t.Errorf("original body closed %d times, want 1", body.closes)
@@ -410,5 +428,19 @@ func TestDoWithContextClosesOriginalBody(t *testing.T) {
 				t.Errorf("decoded = %v", decoded)
 			}
 		})
+	}
+}
+
+func TestDoWithContextTransportError(t *testing.T) {
+	transportError := errors.New("transport failed")
+	testClient := NewClient(&http.Client{Transport: responseBodyTransport{err: transportError}})
+	testClient.SetRetryLimit(0)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://example.invalid/", http.NoBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	res, err := testClient.DoWithContext(context.Background(), req, nil)
+	if res != nil || err == nil || !strings.Contains(err.Error(), transportError.Error()) {
+		t.Fatalf("response = %v, error = %v, want transport error", res, err)
 	}
 }

@@ -107,7 +107,7 @@ type BareMetalUpdate struct {
 	Label        string   `json:"label,omitempty"`
 	AppID        int      `json:"app_id,omitempty"`
 	ImageID      string   `json:"image_id,omitempty"`
-	UserData     string   `json:"user_data,omitempty"`
+	UserData     *string  `json:"user_data,omitempty"`
 	IPXEChainURL string   `json:"ipxe_chain_url,omitempty"`
 	MdiskMode    string   `json:"mdisk_mode,omitempty"`
 	Tags         []string `json:"tags,omitempty"`

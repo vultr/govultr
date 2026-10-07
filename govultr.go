@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	version     = "3.33.0"
+	version     = "3.33.1"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 500 * time.Millisecond
@@ -29,6 +29,12 @@ const (
 
 // RequestBody is used to create JSON bodies for one off calls
 type RequestBody map[string]interface{}
+
+// apiError is a generic JSON body found in some server error API responses
+type apiError struct {
+	Status  int    `json:"status"`
+	Message string `json:"error"`
+}
 
 // Client manages interaction with the Vultr API
 type Client struct {
@@ -185,7 +191,7 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 // DoWithContext sends an API request and returns back the response. The API
 // response is checked to see if it was a successful call. A successful call is
 // then checked to see if we need to unmarshal since some resources have their
-// own implements of unmarshal.
+// own implementations of unmarshal.
 func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) (*http.Response, error) {
 	rreq, err := retryablehttp.FromRequest(r)
 	if err != nil {
@@ -204,19 +210,30 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 		return nil, errDo
 	}
 
-	originalBody := res.Body
-	defer func() {
-		if rerr := originalBody.Close(); err == nil {
-			err = rerr
-		}
-	}()
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
+	body, errRead := io.ReadAll(res.Body)
+	errClose := res.Body.Close()
+	if errRead != nil {
+		return nil, errRead
 	}
 
-	res.Body = io.NopCloser(bytes.NewBuffer(body))
+	if errClose != nil {
+		return nil, errClose
+	}
+
+	// replace response body with in-memory bytes
+	res.Body = io.NopCloser(bytes.NewReader(body))
+
+	// the api can return a json error response so check that before continuing
+	if len(body) > 0 {
+		var responseError apiError
+		if err := json.Unmarshal(body, &responseError); err != nil {
+			return nil, fmt.Errorf("error unmarshaling response body : %v", err)
+		}
+
+		if responseError.Message != "" {
+			return nil, fmt.Errorf("error returned from api : %v", responseError.Message)
+		}
+	}
 
 	switch res.StatusCode {
 	case http.StatusOK, http.StatusCreated, http.StatusAccepted, http.StatusNonAuthoritativeInfo, http.StatusPartialContent:
@@ -237,7 +254,7 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 		return res, nil
 
 	default:
-		return res, errors.New(string(body))
+		return nil, errors.New(string(body))
 	}
 }
 
