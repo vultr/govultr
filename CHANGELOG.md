@@ -1,4 +1,9 @@
 # Change Log
+## [3.33.2](https://github.com/vultr/govultr/compare/v3.33.1...v3.33.2) (2026-10-07)
+### Bug Fixes
+* Handle generic JSON error body during request [PR 477](https://github.com/vultr/govultr/pull/477)
+* Close HTTP response reader after reading body [PR 478](https://github.com/vultr/govultr/pull/478)
+
 ## [3.33.1](https://github.com/vultr/govultr/compare/v3.33.0...v3.33.1) (2026-10-02)
 ### Bug Fixes
 * Bare Metal Server: Allow empty user data update/delete  [PR 475](https://github.com/vultr/govultr/pull/475)
