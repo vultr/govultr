@@ -13,18 +13,21 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
+	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
 )
 
 const (
-	version     = "3.33.2"
-	defaultBase = "https://api.vultr.com"
-	userAgent   = "govultr/" + version
-	rateLimit   = 500 * time.Millisecond
-	retryLimit  = 3
+	version           = "3.33.2"
+	defaultBase       = "https://api.vultr.com"
+	userAgent         = "govultr/" + version
+	rateLimit         = 500 * time.Millisecond
+	rateLimitRetryMax = 3
+	retryLimit        = 3
 )
 
 // RequestBody is used to create JSON bodies for one off calls
@@ -85,10 +88,49 @@ type Client struct {
 
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
+
+	// Tracks when the API rate limit bucket has refilled enough to send
+	// another request. Guarded by rateLimitMu.
+	rateLimitMu      sync.Mutex
+	rateLimitedUntil time.Time
 }
 
 // RequestCompletionCallback defines the type of the request callback function
 type RequestCompletionCallback func(*http.Request, *http.Response)
+
+// RateLimit holds the values reported by the API via the X-RateLimit-*
+// response headers.
+type RateLimit struct {
+	// Limit is the maximum number of requests the bucket can hold (X-RateLimit-Limit).
+	Limit int
+	// Remaining is the number of whole tokens left in the bucket (X-RateLimit-Remaining).
+	Remaining int
+	// Reset is the number of seconds until the bucket is fully refilled (X-RateLimit-Reset).
+	Reset int
+	// OverLimit indicates the request was made over the limit (X-RateLimit-OverLimit).
+	OverLimit bool
+}
+
+// parseRateLimit extracts the rate limit headers from an API response.
+// Returns nil if no rate limit headers are present.
+func parseRateLimit(res *http.Response) *RateLimit {
+	if res == nil {
+		return nil
+	}
+
+	if res.Header.Get("X-RateLimit-Limit") == "" &&
+		res.Header.Get("X-RateLimit-Remaining") == "" {
+		return nil
+	}
+
+	rl := &RateLimit{}
+	rl.Limit, _ = strconv.Atoi(res.Header.Get("X-RateLimit-Limit"))
+	rl.Remaining, _ = strconv.Atoi(res.Header.Get("X-RateLimit-Remaining"))
+	rl.Reset, _ = strconv.Atoi(res.Header.Get("X-RateLimit-Reset"))
+	rl.OverLimit = res.Header.Get("X-RateLimit-OverLimit") == "1"
+
+	return rl
+}
 
 // NewClient returns a Vultr API Client
 func NewClient(httpClient *http.Client) *Client {
@@ -193,14 +235,50 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 // then checked to see if we need to unmarshal since some resources have their
 // own implementations of unmarshal.
 func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) (*http.Response, error) {
-	rreq, err := retryablehttp.FromRequest(r)
-	if err != nil {
-		return nil, err
+	var err error
+
+	var res *http.Response
+	var errDo error
+
+	for attempt := 0; ; attempt++ {
+		// Honor the rate limit reported by the API : if a previous response
+		// told us the bucket was exhausted, block here until it refills.
+		if err := c.waitForRateLimit(ctx); err != nil {
+			return nil, err
+		}
+
+		// Rewind the request body so it can be replayed on retries.
+		if r.GetBody != nil {
+			if body, gerr := r.GetBody(); gerr == nil {
+				r.Body = body
+			}
+		}
+
+		retriable, ferr := retryablehttp.FromRequest(r)
+		if ferr != nil {
+			return nil, ferr
+		}
+		retriable = retriable.WithContext(ctx)
+
+		res, errDo = c.client.Do(retriable)
+		if errDo != nil {
+			break
+		}
+
+		// Track the bucket state so subsequent requests wait instead of fail.
+		if rl := parseRateLimit(res); rl != nil && (rl.OverLimit || rl.Remaining == 0) && rl.Reset > 0 {
+			c.setRateLimitedUntil(rl.Reset)
+		}
+
+		// The API rate limited us (429) : wait for the bucket to refill and retry.
+		if res.StatusCode == http.StatusTooManyRequests && attempt < rateLimitRetryMax {
+			if err := c.waitForRateLimit(ctx); err != nil {
+				return nil, err
+			}
+			continue
+		}
+		break
 	}
-
-	rreq = rreq.WithContext(ctx)
-
-	res, errDo := c.client.Do(rreq)
 
 	defer func() {
 		err = errors.Join(err, closeResponseBody(res))
@@ -258,6 +336,44 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 
 	default:
 		return nil, errors.New(string(body))
+	}
+}
+
+// waitForRateLimit blocks until the API rate limit bucket has refilled, or
+// until the context is canceled. It is a no-op if we are not rate limited.
+func (c *Client) waitForRateLimit(ctx context.Context) error {
+	c.rateLimitMu.Lock()
+	until := c.rateLimitedUntil
+	c.rateLimitMu.Unlock()
+
+	wait := time.Until(until)
+	if wait <= 0 {
+		return nil
+	}
+
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-time.After(wait):
+		return nil
+	}
+}
+
+// setRateLimitedUntil records when the rate limit bucket will be refilled,
+// based on the X-RateLimit-Reset header, so subsequent requests wait instead
+// of failing.
+func (c *Client) setRateLimitedUntil(resetSeconds int) {
+	if resetSeconds <= 0 {
+		return
+	}
+
+	until := time.Now().Add(time.Duration(resetSeconds) * time.Second)
+
+	c.rateLimitMu.Lock()
+	defer c.rateLimitMu.Unlock()
+
+	if until.After(c.rateLimitedUntil) {
+		c.rateLimitedUntil = until
 	}
 }
 

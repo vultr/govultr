@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"reflect"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 )
@@ -334,5 +335,132 @@ func TestRequest_InvalidResponseBody(t *testing.T) {
 	req, _ := client.NewRequest(ctx, http.MethodGet, "/wrong", nil)
 	if _, err := client.DoWithContext(ctx, req, struct{}{}); err == nil {
 		t.Error("Expected response body to be invalid")
+	}
+}
+
+func TestParseRateLimit(t *testing.T) {
+	res := &http.Response{Header: http.Header{}}
+	if rl := parseRateLimit(res); rl != nil {
+		t.Errorf("expected nil when no rate limit headers are present, got %+v", rl)
+	}
+
+	res.Header.Set("X-RateLimit-Limit", "400")
+	res.Header.Set("X-RateLimit-Remaining", "37")
+	res.Header.Set("X-RateLimit-Reset", "9")
+	res.Header.Set("X-RateLimit-OverLimit", "0")
+
+	rl := parseRateLimit(res)
+	if rl == nil {
+		t.Fatal("expected rate limit headers to be parsed")
+	}
+	if rl.Limit != 400 {
+		t.Errorf("expected limit 400, got %d", rl.Limit)
+	}
+	if rl.Remaining != 37 {
+		t.Errorf("expected remaining 37, got %d", rl.Remaining)
+	}
+	if rl.Reset != 9 {
+		t.Errorf("expected reset 9, got %d", rl.Reset)
+	}
+	if rl.OverLimit {
+		t.Error("expected OverLimit to be false")
+	}
+
+	res.Header.Set("X-RateLimit-OverLimit", "1")
+	if rl = parseRateLimit(res); !rl.OverLimit {
+		t.Error("expected OverLimit to be true")
+	}
+
+	if rl := parseRateLimit(nil); rl != nil {
+		t.Errorf("expected nil response to return nil, got %+v", rl)
+	}
+}
+
+func TestClient_setRateLimitedUntil(t *testing.T) {
+	setup()
+	defer teardown()
+
+	client.setRateLimitedUntil(0)
+	client.rateLimitMu.Lock()
+	if !client.rateLimitedUntil.IsZero() {
+		t.Error("expected zero reset to be ignored")
+	}
+	client.rateLimitMu.Unlock()
+
+	client.setRateLimitedUntil(10)
+	client.rateLimitMu.Lock()
+	until := client.rateLimitedUntil
+	client.rateLimitMu.Unlock()
+	if until.Before(time.Now()) {
+		t.Error("expected rateLimitedUntil to be in the future")
+	}
+	if time.Until(until) < 9*time.Second {
+		t.Error("expected rateLimitedUntil to honor the reset window")
+	}
+
+	// waitForRateLimit should return the context error while a wait is pending
+	cancelCtx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if err := client.waitForRateLimit(cancelCtx); err == nil {
+		t.Error("expected context cancellation to abort the rate limit wait")
+	}
+
+	// and it should pass through once the window has elapsed
+	client.rateLimitMu.Lock()
+	client.rateLimitedUntil = time.Now().Add(-time.Second)
+	client.rateLimitMu.Unlock()
+	if err := client.waitForRateLimit(ctx); err != nil {
+		t.Errorf("expected no wait error after the window elapsed, got %v", err)
+	}
+}
+
+// TestClient_DoWithContext_RateLimited verifies the client waits for the
+// bucket to refill instead of failing when the API reports the limit is hit.
+func TestClient_DoWithContext_RateLimited(t *testing.T) {
+	setup()
+	defer teardown()
+
+	var hits int32
+	mux.HandleFunc("/limited", func(writer http.ResponseWriter, request *http.Request) {
+		w := atomic.AddInt32(&hits, 1)
+		if w == 1 {
+			writer.Header().Set("X-RateLimit-Limit", "400")
+			writer.Header().Set("X-RateLimit-Remaining", "0")
+			writer.Header().Set("X-RateLimit-Reset", "1")
+			writer.Header().Set("X-RateLimit-OverLimit", "1")
+			writer.WriteHeader(http.StatusOK)
+			fmt.Fprint(writer, `{"rate_limited":true}`)
+			return
+		}
+
+		writer.Header().Set("X-RateLimit-Limit", "400")
+		writer.Header().Set("X-RateLimit-Remaining", "398")
+		writer.Header().Set("X-RateLimit-Reset", "10")
+		writer.Header().Set("X-RateLimit-OverLimit", "0")
+		writer.WriteHeader(http.StatusOK)
+		fmt.Fprint(writer, `{"rate_limited":false}`)
+	})
+
+	req, _ := client.NewRequest(ctx, http.MethodGet, "/limited", nil)
+
+	start := time.Now()
+	if _, err := client.DoWithContext(ctx, req, nil); err != nil {
+		t.Fatalf("expected rate limited call to succeed, got %v", err)
+	}
+
+	// The first response reported the bucket exhausted with a 1s refill, so
+	// this request should have waited until the bucket refilled.
+	req, _ = client.NewRequest(ctx, http.MethodGet, "/limited", nil)
+	if _, err := client.DoWithContext(ctx, req, nil); err != nil {
+		t.Fatalf("expected second call to succeed after waiting, got %v", err)
+	}
+
+	elapsed := time.Since(start)
+	if elapsed < time.Second {
+		t.Errorf("expected to wait until the rate limit reset, elapsed %v", elapsed)
+	}
+
+	if got := atomic.LoadInt32(&hits); got != 2 {
+		t.Errorf("expected 2 requests, got %d", got)
 	}
 }
