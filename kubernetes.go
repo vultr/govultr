@@ -68,6 +68,7 @@ type Cluster struct {
 	FirewallGroupID string            `json:"firewall_group_id"`
 	OIDCConfig      ClusterOIDCConfig `json:"oidc"`
 	NodePools       []NodePool        `json:"node_pools"`
+	VPC             []VPCNetworkInfo  `json:"vpcs"`
 }
 
 // NodePool represents a pool of nodes that are grouped by their label and plan type
