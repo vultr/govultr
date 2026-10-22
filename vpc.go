@@ -18,17 +18,21 @@ type VPCService interface {
 	Update(ctx context.Context, vpcID string, description string) error
 	Delete(ctx context.Context, vpcID string) error
 	List(ctx context.Context, options *ListOptions) ([]VPC, *Meta, *http.Response, error)
+
 	ListAttachments(ctx context.Context, vpcID string, options *ListOptions) ([]VPCAttachment, *Meta, *http.Response, error)
+
 	CreateNATGateway(ctx context.Context, vpcID string, createReq *NATGatewayReq) (*NATGateway, *http.Response, error)
 	GetNATGateway(ctx context.Context, vpcID, gatewayID string) (*NATGateway, *http.Response, error)
 	UpdateNATGateway(ctx context.Context, vpcID, gatewayID string, updateReq *NATGatewayReq) (*NATGateway, *http.Response, error)
 	DeleteNATGateway(ctx context.Context, vpcID, gatewayID string) error
 	ListNATGateways(ctx context.Context, vpcID string, options *ListOptions) ([]NATGateway, *Meta, *http.Response, error)
+
 	CreateNATGatewayFirewallRule(ctx context.Context, vpcID, gatewayID string, createReq *NATGatewayFirewallRuleCreateReq) (*NATGatewayFirewallRule, *http.Response, error) //nolint:lll
 	GetNATGatewayFirewallRule(ctx context.Context, vpcID, gatewayID, ruleID string) (*NATGatewayFirewallRule, *http.Response, error)
 	UpdateNATGatewayFirewallRule(ctx context.Context, vpcID, gatewayID, ruleID string, updateReq *NATGatewayFirewallRuleUpdateReq) (*NATGatewayFirewallRule, *http.Response, error) //nolint:lll
 	DeleteNATGatewayFirewallRule(ctx context.Context, vpcID, gatewayID, ruleID string) error
-	ListNATGatewayFirewallRules(ctx context.Context, vpcID, gatewayID string, options *ListOptions) ([]NATGatewayFirewallRule, *Meta, *http.Response, error)                                    //nolint:lll
+	ListNATGatewayFirewallRules(ctx context.Context, vpcID, gatewayID string, options *ListOptions) ([]NATGatewayFirewallRule, *Meta, *http.Response, error) //nolint:lll
+
 	CreateNATGatewayPortForwardingRule(ctx context.Context, vpcID, gatewayID string, createReq *NATGatewayPortForwardingRuleReq) (*NATGatewayPortForwardingRule, *http.Response, error)         //nolint:lll
 	GetNATGatewayPortForwardingRule(ctx context.Context, vpcID, gatewayID, ruleID string) (*NATGatewayPortForwardingRule, *http.Response, error)                                                //nolint:lll
 	UpdateNATGatewayPortForwardingRule(ctx context.Context, vpcID, gatewayID, ruleID string, updateReq *NATGatewayPortForwardingRuleReq) (*NATGatewayPortForwardingRule, *http.Response, error) //nolint:lll
@@ -192,6 +196,12 @@ type natGatewayPortForwardingRulesBase struct {
 
 type natGatewayPortForwardingRuleBase struct {
 	PortForwardingRule *NATGatewayPortForwardingRule `json:"port_forwarding_rule"`
+}
+
+// VPCNetworkInfo is the basic info for reference by network members
+type VPCNetworkInfo struct {
+	ID     string `json:"id"`
+	Subnet string `json:"subnet"`
 }
 
 // Create creates a new VPC. A VPC can only be used at the location for which it was created.

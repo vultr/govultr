@@ -49,31 +49,32 @@ type BareMetalServerServiceHandler struct {
 
 // BareMetalServer represents a Bare Metal server on Vultr
 type BareMetalServer struct {
-	ID              string   `json:"id"`
-	Os              string   `json:"os"`
-	RAM             string   `json:"ram"`
-	Disk            string   `json:"disk"`
-	MainIP          string   `json:"main_ip"`
-	CPUCount        int      `json:"cpu_count"`
-	Region          string   `json:"region"`
-	DefaultPassword string   `json:"default_password"`
-	DateCreated     string   `json:"date_created"`
-	Status          string   `json:"status"`
-	NetmaskV4       string   `json:"netmask_v4"`
-	GatewayV4       string   `json:"gateway_v4"`
-	Plan            string   `json:"plan"`
-	V6Network       string   `json:"v6_network"`
-	V6MainIP        string   `json:"v6_main_ip"`
-	V6NetworkSize   int      `json:"v6_network_size"`
-	MacAddress      int      `json:"mac_address"`
-	Label           string   `json:"label"`
-	OsID            int      `json:"os_id"`
-	AppID           int      `json:"app_id"`
-	ImageID         string   `json:"image_id"`
-	SnapshotID      string   `json:"snapshot_id"`
-	Features        []string `json:"features"`
-	Tags            []string `json:"tags"`
-	UserScheme      string   `json:"user_scheme"`
+	ID              string           `json:"id"`
+	Os              string           `json:"os"`
+	RAM             string           `json:"ram"`
+	Disk            string           `json:"disk"`
+	MainIP          string           `json:"main_ip"`
+	CPUCount        int              `json:"cpu_count"`
+	Region          string           `json:"region"`
+	DefaultPassword string           `json:"default_password"`
+	DateCreated     string           `json:"date_created"`
+	Status          string           `json:"status"`
+	NetmaskV4       string           `json:"netmask_v4"`
+	GatewayV4       string           `json:"gateway_v4"`
+	Plan            string           `json:"plan"`
+	V6Network       string           `json:"v6_network"`
+	V6MainIP        string           `json:"v6_main_ip"`
+	V6NetworkSize   int              `json:"v6_network_size"`
+	MacAddress      int              `json:"mac_address"`
+	Label           string           `json:"label"`
+	OsID            int              `json:"os_id"`
+	AppID           int              `json:"app_id"`
+	ImageID         string           `json:"image_id"`
+	SnapshotID      string           `json:"snapshot_id"`
+	Features        []string         `json:"features"`
+	Tags            []string         `json:"tags"`
+	UserScheme      string           `json:"user_scheme"`
+	VPC             []VPCNetworkInfo `json:"vpcs"`
 }
 
 // BareMetalCreate represents the optional parameters that can be set when creating a Bare Metal server
