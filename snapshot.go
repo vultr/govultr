@@ -29,8 +29,8 @@ type Snapshot struct {
 	ID             string `json:"id"`
 	DateCreated    string `json:"date_created"`
 	Description    string `json:"description"`
-	Size           int    `json:"size"`
-	CompressedSize int    `json:"compressed_size"`
+	Size           int64  `json:"size"`
+	CompressedSize int64  `json:"compressed_size"`
 	Status         string `json:"status"`
 	OsID           int    `json:"os_id"`
 	AppID          int    `json:"app_id"`

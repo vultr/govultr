@@ -39,3 +39,16 @@ jobs:
               exit 1
           fi
           exit 0
+
+  Go-Test-386:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.26"
+      - name: Test 32-bit resource decoding
+        env:
+          GOARCH: "386"
+        run: go test -run '^(TestBackup|TestSnapshot|TestBlockStorage|TestBareMetal)' ./...
