@@ -21,6 +21,8 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 			"status": "active",
 			"ipv4": "123.123.123.123",
 			"ipv6": "2001:DB8:1000::100",
+			"cname": "vlb-ebfc2020-8be8-485f-8e01-74f75b24e390.vultrlb.com",
+			"global_cname": "global-lb.example.com",
 			"generic_info": {
 				"balancing_algorithm": "roundrobin",
 				"ssl_redirect": false,
@@ -86,6 +88,8 @@ func TestLoadBalancerHandler_List(t *testing.T) {
 			Region:      "ewr",
 			IPV6:        "2001:DB8:1000::100",
 			IPV4:        "123.123.123.123",
+			CNAME:       "vlb-ebfc2020-8be8-485f-8e01-74f75b24e390.vultrlb.com",
+			GlobalCNAME: "global-lb.example.com",
 			SSLInfo:     BoolToBoolPtr(false),
 			ForwardingRules: []ForwardingRule{
 				{
@@ -155,6 +159,8 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 		"status": "active",
 		"ipv4": "123.123.123.123",
 		"ipv6": "2001:DB8:1000::100",
+		"cname": "vlb-ebfc2020-8be8-485f-8e01-74f75b24e390.vultrlb.com",
+		"global_cname": "global-lb.example.com",
 		"generic_info": {
 			"balancing_algorithm": "roundrobin",
 			"ssl_redirect": false,
@@ -211,6 +217,8 @@ func TestLoadBalancerHandler_Get(t *testing.T) {
 		Region:      "ewr",
 		IPV6:        "2001:DB8:1000::100",
 		IPV4:        "123.123.123.123",
+		CNAME:       "vlb-ebfc2020-8be8-485f-8e01-74f75b24e390.vultrlb.com",
+		GlobalCNAME: "global-lb.example.com",
 		SSLInfo:     BoolToBoolPtr(false),
 		ForwardingRules: []ForwardingRule{
 			{
@@ -271,6 +279,8 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 			"status": "active",
 			"ipv4": "123.123.123.123",
 			"ipv6": "2001:DB8:1000::100",
+			"cname": "vlb-ebfc2020-8be8-485f-8e01-74f75b24e390.vultrlb.com",
+			"global_cname": "",
 			"generic_info": {
 				"balancing_algorithm": "roundrobin",
 				"ssl_redirect": false,
@@ -354,6 +364,7 @@ func TestLoadBalancerHandler_Create(t *testing.T) {
 		Region:      "ewr",
 		IPV6:        "2001:DB8:1000::100",
 		IPV4:        "123.123.123.123",
+		CNAME:       "vlb-ebfc2020-8be8-485f-8e01-74f75b24e390.vultrlb.com",
 		SSLInfo:     BoolToBoolPtr(false),
 		ForwardingRules: []ForwardingRule{
 			{

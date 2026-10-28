@@ -47,6 +47,8 @@ type LoadBalancer struct {
 	Status          string           `json:"status,omitempty"`
 	IPV4            string           `json:"ipv4,omitempty"`
 	IPV6            string           `json:"ipv6,omitempty"`
+	CNAME           string           `json:"cname,omitempty"`
+	GlobalCNAME     string           `json:"global_cname,omitempty"`
 	Instances       []string         `json:"instances,omitempty"`
 	Nodes           int              `json:"nodes,omitempty"`
 	HealthCheck     *HealthCheck     `json:"health_check,omitempty"`
