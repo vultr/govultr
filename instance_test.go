@@ -114,6 +114,10 @@ func TestInstanceServiceHandler_List(t *testing.T) {
 			Hostname:         "my_hostname",
 			Tags:             []string{"a tag", "another"},
 			UserScheme:       "root",
+			VPCs: []VPCNetworkInfo{
+				{ID: "775e26b3-f67d-46b7-87ed-1a0457fb3a5e", Subnet: "10.1.96.3"},
+				{ID: "090a49c0-a1a2-4aab-a263-5d58f180c905", Subnet: "10.1.128.3"},
+			},
 		},
 	}
 
@@ -232,6 +236,10 @@ func TestInstanceServiceHandler_Get(t *testing.T) {
 		Hostname:         "my_hostname",
 		Tags:             []string{"a tag", "another"},
 		UserScheme:       "root",
+		VPCs: []VPCNetworkInfo{
+			{ID: "775e26b3-f67d-46b7-87ed-1a0457fb3a5e", Subnet: "10.1.96.3"},
+			{ID: "090a49c0-a1a2-4aab-a263-5d58f180c905", Subnet: "10.1.128.3"},
+		},
 	}
 
 	if !reflect.DeepEqual(inst, expected) {
