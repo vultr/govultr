@@ -108,7 +108,7 @@ type BlockStorageSnapshot struct {
 	DateUpdated      string `json:"updated_at"`
 	InvoiceNextDate  string `json:"next_invoice_date"`
 	InvoiceNextPrice string `json:"next_invoice_price"`
-	Size             int    `json:"size"`
+	Size             int64  `json:"size"`
 }
 
 type blockStorageSnapshotsBase struct {

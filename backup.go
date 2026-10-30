@@ -25,7 +25,7 @@ type Backup struct {
 	ID          string `json:"id"`
 	DateCreated string `json:"date_created"`
 	Description string `json:"description"`
-	Size        int    `json:"size"`
+	Size        int64  `json:"size"`
 	Status      string `json:"status"`
 }
 
