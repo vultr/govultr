@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"mime"
 	"net"
 	"net/http"
 	"net/url"
@@ -244,8 +245,7 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 			return res, nil
 		}
 
-		switch res.Header.Get("Content-Type") { //nolint:gocritic
-		case "application/json":
+		if isJSONMediaType(res.Header.Get("Content-Type")) {
 			if err := json.Unmarshal(body, data); err != nil {
 				return nil, err
 			}
@@ -259,6 +259,12 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 	default:
 		return nil, errors.New(string(body))
 	}
+}
+
+// isJSONMediaType reports whether value is a valid JSON media type.
+func isJSONMediaType(value string) bool {
+	mediaType, _, err := mime.ParseMediaType(value)
+	return err == nil && mediaType == "application/json"
 }
 
 func closeResponseBody(res *http.Response) error {
