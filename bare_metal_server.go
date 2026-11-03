@@ -75,6 +75,7 @@ type BareMetalServer struct {
 	Tags            []string         `json:"tags"`
 	UserScheme      string           `json:"user_scheme"`
 	VPC             []VPCNetworkInfo `json:"vpcs"`
+	VSerial         string           `json:"vserial"`
 }
 
 // BareMetalCreate represents the optional parameters that can be set when creating a Bare Metal server
