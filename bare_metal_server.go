@@ -65,7 +65,7 @@ type BareMetalServer struct {
 	V6Network       string           `json:"v6_network"`
 	V6MainIP        string           `json:"v6_main_ip"`
 	V6NetworkSize   int              `json:"v6_network_size"`
-	MacAddress      int64            `json:"mac_address"`
+	MacAddress      int              `json:"mac_address"`
 	Label           string           `json:"label"`
 	OsID            int              `json:"os_id"`
 	AppID           int              `json:"app_id"`
@@ -75,6 +75,7 @@ type BareMetalServer struct {
 	Tags            []string         `json:"tags"`
 	UserScheme      string           `json:"user_scheme"`
 	VPC             []VPCNetworkInfo `json:"vpcs"`
+	VSerial         string           `json:"vserial"`
 }
 
 // BareMetalCreate represents the optional parameters that can be set when creating a Bare Metal server
