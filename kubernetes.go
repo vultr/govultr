@@ -812,8 +812,8 @@ func (k *KubernetesHandler) CreateClusterApplicationDeployment(ctx context.Conte
 	return app.Deployment, resp, nil
 }
 
-// CreateClusterApplicationDeployment creates an application deployment on the
-// kubernetes cluster
+// GetClusterApplicationDeployment retrieves the details for a application
+// deployment on the kubernetes cluster
 func (k *KubernetesHandler) GetClusterApplicationDeployment(ctx context.Context, vkeID, appID string) (*ClusterApplicationDeployment, *http.Response, error) { //nolint:lll
 	uri := fmt.Sprintf("%s/%s/applications/%s", vkePath, vkeID, appID)
 	req, err := k.client.NewRequest(ctx, http.MethodGet, uri, nil)
