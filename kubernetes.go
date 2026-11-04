@@ -47,6 +47,14 @@ type KubernetesService interface {
 	Upgrade(ctx context.Context, vkeID string, body *ClusterUpgradeReq) error
 
 	GetClusterResources(ctx context.Context, vkeID string) (*ClusterResources, *http.Response, error)
+
+	ListClusterApplicationDeployments(ctx context.Context, vkeID string) ([]ClusterApplicationDeployment, *http.Response, error)
+	CreateClusterApplicationDeployment(ctx context.Context, vkeID string, appReq *ClusterApplicationDeploymentReq) (*ClusterApplicationDeployment, *http.Response, error) //nolint:lll
+	GetClusterApplicationDeployment(ctx context.Context, vkeID, appID string) (*ClusterApplicationDeployment, *http.Response, error)
+	UpgradeClusterApplicationDeployment(ctx context.Context, vkeID, appID string) error
+	DeleteClusterApplicationDeployment(ctx context.Context, vkeID, appID string) error
+
+	ListClusterApplicationsAvailable(ctx context.Context) ([]ClusterApplication, *http.Response, error)
 }
 
 // KubernetesHandler handles interaction with the kubernetes methods for the Vultr API
@@ -284,6 +292,52 @@ type ClusterResourceLoadBalancer struct {
 	Status      string `json:"status"`
 	IPv4        string `json:"ipv4"`
 	NodeCount   int32  `json:"nodes"`
+}
+
+type clusterApplicationsBase struct {
+	Applications []ClusterApplication `json:"apps"`
+}
+
+// ClusterApplication represents the data for a kubernetes cluster application
+type ClusterApplication struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	URL         string `json:"url"`
+	IconURL     string `json:"icon_url"`
+	Version     string `json:"version"`
+	DateCreated string `json:"date_created"`
+	DateUpdated string `json:"date_updated"`
+}
+
+type clusterApplicationDeploymentBase struct {
+	Deployment *ClusterApplicationDeployment `json:"app_deployment"`
+}
+
+type clusterApplicationDeploymentsBase struct {
+	Deployments []ClusterApplicationDeployment `json:"app_deployments"`
+}
+
+// ClusterApplicationDeployment represents the data related to a cluster
+// application deployment
+type ClusterApplicationDeployment struct {
+	ID          string `json:"id"`
+	AppID       string `json:"app_id"`
+	AppName     string `json:"app_name"`
+	Version     string `json:"version"`
+	Status      string `json:"status"`
+	Timeout     string `json:"timeout"`
+	Config      string `json:"config"`
+	DateCreated string `json:"date_created"`
+	DateUpdated string `json:"date_updated"`
+}
+
+// ClusterApplicationDeployReq represents the request body to deploy a
+// kubernetes cluster application
+type ClusterApplicationDeploymentReq struct {
+	ID      string `json:"id"`
+	Timeout string `json:"timeout,omitempty"`
+	Config  string `json:"config,omitempty"`
 }
 
 // CreateCluster will create a Kubernetes cluster.
@@ -720,4 +774,108 @@ func (k *KubernetesHandler) GetClusterResources(ctx context.Context, vkeID strin
 	}
 
 	return &resources.Resources, resp, nil
+}
+
+// ListClusterApplicationDeployments retrieves a list of applications deployed
+// on the kubernetes cluster
+func (k *KubernetesHandler) ListClusterApplicationDeployments(ctx context.Context, vkeID string) ([]ClusterApplicationDeployment, *http.Response, error) { //nolint:lll
+	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/applications", vkePath, vkeID), nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	apps := new(clusterApplicationDeploymentsBase)
+	resp, err := k.client.DoWithContext(ctx, req, apps)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return apps.Deployments, resp, nil
+}
+
+// CreateClusterApplicationDeployment creates an application deployment on the
+// kubernetes cluster
+func (k *KubernetesHandler) CreateClusterApplicationDeployment(ctx context.Context, vkeID string, appReq *ClusterApplicationDeploymentReq) (*ClusterApplicationDeployment, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/applications", vkePath, vkeID)
+	req, err := k.client.NewRequest(ctx, http.MethodPost, uri, appReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	app := new(clusterApplicationDeploymentBase)
+	resp, err := k.client.DoWithContext(ctx, req, app)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return app.Deployment, resp, nil
+}
+
+// CreateClusterApplicationDeployment creates an application deployment on the
+// kubernetes cluster
+func (k *KubernetesHandler) GetClusterApplicationDeployment(ctx context.Context, vkeID, appID string) (*ClusterApplicationDeployment, *http.Response, error) { //nolint:lll
+	uri := fmt.Sprintf("%s/%s/applications/%s", vkePath, vkeID, appID)
+	req, err := k.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	app := new(clusterApplicationDeploymentBase)
+	resp, err := k.client.DoWithContext(ctx, req, app)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return app.Deployment, resp, nil
+}
+
+// UpgradeClusterApplicationDeployment initiates an upgrade of a cluster
+// application deployment to the latest version for the application
+func (k *KubernetesHandler) UpgradeClusterApplicationDeployment(ctx context.Context, vkeID, appID string) error {
+	uri := fmt.Sprintf("%s/%s/applications/%s/upgrade", vkePath, vkeID, appID)
+	req, err := k.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = k.client.DoWithContext(ctx, req, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DeleteClusterApplicationDeployment deletes the deployment of the kubernetes
+// cluster application
+func (k *KubernetesHandler) DeleteClusterApplicationDeployment(ctx context.Context, vkeID, appID string) error {
+	uri := fmt.Sprintf("%s/%s/applications/%s", vkePath, vkeID, appID)
+	req, err := k.client.NewRequest(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = k.client.DoWithContext(ctx, req, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ListClusterApplicationsAvailable retrieves a list of applications deployed
+// on the kubernetes cluster
+func (k *KubernetesHandler) ListClusterApplicationsAvailable(ctx context.Context) ([]ClusterApplication, *http.Response, error) {
+	req, err := k.client.NewRequest(ctx, http.MethodGet, "/v2/kubernetes/applications", nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	apps := new(clusterApplicationsBase)
+	resp, err := k.client.DoWithContext(ctx, req, apps)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return apps.Applications, resp, nil
 }
