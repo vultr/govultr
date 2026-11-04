@@ -45,6 +45,8 @@ type KubernetesService interface {
 
 	GetUpgrades(ctx context.Context, vkeID string) ([]string, *http.Response, error)
 	Upgrade(ctx context.Context, vkeID string, body *ClusterUpgradeReq) error
+
+	GetClusterResources(ctx context.Context, vkeID string) (*ClusterResources, *http.Response, error)
 }
 
 // KubernetesHandler handles interaction with the kubernetes methods for the Vultr API
@@ -250,6 +252,38 @@ type availableUpgrades struct {
 // ClusterUpgradeReq struct for vke upgradse
 type ClusterUpgradeReq struct {
 	UpgradeVersion string `json:"upgrade_version,omitempty"`
+}
+
+type clusterResourcesBase struct {
+	Resources ClusterResources `json:"resources"`
+}
+
+// ClusterResources represents the load balancer and storage resources
+// associated with and managed by a kubernetes cluster
+type ClusterResources struct {
+	BlockStorages []ClusterResourceBlockStorage `json:"block_storage"`
+	LoadBalancers []ClusterResourceLoadBalancer `json:"load_balancer"`
+}
+
+// ClusterResourceBlockStorage represents a block storage resource associated
+// with and managed by a kubernetes cluster
+type ClusterResourceBlockStorage struct {
+	ID          string `json:"id"`
+	Label       string `json:"label"`
+	DateCreated string `json:"date_created"`
+	Status      string `json:"status"`
+	SizeGB      int32  `json:"size_gb"`
+}
+
+// ClusterResourceLoadBalancer represents a load balancer resource associated
+// with and managed by a kubernetes cluster
+type ClusterResourceLoadBalancer struct {
+	ID          string `json:"id"`
+	Label       string `json:"label"`
+	DateCreated string `json:"date_created"`
+	Status      string `json:"status"`
+	IPv4        string `json:"ipv4"`
+	NodeCount   int32  `json:"nodes"`
 }
 
 // CreateCluster will create a Kubernetes cluster.
@@ -668,4 +702,22 @@ func (k *KubernetesHandler) Upgrade(ctx context.Context, vkeID string, body *Clu
 
 	_, err = k.client.DoWithContext(ctx, req, nil)
 	return err
+}
+
+// GetClusterResources retrieves the cluster resources data showing the block
+// storages and load balancers which are associated with and managed by the
+// kubernetes cluster
+func (k *KubernetesHandler) GetClusterResources(ctx context.Context, vkeID string) (*ClusterResources, *http.Response, error) {
+	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/resources", vkePath, vkeID), nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	resources := new(clusterResourcesBase)
+	resp, err := k.client.DoWithContext(ctx, req, resources)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &resources.Resources, resp, nil
 }
