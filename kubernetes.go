@@ -99,6 +99,7 @@ type Node struct {
 	DateCreated string `json:"date_created"`
 	Label       string `json:"label"`
 	IP          string `json:"ip,omitempty"` // Optional, may not be present in older API responses
+	PrivateIP   string `json:"private_ip"`
 	Status      string `json:"status"`
 }
 
