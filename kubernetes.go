@@ -249,7 +249,7 @@ type availableUpgrades struct {
 	AvailableUpgrades []string `json:"available_upgrades"`
 }
 
-// ClusterUpgradeReq struct for vke upgradse
+// ClusterUpgradeReq struct for vke upgrades
 type ClusterUpgradeReq struct {
 	UpgradeVersion string `json:"upgrade_version,omitempty"`
 }
