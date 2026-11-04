@@ -864,8 +864,8 @@ func (k *KubernetesHandler) DeleteClusterApplicationDeployment(ctx context.Conte
 	return nil
 }
 
-// ListClusterApplicationsAvailable retrieves a list of applications deployed
-// on the kubernetes cluster
+// ListClusterApplicationsAvailable retrieves a list of applications available
+// for deployment on a kubernetes cluster
 func (k *KubernetesHandler) ListClusterApplicationsAvailable(ctx context.Context) ([]ClusterApplication, *http.Response, error) {
 	req, err := k.client.NewRequest(ctx, http.MethodGet, "/v2/kubernetes/applications", nil)
 	if err != nil {
