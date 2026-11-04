@@ -59,6 +59,7 @@ type BareMetalServer struct {
 	DefaultPassword string           `json:"default_password"`
 	DateCreated     string           `json:"date_created"`
 	Status          string           `json:"status"`
+	PowerStatus     string           `json:"power_status"`
 	NetmaskV4       string           `json:"netmask_v4"`
 	GatewayV4       string           `json:"gateway_v4"`
 	Plan            string           `json:"plan"`
