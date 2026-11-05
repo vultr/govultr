@@ -14,6 +14,7 @@ const databasePath = "/v2/databases"
 // Link: https://www.vultr.com/api/#tag/managed-databases
 type DatabaseService interface {
 	ListPlans(ctx context.Context, options *DBPlanListOptions) ([]DatabasePlan, *Meta, *http.Response, error)
+	ListServices(ctx context.Context) (*DatabaseServices, *http.Response, error)
 
 	List(ctx context.Context, options *DBListOptions) ([]Database, *Meta, *http.Response, error)
 	Create(ctx context.Context, databaseReq *DatabaseCreateReq) (*Database, *http.Response, error)
@@ -119,6 +120,19 @@ type DatabasePlan struct {
 	SupportedEngines SupportedEngines `json:"supported_engines"`
 	MaxConnections   *MaxConnections  `json:"max_connections,omitempty"`
 	Locations        []string         `json:"locations"`
+}
+
+type databaseServicesBase struct {
+	Services *DatabaseServices `json:"available_services"`
+}
+
+// DatabaseServices represents a the available list of database versions for
+// the database engines
+type DatabaseServices struct {
+	Kafka      []string `json:"kafka"`
+	MySQL      []string `json:"mysql"`
+	PostgreSQL []string `json:"pg"`
+	Valkey     []string `json:"valkey"`
 }
 
 // SupportedEngines represents an object containing supported database engine types for Managed Database plans
@@ -902,6 +916,23 @@ func (d *DatabaseServiceHandler) ListPlans(ctx context.Context, options *DBPlanL
 	}
 
 	return databasePlans.DatabasePlans, databasePlans.Meta, resp, nil
+}
+
+func (d *DatabaseServiceHandler) ListServices(ctx context.Context) (*DatabaseServices, *http.Response, error) {
+	uri := fmt.Sprintf("%s/available-services", databasePath)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	srvs := new(databaseServicesBase)
+	resp, err := d.client.DoWithContext(ctx, req, srvs)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return srvs.Services, resp, nil
 }
 
 // List retrieves all databases on your account
