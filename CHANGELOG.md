@@ -1,4 +1,26 @@
 # Change Log
+## [3.34.0](https://github.com/vultr/govultr/compare/v3.33.2...v.3.34.0) (2026-11-04)
+### Enhancements
+* Bare Metal Server: Add VPC information [PR 481](https://github.com/vultr/govultr/pull/481)
+* Bare Metal Server: Add VSerial field [PR 486](https://github.com/vultr/govultr/pull/486)
+* Bare Metal Server: Add power status field [PR 490](https://github.com/vultr/govultr/pull/490)
+* Database: Add list of verions/services function [PR 491](https://github.com/vultr/govultr/pull/491)
+* Instance: Add VPC information [PR 481](https://github.com/vultr/govultr/pull/481)
+* Kubernetes: Add VPC information [PR 481](https://github.com/vultr/govultr/pull/481)
+* Load Balancer: Add CNAME fields [PR 484](https://github.com/vultr/govultr/pull/484)
+* Kubernetes: Add linked resources information & functions [PR 487](https://github.com/vultr/govultr/pull/487)
+* Kubernetes: Add private IP info to node members [PR 488](https://github.com/vultr/govultr/pull/488)
+* Kubernetes: Add application deployment information & functions [PR 489](https://github.com/vultr/govultr/pull/489)
+
+### Bug Fixes
+* Backup: Use 64 bit integers for size fields [PR 482](https://github.com/vultr/govultr/pull/482)
+* Bare Metal Server: Use 64 bit integers for MAC address fields [PR 482](https://github.com/vultr/govultr/pull/482)
+* Block Storage: Use 64 bit integers for size fields [PR 482](https://github.com/vultr/govultr/pull/482)
+* Snapshot: Use 64 bit integers for size fields [PR 482](https://github.com/vultr/govultr/pull/482)
+
+### New Contributors
+* @omrzk made their first contribution in [PR 482](https://github.com/vultr/govultr/pull/482)
+
 ## [3.33.2](https://github.com/vultr/govultr/compare/v3.33.1...v3.33.2) (2026-10-07)
 ### Bug Fixes
 * Handle generic JSON error body during request [PR 477](https://github.com/vultr/govultr/pull/477)
