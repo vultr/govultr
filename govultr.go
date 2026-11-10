@@ -190,9 +190,9 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 }
 
 // DoWithContext sends an API request and returns back the response. The API
-// response is checked to see if it was a successful call. A successful call is
-// then checked to see if we need to unmarshal since some resources have their
-// own implementations of unmarshal.
+// response is parsed for error responses, then the response code is checked.
+// Any non-200 http status code will propagate an error. If successful the
+// body, if JSON, is unmarshaled into the provided interface.
 func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) (*http.Response, error) {
 	rreq, err := retryablehttp.FromRequest(r)
 	if err != nil {
