@@ -226,15 +226,13 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 	// replace response body with in-memory bytes
 	res.Body = io.NopCloser(bytes.NewReader(body))
 
-	// the api can return a json error response so check that before continuing
 	if len(body) > 0 {
+		// the api can return a json error response so check that before continuing
 		var responseError apiError
 		if err := json.Unmarshal(body, &responseError); err != nil {
-			return nil, fmt.Errorf("error unmarshaling response body : %v", err)
-		}
-
-		if responseError.Message != "" {
-			return nil, fmt.Errorf("error returned from api : %v", responseError.Message)
+			if responseError.Message != "" {
+				return res, fmt.Errorf("error returned from api : %v", responseError.Message)
+			}
 		}
 	}
 
