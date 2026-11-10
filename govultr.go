@@ -32,8 +32,9 @@ type RequestBody map[string]interface{}
 
 // apiError is a generic JSON body found in some server error API responses
 type apiError struct {
-	Status  int    `json:"status"`
-	Message string `json:"error"`
+	Status   int    `json:"status"`
+	Message  string `json:"error"`
+	External bool   `json:"is_external_error"`
 }
 
 // Client manages interaction with the Vultr API
