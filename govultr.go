@@ -232,7 +232,7 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 		var responseError apiError
 		if err := json.Unmarshal(body, &responseError); err != nil {
 			if responseError.Message != "" {
-				return res, fmt.Errorf("error returned from api : %v", responseError.Message)
+				return nil, fmt.Errorf("error returned from api : %v", responseError.Message)
 			}
 		}
 	}
