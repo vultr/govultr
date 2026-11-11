@@ -32,8 +32,9 @@ type RequestBody map[string]interface{}
 
 // apiError is a generic JSON body found in some server error API responses
 type apiError struct {
-	Status  int    `json:"status"`
-	Message string `json:"error"`
+	Status   int    `json:"status"`
+	Message  string `json:"error"`
+	External bool   `json:"is_external_error"`
 }
 
 // Client manages interaction with the Vultr API
@@ -189,9 +190,9 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 }
 
 // DoWithContext sends an API request and returns back the response. The API
-// response is checked to see if it was a successful call. A successful call is
-// then checked to see if we need to unmarshal since some resources have their
-// own implementations of unmarshal.
+// response is parsed for error responses, then the response code is checked.
+// Any non-200 http status code will propagate an error. If successful the
+// body, if JSON, is unmarshaled into the provided interface.
 func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interface{}) (*http.Response, error) {
 	rreq, err := retryablehttp.FromRequest(r)
 	if err != nil {
@@ -226,15 +227,13 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 	// replace response body with in-memory bytes
 	res.Body = io.NopCloser(bytes.NewReader(body))
 
-	// the api can return a json error response so check that before continuing
 	if len(body) > 0 {
+		// the api can return a json error response so check that before continuing
 		var responseError apiError
-		if err := json.Unmarshal(body, &responseError); err != nil {
-			return nil, fmt.Errorf("error unmarshaling response body : %v", err)
-		}
-
-		if responseError.Message != "" {
-			return nil, fmt.Errorf("error returned from api : %v", responseError.Message)
+		if err := json.Unmarshal(body, &responseError); err == nil {
+			if responseError.Message != "" {
+				return nil, fmt.Errorf("error returned from api : %v", responseError.Message)
+			}
 		}
 	}
 
