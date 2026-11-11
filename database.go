@@ -918,6 +918,7 @@ func (d *DatabaseServiceHandler) ListPlans(ctx context.Context, options *DBPlanL
 	return databasePlans.DatabasePlans, databasePlans.Meta, resp, nil
 }
 
+// ListServices retrieves all database services and their relevant available versions
 func (d *DatabaseServiceHandler) ListServices(ctx context.Context) (*DatabaseServices, *http.Response, error) {
 	uri := fmt.Sprintf("%s/available-services", databasePath)
 
